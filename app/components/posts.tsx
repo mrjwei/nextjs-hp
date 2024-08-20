@@ -1,8 +1,11 @@
 import Link from 'next/link'
 import { formatDate, getBlogPosts } from 'app/blog/utils'
 
-export function BlogPosts() {
+export function BlogPosts({numPosts}: {numPosts?: number}) {
   let allBlogs = getBlogPosts()
+  if (numPosts) {
+    allBlogs = allBlogs.slice(-numPosts)
+  }
 
   return (
     <div>
