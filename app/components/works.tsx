@@ -1,15 +1,15 @@
 import Link from 'next/link'
-import { formatDate, getBlogPosts } from 'app/blog/utils'
+import { formatDate, getWorks } from 'app/blog/utils'
 
-export function BlogPosts({numPosts}: {numPosts?: number}) {
-  let allBlogs = getBlogPosts()
-  if (numPosts) {
-    allBlogs = allBlogs.slice(-numPosts)
+export function Works({numWorks}: {numWorks?: number}) {
+  let allWorks = getWorks()
+  if (numWorks) {
+    allWorks = allWorks.slice(-numWorks)
   }
 
   return (
     <div>
-      {allBlogs
+      {allWorks
         .sort((a, b) => {
           if (
             new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
@@ -18,18 +18,18 @@ export function BlogPosts({numPosts}: {numPosts?: number}) {
           }
           return 1
         })
-        .map((post) => (
+        .map((work) => (
           <Link
-            key={post.slug}
+            key={work.slug}
             className="flex flex-col space-y-1 mb-4"
-            href={`/blog/${post.slug}`}
+            href={`/works/${work.slug}`}
           >
             <div className="w-full flex flex-col md:flex-row space-x-0 md:space-x-2">
               <p className="text-neutral-600 dark:text-neutral-400 w-[100px] tabular-nums text-nowrap mr-4">
-                {formatDate(post.metadata.publishedAt, false)}
+                {formatDate(work.metadata.publishedAt, false)}
               </p>
               <p className="text-neutral-900 dark:text-neutral-100 tracking-tight font-bold">
-                {post.metadata.title}
+                {work.metadata.title}
               </p>
             </div>
           </Link>

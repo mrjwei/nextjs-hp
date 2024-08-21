@@ -1,20 +1,20 @@
 import { notFound } from 'next/navigation'
 import { CustomMDX } from 'app/components/mdx'
-import { formatDate, getBlogPosts } from 'app/blog/utils'
+import { formatDate, getWorks } from 'app/blog/utils'
 import { baseUrl } from 'app/sitemap'
 import Head from 'next/head'
 
 export async function generateStaticParams() {
-  let posts = getBlogPosts()
+  let works = getWorks()
 
-  return posts.map((post) => ({
-    slug: post.slug,
+  return works.map((work) => ({
+    slug: work.slug,
   }))
 }
 
 export function generateMetadata({ params }) {
-  let post = getBlogPosts().find((post) => post.slug === params.slug)
-  if (!post) {
+  let work = getWorks().find((work) => work.slug === params.slug)
+  if (!work) {
     return
   }
 
@@ -23,7 +23,7 @@ export function generateMetadata({ params }) {
     publishedAt: publishedTime,
     summary: description,
     image,
-  } = post.metadata
+  } = work.metadata
   let ogImage = image
     ? image
     : `${baseUrl}/og?title=${encodeURIComponent(title)}`
@@ -36,7 +36,7 @@ export function generateMetadata({ params }) {
       description,
       type: 'article',
       publishedTime,
-      url: `${baseUrl}/blog/${post.slug}`,
+      url: `${baseUrl}/blog/${work.slug}`,
       images: [
         {
           url: ogImage,
@@ -53,17 +53,17 @@ export function generateMetadata({ params }) {
 }
 
 export default function Blog({ params }) {
-  let post = getBlogPosts().find((post) => post.slug === params.slug)
+  let work = getWorks().find((work) => work.slug === params.slug)
 
-  if (!post) {
+  if (!work) {
     notFound()
   }
 
   return (
     <>
       <Head>
-        <title>{post.metadata.title}</title>
-        <link rel="canonical" href={`${baseUrl}/blog/${post.slug}`} />
+        <title>{work.metadata.title}</title>
+        <link rel="canonical" href={`${baseUrl}/blog/${work.slug}`} />
       </Head>
       <section>
         <script
@@ -72,15 +72,15 @@ export default function Blog({ params }) {
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               '@context': 'https://schema.org',
-              '@type': 'BlogPosting',
-              headline: post.metadata.title,
-              datePublished: post.metadata.publishedAt,
-              dateModified: post.metadata.publishedAt,
-              description: post.metadata.summary,
-              image: post.metadata.image
-                ? `${baseUrl}${post.metadata.image}`
-                : `/og?title=${encodeURIComponent(post.metadata.title)}`,
-              url: `${baseUrl}/blog/${post.slug}`,
+              '@type': 'Publishingworks',
+              headline: work.metadata.title,
+              datePublished: work.metadata.publishedAt,
+              dateModified: work.metadata.publishedAt,
+              description: work.metadata.summary,
+              image: work.metadata.image
+                ? `${baseUrl}${work.metadata.image}`
+                : `/og?title=${encodeURIComponent(work.metadata.title)}`,
+              url: `${baseUrl}/blog/${work.slug}`,
               author: {
                 '@type': 'Person',
                 name: 'My Portfolio',
@@ -89,15 +89,15 @@ export default function Blog({ params }) {
           }}
         />
         <h1 className="title font-bold text-4xl">
-          {post.metadata.title}
+          {work.metadata.title}
         </h1>
         <div className="flex justify-between items-center mt-2 mb-8 text-sm">
           <p className="text-sm text-neutral-600 dark:text-neutral-400">
-            {formatDate(post.metadata.publishedAt)}
+            {formatDate(work.metadata.publishedAt)}
           </p>
         </div>
         <article className="prose">
-          <CustomMDX source={post.content} />
+          <CustomMDX source={work.content} />
         </article>
       </section>
     </>
