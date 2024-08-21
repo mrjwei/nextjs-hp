@@ -1,0 +1,209 @@
+---
+title: 'How I Made My Python Data-Scraping Program 140 Times Faster'
+publishedAt: '2024-07-12'
+summary: 'Last month, I developed a Python program to crawl a data-intensive website with numerous pages and tabs, requiring substantial browser interaction. The program’s objective was to interact with the website, locate and parse relevant elements, extract data into a Python dictionary, and write it into a file.'
+---
+
+- [Starting With Selenium: The Initial Version](#starting-with-selenium-the-initial-version)
+- [Combining Beautiful Soup With Selenium: 35 Times Faster](#combining-beautiful-soup-with-selenium-35-timesfaster)
+- [Running Multiple Concurrent Threads: A Further Boost](#running-multiple-concurrent-threads-a-furtherboost)
+  - [Choosing Between Multithreading vs. Multiprocessing](#choosing-between-multithreading-vs-multiprocessing)
+  - [Python's concurrent.futures Module](#pythons-concurrentfutures-module)
+  - [Creating a Driver and Parser Instance for Each Thread](#creating-a-driver-and-parser-instance-for-each-thread)
+  - [Determining the Right Number for max\_workers](#determining-the-right-number-for-max_workers)
+- [Impact](#impact)
+
+
+Last month, I developed a Python program to crawl a data-intensive website with numerous pages and tabs, requiring substantial browser interaction. The data was organized in deeply nested tables, making the task more challenging.
+
+The program’s objective was to interact with the website, locate and parse relevant elements, extract data into a Python dictionary, and write it into a file.
+
+## Starting With Selenium: The Initial Version
+
+The website’s tabs were rendered server-side upon user interaction, so I needed a [WebDriver](https://www.selenium.dev/documentation/webdriver/) to simulate clicks. The initial version of the program created a WebDriver instance, iterated over the pages and their tabs to click through them, and used [WebDriver’s find methods](https://selenium-python.readthedocs.io/locating-elements.html) to locate the desired information.
+
+```python
+# Loop through pages
+for f in c["facilities"]:
+  url = f["link"]
+  driver.get(url)
+  tbody = driver.find_element(By.TAG_NAME, 'tbody')
+  trs = tbody.find_elements(By.TAG_NAME, 'tr')
+
+  # other code omitted
+
+  # Loop through tabs
+  for label in labels:
+    tab = driver.find_element(By.XPATH, f'//span[contains(text(), "{label}")]')
+    tab.click()
+    tables = driver.find_elements(By.CSS_SELECTOR, 'fieldset table')
+
+    # code to locate more elements and extract data
+```
+The problem? It was too slow to be practical. Fetching a single entry took over five minutes, and with tens of thousands of entries, this approach was unacceptable.
+
+## Combining Beautiful Soup With Selenium: 35 Times Faster
+
+Although each tab is rendered upon request, the rendered content is static. So, I decided to combine [Beautiful Soup](https://pypi.org/project/beautifulsoup4/) - a Python library specifically designed for parsing HTML and XML documents - with [Selenium](https://selenium-python.readthedocs.io/).
+
+First, I created a class to handle the creation of a Beautiful Soup instance and to parse tables of various shapes.
+
+```python
+class PageParser():
+  def __init__(self):
+    self.soup = None
+
+  def create_soup(self, source):
+    self.soup = BeautifulSoup(source, 'html.parser')
+
+  def parse_table(self, table):
+    # code to parse table and return its data as a dict
+```
+Next, I replaced all element-locating methods with Beautiful Soup's find and select methods. After this change, **WebDriver only needed to handle minimal browser interaction, leaving the parsing to Beautiful Soup**, which is far less resource-intensive. This optimization boosted the program's execution speed by **35 times**!
+
+```python
+# Loop through pages
+for f in c["facilities"]:
+  url = f["link"]
+  driver.get(url)
+
+  # use Beautiful Soup
+  parser.create_soup(driver.page_source)
+  tbody = parser.soup.find('tbody').find('tbody')
+  trs = tbody.find_all('tr', recursive=False)
+
+  # other code omitted
+
+  # Loop through tabs
+  for label in labels:
+    tab = driver.find_element(By.XPATH, f'//span[contains(text(), "{label}")]')
+    tab.click()
+
+    # use Beautiful Soup
+    parser.create_soup(driver.page_source)
+    tables = parser.soup.select('fieldset table')
+
+    # code to locate more elements and extract data
+```
+Beautiful Soup is much faster than Selenium in parsing web content because it operates entirely in memory, downloading the page source and parsing it without the overhead of controlling a browser. In contrast, Selenium requires navigating to the page and waiting for it to load and render before interacting with its elements, making it inherently slower. Selenium's WebDriver must communicate with the browser instance, introducing latency, especially when many elements need to be found.
+
+## Running Multiple Concurrent Threads: A Further Boost
+
+Despite the 35x improvement, the program still wasn't fast enough - it would take four days to complete the task. To achieve further speed, I turned to concurrent execution.
+
+### Choosing Between Multithreading vs. Multiprocessing
+
+I had to choose between multithreading and multiprocessing:
+
+**Multithreading**: Ideal for I/O-bound tasks, such as file reading and network communication. Multithreading shares resources among threads, making better use of the CPU when I/O operations are involved. Threads are lightweight and efficient to create and switch between.
+
+**Multiprocessing**: Suited for CPU-bound tasks, like data processing and graphics rendering. Multiprocessing takes advantage of multiple CPU cores, providing true parallelism. However, creating processes is more time-consuming than creating threads.
+
+For more information on threads and processes, check out [Multithreading vs. Multiprocessing Explained](https://builtin.com/data-science/multithreading-multiprocessing#:~:text=Multithreading%20refers%20to%20the%20ability,run%20one%20or%20more%20threads.) and posts on Reddit such as [Multithreading vs Multiprocessing](https://www.reddit.com/r/learnpython/comments/uqgkhs/multithreading_vs_multiprocessing/) and [ELI5: What's the difference between multiprocessing and multithreading?](https://www.reddit.com/r/explainlikeimfive/comments/vwjob3/eli5_whats_the_difference_between_multiprocessing/)
+
+One critical factor was Python's **[Global Interpreter Lock (GIL)](https://wiki.python.org/moin/GlobalInterpreterLock)**, which prevents multiple native threads from executing Python bytecodes simultaneously. While GIL can be a limitation for CPU-bound tasks, it's less of an issue for I/O-bound tasks, where threads spend a lot of time waiting for I/O operations to complete, allowing other threads to run. Given the nature of my program, which involved significant network communication and independent data fetching, I opted for multithreading.
+
+An in-depth discussion on it is beyond the scope of this article, but if you are interested, take a look at [Python Wiki](https://wiki.python.org/moin/GlobalInterpreterLock) and [Real Python's article](https://realpython.com/python-gil/) on this topic.
+
+### Python's concurrent.futures Module
+
+The `concurrent.futures` module provides the `ThreadPoolExecutor` concrete class to implement multithreading in Python. A basic example looks like this:
+
+```python
+import concurrent.futures
+
+def scrape_data(url):
+  # code to scrape data
+
+urls = [
+    'https://example.com',
+    'https://example.org',
+    'https://example.net',
+]
+
+with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+  results = list(executor.map(scrape_data, urls))
+```
+I used the same `map` method to implement my `scrape_facility` function as shown in the following section.
+
+### Creating a Driver and Parser Instance for Each Thread
+
+Initially, I encountered sporadic `stale element reference` errors without understanding their cause.
+
+```python
+from functools import partial
+
+def scrape_facility(f, driver, parser):
+  # code to get data for a single entry (facility)
+
+def main():
+
+  # other code omitted
+
+  parser = PageParser()
+
+  chrome_options = Options()
+  chrome_options.add_argument("--headless=new")
+  driver = webdriver.Chrome(service=Service('./chromedriver'), options=chrome_options)
+
+  # This allows multiple arguments to be passed to scrape_facility in addition to facilities_chunk
+  scrape_facility_with_args = partial(scrape_facility, driver=driver, parser=parser)
+
+  for facilities_chunk in chunk_facilities(c['facilities'], MAX_WORKERS):
+    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+      facilities = list(executor.map(scrape_facility_with_args, facilities_chunk))
+```
+After some research, I learned that concurrent access to WebDriver methods from multiple threads can cause race conditions and unpredictable behavior. My mistake was initializing the WebDriver and parser outside the concurrent context, causing all threads to share these instances.
+
+```python
+def main():
+
+  # ====== Problematic code starts ======
+
+  parser = PageParser()
+
+  chrome_options = Options()
+  chrome_options.add_argument("--headless=new")
+  driver = webdriver.Chrome(service=Service('./chromedriver'), options=chrome_options)
+
+  # ====== Problematic code ends ======
+```
+I resolved the issue by moving the WebDriver and parser initialization into the `scrape_facility` method.
+
+```python
+def scrape_facility(f):
+  # Moved parser and driver initialization into scrape_facility
+  parser = PageParser()
+
+  chrome_options = Options()
+  chrome_options.add_argument("--headless=new")
+  driver = webdriver.Chrome(service=Service('./chromedriver'), options=chrome_options)
+
+  # other code omitted
+
+def main():
+
+  # other code omitted
+
+  for facilities_chunk in chunk_facilities(c['facilities'], MAX_WORKERS):
+    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+      facilities = list(executor.map(scrape_facility, facilities_chunk))
+```
+
+### Determining the Right Number for max_workers
+
+Another critical factor was selecting the optimal `max_workers` value. While **number of CPU cores * 4** is generally recommended, my benchmarks showed that setting `max_workers` to **number of CPU cores * 2** performed best, reducing execution time by about **32%** compared to the higher value.
+
+```bash
+# os.cpu_count() * 4
+201458845 function calls (140589864 primitive calls) in 306.416 seconds
+```
+
+```bash
+# os.cpu_count() * 2
+201464531 function calls (155030139 primitive calls) in 207.611 seconds
+```
+
+## Impact
+
+After implementing multithreading, the program ran another four times faster. Combined with Beautiful Soup, this resulted in a total speed boost of **140 times**. I was able to complete the scraping of about 40,000 entries in 24 hours, compared to the estimated 140 days before optimization.

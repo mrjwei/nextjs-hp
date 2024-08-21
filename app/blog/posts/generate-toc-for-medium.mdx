@@ -1,0 +1,69 @@
+---
+title: 'Generate a Table of Contents for Medium Articles With One Click'
+publishedAt: '2024-07-16'
+summary: 'Manually creating TOCs for Medium articles was tedious, so I decided to automate the process by developing a Python program.'
+---
+
+- [Designing With Users in Mind](#designing-with-users-in-mind)
+- [Coding It out](#coding-it-out)
+- [Takeaways](#takeaways)
+
+Medium currently lacks native support for a Table of Contents (TOC), leaving creators to manually create them if they wish to have one. I first encountered this issue when I needed to add TOCs to multiple posts. Manually creating TOCs was tedious, so I decided to automate the process by developing a Python program. You can check out the project on [GitHub](https://github.com/mrjwei/medium-toc-generator).
+
+## Designing With Users in Mind
+
+When designing this program, I prioritized accessibility, especially for non-programmers. To make the tool more user-friendly, I integrated a **graphical user interface (GUI)** so that users could easily interact with the program without needing to know any code.
+
+Additionally, I decided to implement the ability to **generate TOCs in bulk for multiple articles**. This feature significantly enhances user experience (UX) without requiring substantial additional development time.
+
+One major challenge was **ensuring that the TOCs would display correctly on Medium**. Due to how Medium handles content, simply pasting TOCs in raw HTML wouldn’t render them properly.
+
+```html
+<!--Copying & pasting this into Medium won't work-->
+<ul>
+  <li>
+    <a href="">Heading 1</a>
+  </li>
+  <li>
+    <a href="">Heading 2</a>
+  </li>
+  <li>
+    <a href="">Heading 3</a>
+  </li>
+</ul>
+```
+
+Instead, the TOCs needed to be pasted as rendered HTML, as shown below:
+
+<figure style={{ textAlign: 'center' }}>
+  <img src="/generate-toc-for-medium/toc.png" alt="description" />
+  <figcaption>You need to paste this into Medium</figcaption>
+</figure>
+
+To streamline this process, I designed the program to **automatically open the generated TOC in a browser**, making it easy for users to copy and paste the correct version directly into their Medium articles.
+
+## Coding It out
+
+Thanks to careful planning, the coding process was relatively straightforward. The program allows users to quickly generate a TOC for one or multiple Medium articles.
+
+Here’s what the finished program looks like when executed:
+
+<figure style={{ textAlign: 'center' }}>
+  <img src="/generate-toc-for-medium/gui.png" alt="description" />
+  <figcaption>The rendered html ready to be copied and pasted into Medium</figcaption>
+</figure>
+
+And here’s how the generated and rendered HTML looks:
+
+<figure style={{ textAlign: 'center' }}>
+  <img src="/generate-toc-for-medium/generated-toc.png" alt="description" />
+  <figcaption>Generated TOC</figcaption>
+</figure>
+
+You can easily select all the content by pressing Cmd + A (Mac) or Ctrl + A (Windows) and then copy and paste it into your Medium article.
+
+## Takeaways
+
+While this project resulted in a Python program, the design thinking and planning process played a critical role in its usability and accessibility. Conversely, without the foundational coding skills, my idea wouldn’t have come to life.
+
+This project reinforced my belief that design and programming are deeply interconnected disciplines, each complementing the other in creating user-focused solutions.

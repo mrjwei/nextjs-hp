@@ -1,0 +1,55 @@
+---
+title: 'Handling Functions in Server Components with Next.js'
+publishedAt: '2024-06-24'
+summary: 'How to Resolve the “Functions cannot be passed directly to Client Components” Error in Next.js'
+---
+
+- [The Context](#the-context)
+- [The Fix](#the-fix)
+- [Deeper Insight](#deeper-insight)
+
+## The Context
+
+While working through the [official tutorial of Nextjs](https://nextjs.org/learn/dashboard-app/mutating-data#deleting-an-invoice), I encountered an error that took me by surprise:
+
+> Error: Functions cannot be passed directly to Client Components unless you explicitly expose it by marking it with “use server”. Or maybe you meant to call this function rather than return it.  
+> ``<form action={function action} children=…>``
+> ^^^^^^^^^^^^^^^^^
+
+This happened when I experimented with the following code (different from the tutorial’s example to explore things further):
+
+```jsx
+return <form action={() => deleteInvoice(id)}>...</form>
+```
+
+## The Fix
+
+Resolving this issue was straightforward by modifying the code as follows:
+
+```jsx
+// Fix by using 'use server'
+<form action={
+ async function() {
+  'use server';
+  await deleteInvoice(id)
+ }
+}>
+```
+
+Alternatively, you can follow the [tutorial’s](https://nextjs.org/learn/dashboard-app/mutating-data#deleting-an-invoice) guidance:
+
+```jsx
+const deleteInvoiceWithId = deleteInvoice.bind(null, id);
+return (
+  <form action={deleteInvoiceWithId}>
+  ...
+)
+```
+
+## Deeper Insight
+
+Upon digging deeper, I discovered that:
+
+- Function creation and excution context cannot be properly serialized and transmitted over the network.
+- deleteInvoiceWithId is simply a new reference to an existing Server Action function, preserving its server-side context. However, () => deleteInvoice(id) creates a completely new function with a different context than the original.
+- By declaring the new function as a Server Action with ‘use server’, the code executes correctly, with a new server context established.
