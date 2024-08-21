@@ -12,9 +12,8 @@ summary: 'How to Resolve the “Functions cannot be passed directly to Client Co
 
 While working through the [official tutorial of Nextjs](https://nextjs.org/learn/dashboard-app/mutating-data#deleting-an-invoice), I encountered an error that took me by surprise:
 
-> Error: Functions cannot be passed directly to Client Components unless you explicitly expose it by marking it with “use server”. Or maybe you meant to call this function rather than return it.  
+> Error: Functions cannot be passed directly to Client Components unless you explicitly expose it by marking it with “use server”. Or maybe you meant to call this function rather than return it.
 > ``<form action={function action} children=…>``
-> ^^^^^^^^^^^^^^^^^
 
 This happened when I experimented with the following code (different from the tutorial’s example to explore things further):
 
