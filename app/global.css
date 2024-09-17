@@ -125,6 +125,18 @@ html {
   margin-bottom: 1.25em !important;
 }
 
+.prose blockquote {
+  @apply p-4 bg-neutral-100 border-l-4 border-l-neutral-400;
+}
+
+.prose blockquote p {
+  @apply m-0;
+}
+
+.prose figcaption {
+  @apply text-neutral-500;
+}
+
 pre::-webkit-scrollbar {
   display: none;
 }
