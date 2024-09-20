@@ -1,0 +1,154 @@
+---
+title: "Understanding event.target and event.currentTarget: A Comprehensive Guide"
+publishedAt: '2022-06-12'
+summary: 'When working with the DOM, you’ll often encounter events that help capture and respond to user interactions. The Event interface, part of the DOM API, has two properties—event.target and event.currentTarget—that can sometimes be confusing. In this guide, we’ll break down the differences between these two and provide examples to clarify their usage.'
+---
+
+- [Introduction](#introduction)
+- [Understanding `event.target` and `event.currentTarget`](#understanding-eventtarget-and-eventcurrenttarget)
+  - [What is `event.target`?](#what-is-eventtarget)
+  - [What is `event.currentTarget`?](#what-is-eventcurrenttarget)
+- [Examples](#examples)
+  - [Example of `event.target`](#example-of-eventtarget)
+  - [Example of `event.currentTarget`](#example-of-eventcurrenttarget)
+- [Conclusion](#conclusion)
+
+## Introduction
+
+The [Event interface](https://developer.mozilla.org/en-US/docs/Web/API/Event) represents an interaction with the DOM, such as clicks, key presses, and mouse movements. Two of its key properties, `event.target` and `event.currentTarget`, are often misunderstood. In this post, we’ll dive into their roles and differences, using practical examples to demonstrate their behavior.
+
+## Understanding `event.target` and `event.currentTarget`
+
+### What is `event.target`?
+
+event.target refers to **the element that triggered the event**. This is the original source of the event, where the interaction (e.g., a click) first occurred.
+
+### What is `event.currentTarget`?
+
+`event.currentTarget` refers to **the element to which the event handler is attached, regardless of whether it was the original trigger**. This is particularly important when handling events that bubble up through the DOM.
+
+## Examples
+
+### Example of `event.target`
+
+Let’s explore how `event.target` works. Consider the following HTML structure:
+
+```html
+<body>
+  <form>
+    FORM
+    <div>
+      DIV
+      <p>P</p>
+    </div>
+  </form>
+  <script>
+    const form = document.querySelector("form");
+    const div = document.querySelector("div");
+    const p = document.querySelector("p");
+
+    form.onclick = function (event) {
+      console.log("form: ", event.target);
+    };
+    div.onclick = function (event) {
+      console.log("div: ", event.target);
+    };
+    p.onclick = function (event) {
+      console.log("p: ", event.target);
+    };
+  </script>
+</body>
+```
+
+The code renders this:
+
+<figure style={{ textAlign: 'center' }}>
+  <img src="/understanding-event-target-and-current-target/rendering.png" alt="rendered image of example code" />
+  <figcaption>Rendered image of example code</figcaption>
+</figure>
+
+In this example, we have event listeners for clicks on the `form`, `div`, and `p` elements. Here’s what happens when we click the `p` tag:
+
+<figure style={{ textAlign: 'center' }}>
+  <img src="/understanding-event-target-and-current-target/clicking-p.png" alt="output when clicking p" />
+  <figcaption>Output when clicking p</figcaption>
+</figure>
+
+Even though we clicked on the `p` element, the `div` and `form` elements also logged the event due to [event bubbling](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events#event_bubbling_and_capture). However, all three logs show `p` as the `event.target`.
+
+Key takeaway: **Event bubbling does not affect the `event.target`**. Regardless of how far the event bubbles, event.target remains the element that initiated the event.
+
+Clicking `div` and `form` results the following respectively:
+
+<figure style={{ textAlign: 'center' }}>
+  <img src="/understanding-event-target-and-current-target/clicking-div.png" alt="output when clicking div" />
+  <figcaption>Output when clicking div</figcaption>
+</figure>
+<br/>
+<figure style={{ textAlign: 'center' }}>
+  <img src="/understanding-event-target-and-current-target/clicking-form.png" alt="output when clicking form" />
+  <figcaption>Output when clicking form</figcaption>
+</figure>
+
+### Example of `event.currentTarget`
+
+Now, let’s replace `event.target` with `event.currentTarget` in the previous example:
+
+```javascript
+form.onclick = function (event) {
+  console.log("form: ", event.currentTarget);
+};
+div.onclick = function (event) {
+  console.log("div: ", event.currentTarget);
+};
+p.onclick = function (event) {
+  console.log("p: ", event.currentTarget);
+};
+```
+
+When you click the `p` element now, the logs show the element that owns each event handler as the `event.currentTarget`.
+
+<figure style={{ textAlign: 'center' }}>
+  <img src="/understanding-event-target-and-current-target/clicking-p-currenttarget.png" alt="currentTarget output when clicking p" />
+  <figcaption>currentTarget output when clicking p</figcaption>
+</figure>
+
+Clicking `div` and `form` results the following respectively:
+
+<figure style={{ textAlign: 'center' }}>
+  <img src="/understanding-event-target-and-current-target/clicking-div-currenttarget.png" alt="currentTarget output when clicking div" />
+  <figcaption>currentTarget output when clicking div</figcaption>
+</figure>
+<br/>
+<figure style={{ textAlign: 'center' }}>
+  <img src="/understanding-event-target-and-current-target/clicking-form-currenttarget.png" alt="currentTarget output when clicking form" />
+  <figcaption>currentTarget output when clicking form</figcaption>
+</figure>
+
+For an element to be the `event.currentTarget`, it must have an event handler for the **specified event**. If an element has a handler for a different event, it won’t qualify as the `event.currentTarget` for the current event. Here’s an example where we change the `p` element’s handler to listen for `ondrop` instead of `onclick`:
+
+```javascript
+...
+p.ondrop = function(event) {
+  console.log("p: ", event.currentTarget)
+}
+```
+
+Now, clicking on p won’t invoke the handler:
+
+
+Now, clicking `p` again and we can see that handler for `p` is NOT invoked because the handler only handles drop events and not click events.
+
+<figure style={{ textAlign: 'center' }}>
+  <img src="/understanding-event-target-and-current-target/clicking-p-with-different-handler.png" alt="currentTarget output when clicking p with a different handler" />
+  <figcaption>currentTarget output when clicking p with a different handler</figcaption>
+</figure>
+
+## Conclusion
+
+In summary:
+
+- `event.target` is always the element that triggered the event. It remains constant as the event bubbles up.
+- `event.currentTarget` refers to the element where the event handler is attached. It changes as the event bubbles and reaches new elements, provided they have an appropriate handler for that event.
+
+Understanding these two properties will help you manage event handling more effectively, especially when dealing with complex DOM structures and event propagation.
