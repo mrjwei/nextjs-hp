@@ -1,0 +1,142 @@
+---
+title: "An AI-Powered App That Streamlines Your Speaking Test Prep Workflow"
+publishedAt: "2024-07-27"
+summary: "Traditional English speaking test prep methods felt inefficient, and the process of recording my answers, transcribing them manually, and then using AI like ChatGPT for revisions was too cumbersome."
+---
+
+- [Output Files: The Initial Version](#output-files-the-initial-version)
+  - [Concepts and Features](#concepts-and-features)
+  - [The Implementation](#the-implementation)
+    - [Choosing appropriate OpenAI APIs and their endpoints](#choosing-appropriate-openai-apis-and-their-endpoints)
+    - [Selecting the right model for the Chat API](#selecting-the-right-model-for-the-chat-api)
+  - [The Outcome](#the-outcome)
+- [Everything in One Place: The Upgraded Version Integrating With Notion](#everything-in-one-place-the-upgraded-version-integrating-with-notion)
+  - [Problems With the Initial Version](#problems-with-the-initial-version)
+  - [Concept: Building Upon the First Version](#concept-building-upon-the-first-version)
+  - [The Implementation](#the-implementation-1)
+  - [The Outcome](#the-outcome-1)
+- [Ideas for Further Optimization](#ideas-for-further-optimization)
+- [Conclusion](#conclusion)
+
+With just two months left to prepare for the IELTS speaking test, I faced a significant challenge: my speaking skills needed urgent improvement, and I didn’t have the support of an English teacher or native English-speaking friends. Traditional methods felt inefficient, and the process of recording my answers, transcribing them manually, and then using AI like ChatGPT for revisions was too cumbersome.
+
+In response, I decided to develop an AI-powered app to streamline this process. The app aims to provide instant feedback with one click and the results are consolidated in notion pages, making my preparation — and hopefully yours as well — more effective.
+
+In this post, I’ll walk you through how the app evolved from its initial version to a more advanced tool by integrating with notion, and how it can benefit others facing similar challenges.
+
+Please check out the [repo](https://github.com/mrjwei/speaking-test-prep-assistant-app) to see how to use it.
+
+## Output Files: The Initial Version
+
+### Concepts and Features
+
+- Traditionally, the workflow involved recording my answer, manually transcribing it, feeding the transcription to AI, enhancing the answer, and then copying and pasting the results, along with my original answers, into note-taking tools. This process was inefficient.
+- The optimized workflow now involves recording my answer, passing the audio file to the app, and entering the question text (if available in digital form) into the app’s GUI before hitting the Generate button. This streamlined approach allows you to practice 5–10 times more questions in the same period compared to the traditional method.
+- Your original answer and the AI-enhanced answer are located in the same file, making it much easier to see the differences and improving the effectiveness of your practice.
+- The app features a simple and intuitive GUI designed to streamline your workflow while keeping you focused.
+
+### The Implementation
+
+The implementation of this version is straightforward, but a few key considerations were necessary:
+
+#### Choosing appropriate OpenAI APIs and their endpoints
+
+To transcribe recordings and then process the text with AI, I required two APIs:
+
+- [Audio API](https://platform.openai.com/docs/api-reference/audio). Specifically, I needed its [transcriptions](https://platform.openai.com/docs/api-reference/audio/createTranscription) endpoint.
+- [Chat API](https://platform.openai.com/docs/api-reference/chat/create). Specifically, I needed its [completions](https://platform.openai.com/docs/api-reference/chat/create) endpoint.
+
+#### Selecting the right model for the Chat API
+
+With several models available for the Chat API, I opted for the [gpt-4o-mini](https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/) model over [gpt-4o](https://openai.com/index/hello-gpt-4o/) due to its performance and cost-effectiveness. Here’s why:
+
+In specific, the decision was made based on these facts and outcomes from my research:
+
+- The IELTS speaking test allows a maximum of 2 minutes uninterrupted on a topic.
+- An average English speaker uses 250–300 words in 2 minutes, so I used 250–300 words as a benchmark for my calculations.
+- On average, one English word translates to about 1.33 tokens in GPT models. Thus, 300 words would be approximately 400 tokens.
+- [Pricing](https://openai.com/api/): GPT-4o costs $5 per million input tokens and $15 per million output tokens, while GPT-4o mini costs $0.15 per million input tokens and $0.60 per million output tokens.
+- With an estimated 1000 minutes of practice, this translates to 0.2M input and 0.2M output tokens, costing $4 with GPT-4o versus $0.15 with GPT-4o mini. Given the 27-fold price difference and the task’s simplicity, choosing GPT-4o mini was a clear decision.
+
+### The Outcome
+
+This is what the finished app looks like. The interface is simple, clean and user-friendly.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/ai-powered-app-for-speaking-test-prep/gui.png"
+    alt="the initial app"
+    width="400px"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>The initial app</figcaption>
+</figure>
+
+## Everything in One Place: The Upgraded Version Integrating With Notion
+
+### Problems With the Initial Version
+
+- As your practice progresses, the number of output files increases too.
+- You need to open the files manually and one by one, which is tedious.
+- Output files are less portable compared to documents stored on cloud-based platforms like Notion.
+
+### Concept: Building Upon the First Version
+
+To address these issues and enhance the app’s functionality, I upgraded it to integrate with [Notion](https://www.notion.so/). This upgrade ensures that your answers and their refined versions are stored in one place on the cloud, making them accessible from anywhere. If you use Notion in your daily work or study, the page is likely already open in your browser, eliminating the need to manually open files from your file system.
+
+### The Implementation
+
+The key to this implementation was understanding the Notion API. Familiarizing myself with Notion objects and the endpoints required some time. Some important findings include:
+
+1. The endpoint for updating page content turned out to be [block](https://developers.notion.com/reference/block), not page, which surprised me.
+2. Each object, e.g. a heading or a paragraph, to be added to the page is represented as a dict in the `children` list.
+<br/>
+```javascript
+# Using block, instead of page endpoint, to update page content
+URL = 'https://api.notion.com/v1/blocks/block_id/children'
+# Content to be appended to the page
+# Each object is represented as a dict in the children list
+data = {
+  "children": [
+    {
+      "object": "block",
+      "type": "paragraph",
+      "paragraph": {
+        "rich_text": [
+          {
+            "type": "text",
+            "text": {
+              "content": "This is a new paragraph."
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+With these implementation details sorted out, sending a patch request to the Notion API was straightforward.
+
+### The Outcome
+
+Here’s how the upgraded version looks and operates. The workflow is now faster and more efficient.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/ai-powered-app-for-speaking-test-prep/upgraded-version.gif"
+    alt="the upgraded version"
+    width="400px"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>The upgraded version</figcaption>
+</figure>
+
+## Ideas for Further Optimization
+
+- As content length grows, it may be necessary to allow users to specify new pages for additional content.
+- It would be beneficial to provide users with the option to create a new database or page, or use an existing one, to accommodate their content.
+
+## Conclusion
+
+The development of this AI-powered app has significantly streamlined my IELTS speaking test preparation. By addressing initial inefficiencies and integrating with Notion, the app now offers a more effective and organized approach to practicing speaking skills. The continued optimization of this tool could further enhance its usability, making it an even more valuable resource for anyone looking to improve their speaking proficiency efficiently.
