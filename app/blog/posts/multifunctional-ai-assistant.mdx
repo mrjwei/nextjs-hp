@@ -1,0 +1,71 @@
+---
+title: "Multifunctional AI Assistant (Part 1)"
+publishedAt: "2024-09-25"
+summary: "AI assistant that can help with a range of tasks."
+---
+
+- [Goals](#goals)
+  - [Short-term Goals](#short-term-goals)
+  - [Long-term Goals](#long-term-goals)
+- [Requirements](#requirements)
+- [Design: Back-of-the-Napkin Sketches](#design-back-of-the-napkin-sketches)
+- [A Quick Prototype](#a-quick-prototype)
+- [Next Step](#next-step)
+
+In today’s fast-paced world, AI-driven tools are transforming how we learn, work, and manage our daily lives. This project aims to build a versatile AI assistant, starting with an English-speaking tutor. This assistant will offer real-time, conversational learning experiences, with the potential to grow into a multifunctional tool that supports a wide range of tasks. In this post, I’ll walk you through the early stages of the development process, including the app’s goals, requirements, and a basic prototype.
+
+## Goals
+
+### Short-term Goals
+
+- Create an AI English-speaking tutor accessible from any device with internet connectivity.
+- Offer users real-time conversational practice in English, simulating human interaction.
+- Store conversations in an organized, permanent manner for review and learning reinforcement.
+
+### Long-term Goals
+
+- Expand the app into a multifunctional personal assistant that helps with tasks such as proofreading, scheduling, image generation, and web scraping.
+- Automate parts of users’ daily routines to help them focus on high-priority tasks.
+
+## Requirements
+
+- A database to store conversations.
+- An intuitive UI that is easy and fun to interact with.
+- Functionality to capture speech, transcribe it, and have the AI speak responses.
+- Voice control to enhance usability.
+- Integration with multiple AI APIs and custom tools to manage various tasks.
+- User authentication for personalised experiences.
+
+## Design: Back-of-the-Napkin Sketches
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/multifunctional-ai-assistant/sketch.jpeg"
+    alt="back-of-the-napkin sketches"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Back-of-the-napkin sketches</figcaption>
+</figure>
+
+## A Quick Prototype
+
+To test some of the key features, I built an initial prototype. It includes core functionality like recording and transcribing speech, sending transcripts to the [OpenAI API](https://platform.openai.com/docs/api-reference/introduction) for processing, and playing back AI responses. The prototype demonstrates the basic conversational flow between the user and the AI tutor, simulating an interactive learning session.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/multifunctional-ai-assistant/quick-prototype.png"
+    alt="a quick prototype"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>A quick prototype</figcaption>
+</figure>
+
+## Next Step
+
+In the next part of this series, I will integrate a database to enable users to perform CRUD operations on conversations, laying the groundwork for a more robust and feature-rich app.
+
+
+
+
+
+
