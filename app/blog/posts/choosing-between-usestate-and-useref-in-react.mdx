@@ -76,11 +76,11 @@ The core issue is that both buttons set the recording state to `false`, which in
 
 ## Key Considerations
 
-1. **Avoid Unnecessary Re-renders**
-   - `useState` triggers a component re-render whenever its value is updated. This behavior is unnecessary here because changing `shouldTranscribe` doesn’t affect the UI. It’s a purely logical decision: whether or not to send the recording for transcription.
-   - On the other hand, `useRef` can hold a mutable value without triggering a re-render. This makes it perfect for managing non-UI-related logic like a flag that determines whether transcription should happen.
+1. **Avoid Unnecessary Re-renders**<br/>
+  `useState` triggers a component re-render whenever its value is updated. This behavior is unnecessary here because changing `shouldTranscribe` doesn’t affect the UI. It’s a purely logical decision: whether or not to send the recording for transcription.
+  On the other hand, `useRef` can hold a mutable value without triggering a re-render. This makes it perfect for managing non-UI-related logic like a flag that determines whether transcription should happen.
 
-2. **Immediate Access to the Updated Value**
+1. **Immediate Access to the Updated Value**<br/>
    `useState` updates are asynchronous, meaning that if I used `useState` to toggle `shouldTranscribe`, the new value wouldn’t be immediately available during the stop event handling. In contrast, `useRef` provides immediate access to the updated value, which is essential for making synchronous decisions, like whether to transcribe the audio.
 
 ## The Final Solution
