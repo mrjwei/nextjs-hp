@@ -1,0 +1,149 @@
+---
+title: "Choosing Between useState and useRef in React: A Case Study from My AI Assistant App"
+publishedAt: "2024-10-09"
+summary: "A discussion about the decision on choosing useRef over useState in a specific scenario."
+tags: ["javascript", "reactjs", "dev"]
+---
+
+- [The Context](#the-context)
+- [React Mic and Recording](#react-mic-and-recording)
+- [The Problem: To Transcribe or Not to Transcribe?](#the-problem-to-transcribe-or-not-to-transcribe)
+- [Key Considerations](#key-considerations)
+- [The Final Solution](#the-final-solution)
+- [Conclusion](#conclusion)
+
+When developing the [multifunctional AI assistant app](./multifunctional-ai-assistant-1.mdx), I encountered a common dilemma in React: should I use `useState` or `useRef` to manage a piece of logic? In this article, I’ll walk you through my decision process and explain why I opted for `useRef` in a scenario involving user speech transcription.
+
+## The Context
+
+The app has two key buttons: a **play/stop toggle button** and a **reset button**. Here’s the desired behavior:
+
+- When the user presses the stop button, their speech is transcribed and displayed in a text box.
+<br/>
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/choosing-between-usestate-and-useref-in-react/record-and-stop.gif"
+    alt="pressing stop button"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Pressing stop button</figcaption>
+</figure>
+<br/>
+
+- When the reset button is pressed, the recording is cleared and not sent for transcription, since transcription costs both time and money.
+<br/>
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/choosing-between-usestate-and-useref-in-react/record-and-reset.gif"
+    alt="pressing reset button"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Pressing reset button</figcaption>
+</figure>
+<br/>
+
+However, both buttons stop the recording, so I needed a way to distinguish which button triggered the stop action. This would determine whether or not the transcription should occur.
+
+## React Mic and Recording
+
+I used the [react-mic](https://www.npmjs.com/package/react-mic) library to handle speech recording. The library captures the user’s speech and provides it as an audio blob. Typically, you use the component like this:
+
+```javascript
+<ReactMic
+  record={isRecording}
+  onStop={handleStop}
+  {...otherProps}
+/>
+```
+
+When `isRecording` is set to `false`, the recording stops and `handleStop` is triggered, receiving the audio blob as an argument.
+
+```javascript
+const handleStop = (returnedBlob) => {
+  // Process the blob
+}
+```
+
+Since both the stop and reset buttons stop the recording, I needed a way to determine if the transcription should happen. This led to the decision between `useState` and `useRef`.
+
+## The Problem: To Transcribe or Not to Transcribe?
+
+I wanted to set a flag (`shouldTranscribe`) that would:
+
+1. Trigger transcription only when the stop button is pressed.
+2. Prevent transcription when the reset button is clicked.
+
+The core issue is that both buttons set the recording state to `false`, which in turn triggers `handleStop`. To avoid sending the recording for transcription when the reset button is pressed, I needed a flag that could differentiate between the two actions.
+
+## Key Considerations
+
+1. **Avoid Unnecessary Re-renders**<br/>
+  `useState` triggers a component re-render whenever its value is updated. This behavior is unnecessary here because changing `shouldTranscribe` doesn’t affect the UI. It’s a purely logical decision: whether or not to send the recording for transcription.
+  On the other hand, `useRef` can hold a mutable value without triggering a re-render. This makes it perfect for managing non-UI-related logic like a flag that determines whether transcription should happen.
+
+1. **Immediate Access to the Updated Value**<br/>
+   `useState` updates are asynchronous, meaning that if I used `useState` to toggle `shouldTranscribe`, the new value wouldn’t be immediately available during the stop event handling. In contrast, `useRef` provides immediate access to the updated value, which is essential for making synchronous decisions, like whether to transcribe the audio.
+
+## The Final Solution
+
+Here’s the solution I implemented using `useRef`:
+
+```javascript
+const shouldTranscribeRef = useRef(false)
+
+const handleStart = () => {
+  setIsRecording(true)
+}
+
+const handleStop = () => {
+  shouldTranscribeRef.current = true // Transcription will happen
+  setIsRecording(false)
+}
+
+const handleReset = () => {
+  shouldTranscribeRef.current = false // No transcription
+  setIsRecording(false)
+  // Other code omitted
+}
+
+const handleTranscribe = async (returnedBlob) => {
+  if (shouldTranscribeRef.current) {
+    // Send the blob for transcription
+  }
+}
+
+return (
+  <div>
+    <ReactMic
+      record={isRecording}
+      onStop={handleTranscribe}
+      {...otherProps}
+    />
+    {isRecording ? (
+      <button onClick={handleStop}>
+        Stop
+      </button>
+    ) : (
+      <button onClick={handleStart}>
+        Play
+      </button>
+    )}
+    <button onClick={handleReset}>
+      Send
+    </button>
+  </div>
+)
+```
+
+This way, I managed to achieve the designed behaviour shown in [The Context](#the-context) section.
+
+## Conclusion
+
+In this case, using `useRef` was a better fit than `useState` because it:
+
+- Avoided unnecessary re-renders.
+- Provided immediate access to the updated value.
+
+This pattern worked well in my AI assistant app, where I needed to manage non-UI logic efficiently. When deciding between `useState` and `useRef`, consider whether you need reactivity (in which case `useState` is appropriate) or just an instance variable (where `useRef` is better suited).
+
+For more information, see [React documentation on refs](https://react.dev/learn/referencing-values-with-refs).

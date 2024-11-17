@@ -1,21 +1,30 @@
-import Link from 'next/link'
+import Link from "next/link"
+import Image from "next/image"
 
 const navItems = {
-  '/': {
-    name: 'Home',
+  "/": {
+    name: "Home",
   },
-  '/works': {
-    name: 'Works',
+  "/artworks": {
+    name: "Artworks",
   },
-  '/blog': {
-    name: 'Blog',
+  "/writings": {
+    name: "Writings",
   },
 }
 
 export function Navbar() {
   return (
     <aside className="-ml-[8px] mb-16 tracking-tight">
-      <div className="lg:sticky lg:top-20">
+      <div className="lg:sticky lg:top-20 flex justify-between items-center">
+        <Link href="/" aria-label="home">
+          <Image
+            src="/avatar.png"
+            alt="Jesse Wei's avatar"
+            width={80}
+            height={80}
+          />
+        </Link>
         <nav
           className="flex flex-row items-start relative px-0 pb-0 fade md:overflow-auto scroll-pr-6 md:relative"
           id="nav"

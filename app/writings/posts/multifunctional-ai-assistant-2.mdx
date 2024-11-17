@@ -1,0 +1,122 @@
+---
+title: "Multifunctional AI Assistant (Part 2)"
+publishedAt: "2024-10-08"
+summary: "AI assistant that can help with a range of tasks."
+tags: ["productivity", "design", "uiux", "ai", "dev"]
+---
+
+- [New Functionalities](#new-functionalities)
+- [Key Considerations](#key-considerations)
+  - [MongoDB vs. RDBMS](#mongodb-vs-rdbms)
+  - [High-quality Transcription](#high-quality-transcription)
+- [The Upgraded Version](#the-upgraded-version)
+- [Next Step](#next-step)
+
+In this second part, I expanded the initial version of the AI assistant by adding new functionalities and optimizing its design to offer an enhanced user experience.
+
+## New Functionalities
+
+Building on the initial prototype, I have added several key features that greatly improve the app’s overall functionality:
+
+- Permanent storage with MongoDB
+- CRUD operations for threads (conversations)
+- Display of existing threads in a sidebar
+- Ability to stop and replay AI responses
+- Responsive design for better accessibility across devices
+- Basic user authentication
+
+## Key Considerations
+
+### MongoDB vs. RDBMS
+
+Choosing the right database was a crucial decision for the app, as it directly affects scalability, performance, and ease of development. Here’s why I opted for [MongoDB](https://www.mongodb.com/) over a traditional relational database management system (RDBMS):
+
+- **Flexible Schema**: MongoDB’s document-based, schema-less structure is ideal for storing conversations and messages, which often vary in size and structure. Each conversation (thread) can be stored as a single document, with messages represented as nested documents. In contrast, RDBMS requires a rigid schema, making it harder to adapt to evolving data models and necessitating complex table relations.
+- **Ease of Scaling**: MongoDB is designed to scale horizontally, allowing data to be distributed across multiple servers with ease. This is essential as the user base and data grow. RDBMS typically scales vertically, which can be limiting and often requires more complex architecture for horizontal scaling.
+- **Performance**: For an app that involves real-time interactions, fast read/write operations are essential. MongoDB’s indexing and ability to store data in a more flexible way make it faster for certain queries compared to RDBMS, which often relies on complex joins and normalized tables, potentially affecting performance as the data grows.
+- **Real-Time Data**: MongoDB’s support for change streams allows me to track real-time updates in the database. This is useful for keeping conversation threads updated without refreshing the entire app, a feature that is more challenging to achieve efficiently in traditional relational databases.
+
+In summary, MongoDB’s flexibility, scalability, and performance made it the best fit for the app, especially given the nature of the data and the need for future growth.
+
+### High-quality Transcription
+
+Initially, I used [react-speech-recognition](https://www.npmjs.com/package/react-speech-recognition) to record and transcribe user speech. However, the quality of transcription was subpar, with poor handling of capitalization and punctuation.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/multifunctional-ai-assistant/poor-transcript.png"
+    alt="Before: poor transcription"
+    style={{ marginBottom: "8px"}}
+  />
+  <figcaption>Before: poor transcription</figcaption>
+</figure>
+
+To address this, I switched to [OpenAI's Audio API](https://platform.openai.com/docs/api-reference/audio/createTranscription), which provides high-quality transcription with proper capitalization and punctuation. This change significantly improved the accuracy and readability of the transcriptions, making conversations smoother and more coherent.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/multifunctional-ai-assistant/improved-transcript.png"
+    alt="After: improved transcription"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>After: improved transcription</figcaption>
+</figure>
+
+## The Upgraded Version
+
+The app is now much more functional and useful compared to the initial version, offering a vastly improved user experience. Users can now store conversations, manage threads, and replay AI responses, all within a responsive and intuitive interface.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/multifunctional-ai-assistant/login.png"
+    alt="login page"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Login page</figcaption>
+</figure>
+<br/>
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/multifunctional-ai-assistant/thread.png"
+    alt="Chat page"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Chat page</figcaption>
+</figure>
+<br/>
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/multifunctional-ai-assistant/editing-thread-title.png"
+    alt="Thread title can be edited"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Thread title can be edited</figcaption>
+</figure>
+<br/>
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/multifunctional-ai-assistant/mobile-thread.png"
+    alt="Responsive design: chat page"
+    style={{ marginBottom: "8px", maxWidth: "400px" }}
+  />
+  <figcaption>Responsive design: chat page</figcaption>
+</figure>
+<br/>
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/multifunctional-ai-assistant/mobile-menu.png"
+    alt="Responsive design: menu"
+    style={{ marginBottom: "8px", maxWidth: "400px" }}
+  />
+  <figcaption>Responsive design: menu</figcaption>
+</figure>
+
+## Next Step
+
+There is still more to optimize and enhance. The next step is to allow users to register and select different contexts for the AI assistant. This will enable the assistant to perform a variety of tasks, tailoring its responses and behavior to specific user needs.
+
+
+
+
+
+

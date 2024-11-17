@@ -1,7 +1,9 @@
 import Link from "next/link"
-import { formatDate, getBlogPosts } from "app/blog/utils"
+import { ArrowRightIcon } from '@heroicons/react/24/outline'
+import { getBlogPosts } from "app/writings/utils"
+import {ArticleCard} from 'app/components/article-card'
 
-export function BlogPosts({ numPosts }: { numPosts?: number }) {
+export function Articles({ numPosts, hasSeeMore = true }: { numPosts?: number, hasSeeMore?: boolean }) {
   let allBlogs = getBlogPosts().sort((a, b) => {
     if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
       return -1
@@ -14,22 +16,25 @@ export function BlogPosts({ numPosts }: { numPosts?: number }) {
 
   return (
     <div>
-      {allBlogs.map((post) => (
-        <Link
-          key={post.slug}
-          className="flex flex-col space-y-1 mb-4"
-          href={`/blog/${post.slug}`}
-        >
-          <div className="w-full flex flex-col md:flex-row space-x-0 md:space-x-2">
-            <p className="text-neutral-600 dark:text-neutral-400 tabular-nums text-nowrap mr-4">
-              {formatDate(post.metadata.publishedAt, false)}
-            </p>
-            <p className="text-neutral-900 dark:text-neutral-100 tracking-tight font-bold">
-              {post.metadata.title}
-            </p>
-          </div>
-        </Link>
-      ))}
+      <div className="grid grid-cols-12 gap-6">
+        {allBlogs.map((post) => (
+          <Link
+            key={post.slug}
+            className="col-span-12 sm:col-span-6 lg:col-span-4"
+            href={`/writings/${post.slug}`}
+          >
+            <ArticleCard article={post} />
+          </Link>
+        ))}
+      </div>
+      {hasSeeMore && (
+        <div className="flex justify-center mt-8">
+          <Link href="/writings" className="border-2 rounded border-neutral-600 p-2 flex items-center">
+            <span className="mr-2">See more</span>
+            <ArrowRightIcon className="w-5" />
+          </Link>
+        </div>
+      )}
     </div>
   )
 }

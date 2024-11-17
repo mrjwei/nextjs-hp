@@ -1,7 +1,10 @@
 import Link from 'next/link'
-import { formatDate, getWorks } from 'app/blog/utils'
+import { ArrowRightIcon } from '@heroicons/react/24/outline'
+import { getWorks } from 'app/writings/utils'
+import {ArtworkCard} from 'app/components/artwork-card'
 
-export function Works({numWorks}: {numWorks?: number}) {
+
+export function Works({numWorks, hasSeeMore = true}: {numWorks?: number, hasSeeMore?: boolean}) {
   let allWorks = getWorks()
   if (numWorks) {
     allWorks = allWorks.slice(-numWorks)
@@ -9,31 +12,34 @@ export function Works({numWorks}: {numWorks?: number}) {
 
   return (
     <div>
-      {allWorks
-        .sort((a, b) => {
-          if (
-            new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
-          ) {
-            return -1
-          }
-          return 1
-        })
-        .map((work) => (
-          <Link
-            key={work.slug}
-            className="flex flex-col space-y-1 mb-4"
-            href={`/works/${work.slug}`}
-          >
-            <div className="w-full flex flex-col md:flex-row space-x-0 md:space-x-2">
-              <p className="text-neutral-600 dark:text-neutral-400 w-[100px] tabular-nums text-nowrap mr-4">
-                {formatDate(work.metadata.publishedAt, false)}
-              </p>
-              <p className="text-neutral-900 dark:text-neutral-100 tracking-tight font-bold">
-                {work.metadata.title}
-              </p>
-            </div>
+      <div className="grid grid-cols-12 gap-6">
+        {allWorks
+          .sort((a, b) => {
+            if (
+              new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
+            ) {
+              return -1
+            }
+            return 1
+          })
+          .map((work) => (
+            <Link
+              key={work.slug}
+              className="col-span-12 sm:col-span-6 lg:col-span-4"
+              href={`/artworks/${work.slug}`}
+            >
+              <ArtworkCard work={work} imgClassName="object-cover object-top" />
+            </Link>
+          ))}
+      </div>
+      {hasSeeMore && (
+        <div className="flex justify-center mt-8">
+          <Link href="/artworks" className="border-2 rounded border-neutral-600 p-2 flex items-center">
+            <span className="mr-2">See more</span>
+            <ArrowRightIcon className="w-5" />
           </Link>
-        ))}
+        </div>
+      )}
     </div>
   )
 }

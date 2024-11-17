@@ -1,0 +1,106 @@
+---
+title: "Multifunctional AI Assistant (Part 3)"
+publishedAt: "2024-10-24"
+summary: "AI assistant that can help with a range of tasks."
+tags: ["productivity", "design", "uiux", "ai", "dev"]
+---
+
+- [Custom System Messages](#custom-system-messages)
+- [Voice Selection](#voice-selection)
+- [Conclusion](#conclusion)
+
+In this third part of the series, I’ve introduced custom system messages and voice selection to the AI assistant. These new features add layers of personalization and functionality, making the app more effective and enjoyable to use.
+
+## Custom System Messages
+
+A system message, also known as a system prompt, is a hidden message sent to the AI at the start of a conversation. **It defines the role, tone, and behavior of the assistant, setting a context that impacts the relevance and quality of its responses**. For example, a system message might prompt the AI to be a supportive language coach or a formal business advisor, depending on the user’s needs.
+
+Adding the ability to create and manage custom system messages enables users to tailor the AI’s responses more precisely to specific scenarios. In the context of language learning, for instance, this feature can guide the AI to respond as a tutor who specializes in formal English, conversational phrases, or even regional dialects, making each chat more relevant to the user’s goals.
+
+With this update, users can:
+
+- Create and store custom system messages for different conversational contexts.
+- Apply a system message to an active chat session.
+- Switch between system messages effortlessly to explore different assistant roles.
+
+This level of customization not only enhances user experience but also provides a more focused learning environment, helping users achieve better results.
+
+<br/>
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/multifunctional-ai-assistant/sys-msg-menu.png"
+    alt="Select system message"
+    style={{ marginBottom: "8px"}}
+  />
+  <figcaption>Select system message</figcaption>
+</figure>
+
+<br/>
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/multifunctional-ai-assistant/settings-sys-msg.png"
+    alt="Setting: system messages"
+    style={{ marginBottom: "8px"}}
+  />
+  <figcaption>Setting: system messages</figcaption>
+</figure>
+
+<br/>
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/multifunctional-ai-assistant/sys-msg-edit.png"
+    alt="System messages: editing"
+    style={{ marginBottom: "8px"}}
+  />
+  <figcaption>System messages: editing</figcaption>
+</figure>
+
+<br/>
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/multifunctional-ai-assistant/sys-msg-new.png"
+    alt="System messages: new"
+    style={{ marginBottom: "8px"}}
+  />
+  <figcaption>System messages: new</figcaption>
+</figure>
+
+## Voice Selection
+
+Voice is an essential part of making the AI assistant more engaging and adaptable across various tasks. To allow users more personalization, I added a voice selection feature that enables users to pick from a variety of voices, including options with different accents. This selection helps tailor the experience, whether the assistant is summarizing information, guiding through instructions, or engaging in conversational tasks.
+
+These voice options are sourced directly from the browser’s `window.speechSynthesis.getVoices()` API, allowing the app to leverage built-in voices from the user’s device. This not only provides a seamless, high-quality voice experience but also ensures compatibility across devices.
+
+With this update, users can:
+
+- Select their preferred voice (e.g., UK, US, or other regional accents) for spoken responses.
+- Switch voices as needed, allowing for flexibility in different contexts or tasks.
+- Persist voice preferences for a consistent experience tailored to each user’s personal style.
+
+This customization elevates the AI assistant’s usability across a wide range of tasks, ensuring that interactions feel relevant, comfortable, and natural for each unique user.
+
+<br/>
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/multifunctional-ai-assistant/voice-menu.png"
+    alt="System messages: editing"
+    style={{ marginBottom: "8px"}}
+  />
+  <figcaption>System messages: editing</figcaption>
+</figure>
+
+## Conclusion
+
+With custom system messages and voice selection, the AI assistant has become even more user-friendly and tailored to language learning. These updates create a richer, more relevant learning experience by allowing users to set a specific context and accent for their conversations. The AI assistant now feels more personalized, enhancing both the usability and effectiveness of the app.
+
+
+
+
+
+
+

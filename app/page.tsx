@@ -1,22 +1,25 @@
-import { BlogPosts } from 'app/components/posts'
+import { Kanit } from 'next/font/google'
+import { Articles } from 'app/components/posts'
 import { Works } from 'app/components/works'
+
+const kanit = Kanit({subsets: ['latin'], weight: ["500", "600", "700"], style: ["normal", "italic"]})
 
 export default function Page() {
   return (
     <section>
-      <h1 className="mb-8 text-4xl font-bold tracking-tighter">
-        Jesse Wei
+      <h1 className={`mb-4 text-4xl font-medium text-neutral-600 ${kanit.className}`}>
+        <span className="font-bold italic">Jesse</span> <span className="text-neutral-500">is a creator who is passionate about the intersection of</span> <span className="font-bold italic">creativity and technology</span>.
       </h1>
-      <p className="mb-4">
-        I’m a product designer and self-taught software engineer, passionate about the intersection of <strong>creativity and technology</strong>. This space is where I showcase my creative works, document the design and development processes, and share my thoughts on blending these two worlds.
-      </p>
+      <h2 className="mb-4 text-xl text-neutral-600">
+        This space is where I showcase my artworks and my creative experiments, document the design and development processes, and share my thoughts on blending these two worlds.
+      </h2>
       <div className="my-8">
         <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">Latest Works</h2>
-          <Works numWorks={5} />
+          <h2 className="text-2xl font-bold mb-4">Latest Artworks</h2>
+          <Works numWorks={3} />
         </div>
-        <h2 className="text-2xl font-bold mb-4">Latest Posts</h2>
-        <BlogPosts numPosts={5} />
+        <h2 className="text-2xl font-bold mb-4">Latest Writings</h2>
+        <Articles numPosts={6} />
       </div>
     </section>
   )
