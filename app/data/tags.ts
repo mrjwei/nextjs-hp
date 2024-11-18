@@ -26,4 +26,7 @@ export const tags = {
   reactjs: {
     color: "#707070"
   },
+  python: {
+    color: "#2f27cc"
+  },
 }
