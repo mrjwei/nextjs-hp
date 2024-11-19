@@ -1,5 +1,5 @@
 import './global.css'
-import { Open_Sans } from 'next/font/google'
+import { Source_Serif_4 } from 'next/font/google'
 import type { Metadata } from 'next'
 import { Navbar } from './components/nav'
 import { Analytics } from '@vercel/analytics/react'
@@ -7,7 +7,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import Footer from './components/footer'
 import { baseUrl } from './sitemap'
 
-const openSans = Open_Sans({subsets: ['latin'], weight: ["400", "500", "600", "700"], style: ["normal", "italic"]})
+const openSans = Source_Serif_4({subsets: ['latin'], weight: ["400", "500", "600", "700"], style: ["normal", "italic"]})
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
