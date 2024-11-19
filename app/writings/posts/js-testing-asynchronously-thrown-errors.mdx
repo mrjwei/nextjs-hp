@@ -1,0 +1,146 @@
+---
+title: "Testing Asynchronously Thrown Errors in Javascript"
+publishedAt: "2024-11-19"
+summary: "When working with the DOM, you’ll often encounter events that help capture and respond to user interactions. The Event interface, part of the DOM API, has two properties—event.target and event.currentTarget—that can sometimes be confusing. In this guide, we’ll break down the differences between these two and provide examples to clarify their usage."
+tags: ["dev", "javascript"]
+---
+
+## The Context
+
+When testing JavaScript applications, it’s often necessary to verify that expected errors are triggered under specific conditions. However, catching errors in asynchronous logic can be tricky because of how JavaScript handles asynchronous operations.
+
+As part of my journey to deepen my understanding of JavaScript testing, I’ve been working through the [Test-Driven Development for JavaScript](https://learning.oreilly.com/course/test-driven-development-for/9780137864591/) course. In the section on [Testing errors from callback functions](https://learning.oreilly.com/videos/test-driven-development-for/9780137864591/9780137864591-TDJ1_01_04_02/), I came across this example:
+
+```javascript
+function slowOperationWithError(a, b, callback) {
+  setTimeout(() => {
+    if (b === 0) {
+      throw new Error("Cannot divide by 0")
+    } else {
+      callback(a / b)
+    }
+  }, 2000)
+}
+```
+
+The accompanying test code looked like this:
+
+```javascript
+test("test - incorrect technique", (done) => {
+  try {
+    slowOperationWithError(10, 0, null)
+  } catch (err) {
+    expect(err).toBe("Cannot divide by 0")
+  }
+  done()
+})
+```
+
+Surprisingly, the test passed. However, upon closer inspection, it became clear that this was a false positive. The `done` callback was invoked before the `slowOperationWithError` function had a chance to finish executing, which meant the target function wasn’t tested at all. Furthermore, the code in the `catch` block would never run, as the error was thrown asynchronously.
+
+This led me to investigate why this happens and how to fix it. Here’s what I learned.
+
+## The Cause
+
+The root cause lies in how JavaScript handles asynchronous errors. The `try/catch` block can only catch errors thrown **synchronously**. To illustrate, consider the following example:
+
+```javascript
+try {
+  throw new Error("This will be caught!")
+} catch (err) {
+  console.error("Caught:", err.message)
+}
+console.log("Finish running.")
+```
+<br/>
+```bash
+# Console output
+
+Caught: This will be caught!
+Finish running.
+```
+
+In this case, the error is thrown synchronously, so the `catch` block captures it and logs the error message.
+
+However, if the error is thrown inside an asynchronous operation, such as a `setTimeout`, the `try/catch` block will no longer apply because the asynchronous code runs in a different phase of the event loop. Here’s an example:
+
+```javascript
+try {
+  setTimeout(() => {
+    throw new Error("This won't be caught!")
+  }, 3000)
+} catch (err) {
+  console.error("Caught:", err.message)
+}
+console.log("Before timeout.")
+```
+<br/>
+```bash
+# Console output
+
+Before timeout.
+Uncaught Error: This won't be caught!
+```
+
+The `try/catch` block finishes execution **before** the `setTimeout` callback is invoked, so the error is unhandled. This behavior explains why the original test code doesn’t work:
+
+```javascript
+test("test - incorrect technique", (done) => {
+  try {
+    slowOperationWithError(10, 0, null) // Error is thrown after 2 seconds
+  } catch (err) {
+    expect(err).toBe("Cannot divide by 0") // Never runs
+  }
+  done() // Invoked immediately, before the error occurs
+})
+```
+
+The test completes in less than 0.2 seconds because `done` is called prematurely, and Jest warns that the asynchronous operation is still running in the background.
+
+```bash
+Time:        0.157 s, estimated 6 s
+# other output omitted
+Jest did not exit one second after the test run has completed.
+```
+
+## The Fix
+
+To fix the test, we need to ensure that:
+
+1. The asynchronous error is passed back to the test framework.
+2. The test waits for the asynchronous operation to complete before calling done.
+
+Here’s the revised test code:
+
+```javascript
+test("test - correct technique", (done) => {
+  slowOperationWithError(10, 0, null, (error) => {
+    expect(error).toBe("Cannot divide by 0")
+    done()
+  })
+})
+```
+
+In this version, the `slowOperationWithError` function accepts an error callback. When the error condition is met, the callback is invoked with the error message. This allows our matcher (expect) to verify that the expected error occurs. Finally, we call `done` to signal that the test has finished.
+
+To make this test work, we need to modify the production code slightly:
+
+```javascript
+function slowOperationWithError(a, b, okCallback, errCallback /* Add this */) {
+  setTimeout(() => {
+    if (b === 0) {
+      errCallback("Cannot divide by 0") // Use the callback here
+    } else {
+      okCallback(a / b)
+    }
+  }, 2000)
+}
+```
+
+By passing errors through a callback instead of throwing them, we ensure that the test has control over asynchronous error handling. The test now explicitly waits for the error callback to be invoked, which prevents premature termination and ensures the error behavior is properly tested.
+
+## Conclusion
+
+Testing asynchronous code in JavaScript requires a clear understanding of how errors are handled across different phases of the event loop. The key takeaway is that `try/catch` only works for synchronous code. For asynchronous logic, always pass errors through callbacks, promises, or `async/await` patterns.
+
+By adopting these practices, we can write reliable tests that accurately validate your application’s behavior, even under complex asynchronous conditions.
