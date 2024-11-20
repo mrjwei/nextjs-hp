@@ -1,9 +1,14 @@
 ---
 title: "Testing Asynchronously Thrown Errors in Javascript"
 publishedAt: "2024-11-19"
-summary: "When working with the DOM, you’ll often encounter events that help capture and respond to user interactions. The Event interface, part of the DOM API, has two properties—event.target and event.currentTarget—that can sometimes be confusing. In this guide, we’ll break down the differences between these two and provide examples to clarify their usage."
+summary: "When testing JavaScript applications, it’s often necessary to verify that expected errors are triggered under specific conditions. However, catching errors in asynchronous logic can be tricky because of how JavaScript handles asynchronous operations."
 tags: ["dev", "javascript"]
 ---
+
+- [The Context](#the-context)
+- [The Cause](#the-cause)
+- [The Fix](#the-fix)
+- [Conclusion](#conclusion)
 
 ## The Context
 

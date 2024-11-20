@@ -1,0 +1,195 @@
+---
+title: "Testing Asynchronous Code in Javascript"
+publishedAt: "2024-11-20"
+summary: "Building on my previous article, I want to explore the broader topic of testing asynchronous code in JavaScript. Asynchronous programming is a cornerstone of JavaScript, and testing it effectively is a critical skill for any developer."
+tags: ["dev", "javascript"]
+---
+
+- [Three Options for Testing Asynchronous Code](#three-options-for-testing-asynchronous-code)
+  - [Using Promises](#using-promises)
+  - [Using Async/Await](#using-asyncawait)
+  - [Using callbacks](#using-callbacks)
+- [Conclusion](#conclusion)
+
+Building on my previous article, [Testing Asynchronously Thrown Errors in Javascript](/js-testing-asynchronously-thrown-errors), I want to explore the broader topic of testing asynchronous code in JavaScript. Asynchronous programming is a cornerstone of JavaScript, and testing it effectively is a critical skill for any developer.
+
+## Three Options for Testing Asynchronous Code
+
+There are three main approaches to testing asynchronous code in JavaScript:
+
+- Using promises
+- Using async/await
+- Using callbacks
+
+In this article, I will illustrate each approach using examples from the [Test-Driven Development for JavaScript](https://learning.oreilly.com/course/test-driven-development-for/9780137864591/) course.
+
+The production code we will test is a simple doTask function that simulates a task with random success or failure after a delay:
+
+```javascript
+function doTask(taskNumber, randomNumber) {
+  return new Promise(function (resolve, reject) {
+    setTimeout(() => {
+      if (randomNumber < 0.5) resolve(`Task ${taskNumber} resolved`)
+      else reject(`Task ${taskNumber} rejected`)
+    }, randomNumber * 5000)
+  })
+}
+```
+
+### Using Promises
+
+According to [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise),
+
+> The Promise object represents the eventual completion (or failure) of an asynchronous operation and its resulting value.
+
+For a task that resolves, we can place our matcher in the then method:
+
+```javascript
+test("task resolves if value < 0.5", () => {
+  return doTask(1, 0.3).then((data) => {
+    expect(data).toBe("Task 1 resolved")
+  })
+})
+```
+
+When testing rejection, it’s essential to add `expect.assertions(n)` to ensure the test verifies the expected number of assertions. Without this, the test could falsely pass if the promise unexpectedly resolves:
+
+```javascript
+test("task rejects if value >= 0.5", () => {
+  expect.assertions(1)
+  return doTask(1, 0.5).catch((err) => {
+    expect(err).toBe("Task 1 rejected")
+  })
+})
+```
+
+Jest provides `resolves` and `rejects` matchers for simpler syntax when working with promises, so we can use these too:
+
+```javascript
+test("task resolves if value < 0.5", () => {
+  return expect(doTask(1, 0.3)).resolves.toBe("Task 1 resolved")
+})
+```
+
+<br />
+
+```javascript
+test("task rejects if value >= 0.5", () => {
+  return expect(doTask(1, 0.5)).rejects.toBe("Task 1 rejected")
+})
+```
+
+### Using Async/Await
+
+The `async/await` syntax simplifies working with promises, allowing us to write asynchronous code in a synchronous style.
+
+With `async/await`, we use await to pause execution until the promise resolves, and then we run our matcher:
+
+```javascript
+test("task resolves if value < 0.5", async () => {
+  const data = await doTask(1, 0.3)
+  expect(data).toBe("Task 1 resolved")
+})
+```
+
+When testing for rejection, use a `try/catch` block to handle the error and validate it. Again, include `expect.assertions(n)` to avoid false positives:
+
+```javascript
+test("task rejects if value >= 0.5", async () => {
+  expect.assertions(1)
+  try {
+    await doTask(1, 0.5)
+  } catch (err) {
+    expect(err).toBe("Task 1 rejected")
+  }
+})
+```
+
+### Using callbacks
+
+Testing with callbacks is less common today due to the widespread adoption of promises and async/await, but it’s still useful for legacy codebases or specific APIs.
+
+In [Testing Asynchronously Thrown Errors in Javascript](/js-testing-asynchronously-thrown-errors), I explained that `try/catch` only works for synchronous logic. For asynchronous callbacks, you need to pass a `done` argument to the test and call it when the test is complete.
+
+The [Jest documentation](https://jestjs.io/docs/asynchronous#callbacks) provides a helpful example of testing asynchronous callbacks. Note that omitting the `done` callback causes the test to finish before the asynchronous operation completes:
+
+```javascript
+// Incorrect: Test finishes before callback is invoked
+test("the data is peanut butter", () => {
+  function callback(error, data) {
+    if (error) {
+      throw error
+    }
+    expect(data).toBe("peanut butter")
+  }
+
+  fetchData(callback)
+})
+```
+
+To fix this, we explicitly call `done`:
+
+```javascript
+// Correct: Jest waits until done is called
+test("the data is peanut butter", (done) => {
+  function callback(error, data) {
+    if (error) {
+      done(error)
+      return
+    }
+    try {
+      expect(data).toBe("peanut butter")
+      done()
+    } catch (error) {
+      done(error)
+    }
+  }
+
+  fetchData(callback)
+})
+```
+
+We can apply this pattern to test `doTask` with callbacks:
+
+```javascript
+test("task resolves if value < 0.5", (done) => {
+  function callback(err, data) {
+    if (err) {
+      done(err)
+      return
+    }
+    try {
+      expect(data).toBe("Task 1 resolved")
+      done()
+    } catch (err) {
+      done(err)
+    }
+  }
+  doTask(1, 0.3, callback)
+})
+```
+
+To enable callback-based testing, we need to tweak the `doTask` function to support callbacks:
+
+```javascript
+function doTask(taskNumber, randomNumber, callback) {
+  return new Promise(function (resolve, reject) {
+    setTimeout(() => {
+      if (randomNumber < 0.5) resolve(`Task ${taskNumber} resolved`)
+      else reject(`Task ${taskNumber} rejected`)
+    }, randomNumber * 5000)
+  })
+    .then((data) => callback(null, data))
+    .catch((err) => callback(err, null))
+}
+```
+
+## Conclusion
+
+Testing asynchronous code in JavaScript requires understanding how promises, `async/await`, and callbacks work. Each approach has its strengths:
+
+- Promises: Ideal for direct promise handling with concise syntax.
+- Async/await: Simplifies promise-based code into a synchronous style.
+- Callbacks: Necessary for legacy code or APIs using callback patterns.
+
+By choosing the right technique for your testing scenario, you can ensure reliable and robust tests for your asynchronous logic.
