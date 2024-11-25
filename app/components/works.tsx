@@ -5,23 +5,22 @@ import {ArtworkCard} from 'app/components/artwork-card'
 
 
 export function Works({numWorks, hasSeeMore = true}: {numWorks?: number, hasSeeMore?: boolean}) {
-  let allWorks = getWorks()
+  let allWorks = getWorks().sort((a, b) => {
+    if (
+      new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
+    ) {
+      return -1
+    }
+    return 1
+  })
   if (numWorks) {
-    allWorks = allWorks.slice(-numWorks)
+    allWorks = allWorks.slice(0, numWorks)
   }
 
   return (
     <div>
       <div className="grid grid-cols-12 gap-6">
         {allWorks
-          .sort((a, b) => {
-            if (
-              new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
-            ) {
-              return -1
-            }
-            return 1
-          })
           .map((work) => (
             <Link
               key={work.slug}

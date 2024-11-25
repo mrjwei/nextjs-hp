@@ -6,7 +6,7 @@ import { formatDate } from "app/writings/utils"
 
 export function ArtworkCard({ work, imgClassName = "" }) {
   return (
-    <div className="h-full flex flex-col bg-white transition duration-300 ease-in-out shadow-md hover:shadow-xl rounded-lg border-t-neutral-600 border-t-8">
+    <div className="h-full flex flex-col bg-white transition duration-300 ease-in-out shadow-md hover:shadow-xl rounded-lg">
       <div className="h-36 flex justify-center">
         <Image
           className={clsx(
