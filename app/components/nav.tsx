@@ -11,6 +11,9 @@ const navItems = {
   "/writings": {
     name: "Writings",
   },
+  "/contact": {
+    name: "Contact",
+  },
 }
 
 export function Navbar() {
