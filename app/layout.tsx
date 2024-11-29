@@ -52,14 +52,14 @@ export default function RootLayout({
         openSans.className
       )}
     >
-      <body className="antialiased max-w-2xl lg:max-w-3xl mx-4 mt-4 lg:mx-auto">
-        <main className="flex-auto min-w-0 flex flex-col px-2 md:px-0">
+      <body className="antialiased mt-4">
+        <main className="max-w-2xl lg:max-w-3xl mx-4 lg:mx-auto min-w-0 flex flex-col px-2 md:px-0">
           <Navbar />
           {children}
-          <Footer />
           <Analytics />
           <SpeedInsights />
         </main>
+        <Footer />
       </body>
     </html>
   )

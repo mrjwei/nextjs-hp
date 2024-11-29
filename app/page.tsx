@@ -1,8 +1,6 @@
-import { Kanit } from 'next/font/google'
+import {kanit} from 'app/data/fonts'
 import { Articles } from 'app/components/posts'
 import { Works } from 'app/components/works'
-
-const kanit = Kanit({subsets: ['latin'], weight: ["500", "600", "700"], style: ["normal", "italic"]})
 
 export default function Page() {
   return (

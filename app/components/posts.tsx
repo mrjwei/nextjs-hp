@@ -2,6 +2,7 @@ import Link from "next/link"
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
 import { getBlogPosts } from "app/writings/utils"
 import {ArticleCard} from 'app/components/article-card'
+import {kanit} from 'app/data/fonts'
 
 export function Articles({ numPosts, hasSeeMore = true }: { numPosts?: number, hasSeeMore?: boolean }) {
   let allBlogs = getBlogPosts().sort((a, b) => {
@@ -30,7 +31,7 @@ export function Articles({ numPosts, hasSeeMore = true }: { numPosts?: number, h
       {hasSeeMore && (
         <div className="flex justify-center mt-8">
           <Link href="/writings" className="border-2 rounded border-neutral-600 p-2 flex items-center">
-            <span className="mr-2">See more</span>
+            <span className={`mr-2 ${kanit.className}`}>See more</span>
             <ArrowRightIcon className="w-5" />
           </Link>
         </div>
