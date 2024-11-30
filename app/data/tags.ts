@@ -29,4 +29,7 @@ export const tags = {
   python: {
     color: "#2f27cc"
   },
+  tutorial: {
+    color: "#ffc130"
+  }
 }

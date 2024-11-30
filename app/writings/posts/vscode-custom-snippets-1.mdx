@@ -1,0 +1,56 @@
+---
+title: "VS Code Custom Snippets: Boost Your Productivity (Part 1)"
+publishedAt: "2024-11-30"
+summary: "VSCode is packed with handy features, many of which remain underutilized by developers. In this article, I’ll show you how to leverage the custom snippets feature to drastically improve your productivity."
+tags: ["productivity", "dev", "tutorial"]
+---
+
+- [What Are Custom Snippets?](#what-are-custom-snippets)
+- [How to Create Custom Snippets](#how-to-create-custom-snippets)
+- [Conclusion](#conclusion)
+
+VSCode is packed with handy features, many of which remain underutilized by developers. In this article, I’ll show you how to leverage the [custom snippets](https://code.visualstudio.com/docs/editor/userdefinedsnippets) feature to drastically improve your productivity.
+
+## What Are Custom Snippets?
+
+Custom snippets are reusable code templates that you define in configuration files. A typical snippet object contains the following fields:
+
+- **prefix**: The trigger keyword for the snippet.
+- **body**: A string or array of strings representing the generated code.
+- **description**: A short explanation of what the snippet does.
+
+Although the snippet object supports additional fields like *scope*, they are rarely used and won’t be covered in this article.
+
+## How to Create Custom Snippets
+
+Creating custom snippets is easy. Open the Command Palette with **Cmd + Shift + P** on Mac or **Ctrl + Shift + P** on Windows and type *“custom snippets”* in the search bar. Select **Snippets: Configure Snippets** from the menu. Next, choose the appropriate configuration file for your target file type. For example, to define snippets for `.tsx` files, select `typescriptreact.json`.
+
+Here’s an example of a basic custom snippet defined in `typescriptreact.json`:
+
+```json
+"Print to console": {
+    "prefix": "log",
+    "body": [
+        "console.log('$1');",
+        "$2"
+    ],
+    "description": "Log output to console"
+},
+```
+
+Notice that the `body` field is an array of strings. This allows the snippet to span multiple lines, with each line as a separate string in the array.
+
+Now, open a `.tsx` file and start typing `log`. A menu will appear, showing the snippet’s description (“Print to console”). Select it, input your message, hit Tab, and you’re done!
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/vscode-custom-snippets-1/basic-custom-snippet.gif"
+    alt="using the basic snippet"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Using the basic snippet</figcaption>
+</figure>
+
+## Conclusion
+
+In this part, we explored the basics of custom snippets, including how to define and use them to speed up your workflow. In the [next part](/writings/vscode-custom-snippets-2), we’ll dive into advanced usage, uncovering tricks to make this feature even more powerful.
