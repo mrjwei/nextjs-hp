@@ -1,0 +1,183 @@
+---
+title: "VS Code Custom Snippets: Boost Your Productivity (Part 2)"
+publishedAt: "2024-12-01"
+summary: "VSCode is packed with handy features, many of which remain underutilized by developers. In this article, I’ll show you how to leverage the custom snippets feature to drastically improve your productivity."
+tags: ["productivity", "dev", "tutorial"]
+---
+
+- [Advanced Usage](#advanced-usage)
+  - [Cursor Mirroring](#cursor-mirroring)
+  - [Same Prefix, Multiple Snippets](#same-prefix-multiple-snippets)
+  - [Built-in Variables](#built-in-variables)
+  - [Multi-choice Placeholders](#multi-choice-placeholders)
+  - [Regex Transformation](#regex-transformation)
+- [Conclusion](#conclusion)
+
+
+In [part 1](/writings/vscode-custom-snippets-1), we explored the basics of custom snippets in VSCode. Now, let’s dive into some advanced features that will further enhance your productivity.
+
+## Advanced Usage
+
+Here are some of the lesser-known but highly useful functionalities of custom snippets:
+
+### Cursor Mirroring
+
+Cursor mirroring lets you edit the same text in multiple places simultaneously. For example, in the snippet below, I used the placeholder `ComponentName` (index 1) in multiple spots. When you input the component name, all occurrences of the same index are updated automatically:
+
+```json
+"React Component TS": {
+  "prefix": "rc",
+  "body": [
+    "type T${1:ComponentName}Props = {",
+    "\t${2}",
+    "}",
+    "\n",
+    "export function ${1}({${3:props}}: T${1}Props) {",
+    "\t${4}${0}",
+    "}"
+  ],
+  "description": "React component boilerplate"
+}
+```
+This ensures consistency and saves time by reducing repetitive typing.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/vscode-custom-snippets-2/vscode-snippet-cursor-mirroring.gif"
+    alt="Cursor mirroring"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Cursor mirroring</figcaption>
+</figure>
+
+### Same Prefix, Multiple Snippets
+
+Sometimes, you may want the same prefix to trigger multiple snippets, letting you select the most suitable one. For instance, you might want to define snippets for different types of functions under the prefix `fn`:
+
+```json
+"Arrow Function": {
+  "prefix": "fn",
+  "body": [
+    "const ${1:name} = (${2:args}) => { $0 };"
+  ],
+  "description": "Expand arrow function"
+},
+
+"Traditional Function": {
+  "prefix": "fn",
+  "body": [
+    "function ${1:name}(${2:args}) { $0 }"
+  ],
+  "description": "Expand traditional function"
+}
+```
+
+When you type `fn`, a menu appears, letting you choose between the arrow function or the traditional function snippet.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/vscode-custom-snippets-2/vscode-snippet-multi-snippets.gif"
+    alt="Same prefix, multiple snippets"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Same prefix, multiple snippets</figcaption>
+</figure>
+
+### Built-in Variables
+
+VSCode provides a range of built-in variables that can make your snippets even smarter. Some popular variables include:
+
+- `${TM_FILENAME}`: The current file name.
+- `${CURRENT_YEAR}`, `${CURRENT_MONTH}`, `${CURRENT_DATE}`: Date-related values.
+
+Here’s an example of a snippet that generates a file header using these variables:
+
+```json
+"File Header": {
+  "prefix": "header",
+  "body": [
+    "/**",
+    " * File: ${TM_FILENAME}",
+    " * Author: Jesse",
+    " * Created: ${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE}",
+    " */",
+    "$0"
+  ],
+  "description": "Generate file header"
+}
+```
+
+This ensures each file has a consistent header without manually typing in the details.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/vscode-custom-snippets-2/vscode-snippet-built-in-vars.gif"
+    alt="Built-in variables"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Built-in variables</figcaption>
+</figure>
+
+### Multi-choice Placeholders
+
+Multi-choice placeholders let you choose from a predefined list of values instead of typing them out. This is particularly useful for repetitive tasks. For example:
+
+```json
+"Request Methods": {
+  "prefix": "method",
+  "body": [
+    "app.${1|get,post,put,delete|}('${2:path}', (req, res) => {",
+    "  res.send('${3:response}');",
+    "});"
+  ],
+  "description": "Expand request snippet"
+}
+```
+
+When the snippet expands, you can select one of the HTTP methods (get, post, put, or delete) from a dropdown.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/vscode-custom-snippets-2/vscode-snippet-select.gif"
+    alt="Multi-choice placeholders"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Multi-choice placeholders</figcaption>
+</figure>
+
+### Regex Transformation
+
+Regex transformations allow you to dynamically modify text in placeholders. A common use case is capitalizing variable names, such as when generating `useState` hooks in React:
+
+```javascript
+const [amount, setAmount] = React.useState(0);
+```
+
+With regex transformation, you can automatically capitalize the setter name (`setAmount`) as you type:
+
+```json
+"useState": {
+  "prefix": "us",
+  "body": "const [${1:state}, set${1/(.*)/${1:/capitalize}/}] = React.useState($0)",
+  "description": "Expand useState expression"
+}
+```
+
+Here’s how `${1/(.*)/${1:/capitalize}/}` works:
+
+1. The first 1 references the placeholder `${1}`.
+2. `(.*)` captures all input from `${1}` using regex.
+3. `${1:/capitalize}` applies the capitalize transformation to the captured input and updates the output.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/vscode-custom-snippets-2/vscode-snippet-regex-transformation.gif"
+    alt="Regex transformation"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Regex transformation</figcaption>
+</figure>
+
+## Conclusion
+
+By mastering these advanced features, you can take your custom snippets to the next level. Whether it’s cursor mirroring, using built-in variables, creating dropdowns with multi-choice placeholders, or applying regex transformations, these techniques make snippets more powerful and versatile.
