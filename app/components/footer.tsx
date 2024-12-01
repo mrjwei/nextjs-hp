@@ -19,7 +19,7 @@ function ArrowIcon() {
 
 export default function Footer() {
   return (
-    <footer className="mb-8 border-t-2 border-neutral-200">
+    <footer className="mt-16 mb-8 border-t-2 border-neutral-200">
       <div className="max-w-2xl lg:max-w-3xl mx-4 lg:mx-auto min-w-0 flex flex-col px-2 md:px-0">
         <ul className="font-sm mt-8 flex flex-col space-x-0 space-y-2 text-neutral-600 md:flex-row md:space-x-4 md:space-y-0 dark:text-neutral-300">
           {/* <li>
