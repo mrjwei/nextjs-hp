@@ -7,6 +7,7 @@ tags: ["productivity", "dev", "tutorial"]
 
 - [What Are Custom Snippets?](#what-are-custom-snippets)
 - [How to Create Custom Snippets](#how-to-create-custom-snippets)
+  - [Placeholders](#placeholders)
 - [Conclusion](#conclusion)
 
 VSCode is packed with handy features, many of which remain underutilized by developers. In this article, I’ll show you how to leverage the [custom snippets](https://code.visualstudio.com/docs/editor/userdefinedsnippets) feature to drastically improve your productivity.
@@ -50,6 +51,26 @@ Now, open a `.tsx` file and start typing `log`. A menu will appear, showing the 
   />
   <figcaption>Using the basic snippet</figcaption>
 </figure>
+
+### Placeholders
+
+In the body of the snippet above, you might have noticed some numbers preceded by dollar signs, like $1 and $2. These are called placeholders, and they are the key to the magic of custom snippets. With a bit of creativity, placeholders can turn your snippets into powerful productivity boosters.
+
+A placeholder can take one of two forms:
+
+1. **Simple Placeholders**: A dollar sign followed by a number, e.g., $1 or $2. These mark the spots where the cursor will stop for input during snippet expansion.
+2. **Placeholders with Default Text**: A dollar sign followed by curly braces containing a number and some default text separated by a colon, e.g., `${1:ComponentName}`.
+    - The number still acts as the index (as with simple placeholders).
+    - The text (e.g., `ComponentName`) provides a pre-filled value or a helpful hint for users of the snippet. This text can be overwritten, and any changes will automatically update mirrored placeholders with the same index.
+
+The number in a placeholder defines its **index**. When you expand the snippet, the cursor automatically navigates through placeholders in order, starting with `$1`, then `$2`, and so on.
+
+For example, in the animation:
+
+- After the snippet expanded, the cursor was positioned in the parentheses (`$1`), ready for input.
+- Pressing the `Tab` key moved the cursor to the next placeholder (`$2`), enabling you to edit the next part of the code.
+
+This seamless navigation is one of the key reasons custom snippets can save so much time!
 
 ## Conclusion
 
