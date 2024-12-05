@@ -1,8 +1,67 @@
 ---
 title: "VS Code Custom Snippets: Boost Your Productivity (Part 3)"
-publishedAt: "2024-12-03"
-summary: "Coming soon..."
+publishedAt: "2024-12-05"
+summary: "n this final part, we’ll focus on how to share and version control snippets for a more streamlined workflow."
 tags: ["productivity", "dev", "tutorial"]
 ---
 
-Coming soon...
+In the first two parts of this series, we explored the basics and advanced features of custom snippets in VSCode. In this final part, we’ll focus on how to share and version control snippets for a more streamlined workflow.
+
+## Using Symbolic Links for Syncing
+
+To keep your snippets in sync across devices and manage them effectively, a version-controlled repository combined with [symbolic links](https://en.wikipedia.org/wiki/Symbolic_link#:~:text=In%20computing%2C%20a%20symbolic%20link,by%20specifying%20a%20path%20thereto.) is an ideal approach.
+
+For convenience, I’ve curated a collection of snippets in [this repository](https://github.com/mrjwei/vscode-snippets). Feel free to fork it, customize the snippets, or add your own. The README provides detailed workflow instructions.
+
+If you prefer starting from scratch, here’s how you can set up your own system:
+
+### 1. Create a New Git Repository
+
+Start by creating a new directory, for example, `vscode-snippets`, and initialize it as a Git repository:
+
+### 2. Locate Your Existing Snippets
+
+Find the location of your current VSCode snippets folder. This is typically displayed at the bottom of the open snippet file in VSCode.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/vscode-custom-snippets-3/path.png"
+    alt="Locate your existing snippets"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Locate your existing snippets</figcaption>
+</figure>
+
+### 3. Move Snippets and Delete the Original Folder
+
+Move your existing snippets to the new directory, then remove the old snippets folder to prepare for linking:
+
+```bash
+mv /path/to/existing/snippets/* /path/to/new/directory
+rm -rf /path/to/existing/snippets
+```
+
+### 4. Create a Symbolic Link
+
+Point VSCode to your new snippets directory using a symbolic link. For macOS and Linux, the command might look like this:
+
+```bash
+ln -s path/to/new/directory/* ~/Library/Application\ Support/Code/User/snippets/
+```
+
+For Windows, you can use the mklink command:
+
+```bash
+mklink /D "%APPDATA%\Code\User\snippets" "C:\path\to\new\directory"
+```
+
+### 5. Connect Your Local Repository to GitHub
+
+Create a repository on GitHub, then link it to your local directory. From now on, you can update, add, or remove snippets in your version-controlled directory. Any changes will be reflected in VSCode via the symbolic link. You can share the repository or clone it on a new device for seamless portability.
+
+## Conclusion
+
+Version-controlling your snippets not only ensures they’re always accessible but also helps you maintain a clean, organized workflow across devices.
+
+With this, we wrap up the series on VSCode custom snippets. I hope this inspires you to leverage snippets for enhanced productivity.
+
