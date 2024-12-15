@@ -27,7 +27,7 @@ export function Series({
       {series.map((s) => {
         return (
           <div className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">{s[0].metadata.seriesTitle}</h2>
+            <h2 className={`text-2xl font-semibold mb-4 ${kanit.className}`}>{s[0].metadata.seriesTitle}</h2>
             <div className="grid grid-cols-12 gap-6">
               {s.map((article) => (
                 <Link
