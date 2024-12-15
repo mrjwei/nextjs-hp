@@ -1,20 +1,19 @@
 import { notFound } from 'next/navigation'
 import { CustomMDX } from 'app/components/mdx'
-import { formatDate, getBlogPosts } from 'app/writings/utils'
+import { formatDate, getSeries } from 'app/utils'
 import { baseUrl } from 'app/sitemap'
 import Head from 'next/head'
 
 export async function generateStaticParams() {
-  let posts = getBlogPosts()
-
-  return posts.map((post) => ({
-    slug: post.slug,
+  return getSeries().flat().map(article => ({
+    slug: [article.metadata.seriesSlug, article.slug]
   }))
 }
 
 export function generateMetadata({ params }) {
-  let post = getBlogPosts().find((post) => post.slug === params.slug)
-  if (!post) {
+  let article = getSeries().flat().find((article) => article.slug === params.slug[1])
+
+  if (!article) {
     return
   }
 
@@ -23,7 +22,7 @@ export function generateMetadata({ params }) {
     publishedAt: publishedTime,
     summary: description,
     image,
-  } = post.metadata
+  } = article.metadata
   let ogImage = image
     ? image
     : `${baseUrl}/og?title=${encodeURIComponent(title)}`
@@ -36,7 +35,7 @@ export function generateMetadata({ params }) {
       description,
       type: 'article',
       publishedTime,
-      url: `${baseUrl}/writings/${post.slug}`,
+      url: `${baseUrl}/series/${article.metadata.seriesSlug}/${article.slug}`,
       images: [
         {
           url: ogImage,
@@ -52,18 +51,19 @@ export function generateMetadata({ params }) {
   }
 }
 
-export default function Writing({ params }) {
-  let post = getBlogPosts().find((post) => post.slug === params.slug)
+export default function SeriesArticle({ params }) {
+  console.log()
+  let article = getSeries().flat().find((article) => article.slug === params.slug[1])
 
-  if (!post) {
+  if (!article) {
     notFound()
   }
 
   return (
     <>
       <Head>
-        <title>{post.metadata.title}</title>
-        <link rel="canonical" href={`${baseUrl}/writings/${post.slug}`} />
+        <title>{article.metadata.title}</title>
+        <link rel="canonical" href={`${baseUrl}/series/${article.metadata.seriesSlug}/${article.slug}`} />
       </Head>
       <section>
         <script
@@ -73,14 +73,14 @@ export default function Writing({ params }) {
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'BlogPosting',
-              headline: post.metadata.title,
-              datePublished: post.metadata.publishedAt,
-              dateModified: post.metadata.publishedAt,
-              description: post.metadata.summary,
-              image: post.metadata.image
-                ? `${baseUrl}${post.metadata.image}`
-                : `/og?title=${encodeURIComponent(post.metadata.title)}`,
-              url: `${baseUrl}/writings/${post.slug}`,
+              headline: article.metadata.title,
+              datePublished: article.metadata.publishedAt,
+              dateModified: article.metadata.publishedAt,
+              description: article.metadata.summary,
+              image: article.metadata.image
+                ? `${baseUrl}${article.metadata.image}`
+                : `/og?title=${encodeURIComponent(article.metadata.title)}`,
+              url: `${baseUrl}/articles/${article.slug}`,
               author: {
                 '@type': 'Person',
                 name: 'My Portfolio',
@@ -89,15 +89,15 @@ export default function Writing({ params }) {
           }}
         />
         <h1 className="title font-bold text-4xl">
-          {post.metadata.title}
+          {article.metadata.title}
         </h1>
         <div className="flex justify-between items-center mt-2 mb-8 text-sm">
           <p className="text-sm text-neutral-600 dark:text-neutral-400">
-            {formatDate(post.metadata.publishedAt)}
+            {formatDate(article.metadata.publishedAt)}
           </p>
         </div>
         <article className="prose">
-          <CustomMDX source={post.content} />
+          <CustomMDX source={article.content} />
         </article>
       </section>
     </>

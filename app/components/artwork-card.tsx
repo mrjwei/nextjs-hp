@@ -2,7 +2,7 @@ import Image from "next/image"
 import clsx from 'clsx'
 import { tags } from "app/data/tags"
 import { Tag } from "app/components/tag"
-import { formatDate } from "app/writings/utils"
+import { formatDate } from "app/utils"
 
 export function ArtworkCard({ work, imgClassName = "" }) {
   return (

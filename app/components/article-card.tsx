@@ -1,15 +1,19 @@
 import Image from "next/image"
+import clsx from 'clsx';
 import { tags } from "app/data/tags"
 import { Tag } from "app/components/tag"
-import { formatDate } from "app/writings/utils"
+import { formatDate } from "app/utils"
 
-export function ArticleCard({ article }) {
+export function ArticleCard({ article, className }: {article: any, className?: string}) {
   return (
-    <div className="h-full flex flex-col bg-white transition duration-300 ease-in-out shadow-md hover:shadow-xl rounded-lg border-t-neutral-600 border-t-8">
+    <div className={clsx(
+      "h-full flex flex-col bg-white transition duration-300 ease-in-out shadow-md hover:shadow-xl rounded-lg border-t-neutral-600 border-t-8",
+      className
+    )}>
       <div className="h-36 flex justify-center">
         <Image
           className="w-auto h-full"
-          src={`/${article.slug}/thumbnail.png`}
+          src={article.metadata.seriesSlug ? `/series/${article.metadata.seriesSlug}/thumbnail.png` : `/${article.slug}/thumbnail.png`}
           alt={`thumbnail of article ${article.metadata.title}`}
           width={1109}
           height={635}

@@ -31,5 +31,8 @@ export const tags = {
   },
   tutorial: {
     color: "#ffc130"
-  }
+  },
+  series: {
+    color: "#855572"
+  },
 }

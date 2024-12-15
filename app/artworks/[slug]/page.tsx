@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { ArrowRightIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
 import { notFound } from 'next/navigation'
 import { CustomMDX } from 'app/components/mdx'
-import { formatDate, getWorks } from 'app/writings/utils'
+import { formatDate, getWorks } from 'app/utils'
 import { baseUrl } from 'app/sitemap'
 import Head from 'next/head'
 
@@ -38,7 +38,7 @@ export function generateMetadata({ params }) {
       description,
       type: 'article',
       publishedTime,
-      url: `${baseUrl}/writings/${work.slug}`,
+      url: `${baseUrl}/articles/${work.slug}`,
       images: [
         {
           url: ogImage,

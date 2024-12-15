@@ -37,19 +37,19 @@ function parseFrontmatter(fileContent: string) {
   return { metadata: metadata as Metadata, content }
 }
 
-function getMDXFiles(dir) {
-  return fs.readdirSync(dir).filter((file) => path.extname(file) === '.mdx')
+function getMDXFiles(absDirPath) {
+  return fs.readdirSync(absDirPath).filter((file) => path.extname(file) === '.mdx')
 }
 
-function readMDXFile(filePath) {
-  let rawContent = fs.readFileSync(filePath, 'utf-8')
+function readMDXFile(absFilePath) {
+  let rawContent = fs.readFileSync(absFilePath, 'utf-8')
   return parseFrontmatter(rawContent)
 }
 
-function getMDXData(dir) {
-  let mdxFiles = getMDXFiles(dir)
+function getMDXData(absDirPath) {
+  let mdxFiles = getMDXFiles(absDirPath)
   return mdxFiles.map((file) => {
-    let { metadata, content } = readMDXFile(path.join(dir, file))
+    let { metadata, content } = readMDXFile(path.join(absDirPath, file))
     let slug = path.basename(file, path.extname(file))
 
     return {
@@ -60,8 +60,17 @@ function getMDXData(dir) {
   })
 }
 
-export function getBlogPosts() {
-  return getMDXData(path.join(process.cwd(), 'app', 'writings', 'posts'))
+export function getArticles() {
+  return getMDXData(path.join(process.cwd(), 'app', 'articles', 'posts'))
+}
+
+export function getSeries() {
+  const subdirs = fs.readdirSync(path.join(process.cwd(), 'app', 'series', 'posts'))
+  return subdirs.reduce((MDXData: any, subdir: string) => {
+    const absDirPath = path.join(process.cwd(), 'app', 'series', 'posts', subdir)
+    MDXData.push(getMDXData(absDirPath))
+    return MDXData
+  }, [])
 }
 
 export function getWorks() {

@@ -9,8 +9,11 @@ const navItems = {
   "/artworks": {
     name: "Artworks",
   },
-  "/writings": {
-    name: "Writings",
+  "/articles": {
+    name: "Articles",
+  },
+  "/series": {
+    name: "Series",
   },
 }
 

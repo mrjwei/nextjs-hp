@@ -1,6 +1,7 @@
 import {kanit} from 'app/data/fonts'
-import { Articles } from 'app/components/posts'
+import { Articles } from 'app/components/articles'
 import { Works } from 'app/components/works'
+import { Series } from 'app/components/series'
 
 export default function Page() {
   return (
@@ -13,11 +14,17 @@ export default function Page() {
       </h2>
       <div className="my-8">
         <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">Latest Artworks</h2>
+          <h2 className="text-3xl font-bold mb-4">Latest Artworks</h2>
           <Works numWorks={3} />
         </div>
-        <h2 className="text-2xl font-bold mb-4">Latest Writings</h2>
-        <Articles numPosts={6} />
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold mb-4">Popular Articles</h2>
+          <Articles numArticles={6} />
+        </div>
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold mb-4">New Series</h2>
+          <Series numSeries={1} />
+        </div>
       </div>
     </section>
   )

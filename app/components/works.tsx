@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
-import { getWorks } from 'app/writings/utils'
+import { getWorks } from 'app/utils'
 import {ArtworkCard} from 'app/components/artwork-card'
 import {kanit} from 'app/data/fonts'
 
