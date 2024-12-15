@@ -3,6 +3,7 @@ import { CustomMDX } from 'app/components/mdx'
 import { formatDate, getSeries } from 'app/utils'
 import { baseUrl } from 'app/sitemap'
 import Head from 'next/head'
+import { kanit } from "app/data/fonts"
 
 export async function generateStaticParams() {
   return getSeries().flat().map(article => ({
@@ -92,7 +93,7 @@ export default function SeriesArticle({ params }) {
           {article.metadata.title}
         </h1>
         <div className="flex justify-between items-center mt-2 mb-8 text-sm">
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+          <p className={`text-sm text-neutral-500 dark:text-neutral-400 ${kanit.className}`}>
             {formatDate(article.metadata.publishedAt)}
           </p>
         </div>

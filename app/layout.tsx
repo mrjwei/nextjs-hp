@@ -47,7 +47,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={cx(
-        'text-neutral-800 bg-neutral-50 dark:text-white dark:bg-neutral-800',
+        'text-neutral-800 bg-white text-base dark:text-white dark:bg-neutral-800',
         openSans.className
       )}
     >

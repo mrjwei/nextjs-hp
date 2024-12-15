@@ -6,10 +6,10 @@ import { Series } from 'app/components/series'
 export default function Page() {
   return (
     <section>
-      <h1 className={`mb-4 text-4xl font-medium text-neutral-600 ${kanit.className}`}>
+      <h1 className={`mb-4 text-4xl font-extrabold text-neutral-800 ${kanit.className}`}>
         <span className="font-bold italic">Jesse</span> <span className="text-neutral-500">is a creator who is passionate about the intersection of</span> <span className="font-bold italic">creativity and technology</span>.
       </h1>
-      <h2 className="mb-4 text-xl text-neutral-600">
+      <h2 className="mb-4 text-xl text-neutral-800">
         This space is where I showcase my artworks and my creative experiments, document the design and development processes, and share my thoughts on blending these two worlds.
       </h2>
       <div className="my-8">

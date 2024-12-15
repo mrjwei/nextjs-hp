@@ -3,6 +3,8 @@ import clsx from 'clsx'
 import { tags } from "app/data/tags"
 import { Tag } from "app/components/tag"
 import { formatDate } from "app/utils"
+import { kanit } from "app/data/fonts"
+
 
 export function ArtworkCard({ work, imgClassName = "" }) {
   return (
@@ -20,8 +22,8 @@ export function ArtworkCard({ work, imgClassName = "" }) {
       </div>
       <div className="px-4 pt-2 pb-4 flex-1 flex flex-col justify-between">
         <div>
-          <h3 className="font-bold mb-1">{work.metadata.title}</h3>
-          <p className="text-neutral-600 text-sm mb-2">
+          <h3 className="text-xl font-bold mb-1">{work.metadata.title}</h3>
+          <p className="text-neutral-600 text-base mb-2">
             {work.metadata.summary.length > 100
               ? work.metadata.summary.slice(0, 100) + "..."
               : work.metadata.summary}
@@ -32,7 +34,7 @@ export function ArtworkCard({ work, imgClassName = "" }) {
             ))}
           </div>
         </div>
-        <small className="text-neutral-600">
+        <small className={`text-neutral-500 ${kanit.className}`}>
           {formatDate(work.metadata.publishedAt, false)}
         </small>
       </div>
