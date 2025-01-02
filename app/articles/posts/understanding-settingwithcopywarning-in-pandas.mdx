@@ -10,7 +10,7 @@ tags: ["python", "ai", "dev"]
 - [Finding Answers](#finding-answers)
   - [What is a view vs. a copy in pandas?](#what-is-a-view-vs-a-copy-in-pandas)
   - [What is memory layout of arrays, and how does it affect whether pandas creates a view or a copy?](#what-is-memory-layout-of-arrays-and-how-does-it-affect-whether-pandas-creates-a-view-or-a-copy)
-  - [What does the temporary object look like, and why can’t pandas guarantee that modifying it affects the original `dfmi`?](#what-does-the-temporary-object-look-like-and-why-cant-pandas-guarantee-that-modifying-it-affects-the-original-dfmi)
+  - [What does the temporary object look like, and why can’t pandas guarantee that modifying it affects the original dfmi?](#what-does-the-temporary-object-look-like-and-why-cant-pandas-guarantee-that-modifying-it-affects-the-original-dfmi)
 - [Strided Slicing vs. Fancy Indexing](#strided-slicing-vs-fancy-indexing)
   - [Strided Slicing: Efficient and Predictable Views](#strided-slicing-efficient-and-predictable-views)
   - [Fancy Indexing: Complex and Requires Copies](#fancy-indexing-complex-and-requires-copies)
@@ -70,7 +70,7 @@ The memory layout of arrays refers to how data is stored in memory. In pandas, t
 - **Contiguous Arrays**: Data is stored sequentially in memory. Operations on such arrays often create views, as the data can be accessed efficiently without duplication.
 - **Non-Contiguous Arrays**: Data is scattered in memory. Operations on these arrays often create copies to avoid the complexity of mapping scattered elements back to their original locations.
 
-### What does the temporary object look like, and why can’t pandas guarantee that modifying it affects the original `dfmi`?
+### What does the temporary object look like, and why can’t pandas guarantee that modifying it affects the original dfmi?
 
 Consider the example:
 
