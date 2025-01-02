@@ -22,7 +22,12 @@ export function ArticleCard({ article, className }: {article: any, className?: s
       </div>
       <div className="px-4 pt-2 pb-4 flex-1 flex flex-col justify-between">
         <div>
-          <h3 className="text-xl font-bold mb-1">{article.metadata.title}</h3>
+          <h3 className={clsx(
+            "text-xl font-bold mb-1",
+            {
+              "break-all": article.metadata.shouldBreakWord
+            }
+          )}>{article.metadata.title}</h3>
           <p className="text-neutral-600 text-base mb-2">
             {article.metadata.summary.length > 100
               ? article.metadata.summary.slice(0, 100) + "..."

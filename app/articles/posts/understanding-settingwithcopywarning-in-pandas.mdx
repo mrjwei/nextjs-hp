@@ -1,0 +1,148 @@
+---
+title: "Understanding the SettingWithCopyWarning in Pandas"
+shouldBreakWord: true
+publishedAt: "2025-01-01"
+summary: "When working with Pandas, you may encounter the SettingWithCopyWarning. In this article, I'll share my findings to help you understand the warning, its cause and how to prevent it."
+tags: ["ai", "dev"]
+---
+
+- [Starting With Questions](#starting-with-questions)
+- [Finding Answers](#finding-answers)
+  - [What is a view vs. a copy in pandas?](#what-is-a-view-vs-a-copy-in-pandas)
+  - [What is memory layout of arrays, and how does it affect whether pandas creates a view or a copy?](#what-is-memory-layout-of-arrays-and-how-does-it-affect-whether-pandas-creates-a-view-or-a-copy)
+  - [What does the temporary object look like, and why can’t pandas guarantee that modifying it affects the original `dfmi`?](#what-does-the-temporary-object-look-like-and-why-cant-pandas-guarantee-that-modifying-it-affects-the-original-dfmi)
+- [Strided Slicing vs. Fancy Indexing](#strided-slicing-vs-fancy-indexing)
+  - [Strided Slicing: Efficient and Predictable Views](#strided-slicing-efficient-and-predictable-views)
+  - [Fancy Indexing: Complex and Requires Copies](#fancy-indexing-complex-and-requires-copies)
+- [Avoiding the SettingWithCopyWarning](#avoiding-the-settingwithcopywarning)
+  - [Modify the Original Data](#modify-the-original-data)
+  - [Work with Explicit Copies](#work-with-explicit-copies)
+- [Conclusion](#conclusion)
+
+
+When working with [Pandas](https://pandas.pydata.org/), you may encounter the `SettingWithCopyWarning`, such as in this example:
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/understanding-settingwithcopywarning-in-pandas/warning.png"
+    alt="SettingWithCopyWarning"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>SettingWithCopyWarning: code example from the [Data Analysis with Pandas and Python](https://learning.oreilly.com/course/data-analysis-with/9781788622394/) course</figcaption>
+</figure>
+<br/>
+
+When I first saw it, I could not figure out what it meant, so I did some research to gain insight. In this article, I'll share my findings to help you understand the warning, its cause and how to prevent it.
+
+## Starting With Questions
+
+The [official Pandas documentation](https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#why-does-assignment-fail-when-using-chained-indexing) gives this example:
+
+```python
+dfmi['one']['second'] = value
+# becomes
+dfmi.__getitem__('one').__setitem__('second', value)
+```
+
+It explains:
+
+> See that `__getitem__` in there? Outside of simple cases, it’s very hard to predict whether it will return a view or a copy (it depends on the memory layout of the array, about which pandas makes no guarantees), and therefore whether the `__setitem__` will modify `dfmi` or a temporary object that gets thrown out immediately afterward. That’s what `SettingWithCopy` is warning you about!
+
+This explanation raised three questions for me:
+
+1. What is a **view** vs. a **copy** in pandas?
+2. What is **memory layout** of arrays, and how does it affect whether pandas creates a view or a copy?
+3. What does the **temporary object** look like, and why can’t pandas guarantee that modifying it affects the original `dfmi`?
+
+## Finding Answers
+
+### What is a view vs. a copy in pandas?
+
+- **View**: A view is a reference to the original data. Modifying a view modifies the original object because the view doesn’t create a new data object—it simply provides an alternative way to access the same underlying data.
+- **Copy**: A copy creates a new, independent object that duplicates the data from the original. Modifying a copy does not affect the original object.
+
+### What is memory layout of arrays, and how does it affect whether pandas creates a view or a copy?
+
+If you slice or index a DataFrame, sometimes you get a view, and other times you get a copy. Pandas tries to optimize memory usage, so the result depends on the operation and the **memory layout** of the data.
+
+The memory layout of arrays refers to how data is stored in memory. In pandas, the underlying data structure is a [NumPy](https://NumPy.org/) array, whose memory layout plays a crucial role:
+
+- **Contiguous Arrays**: Data is stored sequentially in memory. Operations on such arrays often create views, as the data can be accessed efficiently without duplication.
+- **Non-Contiguous Arrays**: Data is scattered in memory. Operations on these arrays often create copies to avoid the complexity of mapping scattered elements back to their original locations.
+
+### What does the temporary object look like, and why can’t pandas guarantee that modifying it affects the original `dfmi`?
+
+Consider the example:
+
+```python
+dfmi['one']['second'] = value
+# Translates to
+temp = dfmi.__getitem__('one') # May be a view or a copy
+temp.__setitem__('second', value) # Modifying temp does not guarantee that dfmi is modified
+```
+
+Here, the intermediate object (temp) could be:
+
+- A view, in which case modifying temp affects `dfmi`.
+- A copy, in which case modifications to temp don’t affect `dfmi`.
+
+Because pandas cannot predict whether temp will be a view or a copy, it raises the `SettingWithCopyWarning`.
+
+## Strided Slicing vs. Fancy Indexing
+
+### Strided Slicing: Efficient and Predictable Views
+
+Strided slicing refers to selecting elements at regular intervals, such as every `nth` element:
+
+```python
+arr = np.array([1, 2, 3, 4, 5])
+view = arr[::2]  # Select every 2nd element
+```
+
+NumPy can return a view because it calculates element positions using simple arithmetic (start, stop, and stride).
+
+### Fancy Indexing: Complex and Requires Copies
+
+[Fancy indexing](https://jakevdp.github.io/PythonDataScienceHandbook/02.07-fancy-indexing.html) selects arbitrary elements, often scattered in memory:
+
+```python
+arr = np.array([10, 20, 30, 40, 50])
+fancy = arr[[0, 2, 4]]  # Arbitrary indices
+```
+
+This creates a copy because:
+
+1. The elements are non-contiguous.
+2. Maintaining a mapping for changes would be computationally expensive, especially for overlapping or repeated indices.
+
+Example of ambiguity:
+
+```python
+arr = np.array([10, 20, 30, 40, 50])
+fancy = arr[[0, 0, 2]]  # Overlapping indices
+fancy[0] = 99 # How should arr handle overlapping indices?
+```
+
+## Avoiding the SettingWithCopyWarning
+
+To avoid the warning, always be explicit:
+
+### Modify the Original Data
+
+```python
+dfmi.loc[:, ('one', 'second')] = value # Modify the original data
+```
+
+### Work with Explicit Copies
+
+```python
+temp = dfmi['one'].copy()
+temp['second'] = value # Modify the copy
+```
+
+## Conclusion
+
+The `SettingWithCopyWarning` indicates that ambiguity exists when modifying data in pandas. Whether a view or a copy is returned depends on factors like the memory layout and the type of indexing used. Understanding these nuances helps ensure our code behaves as expected.
+
+By being explicit about our intentions—either modifying the original data or creating a copy—we can avoid this warning and write clearer, more predictable pandas code.
+
