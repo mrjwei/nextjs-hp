@@ -60,8 +60,8 @@ function getMDXData(absDirPath) {
   })
 }
 
-export function getArticles() {
-  return getMDXData(path.join(process.cwd(), 'app', 'articles', 'posts'))
+export function getWritings() {
+  return getMDXData(path.join(process.cwd(), 'app', 'writings', 'posts'))
 }
 
 export function getSeries() {

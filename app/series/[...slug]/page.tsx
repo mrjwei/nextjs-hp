@@ -52,7 +52,7 @@ export function generateMetadata({ params }) {
   }
 }
 
-export default function SeriesArticle({ params }) {
+export default function SeriesWriting({ params }) {
   console.log()
   let article = getSeries().flat().find((article) => article.slug === params.slug[1])
 
@@ -81,7 +81,7 @@ export default function SeriesArticle({ params }) {
               image: article.metadata.image
                 ? `${baseUrl}${article.metadata.image}`
                 : `/og?title=${encodeURIComponent(article.metadata.title)}`,
-              url: `${baseUrl}/articles/${article.slug}`,
+              url: `${baseUrl}/writings/${article.slug}`,
               author: {
                 '@type': 'Person',
                 name: 'My Portfolio',

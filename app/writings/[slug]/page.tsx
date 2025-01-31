@@ -1,12 +1,12 @@
 import { notFound } from 'next/navigation'
 import { CustomMDX } from 'app/components/mdx'
-import { formatDate, getArticles } from 'app/utils'
+import { formatDate, getWritings } from 'app/utils'
 import { baseUrl } from 'app/sitemap'
 import Head from 'next/head'
 import { kanit } from "app/data/fonts"
 
 export async function generateStaticParams() {
-  let posts = getArticles()
+  let posts = getWritings()
 
   return posts.map((post) => ({
     slug: post.slug,
@@ -14,7 +14,7 @@ export async function generateStaticParams() {
 }
 
 export function generateMetadata({ params }) {
-  let post = getArticles().find((post) => post.slug === params.slug)
+  let post = getWritings().find((post) => post.slug === params.slug)
   if (!post) {
     return
   }
@@ -37,7 +37,7 @@ export function generateMetadata({ params }) {
       description,
       type: 'article',
       publishedTime,
-      url: `${baseUrl}/articles/${post.slug}`,
+      url: `${baseUrl}/writings/${post.slug}`,
       images: [
         {
           url: ogImage,
@@ -54,7 +54,7 @@ export function generateMetadata({ params }) {
 }
 
 export default function Writing({ params }) {
-  let post = getArticles().find((post) => post.slug === params.slug)
+  let post = getWritings().find((post) => post.slug === params.slug)
 
   if (!post) {
     notFound()
@@ -64,7 +64,7 @@ export default function Writing({ params }) {
     <>
       <Head>
         <title>{post.metadata.title}</title>
-        <link rel="canonical" href={`${baseUrl}/articles/${post.slug}`} />
+        <link rel="canonical" href={`${baseUrl}/writings/${post.slug}`} />
       </Head>
       <section>
         <script
@@ -81,7 +81,7 @@ export default function Writing({ params }) {
               image: post.metadata.image
                 ? `${baseUrl}${post.metadata.image}`
                 : `/og?title=${encodeURIComponent(post.metadata.title)}`,
-              url: `${baseUrl}/articles/${post.slug}`,
+              url: `${baseUrl}/writings/${post.slug}`,
               author: {
                 '@type': 'Person',
                 name: 'My Portfolio',

@@ -1,5 +1,5 @@
 import {kanit} from 'app/data/fonts'
-import { Articles } from 'app/components/articles'
+import { Writings } from 'app/components/writings'
 import { Works } from 'app/components/works'
 import { Series } from 'app/components/series'
 
@@ -18,8 +18,8 @@ export default function Page() {
           <Works numWorks={3} />
         </div>
         <div className="mb-8">
-          <h2 className="text-3xl font-bold mb-4">Popular Articles</h2>
-          <Articles numArticles={6} />
+          <h2 className="text-3xl font-bold mb-4">Popular Writings</h2>
+          <Writings numWritings={6} />
         </div>
         <div className="mb-8">
           <h2 className="text-3xl font-bold mb-4">New Series</h2>

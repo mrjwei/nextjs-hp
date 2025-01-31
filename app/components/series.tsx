@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { ArrowRightIcon } from "@heroicons/react/24/outline"
 import { getSeries } from "app/utils"
-import { ArticleCard } from "app/components/article-card"
+import { WritingCard } from "app/components/article-card"
 import { kanit } from "app/data/fonts"
 
 export function Series({
@@ -35,7 +35,7 @@ export function Series({
                   className="col-span-12 sm:col-span-6 lg:col-span-4"
                   href={`/series/${article.metadata.seriesSlug}/${article.slug}`}
                 >
-                  <ArticleCard article={article} />
+                  <WritingCard article={article} />
                 </Link>
               ))}
             </div>

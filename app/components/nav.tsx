@@ -6,13 +6,13 @@ const navItems = {
   "/": {
     name: "Home",
   },
+  "/writings": {
+    name: "Writings",
+  },
   "/artworks": {
     name: "Artworks",
   },
-  "/articles": {
-    name: "Articles",
-  },
-  "/series": {
+  "/about": {
     name: "Series",
   },
 }

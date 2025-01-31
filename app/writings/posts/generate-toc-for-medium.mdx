@@ -1,7 +1,7 @@
 ---
-title: 'Generate a Table of Contents for Medium Articles With One Click'
+title: 'Generate a Table of Contents for Medium Writings With One Click'
 publishedAt: '2024-07-16'
-summary: 'Manually creating TOCs for Medium articles was tedious, so I decided to automate the process by developing a Python program.'
+summary: 'Manually creating TOCs for Medium writings was tedious, so I decided to automate the process by developing a Python program.'
 tags: ["productivity", "uiux", "dev"]
 ---
 
@@ -15,7 +15,7 @@ Medium currently lacks native support for a Table of Contents (TOC), leaving cre
 
 When designing this program, I prioritized accessibility, especially for non-programmers. To make the tool more user-friendly, I integrated a **graphical user interface (GUI)** so that users could easily interact with the program without needing to know any code.
 
-Additionally, I decided to implement the ability to **generate TOCs in bulk for multiple articles**. This feature significantly enhances user experience (UX) without requiring substantial additional development time.
+Additionally, I decided to implement the ability to **generate TOCs in bulk for multiple writings**. This feature significantly enhances user experience (UX) without requiring substantial additional development time.
 
 One major challenge was **ensuring that the TOCs would display correctly on Medium**. Due to how Medium handles content, simply pasting TOCs in raw HTML wouldn’t render them properly.
 
@@ -41,11 +41,11 @@ Instead, the TOCs needed to be pasted as rendered HTML, as shown below:
   <figcaption>You need to paste this into Medium</figcaption>
 </figure>
 
-To streamline this process, I designed the program to **automatically open the generated TOC in a browser**, making it easy for users to copy and paste the correct version directly into their Medium articles.
+To streamline this process, I designed the program to **automatically open the generated TOC in a browser**, making it easy for users to copy and paste the correct version directly into their Medium writings.
 
 ## Coding It out
 
-Thanks to careful planning, the coding process was relatively straightforward. The program allows users to quickly generate a TOC for one or multiple Medium articles.
+Thanks to careful planning, the coding process was relatively straightforward. The program allows users to quickly generate a TOC for one or multiple Medium writings.
 
 Here’s what the finished program looks like when executed:
 

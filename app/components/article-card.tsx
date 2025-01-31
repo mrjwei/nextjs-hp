@@ -5,7 +5,7 @@ import { Tag } from "app/components/tag"
 import { formatDate } from "app/utils"
 import { kanit } from "app/data/fonts"
 
-export function ArticleCard({ article, className }: {article: any, className?: string}) {
+export function WritingCard({ article, className }: {article: any, className?: string}) {
   return (
     <div className={clsx(
       "h-full flex flex-col bg-white transition duration-300 ease-in-out shadow-md hover:shadow-xl rounded-lg border-t-neutral-600 border-t-8",
