@@ -3,7 +3,7 @@ import clsx from "clsx"
 import { tags } from "app/data/tags"
 import { Tag } from "app/components/tag"
 import { formatDate } from "app/utils"
-import { kanit } from "app/data/fonts"
+import { openSans } from "app/data/fonts"
 
 export function ArtworkCard({ work, imgClassName = "" }) {
   return (
@@ -31,7 +31,7 @@ export function ArtworkCard({ work, imgClassName = "" }) {
               .map((tag) => <Tag label={tag} color={tags[tag].color} />)}
           </div>
         </div>
-        <small className={`text-neutral-500 ${kanit.className}`}>
+        <small className={`text-neutral-500 ${openSans.className}`}>
           {formatDate(work.metadata.publishedAt, false)}
         </small>
       </div>

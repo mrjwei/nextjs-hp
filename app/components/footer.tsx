@@ -1,4 +1,4 @@
-import { kanit } from "app/data/fonts"
+import { openSans } from "app/data/fonts"
 
 function ArrowIcon() {
   return (
@@ -30,7 +30,7 @@ export default function Footer() {
               href="/rss"
             >
               <ArrowIcon />
-              <p className={`ml-2 h-7 ${kanit.className}`}>rss</p>
+              <p className={`ml-2 h-7 ${openSans.className}`}>rss</p>
             </a>
           </li> */}
 
@@ -42,7 +42,7 @@ export default function Footer() {
               href="https://www.linkedin.com/in/jesse-wei-profile/"
             >
               <ArrowIcon />
-              <p className={`ml-2 h-7 ${kanit.className}`}>LinkedIn</p>
+              <p className={`ml-2 h-7 ${openSans.className}`}>LinkedIn</p>
             </a>
           </li>
           <li>
@@ -53,7 +53,7 @@ export default function Footer() {
               href="https://bsky.app/profile/mrjwei.bsky.social"
             >
               <ArrowIcon />
-              <p className={`ml-2 h-7 ${kanit.className}`}>Bluesky</p>
+              <p className={`ml-2 h-7 ${openSans.className}`}>Bluesky</p>
             </a>
           </li>
           <li>
@@ -64,7 +64,7 @@ export default function Footer() {
               href="https://github.com/mrjwei"
             >
               <ArrowIcon />
-              <p className={`ml-2 h-7 ${kanit.className}`}>GitHub</p>
+              <p className={`ml-2 h-7 ${openSans.className}`}>GitHub</p>
             </a>
           </li>
           <li>
@@ -75,7 +75,7 @@ export default function Footer() {
               href="https://www.instagram.com/mrjwei/"
             >
               <ArrowIcon />
-              <p className={`ml-2 h-7 ${kanit.className}`}>Instagram</p>
+              <p className={`ml-2 h-7 ${openSans.className}`}>Instagram</p>
             </a>
           </li>
         </ul>

@@ -1,10 +1,4 @@
-import { Kanit, League_Spartan, Open_Sans, Roboto_Slab } from "next/font/google"
-
-export const kanit = Kanit({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-  style: ["normal", "italic"],
-})
+import { League_Spartan, Open_Sans, Roboto_Slab } from "next/font/google"
 
 export const openSans = Open_Sans({
   subsets: ["latin"],

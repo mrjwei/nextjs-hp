@@ -2,7 +2,7 @@ import Link from "next/link"
 import { ArrowRightIcon } from "@heroicons/react/24/outline"
 import { getWritings } from "app/utils"
 import { WritingCard } from "app/components/article-card"
-import { kanit } from "app/data/fonts"
+import { openSans } from "app/data/fonts"
 
 export function Writings({
   numWritings,
@@ -41,7 +41,7 @@ export function Writings({
             href="/writings"
             className="border-2 rounded border-neutral-600 p-2 flex items-center"
           >
-            <span className={`mr-2 ${kanit.className}`}>See more</span>
+            <span className={`mr-2 ${openSans.className}`}>See more</span>
             <ArrowRightIcon className="w-5" />
           </Link>
         </div>

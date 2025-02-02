@@ -1,18 +1,22 @@
-import { notFound } from 'next/navigation'
-import { CustomMDX } from 'app/components/mdx'
-import { formatDate, getSeries } from 'app/utils'
-import { baseUrl } from 'app/sitemap'
-import Head from 'next/head'
-import { kanit } from "app/data/fonts"
+import { notFound } from "next/navigation"
+import { CustomMDX } from "app/components/mdx"
+import { formatDate, getSeries } from "app/utils"
+import { baseUrl } from "app/sitemap"
+import Head from "next/head"
+import { openSans } from "app/data/fonts"
 
 export async function generateStaticParams() {
-  return getSeries().flat().map(article => ({
-    slug: [article.metadata.seriesSlug, article.slug]
-  }))
+  return getSeries()
+    .flat()
+    .map((article) => ({
+      slug: [article.metadata.seriesSlug, article.slug],
+    }))
 }
 
 export function generateMetadata({ params }) {
-  let article = getSeries().flat().find((article) => article.slug === params.slug[1])
+  let article = getSeries()
+    .flat()
+    .find((article) => article.slug === params.slug[1])
 
   if (!article) {
     return
@@ -34,7 +38,7 @@ export function generateMetadata({ params }) {
     openGraph: {
       title,
       description,
-      type: 'article',
+      type: "article",
       publishedTime,
       url: `${baseUrl}/series/${article.metadata.seriesSlug}/${article.slug}`,
       images: [
@@ -44,7 +48,7 @@ export function generateMetadata({ params }) {
       ],
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title,
       description,
       images: [ogImage],
@@ -54,7 +58,9 @@ export function generateMetadata({ params }) {
 
 export default function SeriesWriting({ params }) {
   console.log()
-  let article = getSeries().flat().find((article) => article.slug === params.slug[1])
+  let article = getSeries()
+    .flat()
+    .find((article) => article.slug === params.slug[1])
 
   if (!article) {
     notFound()
@@ -64,7 +70,10 @@ export default function SeriesWriting({ params }) {
     <>
       <Head>
         <title>{article.metadata.title}</title>
-        <link rel="canonical" href={`${baseUrl}/series/${article.metadata.seriesSlug}/${article.slug}`} />
+        <link
+          rel="canonical"
+          href={`${baseUrl}/series/${article.metadata.seriesSlug}/${article.slug}`}
+        />
       </Head>
       <section>
         <script
@@ -72,8 +81,8 @@ export default function SeriesWriting({ params }) {
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'BlogPosting',
+              "@context": "https://schema.org",
+              "@type": "BlogPosting",
               headline: article.metadata.title,
               datePublished: article.metadata.publishedAt,
               dateModified: article.metadata.publishedAt,
@@ -83,17 +92,17 @@ export default function SeriesWriting({ params }) {
                 : `/og?title=${encodeURIComponent(article.metadata.title)}`,
               url: `${baseUrl}/writings/${article.slug}`,
               author: {
-                '@type': 'Person',
-                name: 'My Portfolio',
+                "@type": "Person",
+                name: "My Portfolio",
               },
             }),
           }}
         />
-        <h1 className="title font-bold text-4xl">
-          {article.metadata.title}
-        </h1>
+        <h1 className="title font-bold text-4xl">{article.metadata.title}</h1>
         <div className="flex justify-between items-center mt-2 mb-8 text-sm">
-          <p className={`text-sm text-neutral-500 dark:text-neutral-400 ${kanit.className}`}>
+          <p
+            className={`text-sm text-neutral-500 dark:text-neutral-400 ${openSans.className}`}
+          >
             {formatDate(article.metadata.publishedAt)}
           </p>
         </div>
