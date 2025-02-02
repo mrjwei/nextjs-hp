@@ -25,18 +25,12 @@ const navItems = {
 
 export function Header({ className }: { className?: string }) {
   const pathName = usePathname()
-  const [isLight, setIsLight] = React.useState(false)
+  const [isLight, setIsLight] = React.useState(true)
   const headerRef = React.useRef<HTMLElement | null>(null)
   React.useEffect(() => {
     if (pathName !== "/") {
       setIsLight(true)
       return
-    }
-    if (
-      headerRef.current &&
-      window.scrollY > screen.height - headerRef.current.clientHeight
-    ) {
-      setIsLight(true)
     }
     const handleScroll = () => {
       if (headerRef.current) {
@@ -47,15 +41,25 @@ export function Header({ className }: { className?: string }) {
         }
       }
     }
+    if (
+      headerRef.current &&
+      window.scrollY > screen.height - headerRef.current.clientHeight
+    ) {
+      setIsLight(true)
+    } else {
+      setIsLight(false)
+    }
     window.addEventListener("scroll", handleScroll)
 
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+    }
+  }, [pathName])
   return (
     <aside
       ref={headerRef}
       className={clsx(
-        "-ml-[8px] tracking-tight w-full fixed top-0 left-0 flex flex-col items-center bg-gray-800 transition-shadow duration-200 ease-in-out z-50",
+        "w-full fixed top-0 left-0 flex flex-col items-center bg-gray-800 transition-shadow duration-200 ease-in-out z-50",
         {
           "bg-white shadow-md": isLight,
         },

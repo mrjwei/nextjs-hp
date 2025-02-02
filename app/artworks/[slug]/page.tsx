@@ -1,10 +1,10 @@
-import Link from 'next/link'
-import { ArrowRightIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
-import { notFound } from 'next/navigation'
-import { CustomMDX } from 'app/components/mdx'
-import { formatDate, getWorks } from 'app/utils'
-import { baseUrl } from 'app/sitemap'
-import Head from 'next/head'
+import Link from "next/link"
+import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline"
+import { notFound } from "next/navigation"
+import { CustomMDX } from "app/components/mdx"
+import { formatDate, getWorks } from "app/utils"
+import { baseUrl } from "app/sitemap"
+import Head from "next/head"
 
 export async function generateStaticParams() {
   let works = getWorks()
@@ -36,7 +36,7 @@ export function generateMetadata({ params }) {
     openGraph: {
       title,
       description,
-      type: 'article',
+      type: "article",
       publishedTime,
       url: `${baseUrl}/writings/${work.slug}`,
       images: [
@@ -46,7 +46,7 @@ export function generateMetadata({ params }) {
       ],
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title,
       description,
       images: [ogImage],
@@ -76,7 +76,7 @@ export default function Artwork({ params }) {
   }
 
   return (
-    <>
+    <div className="w-full max-w-[1024px] mx-auto px-16 py-24">
       <Head>
         <title>{work.metadata.title}</title>
         <link rel="canonical" href={`${baseUrl}/artworks/${work.slug}`} />
@@ -87,8 +87,8 @@ export default function Artwork({ params }) {
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'Publishingworks',
+              "@context": "https://schema.org",
+              "@type": "Publishingworks",
               headline: work.metadata.title,
               datePublished: work.metadata.publishedAt,
               dateModified: work.metadata.publishedAt,
@@ -98,15 +98,13 @@ export default function Artwork({ params }) {
                 : `/og?title=${encodeURIComponent(work.metadata.title)}`,
               url: `${baseUrl}/artworks/${work.slug}`,
               author: {
-                '@type': 'Person',
-                name: 'My Portfolio',
+                "@type": "Person",
+                name: "My Portfolio",
               },
             }),
           }}
         />
-        <h1 className="title font-bold text-4xl">
-          {work.metadata.title}
-        </h1>
+        <h1 className="title font-bold text-4xl">{work.metadata.title}</h1>
         <div className="flex justify-between items-center mt-2 mb-8 text-sm">
           <p className="text-sm text-neutral-600 dark:text-neutral-400">
             {formatDate(work.metadata.publishedAt)}
@@ -116,16 +114,22 @@ export default function Artwork({ params }) {
           <CustomMDX source={work.content} />
         </article>
         <div className="flex justify-between mt-8">
-          <Link href={`/artworks/${prevWork.slug}`} className="flex items-center border-2 rounded border-neutral-600 p-2">
+          <Link
+            href={`/artworks/${prevWork.slug}`}
+            className="flex items-center border-2 rounded border-neutral-600 p-2"
+          >
             <ArrowLeftIcon className="w-5 mr-2" />
             <span>Prev</span>
           </Link>
-          <Link href={`/artworks/${nextWork.slug}`} className="flex items-center border-2 rounded border-neutral-600 p-2">
+          <Link
+            href={`/artworks/${nextWork.slug}`}
+            className="flex items-center border-2 rounded border-neutral-600 p-2"
+          >
             <span>Next</span>
             <ArrowRightIcon className="w-5 ml-2" />
           </Link>
         </div>
       </section>
-    </>
+    </div>
   )
 }
