@@ -33,11 +33,6 @@ html {
   min-width: 360px;
 }
 
-/* .outlined {
-  @apply tracking-widest;
-  -webkit-text-stroke: 3px #e5e7eb;
-} */
-
 .prose .anchor {
   @apply absolute invisible no-underline;
 
