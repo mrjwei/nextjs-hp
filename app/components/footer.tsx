@@ -1,4 +1,4 @@
-import {kanit} from 'app/data/fonts'
+import { kanit } from "app/data/fonts"
 
 function ArrowIcon() {
   return (
@@ -19,8 +19,8 @@ function ArrowIcon() {
 
 export default function Footer() {
   return (
-    <footer className="mt-16 mb-8 border-t-2 border-neutral-200">
-      <div className="max-w-2xl lg:max-w-3xl mx-4 lg:mx-auto min-w-0 flex flex-col px-2 md:px-0">
+    <footer className="w-full bg-gray-200">
+      <div className="w-full max-w-[1024px] mx-auto flex flex-col items-center px-2 md:px-0">
         <ul className="font-sm mt-8 flex flex-col space-x-0 space-y-2 text-neutral-600 md:flex-row md:space-x-4 md:space-y-0 dark:text-neutral-300">
           {/* <li>
             <a
@@ -33,17 +33,7 @@ export default function Footer() {
               <p className={`ml-2 h-7 ${kanit.className}`}>rss</p>
             </a>
           </li> */}
-          <li>
-            <a
-              className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
-              rel="noopener noreferrer"
-              target="_blank"
-              href="https://bsky.app/profile/mrjwei.bsky.social"
-            >
-              <ArrowIcon />
-              <p className={`ml-2 h-7 ${kanit.className}`}>Bluesky</p>
-            </a>
-          </li>
+
           <li>
             <a
               className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
@@ -53,6 +43,17 @@ export default function Footer() {
             >
               <ArrowIcon />
               <p className={`ml-2 h-7 ${kanit.className}`}>LinkedIn</p>
+            </a>
+          </li>
+          <li>
+            <a
+              className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
+              rel="noopener noreferrer"
+              target="_blank"
+              href="https://bsky.app/profile/mrjwei.bsky.social"
+            >
+              <ArrowIcon />
+              <p className={`ml-2 h-7 ${kanit.className}`}>Bluesky</p>
             </a>
           </li>
           <li>

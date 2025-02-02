@@ -1,8 +1,8 @@
-import { notFound } from 'next/navigation'
-import { CustomMDX } from 'app/components/mdx'
-import { formatDate, getWritings } from 'app/utils'
-import { baseUrl } from 'app/sitemap'
-import Head from 'next/head'
+import { notFound } from "next/navigation"
+import { CustomMDX } from "app/components/mdx"
+import { formatDate, getWritings } from "app/utils"
+import { baseUrl } from "app/sitemap"
+import Head from "next/head"
 import { kanit } from "app/data/fonts"
 
 export async function generateStaticParams() {
@@ -35,7 +35,7 @@ export function generateMetadata({ params }) {
     openGraph: {
       title,
       description,
-      type: 'article',
+      type: "article",
       publishedTime,
       url: `${baseUrl}/writings/${post.slug}`,
       images: [
@@ -45,7 +45,7 @@ export function generateMetadata({ params }) {
       ],
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title,
       description,
       images: [ogImage],
@@ -61,7 +61,7 @@ export default function Writing({ params }) {
   }
 
   return (
-    <>
+    <div className="w-full max-w-[1024px] mx-auto px-16 py-24">
       <Head>
         <title>{post.metadata.title}</title>
         <link rel="canonical" href={`${baseUrl}/writings/${post.slug}`} />
@@ -72,8 +72,8 @@ export default function Writing({ params }) {
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'BlogPosting',
+              "@context": "https://schema.org",
+              "@type": "BlogPosting",
               headline: post.metadata.title,
               datePublished: post.metadata.publishedAt,
               dateModified: post.metadata.publishedAt,
@@ -83,17 +83,17 @@ export default function Writing({ params }) {
                 : `/og?title=${encodeURIComponent(post.metadata.title)}`,
               url: `${baseUrl}/writings/${post.slug}`,
               author: {
-                '@type': 'Person',
-                name: 'My Portfolio',
+                "@type": "Person",
+                name: "My Portfolio",
               },
             }),
           }}
         />
-        <h1 className="title font-bold text-4xl">
-          {post.metadata.title}
-        </h1>
+        <h1 className="title font-bold text-4xl">{post.metadata.title}</h1>
         <div className="flex justify-between items-center mt-2 mb-8 text-sm">
-          <p className={`text-sm text-neutral-500 dark:text-neutral-400 ${kanit.className}`}>
+          <p
+            className={`text-sm text-neutral-500 dark:text-neutral-400 ${kanit.className}`}
+          >
             {formatDate(post.metadata.publishedAt)}
           </p>
         </div>
@@ -101,6 +101,6 @@ export default function Writing({ params }) {
           <CustomMDX source={post.content} />
         </article>
       </section>
-    </>
+    </div>
   )
 }

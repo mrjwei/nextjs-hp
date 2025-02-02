@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 ::selection {
   background-color: #47a3f3;
@@ -33,6 +33,11 @@ html {
   min-width: 360px;
 }
 
+/* .outlined {
+  @apply tracking-widest;
+  -webkit-text-stroke: 3px #e5e7eb;
+} */
+
 .prose .anchor {
   @apply absolute invisible no-underline;
 
@@ -53,7 +58,7 @@ html {
 
 .prose .anchor:after {
   @apply text-neutral-300 dark:text-neutral-700;
-  content: '#';
+  content: "#";
 }
 
 .prose *:hover > .anchor {
@@ -88,7 +93,7 @@ html {
 }
 
 .prose {
-  @apply text-lg
+  @apply text-lg;
 }
 
 .prose p {
@@ -155,8 +160,8 @@ pre {
 }
 
 /* Remove Safari input shadow on mobile */
-input[type='text'],
-input[type='email'] {
+input[type="text"],
+input[type="email"] {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
