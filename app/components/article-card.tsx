@@ -1,6 +1,5 @@
 import clsx from "clsx"
-import { tags } from "app/data/tags"
-import { Tag } from "app/components/tag"
+import { Tags } from "app/components/tags"
 import { formatDate } from "app/utils"
 import { openSans } from "app/data/fonts"
 
@@ -32,11 +31,7 @@ export function WritingCard({
               ? article.metadata.summary.slice(0, 100) + "..."
               : article.metadata.summary}
           </p>
-          <div className="flex flex-wrap gap-1 mb-2">
-            {article.metadata.tags
-              ?.filter((tag) => Object.keys(tags).includes(tag))
-              .map((tag) => <Tag label={tag} color={tags[tag].color} />)}
-          </div>
+          <Tags tags={article.metadata.tags} />
         </div>
         <small className={`text-neutral-500 ${openSans.className}`}>
           {formatDate(article.metadata.publishedAt, false)}

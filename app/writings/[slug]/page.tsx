@@ -4,6 +4,7 @@ import { formatDate, getWritings } from "app/utils"
 import { baseUrl } from "app/sitemap"
 import Head from "next/head"
 import { openSans } from "app/data/fonts"
+import { Tags } from "app/components/tags"
 
 export async function generateStaticParams() {
   let posts = getWritings()
@@ -89,8 +90,7 @@ export default function Writing({ params }) {
             }),
           }}
         />
-        <h1 className="title font-bold text-4xl">{post.metadata.title}</h1>
-        <div className="flex justify-between items-center mt-2 mb-8 text-sm">
+        <Tags tags={post.metadata.tags} className="mb-4" />
           <p
             className={`text-sm text-neutral-500 dark:text-neutral-400 ${openSans.className}`}
           >
