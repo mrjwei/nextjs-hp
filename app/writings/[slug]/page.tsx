@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation"
 import { CustomMDX } from "app/components/mdx"
+import { PrevNext } from "app/components/prev-next"
 import { formatDate, getWritings } from "app/utils"
 import { baseUrl } from "app/sitemap"
 import Head from "next/head"
@@ -55,7 +56,20 @@ export function generateMetadata({ params }) {
 }
 
 export default function Writing({ params }) {
-  let post = getWritings().find((post) => post.slug === params.slug)
+  let posts = getWritings()
+  let post = posts.find((post) => post.slug === params.slug)
+  const postIndex = posts.findIndex((post) => post.slug === params.slug)
+  let prevIndex = postIndex - 1
+  let nextIndex = postIndex + 1
+
+  if (postIndex === posts.length - 1) {
+    nextIndex = 0
+  } else if (postIndex === 0) {
+    prevIndex = posts.length - 1
+  }
+
+  const prevPost = getWritings()[prevIndex]
+  const nextPost = getWritings()[nextIndex]
 
   if (!post) {
     notFound()
@@ -100,6 +114,10 @@ export default function Writing({ params }) {
         <article className="prose">
           <CustomMDX source={post.content} />
         </article>
+        <PrevNext
+          prevLink={`/writings/${prevPost.slug}`}
+          nextLink={`/writings/${nextPost.slug}`}
+        />
       </section>
     </div>
   )

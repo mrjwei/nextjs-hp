@@ -1,7 +1,6 @@
-import Link from "next/link"
-import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline"
 import { notFound } from "next/navigation"
 import { CustomMDX } from "app/components/mdx"
+import { PrevNext } from "app/components/prev-next"
 import { formatDate, getWorks } from "app/utils"
 import { baseUrl } from "app/sitemap"
 import Head from "next/head"
@@ -113,22 +112,10 @@ export default function Artwork({ params }) {
         <article className="prose">
           <CustomMDX source={work.content} />
         </article>
-        <div className="flex justify-between mt-8">
-          <Link
-            href={`/artworks/${prevWork.slug}`}
-            className="flex items-center border-2 rounded border-neutral-600 p-2"
-          >
-            <ArrowLeftIcon className="w-5 mr-2" />
-            <span>Prev</span>
-          </Link>
-          <Link
-            href={`/artworks/${nextWork.slug}`}
-            className="flex items-center border-2 rounded border-neutral-600 p-2"
-          >
-            <span>Next</span>
-            <ArrowRightIcon className="w-5 ml-2" />
-          </Link>
-        </div>
+        <PrevNext
+          prevLink={`/artworks/${prevWork.slug}`}
+          nextLink={`/artworks/${nextWork.slug}`}
+        />
       </section>
     </div>
   )
