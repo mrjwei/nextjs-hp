@@ -1,7 +1,9 @@
+import Link from "next/link"
 import { notFound } from "next/navigation"
 import { CustomMDX } from "app/components/mdx"
 import { PrevNext } from "app/components/prev-next"
 import { BackToTop } from "app/components/back-to-top"
+import { WritingCard } from "app/components/article-card"
 import { formatDate, getWritings } from "app/utils"
 import { baseUrl } from "app/sitemap"
 import Head from "next/head"
@@ -60,6 +62,18 @@ export default function Writing({ params }) {
   let posts = getWritings()
   let post = posts.find((post) => post.slug === params.slug)
   const postIndex = posts.findIndex((post) => post.slug === params.slug)
+
+  let similarPosts = posts
+    .filter(
+      (p) => p.metadata.tags.some((t) => post?.metadata.tags) && p !== post
+    )
+    .sort((a, b) => {
+      if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
+        return -1
+      }
+      return 1
+    })
+
   let prevIndex = postIndex - 1
   let nextIndex = postIndex + 1
 
@@ -82,7 +96,7 @@ export default function Writing({ params }) {
         <title>{post.metadata.title}</title>
         <link rel="canonical" href={`${baseUrl}/writings/${post.slug}`} />
       </Head>
-      <section>
+      <section className="pb-16">
         <script
           type="application/ld+json"
           suppressHydrationWarning
@@ -105,7 +119,9 @@ export default function Writing({ params }) {
             }),
           }}
         />
+        <h1 className="title font-bold text-4xl mb-4">{post.metadata.title}</h1>
         <Tags tags={post.metadata.tags} className="mb-4" />
+        <div className="flex justify-between items-center mt-2 mb-12 text-sm">
           <p
             className={`text-sm text-neutral-500 dark:text-neutral-400 ${openSans.className}`}
           >
@@ -119,6 +135,23 @@ export default function Writing({ params }) {
           prevLink={`/writings/${prevPost.slug}`}
           nextLink={`/writings/${nextPost.slug}`}
         />
+      </section>
+      <hr className="border-[1px] border-gray-200" />
+      <section className="pt-16">
+        <h2 className="text-2xl font-bold mb-8">You May Also Interested In</h2>
+        <div className="grid grid-cols-12 gap-8">
+          {similarPosts.slice(0, 4).map((similarPost) => {
+            return (
+              <Link
+                key={similarPost.slug}
+                className="col-span-12 lg:col-span-6"
+                href={`/writings/${similarPost.slug}`}
+              >
+                <WritingCard article={similarPost} />
+              </Link>
+            )
+          })}
+        </div>
       </section>
       <BackToTop />
     </div>
