@@ -13,19 +13,19 @@ export default function Page() {
           <span className="outlined opacity-50 block text-4xl lg:text-6xl ">
             Bridging
           </span>
-          <span className="inline-block relative z-10 after:content-[''] after:absolute after:bottom-0 after:left-0 after:block after:w-full after:h-6 after:bg-purple-400 after:opacity-80 after:-z-10">
+          <span className="inline-block relative z-10 after:content-[''] after:absolute after:bottom-0 after:left-0 after:block after:w-full after:h-6 after:bg-purple-600 after:-z-10">
             Creativity <small>&&nbsp;</small>
           </span>
-          <span className="inline-block relative z-10 after:content-[''] after:absolute after:bottom-0 after:left-0 after:block after:w-full after:h-6 after:bg-purple-400 after:opacity-80 after:-z-10">
+          <span className="inline-block relative z-10 after:content-[''] after:absolute after:bottom-0 after:left-0 after:block after:w-full after:h-6 after:bg-purple-600 after:-z-10">
             Technology
           </span>
           <span className="outlined block whitespace-nowrap text-4xl lg:text-6xl opacity-50 translate-y-3">
             to Craft
           </span>
-          <span className="inline-block relative z-10 after:content-[''] after:absolute after:bottom-0 after:left-0 after:block after:w-full after:h-6 after:bg-purple-400 after:opacity-80 after:-z-10">
+          <span className="inline-block relative z-10 after:content-[''] after:absolute after:bottom-0 after:left-0 after:block after:w-full after:h-6 after:bg-purple-600 after:-z-10">
             Seamless&nbsp;
           </span>
-          <span className="inline-block relative z-10 after:content-[''] after:absolute after:bottom-0 after:left-0 after:block after:w-full after:h-6 after:bg-purple-400 after:opacity-80 after:-z-10">
+          <span className="inline-block relative z-10 after:content-[''] after:absolute after:bottom-0 after:left-0 after:block after:w-full after:h-6 after:bg-purple-600 after:-z-10">
             Products
           </span>
         </h1>

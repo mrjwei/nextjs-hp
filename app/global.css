@@ -79,7 +79,7 @@ html {
 }
 
 .prose p > code span.sh__token--identifier {
-  @apply !text-red-500;
+  @apply !text-purple-600;
 }
 
 .prose img {
@@ -117,6 +117,22 @@ html {
 
 .prose ul {
   @apply list-disc pl-6;
+}
+
+.prose ul:first-child {
+  @apply bg-gray-200 p-8 rounded-2xl !mb-12;
+}
+
+.prose ul:first-child:before {
+  @apply content-['In_This_Article'] block text-gray-600 mb-4;
+}
+
+.prose ul:first-child li {
+  @apply list-disc list-inside;
+}
+
+.prose ul:first-child a {
+  @apply no-underline;
 }
 
 .prose ol {
