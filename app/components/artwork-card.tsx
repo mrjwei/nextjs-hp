@@ -32,7 +32,7 @@ export function ArtworkCard({ work, imgClassName = "" }) {
           </div>
         </div>
         <small className={`text-neutral-500 ${openSans.className}`}>
-          {formatDate(work.metadata.publishedAt, false)}
+          Published at: {formatDate(work.metadata.publishedAt, false)}
         </small>
       </div>
     </div>

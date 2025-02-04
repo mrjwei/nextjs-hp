@@ -108,7 +108,7 @@ export default function Writing({ params }) {
           <p
             className={`text-sm text-neutral-500 dark:text-neutral-400 ${openSans.className}`}
           >
-            {formatDate(post.metadata.publishedAt)}
+            Published at: {formatDate(post.metadata.publishedAt)}
           </p>
         </div>
         <article className="prose">

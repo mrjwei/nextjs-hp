@@ -34,7 +34,7 @@ export function WritingCard({
           <Tags tags={article.metadata.tags} />
         </div>
         <small className={`text-neutral-500 ${openSans.className}`}>
-          {formatDate(article.metadata.publishedAt, false)}
+          Published at: {formatDate(article.metadata.publishedAt, false)}
         </small>
       </div>
     </div>
