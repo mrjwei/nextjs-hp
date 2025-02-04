@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation"
 import { CustomMDX } from "app/components/mdx"
 import { PrevNext } from "app/components/prev-next"
+import { BackToTop } from "app/components/back-to-top"
 import { formatDate, getWritings } from "app/utils"
 import { baseUrl } from "app/sitemap"
 import Head from "next/head"
@@ -119,6 +120,7 @@ export default function Writing({ params }) {
           nextLink={`/writings/${nextPost.slug}`}
         />
       </section>
+      <BackToTop />
     </div>
   )
 }

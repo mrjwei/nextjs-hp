@@ -53,7 +53,7 @@ export default function RootLayout({
     >
       <body className="antialiased flex flex-col items-center">
         <Header />
-        <main className="w-full bg-gray-50 flex flex-col">
+        <main className="relative w-full bg-gray-50 flex flex-col">
           {children}
           <Analytics />
           <SpeedInsights />

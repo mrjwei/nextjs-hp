@@ -4,6 +4,7 @@ import { PrevNext } from "app/components/prev-next"
 import { formatDate, getWorks } from "app/utils"
 import { baseUrl } from "app/sitemap"
 import Head from "next/head"
+import { BackToTop } from "app/components/back-to-top"
 
 export async function generateStaticParams() {
   let works = getWorks()
@@ -117,6 +118,7 @@ export default function Artwork({ params }) {
           nextLink={`/artworks/${nextWork.slug}`}
         />
       </section>
+      <BackToTop />
     </div>
   )
 }

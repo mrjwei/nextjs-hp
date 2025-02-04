@@ -21,7 +21,7 @@ export default function Footer() {
   return (
     <footer className="w-full bg-gray-200">
       <div className="w-full max-w-[1024px] mx-auto flex flex-col items-center px-2 md:px-0">
-        <ul className="font-sm mt-8 flex flex-col space-x-0 space-y-2 text-neutral-600 md:flex-row md:space-x-4 md:space-y-0 dark:text-neutral-300">
+        <ul className="font-sm mt-8 flex space-x-3 lg:space-x-8 text-neutral-600 dark:text-neutral-300">
           {/* <li>
             <a
               className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
