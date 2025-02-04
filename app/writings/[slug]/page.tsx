@@ -138,7 +138,7 @@ export default function Writing({ params }) {
       </section>
       <hr className="border-[1px] border-gray-200" />
       <section className="pt-16">
-        <h2 className="text-2xl font-bold mb-8">You May Also Interested In</h2>
+        <h2 className="text-2xl font-bold mb-8">You May Also Like</h2>
         <div className="grid grid-cols-12 gap-8">
           {similarPosts.slice(0, 4).map((similarPost) => {
             return (
