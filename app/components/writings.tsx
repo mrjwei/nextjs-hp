@@ -1,15 +1,13 @@
 import Link from "next/link"
-import { ArrowRightIcon } from "@heroicons/react/24/outline"
 import { getWritings } from "app/utils"
 import { WritingCard } from "app/components/article-card"
-import { openSans } from "app/data/fonts"
 
 export function Writings({
   numWritings,
-  hasSeeMore = true,
+  className = "",
 }: {
   numWritings?: number
-  hasSeeMore?: boolean
+  className?: string
 }) {
   let writings = getWritings().sort((a, b) => {
     if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
@@ -23,7 +21,7 @@ export function Writings({
   }
 
   return (
-    <div>
+    <div className={className}>
       <div className="grid grid-cols-12 gap-8">
         {writings.map((article) => (
           <Link
@@ -35,17 +33,6 @@ export function Writings({
           </Link>
         ))}
       </div>
-      {hasSeeMore && (
-        <div className="flex justify-center mt-16">
-          <Link
-            href="/writings"
-            className="border-2 rounded border-neutral-600 p-2 flex items-center"
-          >
-            <span className={`mr-2 ${openSans.className}`}>See more</span>
-            <ArrowRightIcon className="w-5" />
-          </Link>
-        </div>
-      )}
     </div>
   )
 }

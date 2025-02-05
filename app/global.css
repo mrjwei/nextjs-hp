@@ -17,6 +17,37 @@
   --sh-entity: #e25a1c;
 }
 
+@theme {
+  --animate-vibrate: vibrate 1s ease-in-out infinite;
+  @keyframes vibrate {
+    0%,
+    100% {
+      transform: translateY(0);
+      animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+    }
+    50% {
+      transform: translateY(20%);
+      animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    }
+  }
+  --animate-vibrate-horizontal: vibrate-horizontal 1s ease-in-out infinite;
+  @keyframes vibrate-horizontal {
+    0%,
+    100% {
+      transform: translateX(0);
+      animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+    }
+    50% {
+      transform: translateX(20%);
+      animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    }
+  }
+}
+
+.more-btn:hover svg {
+  @apply animate-vibrate-horizontal;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --sh-class: #4c97f8;
@@ -31,6 +62,31 @@
 
 html {
   min-width: 360px;
+}
+
+.heading,
+.content {
+  @apply opacity-0;
+  transition:
+    opacity 1s ease-out,
+    transform 0.7s ease-out 0.3s;
+}
+
+.heading {
+  @apply translate-y-[96px];
+}
+
+.content {
+  @apply translate-y-[128px];
+}
+
+.heading.visible,
+.content.visible {
+  @apply opacity-100 translate-y-0;
+}
+
+.content.visible {
+  @apply delay-700;
 }
 
 .prose .anchor {

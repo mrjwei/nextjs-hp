@@ -1,15 +1,13 @@
 import Link from "next/link"
-import { ArrowRightIcon } from "@heroicons/react/24/outline"
 import { getWorks } from "app/utils"
 import { ArtworkCard } from "app/components/artwork-card"
-import { openSans } from "app/data/fonts"
 
 export function Works({
   numWorks,
-  hasSeeMore = true,
+  className = "",
 }: {
   numWorks?: number
-  hasSeeMore?: boolean
+  className?: string
 }) {
   let allWorks = getWorks().sort((a, b) => {
     if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
@@ -22,7 +20,7 @@ export function Works({
   }
 
   return (
-    <div>
+    <div className={className}>
       <div className="grid grid-cols-12 gap-8">
         {allWorks.map((work) => (
           <Link
@@ -34,17 +32,6 @@ export function Works({
           </Link>
         ))}
       </div>
-      {hasSeeMore && (
-        <div className="flex justify-center mt-16">
-          <Link
-            href="/artworks"
-            className="border-2 rounded border-neutral-600 p-2 flex items-center"
-          >
-            <span className={`mr-2 ${openSans.className}`}>See more</span>
-            <ArrowRightIcon className="w-5" />
-          </Link>
-        </div>
-      )}
     </div>
   )
 }
