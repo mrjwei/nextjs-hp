@@ -14,7 +14,7 @@ export default function Page() {
           My original logos, illustrations and more.
         </p>
       </div>
-      <Works hasSeeMore={false} />
+      <Works />
     </section>
   )
 }
