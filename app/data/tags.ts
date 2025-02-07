@@ -21,18 +21,21 @@ export const tags = {
     color: "#ab600a",
   },
   javascript: {
-    color: "#8ec215"
+    color: "#8ec215",
   },
   reactjs: {
-    color: "#707070"
+    color: "#707070",
   },
   python: {
-    color: "#2f27cc"
+    color: "#2f27cc",
   },
   tutorial: {
-    color: "#ffc130"
+    color: "#ffc130",
   },
   series: {
-    color: "#855572"
+    color: "#855572",
+  },
+  web: {
+    color: "#4287f5",
   },
 }
