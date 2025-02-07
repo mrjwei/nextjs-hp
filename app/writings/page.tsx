@@ -2,7 +2,7 @@ import { FilterWritings } from "app/components/filter-writings"
 import { getWritings } from "app/utils"
 
 export const metadata = {
-  title: "Writings",
+  title: "Writings | Jesse Wei",
   description: "My blog posts, tutorials and more.",
 }
 

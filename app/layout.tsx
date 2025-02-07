@@ -11,13 +11,15 @@ import { baseUrl } from "./sitemap"
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: "HP of Jesse Wei",
+    default: "Jesse Wei | A Creator who blends design and technology",
     template: "%s",
   },
-  description: "This is Jesse Wei's homepage.",
+  description:
+    "Jesse Wei is a creator, passionate about blending design and technology to craft innovative and impactful products.",
   openGraph: {
-    title: "Jesse Wei",
-    description: "This is Jesse Wei's homepage.",
+    title: "Jesse Wei | A Creator who blends design and technology",
+    description:
+      "Jesse Wei is a creator, passionate about blending design and technology to craft innovative and impactful products.",
     url: baseUrl,
     siteName: "Jesse Wei",
     locale: "en_US",

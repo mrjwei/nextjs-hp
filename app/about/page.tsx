@@ -4,7 +4,7 @@ import { ArrowIcon } from "app/components/footer"
 import { openSans } from "app/data/fonts"
 
 export const metadata = {
-  title: "About Jesse Wei",
+  title: "About Me | Jesse Wei",
   description: "Introduction of Jesse Wei",
 }
 

@@ -1,7 +1,7 @@
 import { Works } from "app/components/works"
 
 export const metadata = {
-  title: "Artworks",
+  title: "Artworks | Jesse Wei",
   description: "View my artworks.",
 }
 
