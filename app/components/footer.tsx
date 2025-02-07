@@ -1,6 +1,7 @@
+import Link from "next/link"
 import { openSans } from "app/data/fonts"
 
-function ArrowIcon() {
+export function ArrowIcon() {
   return (
     <svg
       width="12"
@@ -35,7 +36,7 @@ export default function Footer() {
           </li> */}
 
           <li>
-            <a
+            <Link
               className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
               rel="noopener noreferrer"
               target="_blank"
@@ -43,10 +44,10 @@ export default function Footer() {
             >
               <ArrowIcon />
               <p className={`ml-2 h-7 ${openSans.className}`}>LinkedIn</p>
-            </a>
+            </Link>
           </li>
           <li>
-            <a
+            <Link
               className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
               rel="noopener noreferrer"
               target="_blank"
@@ -54,10 +55,10 @@ export default function Footer() {
             >
               <ArrowIcon />
               <p className={`ml-2 h-7 ${openSans.className}`}>Bluesky</p>
-            </a>
+            </Link>
           </li>
           <li>
-            <a
+            <Link
               className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
               rel="noopener noreferrer"
               target="_blank"
@@ -65,10 +66,10 @@ export default function Footer() {
             >
               <ArrowIcon />
               <p className={`ml-2 h-7 ${openSans.className}`}>GitHub</p>
-            </a>
+            </Link>
           </li>
           <li>
-            <a
+            <Link
               className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
               rel="noopener noreferrer"
               target="_blank"
@@ -76,7 +77,7 @@ export default function Footer() {
             >
               <ArrowIcon />
               <p className={`ml-2 h-7 ${openSans.className}`}>Instagram</p>
-            </a>
+            </Link>
           </li>
         </ul>
         <p className="mt-8 text-neutral-600 dark:text-neutral-300">

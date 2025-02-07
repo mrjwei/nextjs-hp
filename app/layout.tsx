@@ -51,9 +51,9 @@ export default function RootLayout({
         openSans.className
       )}
     >
-      <body className="antialiased flex flex-col items-center">
+      <body className="antialiased flex flex-col items-center justify-between min-h-screen">
         <Header />
-        <main className="relative w-full bg-gray-50 flex flex-col">
+        <main className="relative w-full flex-1 bg-gray-50 flex flex-col">
           {children}
           <Analytics />
           <SpeedInsights />
