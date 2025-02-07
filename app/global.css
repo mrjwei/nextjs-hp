@@ -174,19 +174,19 @@ html {
   @apply list-disc pl-6;
 }
 
-.prose ul:first-child {
-  @apply bg-gray-200 p-8 rounded-2xl !mb-12;
+.prose > ul:first-of-type {
+  @apply bg-gray-100 p-8 rounded-2xl !mb-12;
 }
 
-.prose ul:first-child:before {
-  @apply content-['In_This_Article'] block text-gray-600 mb-4;
+.prose > ul:first-of-type:before {
+  @apply content-['In_This_Article'] block text-gray-600 mb-4 font-bold;
 }
 
-.prose ul:first-child li {
+.prose > ul:first-of-type li {
   @apply list-disc list-inside;
 }
 
-.prose ul:first-child a {
+.prose > ul:first-of-type a {
   @apply no-underline;
 }
 
