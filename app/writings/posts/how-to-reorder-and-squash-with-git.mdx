@@ -1,0 +1,136 @@
+---
+title: "Tutorial: How to Reorder and Squash Commits with Git"
+publishedAt: "2025-02-27"
+summary: "When working with multiple WIP commits or other related commits, you may want to combine them to keep your Git history clean and organized."
+tags: ["git", "tutorial", "dev"]
+---
+
+- [Step 1: Identify Relevant Commits](#step-1-identify-relevant-commits)
+- [Step 2: Rebase Interactively](#step-2-rebase-interactively)
+- [Step 3: Reorder Commits (If Necessary)](#step-3-reorder-commits-if-necessary)
+  - [How to Move Commits in Vim](#how-to-move-commits-in-vim)
+- [Step 4: Squash Commits](#step-4-squash-commits)
+- [Step 5: Write the New Commit Message](#step-5-write-the-new-commit-message)
+- [Final Thoughts](#final-thoughts)
+  - [Pro Tip: When Things Go Wrong](#pro-tip-when-things-go-wrong)
+
+When working with multiple WIP commits or other related commits, you may want to combine them to keep your Git history clean and organized.
+
+In this tutorial, I will walk you through the steps to reorder your commits (if necessary) and then squash them into a single commit.
+
+## Step 1: Identify Relevant Commits
+
+First, check your Git commit history to determine how many commits back you need to go in the next step:
+
+```bash
+git log --oneline
+```
+
+This will output something like:
+
+```bash
+pick abc123 [WIP] Initial work on a cool feature
+pick def456 Fixed unrelated bug
+pick ghi789 [WIP] Fixed a bug in cool feature
+pick jkl012 [WIP] Improved UI for cool feature
+```
+
+In this case, we want to combine the three WIP commits into one while leaving the unrelated bug fix (`def456`) untouched. Since four commits are involved, we need to go four commits back in the next step.
+
+## Step 2: Rebase Interactively
+
+Run the following command to rebase the last four commits:
+
+```bash
+git rebase -i HEAD~4
+```
+
+This will open an interactive editor where you can reorder and squash commits.
+
+## Step 3: Reorder Commits (If Necessary)
+
+If your related commits are already consecutive, you can skip this step.
+
+However, in our example, the unrelated commit (`def456`) is in between, so we need to move it below the WIP commits.
+
+### How to Move Commits in Vim
+
+- Navigate to the commit you want to move.
+- Press `dd` to cut it.
+- Move your cursor to the line above which you want to paste the commit.
+- Press `Shift + p` to paste it.
+
+**Before Reordering**:
+
+```bash
+pick abc123 [WIP] Initial work on a cool feature
+pick def456 Fixed unrelated bug
+pick ghi789 [WIP] Fixed a bug in cool feature
+pick jkl012 [WIP] Improved UI for cool feature
+```
+
+**After Reordering**:
+
+```bash
+pick abc123 [WIP] Initial work on a cool feature
+pick ghi789 [WIP] Fixed a bug in cool feature
+pick jkl012 [WIP] Improved UI for cool feature
+pick def456 Fixed unrelated bug
+```
+
+Now, all the WIP commits are together, making them easier to squash.
+
+## Step 4: Squash Commits
+
+Next, change the `pick` keyword to `squash` for the second and third WIP commits while leaving the first one as `pick`:
+
+**Before Squashing**:
+
+```bash
+pick abc123 [WIP] Initial work on a cool feature
+pick ghi789 [WIP] Fixed a bug in cool feature
+pick jkl012 [WIP] Improved UI for cool feature
+pick def456 Fixed unrelated bug
+```
+
+**After Squashing**:
+
+```bash
+pick abc123 [WIP] Initial work on a cool feature
+squash ghi789 [WIP] Fixed a bug in cool feature
+squash jkl012 [WIP] Improved UI for cool feature
+pick def456 Fixed unrelated bug
+```
+
+Press `Esc` and then type `:wq` to save and exit
+
+## Step 5: Write the New Commit Message
+
+Git will now ask you to provide a new commit message. By default, it will list all commit messages from the squashed commits. Edit this message to keep only the final meaningful message, then save and exit with `:wq`.
+
+## Final Thoughts
+
+Now, your Git history is cleaner, with a single commit for your feature instead of multiple WIP commits.
+
+If you run:
+
+```bash
+git log --oneline
+```
+
+You should see:
+
+```bash
+xyz999 feat: Implement cool feature
+def456 Fixed unrelated bug
+```
+
+### Pro Tip: When Things Go Wrong
+
+If you run into issues during rebasing, you can abort and start over with:
+
+```bash
+git rebase --abort
+```
+
+Hope this helps.

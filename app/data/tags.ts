@@ -26,11 +26,17 @@ export const tags = {
   reactjs: {
     color: "#707070",
   },
+  nextjs: {
+    color: "#805d5d",
+  },
   python: {
     color: "#2f27cc",
   },
+  git: {
+    color: "#de7e47",
+  },
   tutorial: {
-    color: "#ffc130",
+    color: "#ab8326",
   },
   series: {
     color: "#855572",
