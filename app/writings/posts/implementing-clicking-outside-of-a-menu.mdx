@@ -1,0 +1,162 @@
+---
+title: "Implementing Clicking Outside of a Menu in JavaScript"
+publishedAt: "2025-03-07"
+summary: "A common feature in web development is closing a popup or menu when the user clicks outside of it."
+tags: ["nextjs", "reactjs", "javascript", "web", "dev", "tutorial"]
+---
+
+A common feature in web development is closing a popup or menu when the user clicks outside of it. While the implementation is straightforward, there are a few nuances to understand, especially when using different tools and libraries. In this tutorial, I will walk you through examples to illustrate the ideas.
+
+- [React/Next.js Implementation](#reactnextjs-implementation)
+  - [Why `mousedown`](#why-mousedown)
+- [Plain JavaScript Implementation](#plain-javascript-implementation)
+  - [The Problem with click](#the-problem-with-click)
+- [The Solution: Use `mousedown`](#the-solution-use-mousedown)
+- [Conclusion](#conclusion)
+
+## React/Next.js Implementation
+
+In React or Next.js, you can easily implement the “clicking outside to close” feature using the `useEffect` hook. Here’s an example implementation:
+
+```javascript
+const [isMenuVisible, setIsMenuVisible] = React.useState(false)
+
+React.useEffect(() => {
+  const handleClickingOutside = (event) => {
+    if (menuRef.current && !menuRef.current.contains(event.target)) {
+      setIsMenuVisible(false)
+    }
+  }
+  if (isMenuVisible) {
+    document.addEventListener("mousedown", handleClickingOutside)
+  }
+  return () => document.removeEventListener("mousedown", handleClickingOutside)
+}, [isMenuVisible])
+```
+
+### Why `mousedown`
+
+In the above example, we listen for the `mousedown` event rather than `click`. This choice is key to ensuring the outside-click handler works as intended. Here with React/Next, we can safely listen to `click` instead:
+
+```javascript
+React.useEffect(() => {
+  const handleClickingOutside = (event) => {
+    if (menuRef.current && !menuRef.current.contains(event.target)) {
+      setIsMenuVisible(false)
+    }
+  }
+  if (isMenuVisible) {
+    document.addEventListener("click", handleClickingOutside) // Listening to click
+  }
+  return () => document.removeEventListener("click", handleClickingOutside) // Listening to click
+}, [isMenuVisible])
+```
+
+It seems React/Next.js can handle event propagation and state changes in a way that avoids issues. However, with plain Javascript, we need to choose `mousedown`.
+
+## Plain JavaScript Implementation
+
+In vanilla Javacript, when you listen to a `click` event to open the menu and another to close it, the menu closes as soon as it opens, leading to an impression that the menu does not open at all.
+
+Here is an example:
+
+```html
+<style>
+  #menu {
+    background: green;
+    display: none;
+  }
+  #menu.open {
+    display: block;
+  }
+</style>
+<button id="open">open</button>
+<ul id="menu">
+  <li>foo</li>
+  <li>bar</li>
+</ul>
+```
+
+The followig code does not work:
+
+```javascript
+const btn = document.getElementById("open")
+const menu = document.getElementById("menu")
+
+function handleOpen() {
+  console.log("handleOpen")
+  if (!menu.classList.contains("open")) {
+    menu.classList.add("open")
+  }
+}
+
+function handleClickOutside(e) {
+  console.log("handleClickOutside")
+  if (menu.classList.contains("open") && !menu.contains(e.target)) {
+    menu.classList.remove("open")
+  }
+}
+
+btn.addEventListener("click", handleOpen)
+document.addEventListener("click", handleClickOutside) // Listening to click does not work
+```
+
+### The Problem with click
+
+When using the click event, the menu immediately closes after opening because both the click to open the menu and the click to detect if the user is outside the menu are triggered in quick succession.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/implementing-clicking-outside-of-a-menu/open_close_interference.gif"
+    alt="Menu immediately closes after opening"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Menu immediately closes after opening</figcaption>
+</figure>
+
+We can see problem more clearly by adding a small delay to the removal of the `open` class name:
+
+```javascript
+function handleClickOutside(e) {
+  console.log("handleClickOutside")
+  if (menu.classList.contains("open") && !menu.contains(e.target)) {
+    setTimeout(() => {
+      menu.classList.remove("open")
+    }, 2000)
+  }
+}
+```
+
+<br />
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/implementing-clicking-outside-of-a-menu/set_timeout_open_close.gif"
+    alt="A small delay helps highlight the issue"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>A small delay helps highlight the issue</figcaption>
+</figure>
+
+The menu closes automatically after two seconds.
+
+## The Solution: Use `mousedown`
+
+To fix this issue, we switch to listening for the `mousedown` event, which fires at a different time than the `click` event. This ensures that the menu opens fully before we check if the user clicked outside.
+
+Here’s the updated code that works:
+
+```javascript
+document.addEventListener("mousedown", handleClickOutside)
+```
+
+Additionally, listening to `mousedown` provides a quicker response time. On mobile devices, this leads to smoother interaction, as the menu closes immediately when the user touches outside of it.
+
+## Conclusion
+
+In summary:
+
+- In React/Next.js, both `mousedown` and `click` work, thanks to their reconciliation mechanism.
+- In plain JavaScript, the issue arises when using the `click` event because it triggers after the menu is opened, leading to unintended behavior.
+- Using `mousedown` resolves this issue and also provides faster and smoother interaction.
+
+By understanding the underlying event flow, you can ensure that the “clicking outside to close” feature works as expected in both React/Next.js and plain JavaScript.
