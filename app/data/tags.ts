@@ -44,4 +44,10 @@ export const tags = {
   web: {
     color: "#4287f5",
   },
+  auth: {
+    color: "#03befc",
+  },
+  jwt: {
+    color: "#9c9600",
+  },
 }

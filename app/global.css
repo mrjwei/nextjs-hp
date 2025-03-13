@@ -213,7 +213,7 @@ html {
 }
 
 .prose figcaption {
-  @apply text-neutral-500;
+  @apply text-neutral-500 text-sm;
 }
 
 pre::-webkit-scrollbar {
