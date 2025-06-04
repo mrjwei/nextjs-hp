@@ -50,4 +50,10 @@ export const tags = {
   jwt: {
     color: "#9c9600",
   },
+  qut: {
+    color: "#0596b3",
+  },
+  cs: {
+    color: "#4505b3",
+  },
 }

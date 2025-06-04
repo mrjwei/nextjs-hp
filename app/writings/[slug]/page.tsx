@@ -4,7 +4,7 @@ import { CustomMDX } from "app/components/mdx"
 import { PrevNext } from "app/components/prev-next"
 import { BackToTop } from "app/components/back-to-top"
 import { WritingCard } from "app/components/article-card"
-import { formatDate, getWritings } from "app/utils"
+import { formatDate, getWritings, getSeries } from "app/utils"
 import { baseUrl } from "app/sitemap"
 import Head from "next/head"
 import { openSans } from "app/data/fonts"
@@ -60,6 +60,10 @@ export function generateMetadata({ params }) {
 
 export default function Writing({ params }) {
   let posts = getWritings()
+  let subdirs = getSeries()
+  subdirs.forEach((subdir) => {
+    posts.push(...getWritings(subdir))
+  })
   let post = posts.find((post) => post.slug === params.slug)
   const postIndex = posts.findIndex((post) => post.slug === params.slug)
 
@@ -83,8 +87,8 @@ export default function Writing({ params }) {
     prevIndex = posts.length - 1
   }
 
-  const prevPost = getWritings()[prevIndex]
-  const nextPost = getWritings()[nextIndex]
+  const prevPost = posts[prevIndex]
+  const nextPost = posts[nextIndex]
 
   if (!post) {
     notFound()

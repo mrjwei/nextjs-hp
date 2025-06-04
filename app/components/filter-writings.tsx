@@ -8,10 +8,8 @@ import { Filter } from "app/components/filter"
 export const FilterWritings = ({ writings }) => {
   const [filter, setFilter] = React.useState("all")
   const filteredWritings = useMemo(() => {
-    if (filter === "design") {
-      return writings.filter((w) => w.metadata.tags.includes("design"))
-    } else if (filter === "development") {
-      return writings.filter((w) => w.metadata.tags.includes("dev"))
+    if (filter !== "all") {
+      return writings.filter((w) => w.metadata.tags.includes(filter))
     }
     return writings
   }, [filter])
@@ -25,6 +23,12 @@ export const FilterWritings = ({ writings }) => {
           handleClick={(e) => setFilter((e.target as HTMLButtonElement).name)}
         />
         <Filter
+          label="QUT"
+          name="qut"
+          isActive={filter === "qut"}
+          handleClick={(e) => setFilter((e.target as HTMLButtonElement).name)}
+        />
+        <Filter
           label="Design"
           name="design"
           isActive={filter === "design"}
@@ -32,8 +36,8 @@ export const FilterWritings = ({ writings }) => {
         />
         <Filter
           label="Development"
-          name="development"
-          isActive={filter === "development"}
+          name="dev"
+          isActive={filter === "dev"}
           handleClick={(e) => setFilter((e.target as HTMLButtonElement).name)}
         />
       </div>

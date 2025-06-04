@@ -1,5 +1,5 @@
 import { FilterWritings } from "app/components/filter-writings"
-import { getWritings } from "app/utils"
+import { getSeries, getWritings } from "app/utils"
 
 export const metadata = {
   title: "Writings | Jesse Wei",
@@ -7,7 +7,12 @@ export const metadata = {
 }
 
 export default async function Page() {
-  const writings = getWritings().sort((a, b) => {
+  let writings = getWritings()
+  let subdirs = getSeries()
+  subdirs.forEach((subdir) => {
+    writings.push(...getWritings(subdir))
+  })
+  writings = writings.sort((a, b) => {
     if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
       return -1
     }

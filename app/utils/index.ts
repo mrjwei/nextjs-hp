@@ -1,5 +1,5 @@
-import fs from 'fs'
-import path from 'path'
+import fs from "fs"
+import path from "path"
 
 type Metadata = {
   title: string
@@ -13,13 +13,13 @@ function parseFrontmatter(fileContent: string) {
   let frontmatterRegex = /---\s*([\s\S]*?)\s*---/
   let match = frontmatterRegex.exec(fileContent)
   let frontMatterBlock = match![1]
-  let content = fileContent.replace(frontmatterRegex, '').trim()
-  let frontMatterLines = frontMatterBlock.trim().split('\n')
+  let content = fileContent.replace(frontmatterRegex, "").trim()
+  let frontMatterLines = frontMatterBlock.trim().split("\n")
   let metadata: Partial<Metadata> = {}
 
   frontMatterLines.forEach((line) => {
-    let [key, ...valueArr] = line.split(': ')
-    let value = valueArr.join(': ').trim()
+    let [key, ...valueArr] = line.split(": ")
+    let value = valueArr.join(": ").trim()
 
     if (key === "tags") {
       const match = value.match(/\[.*\]/)
@@ -29,7 +29,7 @@ function parseFrontmatter(fileContent: string) {
         throw new Error(`Invalid format for "tags": ${value}`)
       }
     } else {
-      value = value.replace(/^['"](.*)['"]$/, '$1') // Remove quotes
+      value = value.replace(/^['"](.*)['"]$/, "$1") // Remove quotes
       metadata[key] = value
     }
   })
@@ -38,11 +38,13 @@ function parseFrontmatter(fileContent: string) {
 }
 
 function getMDXFiles(absDirPath) {
-  return fs.readdirSync(absDirPath).filter((file) => path.extname(file) === '.mdx')
+  return fs
+    .readdirSync(absDirPath)
+    .filter((file) => path.extname(file) === ".mdx")
 }
 
 function readMDXFile(absFilePath) {
-  let rawContent = fs.readFileSync(absFilePath, 'utf-8')
+  let rawContent = fs.readFileSync(absFilePath, "utf-8")
   return parseFrontmatter(rawContent)
 }
 
@@ -60,26 +62,27 @@ function getMDXData(absDirPath) {
   })
 }
 
-export function getWritings() {
-  return getMDXData(path.join(process.cwd(), 'app', 'writings', 'posts'))
+export function getWritings(subdir = "") {
+  return getMDXData(
+    path.join(process.cwd(), "app", "writings", "posts", subdir)
+  )
 }
 
 export function getSeries() {
-  const subdirs = fs.readdirSync(path.join(process.cwd(), 'app', 'series', 'posts'))
-  return subdirs.reduce((MDXData: any, subdir: string) => {
-    const absDirPath = path.join(process.cwd(), 'app', 'series', 'posts', subdir)
-    MDXData.push(getMDXData(absDirPath))
-    return MDXData
-  }, [])
+  const parentPath = path.join(process.cwd(), "app", "writings", "posts")
+  return fs.readdirSync(parentPath).filter((name) => {
+    const fullPath = path.join(parentPath, name)
+    return fs.statSync(fullPath).isDirectory()
+  })
 }
 
 export function getWorks() {
-  return getMDXData(path.join(process.cwd(), 'app', 'artworks', 'works'))
+  return getMDXData(path.join(process.cwd(), "app", "artworks", "works"))
 }
 
 export function formatDate(date: string, includeRelative = false) {
   let currentDate = new Date()
-  if (!date.includes('T')) {
+  if (!date.includes("T")) {
     date = `${date}T00:00:00`
   }
   let targetDate = new Date(date)
@@ -88,7 +91,7 @@ export function formatDate(date: string, includeRelative = false) {
   let monthsAgo = currentDate.getMonth() - targetDate.getMonth()
   let daysAgo = currentDate.getDate() - targetDate.getDate()
 
-  let formattedDate = ''
+  let formattedDate = ""
 
   if (yearsAgo > 0) {
     formattedDate = `${yearsAgo}y ago`
@@ -97,13 +100,13 @@ export function formatDate(date: string, includeRelative = false) {
   } else if (daysAgo > 0) {
     formattedDate = `${daysAgo}d ago`
   } else {
-    formattedDate = 'Today'
+    formattedDate = "Today"
   }
 
-  let fullDate = targetDate.toLocaleString('en-us', {
-    month: '2-digit',
-    day: '2-digit',
-    year: 'numeric',
+  let fullDate = targetDate.toLocaleString("en-us", {
+    month: "2-digit",
+    day: "2-digit",
+    year: "numeric",
   })
 
   if (!includeRelative) {
