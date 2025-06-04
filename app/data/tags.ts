@@ -38,9 +38,6 @@ export const tags = {
   tutorial: {
     color: "#ab8326",
   },
-  series: {
-    color: "#855572",
-  },
   web: {
     color: "#4287f5",
   },
