@@ -46,6 +46,7 @@ export default function Footer() {
               <p className={`ml-2 h-7 ${openSans.className}`}>LinkedIn</p>
             </Link>
           </li>
+          {/*
           <li>
             <Link
               className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
@@ -57,6 +58,7 @@ export default function Footer() {
               <p className={`ml-2 h-7 ${openSans.className}`}>Bluesky</p>
             </Link>
           </li>
+          */}
           <li>
             <Link
               className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
