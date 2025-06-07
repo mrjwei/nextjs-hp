@@ -76,6 +76,21 @@ export function getSeries() {
   })
 }
 
+export function getAllSortedWritings() {
+  let writings = getWritings()
+  let subdirs = getSeries()
+  subdirs.forEach((subdir) => {
+    writings.push(...getWritings(subdir))
+  })
+  writings = writings.sort((a, b) => {
+    if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
+      return -1
+    }
+    return 1
+  })
+  return writings
+}
+
 export function getWorks() {
   return getMDXData(path.join(process.cwd(), "app", "artworks", "works"))
 }

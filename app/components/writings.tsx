@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { getWritings } from "app/utils"
+import { getAllSortedWritings } from "app/utils"
 import { WritingCard } from "app/components/article-card"
 
 export function Writings({
@@ -9,12 +9,7 @@ export function Writings({
   numWritings?: number
   className?: string
 }) {
-  let writings = getWritings().sort((a, b) => {
-    if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
-      return -1
-    }
-    return 1
-  })
+  let writings = getAllSortedWritings()
 
   if (numWritings) {
     writings = writings.slice(0, numWritings)
