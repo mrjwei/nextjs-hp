@@ -111,6 +111,7 @@ export function Header({ className }: { className?: string }) {
           >
             {icons.linkedin}
           </Link>
+          {/*
           <Link
             target="_blank"
             href="https://bsky.app/profile/mrjwei.bsky.social"
@@ -123,6 +124,7 @@ export function Header({ className }: { className?: string }) {
           >
             {icons.bluesky}
           </Link>
+          */}
 
           <Link
             target="_blank"
