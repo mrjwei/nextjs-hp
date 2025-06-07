@@ -1,0 +1,125 @@
+---
+title: "Number Systems 2: Bases and Conversions in Modern Systems"
+slug: "number-systems-2"
+shouldBreakWord: true
+publishedAt: "2025-06-03"
+summary: "Modern position-dependent number systems are built on the concept of bases. A base defines how many unique digits are used and how each position in a number contributes to its overall value."
+tags: ["qut", "cs"]
+---
+
+- [Position-Independent Number Systems](#position-independent-number-systems)
+- [Position-Dependent Number Systems](#position-dependent-number-systems)
+- [Advantages of Position-Dependent Number Systems](#advantages-of-position-dependent-number-systems)
+
+Modern position-dependent number systems are built on the concept of bases. A base defines how many unique digits are used and how each position in a number contributes to its overall value.
+
+The most familiar system is base 10 (decimal), which uses the digits 0 through 9. Other commonly used bases include:
+
+- Base 2 (binary): Uses digits 0 and 1. Widely used in computing.
+- Base 8 (octal): Uses digits 0 to 7.
+- Base 16 (hexadecimal): Uses digits 0 to 9 and letters A to F to represent values 10 to 15.
+
+Understanding how to convert between these bases is essential for grasping how data is represented and manipulated in computing systems.
+
+## Converting Between Bases
+
+Base conversions follow specific, predictable steps.
+
+### From Base 10 to Other Bases: Recursive Division.
+
+To convert a decimal number to another base, we repeatedly divide the number by the target base and record the remainders. These remainders become the digits of the number in the new base, read in reverse order (from last to first).
+
+Here is a Python function that converts a decimal number to binary:
+
+```python
+def decimal_to_binary(decimal):
+    remainder = decimal % 2
+    decimal = decimal // 2
+    if decimal == 0:
+        return '1'
+    return  decimal_to_binary(decimal) + str(remainder)
+```
+
+### From Other bases to Base 10: Aggregated multiplication
+
+we multiply each digit by the base raised to the power of its position (starting from the right, position 0), and then sum the results.
+
+Here is a Python function that converts an octal number to decimal:
+
+```python
+def octal_to_decimal(octal):
+    result = 0
+    for i, c in enumerate(str(octal)):
+        exp = len(str(octal)) - i - 1
+        result += int(c) * 8 ** exp
+    return result
+```
+
+### From Base 8 or 16 to Base 2: Binary Expansion
+
+When converting from octal (base 8) or hexadecimal (base 16) to binary, you can convert each digit to its corresponding binary representation:
+
+- Each octal digit maps to a 3-bit binary number.
+- Each hex digit maps to a 4-bit binary number.
+
+For example, the octal number **12** becomes:
+
+```
+1    2
+001  010
+```
+
+Removing the leading 0s, we get **1010**.
+
+This method works well for any base that is a power of two, since digit-to-binary conversion is straightforward.
+
+### From Base 2 to Base 8 or 16: Grouping Bits
+
+To convert binary to octal or hex, group the binary digits:
+
+- For octal, group bits in chunks of 3.
+- For hex, group in chunks of 4.
+
+Add leading zeros to the left if needed. Then, convert each group to its corresponding digit:
+
+```
+001  010
+1    2   # octal: 12
+```
+
+### Between Arbitrary Bases
+
+When converting between bases that aren’t powers of two, use a two-step approach:
+
+1. Convert the number to base 10.
+2. Convert the result from base 10 to the target base.
+
+This method works for any pair of bases.
+
+## Positional Value in Base Systems
+
+In position-dependent number systems, each digit’s value is determined by its position and the system’s base:
+
+Value of digit X at position n = X \* base<sup>n</sup>
+
+This principle makes some operations easier than they seem. For example:
+
+### Shortcut for Multiplying by 10 in Decimal
+
+```
+53 + 53 + ... (10 times) = 53 × 10 = 530
+```
+
+We’re effectively shifting each digit one position to the left, multiplying the number by the base.
+
+### Shortcut for Multiplying by 2 in Binary
+
+```
+110101 + 110101 = 110101 × 2 = 1101010
+```
+
+Again, we just shift the digits one place to the left—no manual binary addition is needed.
+
+## Final Thoughts
+
+Understanding how number bases work is fundamental in computing, where base conversions play a role in almost everything—from memory addressing to data encoding. By mastering the logic behind digital systems, we gain deeper insight into how computers operate. This perspective can help software engineers think more like the machine and write code that’s both more efficient and better aligned with how hardware actually works.
