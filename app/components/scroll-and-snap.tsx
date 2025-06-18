@@ -19,6 +19,11 @@ export const ScrollAndSnap = ({ children }) => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
+          if ((entry.target as HTMLElement).scrollHeight > window.innerHeight) {
+            ;(entry.target as HTMLElement).style.scrollSnapAlign = "none"
+          } else {
+            ;(entry.target as HTMLElement).style.scrollSnapAlign = "start"
+          }
           if (entry.isIntersecting) {
             entry.target.scrollIntoView({ behavior: "smooth", block: "start" })
             entry.target.querySelector(".heading")?.classList.add("visible")

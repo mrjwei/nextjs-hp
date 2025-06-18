@@ -52,7 +52,7 @@ export default function Page() {
             </svg>
           </button>
         </div>
-        <div className="should-snap h-screen px-16 w-full max-w-[1024px] mx-auto pt-24">
+        <div className="should-snap lg:h-screen px-16 w-full max-w-[1024px] mx-auto pt-24">
           <div className="heading w-full flex justify-between items-baseline">
             <h2 className="text-3xl font-bold mb-8">Latest Writings</h2>
             <MoreButton link="/writings" label="See More">
@@ -74,7 +74,7 @@ export default function Page() {
           </div>
           <Writings numWritings={4} className="content" />
         </div>
-        <div className="should-snap h-screen px-16 w-full max-w-[1024px] mx-auto pt-24">
+        <div className="should-snap lg:h-screen px-16 w-full max-w-[1024px] mx-auto pt-24">
           <div className="heading w-full flex justify-between items-baseline">
             <h2 className="text-3xl font-bold mb-8">New Artworks</h2>
             <MoreButton link="/artworks" label="See More">

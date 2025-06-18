@@ -5,6 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import clsx from "clsx"
 import Image from "next/image"
+import { Bars3Icon } from "@heroicons/react/24/outline"
 import { openSans } from "app/data/fonts"
 import { icons } from "app/data/icons"
 
@@ -26,6 +27,7 @@ const navItems = {
 export function Header({ className }: { className?: string }) {
   const pathName = usePathname()
   const [isLight, setIsLight] = React.useState(true)
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false)
   const headerRef = React.useRef<HTMLElement | null>(null)
   React.useEffect(() => {
     if (pathName !== "/") {
@@ -55,6 +57,11 @@ export function Header({ className }: { className?: string }) {
       window.removeEventListener("scroll", handleScroll)
     }
   }, [pathName])
+
+  const handleMenuButtonClick = () => {
+    setIsMenuOpen(!isMenuOpen)
+  }
+
   return (
     <aside
       ref={headerRef}
@@ -66,8 +73,39 @@ export function Header({ className }: { className?: string }) {
         className
       )}
     >
-      <div className="w-full lg:max-w-[1024px] px-4 py-2 flex justify-between items-center">
+      <div className="w-full h-[56px] lg:max-w-[1024px] px-4 py-2 flex justify-between items-center">
         <div className="flex items-center">
+          <button
+            type="button"
+            className={clsx("mr-4 transition-all block md:hidden", {
+              "text-gray-600 hover:text-gray-800": isLight,
+              "text-white": !isLight,
+            })}
+            onClick={handleMenuButtonClick}
+          >
+            <Bars3Icon className="w-8" />
+          </button>
+          {isMenuOpen && (
+            <nav
+              className="bg-gray-800 shadow-md absolute w-full top-full left-0 h-screen"
+              id="nav"
+              onClick={handleMenuButtonClick}
+            >
+              {Object.entries(navItems).map(([path, { name }]) => {
+                return (
+                  <Link
+                    key={path}
+                    href={path}
+                    className={clsx(
+                      `transition-all text-white flex align-middle relative text-lg p-5`
+                    )}
+                  >
+                    {name}
+                  </Link>
+                )
+              })}
+            </nav>
+          )}
           <Link href="/" aria-label="home" className="mr-4">
             <Image
               src={isLight ? "/logo.svg" : "/logo-light.svg"}
@@ -77,7 +115,7 @@ export function Header({ className }: { className?: string }) {
             />
           </Link>
           <nav
-            className="flex flex-row items-start relative px-0 pb-0 fade md:overflow-auto scroll-pr-6 md:relative"
+            className="hidden md:flex md:flex-row md:items-start relative px-0 pb-0 fade md:overflow-auto scroll-pr-6 md:relative"
             id="nav"
           >
             {Object.entries(navItems).map(([path, { name }]) => {
