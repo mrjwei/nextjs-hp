@@ -35,7 +35,7 @@ export const FilterWritings = ({ writings }) => {
           handleClick={(e) => setFilter((e.target as HTMLButtonElement).name)}
         />
         <Filter
-          label="Development"
+          label="Dev"
           name="dev"
           isActive={filter === "dev"}
           handleClick={(e) => setFilter((e.target as HTMLButtonElement).name)}
