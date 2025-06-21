@@ -10,13 +10,13 @@ export default function Page() {
       <ScrollAndSnap>
         <div className="should-snap bg-[url(/bg.jpg)] bg-cover text-gray-200 flex flex-col items-center h-screen px-16 pt-28 lg:pt-32 xl:pt-48 -z-20">
           <h1
-            className={`mb-8 md:mb-12 text-6xl lg:text-7xl xl:text-[112px] font-black text-center text-white ${techno.className}`}
+            className={`mb-8 md:mb-12 text-6xl lg:text-7xl xl:text-[100px] font-black text-center text-white ${techno.className}`}
           >
             <span className="inline-block relative z-10">
-              Designing with intent.
+              Designing With Intent.
             </span>
             <span className="inline-block relative z-10 mb-2">
-              Building with clarity.
+              Building With Clarity.
             </span>
             <span className="inline-block relative z-10 text-lg leading-tight md:text-2xl">
               Exploring the space where form and function co-exist.
