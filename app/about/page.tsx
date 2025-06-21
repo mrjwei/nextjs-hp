@@ -13,8 +13,8 @@ export default function Page() {
     <section className="py-24 w-full px-16 max-w-[1024px] mx-auto">
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-8">About Me</h1>
-        <div className="flex gap-16">
-          <div className="text-gray-800 flex-1">
+        <div className="grid grid-cols-12 gap-8 md:gap-16">
+          <div className="text-gray-800 col-span-12 order-2 md:col-span-8 md:order-1">
             <p className="mb-2">
               Hi, I am Jesse, a creator passionate about{" "}
               <strong>blending design and technology</strong> to craft
@@ -90,7 +90,7 @@ export default function Page() {
               <span>.</span>
             </p>
           </div>
-          <div className="shrink-0">
+          <div className="col-12 order-1 md:col-span-4 md:order-2">
             <Image
               src="/avatar.png"
               alt="Jesse Wei's avatar"
