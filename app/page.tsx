@@ -8,17 +8,15 @@ export default function Page() {
   return (
     <section className="pb-16">
       <ScrollAndSnap>
-        <div className="should-snap bg-[url(/bg.jpg)] bg-cover text-gray-200 flex flex-col items-center h-screen px-16 pt-28 lg:pt-32 xl:pt-48 -z-20">
+        <div className="should-snap bg-[url(/bg.jpg)] bg-cover text-gray-200 flex flex-col items-center h-screen px-16 pt-28 md:pt-32 xl:pt-48 -z-20">
           <h1
             className={`mb-8 md:mb-12 text-6xl lg:text-7xl xl:text-[100px] font-black text-center text-white ${techno.className}`}
           >
-            <span className="inline-block relative z-10">
-              Designing With Intent.
-            </span>
-            <span className="inline-block relative z-10 mb-2">
+            <span className="block relative z-10">Designing With Intent.</span>
+            <span className="block relative z-10 mb-4 xl:mb-8">
               Building With Clarity.
             </span>
-            <span className="inline-block relative z-10 text-lg leading-tight md:text-2xl">
+            <span className="block relative z-10 text-lg leading-tight md:text-2xl">
               Exploring the space where form and function co-exist.
             </span>
           </h1>
