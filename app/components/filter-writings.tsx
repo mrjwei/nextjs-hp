@@ -42,15 +42,9 @@ export const FilterWritings = ({ writings }) => {
         />
       </div>
       <div>
-        <div className="grid grid-cols-12 gap-8">
+        <div className="grid grid-cols-12 gap-y-8 md:gap-8">
           {filteredWritings.map((article) => (
-            <Link
-              key={article.slug}
-              className="col-span-12 lg:col-span-6"
-              href={`/writings/${article.slug}`}
-            >
-              <WritingCard article={article} />
-            </Link>
+            <WritingCard article={article} />
           ))}
         </div>
       </div>
