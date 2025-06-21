@@ -53,4 +53,7 @@ export const tags = {
   cs: {
     color: "#4505b3",
   },
+  security: {
+    color: "#70276d",
+  },
 }

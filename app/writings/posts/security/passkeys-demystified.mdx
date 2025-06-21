@@ -1,0 +1,71 @@
+---
+title: "Passkeys: Demystified"
+slug: "passkeys-demystified"
+publishedAt: "2025-06-22"
+summary: "Passkeys are gaining popularity, but what exactly is a passkey? How is it different from a password? Is it safe? Why should we bother using it?"
+tags: ["qut", "cs", "security"]
+---
+
+- [What is a Passkey](#what-is-a-passkey)
+- [How to Use It](#how-to-use-it)
+- [Why You Should Use It](#why-you-should-use-it)
+  - [Security Benefits](#security-benefits)
+  - [User Experience](#user-experience)
+  - [Cross-Device Convenience](#cross-device-convenience)
+- [Considerations for Individuals and Organizations](#considerations-for-individuals-and-organizations)
+- [Conclusion](#conclusion)
+
+Passkeys are gaining popularity, but what exactly is a passkey? How is it different from a password? Is it safe? Why should we bother using it?
+
+In this article, I’m going to help you answer these questions and provide a practical guide on how to adopt passkeys.
+
+## What is a Passkey
+
+Passkeys utilize [asymmetric cryptography](https://en.wikipedia.org/wiki/Public-key_cryptography). A passkey is essentially a key pair: the **public key** is stored on the server of the website the user is accessing, while the **private key** stays on the user’s device — typically a smartphone, tablet, or computer.
+
+During authentication, the server sends a random code to the user’s device. The device uses the private key to sign this code and sends it back to the server for verification.
+
+## How to Use It
+
+The technical details can feel complex, but to the user, using a passkey is simple. In fact, passkeys are designed to offer a seamless experience — far superior to traditional passwords.
+
+The only requirement is that the website must support passkey authentication. The good news? Adoption is growing fast, and most major services now support it.
+
+To start using passkeys, follow these steps (UI details may vary slightly):
+
+1. Register an account on the website if you don’t have one.
+2. Sign in using traditional methods like username and password.
+3. When prompted, tap or click “Save Passkey”, “Create a Passkey”, or something similar.
+
+After that, you’ll be able to log in just like you unlock your device.
+
+The implementation details of passkey creation and authentication can be found at [Passkeys.io](https://www.passkeys.io/technical-details#passkeys-under-the-hood).
+
+## Why You Should Use It
+
+Passkeys offer several advantages over passwords in terms of security, user experience, and ease of management.
+
+### Security Benefits
+
+1. No usernames or passwords are entered during login, so there is nothing to steal through phishing.
+2. Passkeys do not leave your device, making it extremely difficult for attackers to gain access—even if your device is lost. That is because device access is protected by biometrics or other secure local authentication methods.
+3. Each passkey is unique to a specific website and account. Since users don’t have to create or remember them, this eliminates weak and reused passwords.
+
+### User Experience
+
+1. Passkey authentication is faster and smoother.
+2. Businesses have reported increased customer engagement and conversion rates after adopting passkeys.
+
+### Cross-Device Convenience
+
+Passkeys can be synchronized across enrolled devices using passkey/password managers like Google Password Manager. Transmission between devices is encrypted, making it secure and convenient to log in from different devices.
+
+## Considerations for Individuals and Organizations
+
+1. **Device loss** may not lead to data theft, but if passkeys are not synced, they can be permanently lost—requiring you to fall back on passwords to regenerate them.
+2. **Device configuration matters**: Make sure your screen locks after idle time. Since unlocking your device authenticates your passkeys, leaving a device unattended and unlocked can expose a security risk.
+3. **Website support**: Not all websites support passkeys yet. In those cases, traditional password-based login is still necessary.
+
+## Conclusion
+
+Passkeys are a **more secure and convenient** alternative to passwords. As long as your device is properly configured and your credentials are synced through secure tools, passkeys solve many long-standing problems: password memorization, weak credentials, and reuse—all while improving the login experience.
