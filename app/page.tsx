@@ -8,9 +8,9 @@ export default function Page() {
   return (
     <section className="pb-16">
       <ScrollAndSnap>
-        <div className="should-snap bg-[url(/bg.jpg)] bg-cover text-gray-200 flex flex-col items-center h-screen px-16 pt-28 md:pt-48 lg:pt-24 -z-20">
+        <div className="should-snap bg-[url(/bg.jpg)] bg-cover text-gray-200 flex flex-col items-center h-screen px-16 pt-28 lg:pt-32 xl:pt-48 -z-20">
           <h1
-            className={`mb-8 md:mb-12 text-6xl lg:text-[112px] font-black text-center text-white ${techno.className}`}
+            className={`mb-8 md:mb-12 text-6xl lg:text-7xl xl:text-[112px] font-black text-center text-white ${techno.className}`}
           >
             <span className="inline-block relative z-10">
               Designing with intent.
