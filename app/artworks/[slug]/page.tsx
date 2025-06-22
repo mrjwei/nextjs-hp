@@ -99,7 +99,7 @@ export default function Artwork({ params }) {
               url: `${baseUrl}/artworks/${work.slug}`,
               author: {
                 "@type": "Person",
-                name: "My Portfolio",
+                name: "Jesse Wei | Writings and Works",
               },
             }),
           }}

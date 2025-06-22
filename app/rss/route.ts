@@ -1,8 +1,8 @@
-import { baseUrl } from 'app/sitemap'
-import { getWritings } from 'app/utils'
+import { baseUrl } from "app/sitemap"
+import { getAllSortedWritings } from "app/utils"
 
 export async function GET() {
-  let allBlogs = await getWritings()
+  let allBlogs = getAllSortedWritings()
 
   const itemsXml = allBlogs
     .sort((a, b) => {
@@ -16,27 +16,27 @@ export async function GET() {
         `<item>
           <title>${post.metadata.title}</title>
           <link>${baseUrl}/writings/${post.slug}</link>
-          <description>${post.metadata.summary || ''}</description>
+          <description>${post.metadata.summary || ""}</description>
           <pubDate>${new Date(
             post.metadata.publishedAt
           ).toUTCString()}</pubDate>
         </item>`
     )
-    .join('\n')
+    .join("\n")
 
   const rssFeed = `<?xml version="1.0" encoding="UTF-8" ?>
   <rss version="2.0">
     <channel>
-        <title>My Portfolio</title>
+        <title>Jesse Wei | Writings and Works</title>
         <link>${baseUrl}</link>
-        <description>This is my portfolio RSS feed</description>
+        <description>This is my writings and works RSS feed</description>
         ${itemsXml}
     </channel>
   </rss>`
 
   return new Response(rssFeed, {
     headers: {
-      'Content-Type': 'text/xml',
+      "Content-Type": "text/xml",
     },
   })
 }

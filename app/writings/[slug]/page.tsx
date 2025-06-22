@@ -119,7 +119,7 @@ export default function Writing({ params }) {
               url: `${baseUrl}/writings/${writing.slug}`,
               author: {
                 "@type": "Person",
-                name: "My Portfolio",
+                name: "Jesse Wei | Writings and Works",
               },
             }),
           }}
