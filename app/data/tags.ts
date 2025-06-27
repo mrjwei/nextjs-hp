@@ -56,4 +56,10 @@ export const tags = {
   security: {
     color: "#70276d",
   },
+  reflection: {
+    color: "#82824b",
+  },
+  tricks: {
+    color: "#8a455e",
+  },
 }
