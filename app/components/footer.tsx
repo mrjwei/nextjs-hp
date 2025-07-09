@@ -22,10 +22,10 @@ export default function Footer() {
   return (
     <footer className="w-full bg-gray-200">
       <div className="w-full max-w-[1024px] mx-auto flex flex-col items-center px-2 md:px-0">
-        <ul className="font-sm mt-8 flex space-x-3 lg:space-x-8 text-neutral-600 dark:text-neutral-300">
+        <ul className="font-sm mt-8 flex space-x-3 lg:space-x-8 text-neutral-600">
           {/* <li>
             <a
-              className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
+              className="flex items-center transition-all hover:text-neutral-800"
               rel="noopener noreferrer"
               target="_blank"
               href="/rss"
@@ -37,7 +37,7 @@ export default function Footer() {
 
           <li>
             <Link
-              className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
+              className="flex items-center transition-all hover:text-neutral-800"
               rel="noopener noreferrer"
               target="_blank"
               href="https://www.linkedin.com/in/jesse-wei-profile/"
@@ -49,7 +49,7 @@ export default function Footer() {
           {/*
           <li>
             <Link
-              className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
+              className="flex items-center transition-all hover:text-neutral-800"
               rel="noopener noreferrer"
               target="_blank"
               href="https://bsky.app/profile/mrjwei.bsky.social"
@@ -61,7 +61,7 @@ export default function Footer() {
           */}
           <li>
             <Link
-              className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
+              className="flex items-center transition-all hover:text-neutral-800"
               rel="noopener noreferrer"
               target="_blank"
               href="https://github.com/mrjwei"
@@ -72,7 +72,7 @@ export default function Footer() {
           </li>
           <li>
             <Link
-              className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
+              className="flex items-center transition-all hover:text-neutral-800"
               rel="noopener noreferrer"
               target="_blank"
               href="https://www.instagram.com/mrjwei/"
@@ -82,7 +82,7 @@ export default function Footer() {
             </Link>
           </li>
         </ul>
-        <p className="mt-8 text-neutral-600 dark:text-neutral-300">
+        <p className="mt-8 text-neutral-600">
           © {new Date().getFullYear()} Jesse Wei
         </p>
       </div>

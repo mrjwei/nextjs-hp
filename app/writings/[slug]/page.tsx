@@ -129,9 +129,7 @@ export default function Writing({ params }) {
         </h1>
         <Tags tags={writing.metadata.tags} className="mb-4" />
         <div className="flex justify-between items-center mt-2 mb-12 text-sm">
-          <p
-            className={`text-sm text-neutral-500 dark:text-neutral-400 ${openSans.className}`}
-          >
+          <p className={`text-sm text-neutral-500 ${openSans.className}`}>
             Published at: {formatDate(writing.metadata.publishedAt)}
           </p>
         </div>

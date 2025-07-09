@@ -48,10 +48,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cx(
-        "text-neutral-800 bg-white text-base dark:text-white dark:bg-neutral-800",
-        openSans.className
-      )}
+      className={cx("text-neutral-800 bg-white text-base", openSans.className)}
     >
       <body className="antialiased flex flex-col items-center justify-between min-h-screen">
         <Header />

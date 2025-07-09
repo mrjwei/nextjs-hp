@@ -43,7 +43,7 @@ export default function Page() {
               I’m always open to connecting and collaborating on exciting
               projects. Feel free to follow me on
               <Link
-                className="inline-flex items-center transition-all hover:text-gray-800 dark:hover:text-gray-100"
+                className="inline-flex items-center transition-all hover:text-gray-800"
                 rel="noopener noreferrer"
                 target="_blank"
                 href="https://www.linkedin.com/in/jesse-wei-profile/"
@@ -55,7 +55,7 @@ export default function Page() {
               </Link>
               <span>,&nbsp;</span>
               <Link
-                className="inline-flex items-center transition-all hover:text-gray-800 dark:hover:text-gray-100"
+                className="inline-flex items-center transition-all hover:text-gray-800"
                 rel="noopener noreferrer"
                 target="_blank"
                 href="https://bsky.app/profile/mrjwei.bsky.social"
@@ -67,7 +67,7 @@ export default function Page() {
               </Link>
               <span>,&nbsp;</span>
               <Link
-                className="inline-flex items-center transition-all hover:text-gray-800 dark:hover:text-gray-100"
+                className="inline-flex items-center transition-all hover:text-gray-800"
                 rel="noopener noreferrer"
                 target="_blank"
                 href="https://github.com/mrjwei"
@@ -77,7 +77,7 @@ export default function Page() {
               </Link>
               <span>,&nbsp;</span>
               <Link
-                className="inline-flex items-center transition-all hover:text-gray-800 dark:hover:text-gray-100"
+                className="inline-flex items-center transition-all hover:text-gray-800"
                 rel="noopener noreferrer"
                 target="_blank"
                 href="https://www.instagram.com/mrjwei/"

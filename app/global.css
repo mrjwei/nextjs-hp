@@ -48,7 +48,7 @@
   @apply animate-vibrate-horizontal;
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --sh-class: #4c97f8;
     --sh-identifier: white;
@@ -58,7 +58,7 @@
   html {
     color-scheme: dark;
   }
-}
+} */
 
 html {
   min-width: 360px;
@@ -103,11 +103,11 @@ html {
 }
 
 .prose a {
-  @apply underline transition-all decoration-neutral-400 dark:decoration-neutral-600 underline-offset-2 decoration-[0.1em];
+  @apply underline transition-all decoration-neutral-400 underline-offset-2 decoration-[0.1em];
 }
 
 .prose .anchor:after {
-  @apply text-neutral-300 dark:text-neutral-700;
+  @apply text-neutral-300;
   content: "#";
 }
 
@@ -116,7 +116,7 @@ html {
 }
 
 .prose pre {
-  @apply bg-white dark:bg-neutral-900 rounded-lg overflow-x-auto border border-neutral-200 dark:border-neutral-900 p-6 text-sm;
+  @apply bg-white rounded-lg overflow-x-auto border border-neutral-200 p-6 text-sm;
 }
 
 .prose code {
@@ -147,7 +147,7 @@ html {
 }
 
 .prose p {
-  @apply my-4 text-neutral-800 dark:text-neutral-200;
+  @apply my-4 text-neutral-800;
 }
 
 .prose h1 {
