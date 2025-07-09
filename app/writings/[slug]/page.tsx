@@ -96,7 +96,7 @@ export default function Writing({ params }) {
   }
 
   return (
-    <div className="w-full max-w-[1024px] mx-auto px-16 py-24">
+    <div className="w-full max-w-[1024px] mx-auto px-8 md:px-16 py-24">
       <Head>
         <title>{writing.metadata.title}</title>
         <link rel="canonical" href={`${baseUrl}/writings/${writing.slug}`} />
@@ -146,18 +146,10 @@ export default function Writing({ params }) {
       <hr className="border-[1px] border-gray-200" />
       <section className="pt-16">
         <h2 className="text-2xl font-bold mb-8">You May Also Like</h2>
-        <div className="grid grid-cols-12 gap-8">
-          {similarWritings.slice(0, 4).map((similarWriting) => {
-            return (
-              <Link
-                key={similarWriting.slug}
-                className="col-span-12 lg:col-span-6"
-                href={`/writings/${similarWriting.slug}`}
-              >
-                <WritingCard article={similarWriting} />
-              </Link>
-            )
-          })}
+        <div className="grid grid-cols-12 gap-y-8 md:gap-8">
+          {similarWritings.slice(0, 4).map((similarWriting) => (
+            <WritingCard article={similarWriting} />
+          ))}
         </div>
       </section>
       <BackToTop />

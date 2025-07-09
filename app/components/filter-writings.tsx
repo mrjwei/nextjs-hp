@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useMemo } from "react"
-import Link from "next/link"
 import { WritingCard } from "app/components/article-card"
 import { Filter } from "app/components/filter"
 
