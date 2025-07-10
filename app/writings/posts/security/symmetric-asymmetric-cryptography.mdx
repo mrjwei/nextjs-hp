@@ -1,0 +1,129 @@
+---
+title: "Symmetric vs. Asymmetric Cryptography"
+slug: "symmetric-asymmetric-cryptography"
+publishedAt: "2025-07-10"
+summary: "Cryptography is the foundation of digital security—from protecting your messages and passwords to securing online payments and cloud data. At the core of cryptographic systems are two main types of encryption: symmetric and asymmetric."
+tags: ["security", "tricks"]
+---
+
+- [Symmetric Cryptography](#symmetric-cryptography)
+- [Asymmetric Cryptography](#asymmetric-cryptography)
+- [Case Studies](#case-studies)
+  - [Case 1: Ensuring Information Confidentiality](#case-1-ensuring-information-confidentiality)
+  - [Case 2: Proving Authenticity](#case-2-proving-authenticity)
+- [Conclusion](#conclusion)
+
+Cryptography is the foundation of digital security—from protecting your messages and passwords to securing online payments and cloud data. At the core of cryptographic systems are two main types of encryption: **symmetric** and **asymmetric**.
+
+In this article, I’ll walk through how each method works, explore their strengths and limitations, and explain why modern security often relies on a combination of both.
+
+## Symmetric Cryptography
+
+In symmetric cryptography, a single secret key is used for both encryption and decryption. This means the key must be kept secure and **never shared with unauthorized parties**.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/symmetric-asymmetric-cryptography/symmetric.png"
+    alt="Symmetric cryptography. (Image source: Ciampa, M. (2024). Comptia+ security+ guide to network fundamentals. Cengage.)"
+    style={{ marginBottom: "8px", maxWidth: "500px" }}
+  />
+  <figcaption>
+    Symmetric cryptography. (Image source: Ciampa, M. (2024). Comptia+ security+
+    guide to network fundamentals. Cengage.)
+  </figcaption>
+</figure>
+
+However, this raises a challenge: **how to safely transfer the secret key** between trusted parties. Symmetric methods alone do not provide a secure channel for key exchange.
+
+## Asymmetric Cryptography
+
+In asymmetric cryptography, a **public key** is used to encrypt the message and a corresponding **private key** is used to decrypt it. The keys can also be used in reverse, depending on the use case.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/symmetric-asymmetric-cryptography/asymmetric.png"
+    alt="Asymmetric cryptography. (Image source: Ciampa, M. (2024). Comptia+ security+ guide to network fundamentals. Cengage.)"
+    style={{ marginBottom: "8px", maxWidth: "500px" }}
+  />
+  <figcaption>
+    Asymmetric cryptography. (Image source: Ciampa, M. (2024). Comptia+
+    security+ guide to network fundamentals. Cengage.)
+  </figcaption>
+</figure>
+
+## Case Studies
+
+### Case 1: Ensuring Information Confidentiality
+
+While symmetric methods can achieve strong encryption with relatively small key sizes, **they lack a secure method to exchange the secret key**. This is where asymmetric cryptography comes in: it allows safe transmission of the secret key.
+
+However, [asymmetric encryption is computationally more intensive and slower](https://www.quora.com/Why-is-asymmetric-cryptography-bad-for-huge-data) than symmetric methods. In practice, a hybrid approach is commonly used:
+
+- The **message** is encrypted using a symmetric algorithm (e.g. AES) for performance.
+- The **symmetric key** is encrypted using an asymmetric algorithm (e.g. RSA) for secure transmission.
+
+This method offers both high security and good performance.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/symmetric-asymmetric-cryptography/encrypt-secret.png"
+    alt="Asymmetric cryptography. (Image source: Ciampa, M. (2024). Comptia+ security+ guide to network fundamentals. Cengage.)"
+    style={{ marginBottom: "8px", maxWidth: "500px" }}
+  />
+  <figcaption>
+    Sharing the secret key using asymmetric cryptography (Image adapted from
+    source: Ciampa, M. (2024). Comptia+ security+ guide to network fundamentals.
+    Cengage.)
+  </figcaption>
+</figure>
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/symmetric-asymmetric-cryptography/encrypt-msg.png"
+    alt="Sharing the message using symmetric cryptography (Image source: Ciampa, M. (2024). Comptia+ security+ guide to network fundamentals. Cengage.)"
+    style={{ marginBottom: "8px", maxWidth: "500px" }}
+  />
+  <figcaption>
+    Sharing the message using symmetric cryptography (Image source: Ciampa, M.
+    (2024). Comptia+ security+ guide to network fundamentals. Cengage.)
+  </figcaption>
+</figure>
+
+### Case 2: Proving Authenticity
+
+**Authenticity** means confirming that a message was indeed sent by the claimed sender and has not been tampered with. To ensure this, **digital signatures** are used.
+
+A digital signature is created by hashing the message to produce a [digest](https://en.wikipedia.org/wiki/Hash_function) and then encrypting the digest with the sender's **private key**. The receiver:
+
+1. Decrypts the signature using the sender's **public key**.
+2. Hashes the received message and compares it with the decrypted digest.
+
+If they match, this confirms:
+
+- The message was sent by the legitimate sender (**authenticity**).
+- The message was not altered in transit (**integrity**).
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/symmetric-asymmetric-cryptography/digital-signature.png"
+    alt="Digital signature. (Image source: Ciampa, M. (2024). Comptia+ security+ guide to network fundamentals. Cengage.)"
+    style={{ marginBottom: "8px", maxWidth: "500px" }}
+  />
+  <figcaption>
+    Digital signature. (Image source: Ciampa, M. (2024). Comptia+ security+
+    guide to network fundamentals. Cengage.)
+  </figcaption>
+</figure>
+
+It must be noted, however, that digital signatures **do not ensure confidentiality**. The message is still sent in plain text alongside its signed digest. Anyone can read the message — the signature only verifies authenticity and integrity.
+
+To ensure **confidentiality** in addition to authenticity, the signed message must also be encrypted using symmetric or asymmetric encryption, as described in Case 1.
+
+## Conclusion
+
+Symmetric and asymmetric cryptographic algorithms differ in key management, computational performance, and application:
+
+- **Symmetric**: fast, simple, but hard to share keys securely.
+- **Asymmetric**: secure key exchange and digital signatures, but slower.
+
+Each method provides different security properties—such as confidentiality, integrity and non-repudiation. In real-world systems, these approaches are often combined to create secure, performant communication protocols. The key is to **choose the right tools based on the security goals and context** of your project.
