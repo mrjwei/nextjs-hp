@@ -1,0 +1,115 @@
+---
+title: "Common Asymmetric Algorithms (Part 1): RSA"
+slug: "common-asymmetric-algorithms-rsa"
+publishedAt: "2025-07-11"
+summary: "Rivest–Shamir–Adleman (RSA) is one of the most well-known algorithms for asymmetric cryptography. It uses a public key for encryption and a corresponding private key for decryption. Each key consists of a pair of large integers."
+tags: ["security"]
+---
+
+- [What is RSA](#what-is-rsa)
+- [How Does RSA Work](#how-does-rsa-work)
+  - [Step 1: Generate a Shared Component](#step-1-generate-a-shared-component)
+  - [Step 2: Generate the Public Exponent](#step-2-generate-the-public-exponent)
+  - [Step 3: Generate the Private Exponent](#step-3-generate-the-private-exponent)
+  - [Step 4: Encrypt the Message](#step-4-encrypt-the-message)
+  - [Step 5: Decrypt the Message](#step-5-decrypt-the-message)
+- [Security and Performance Considerations](#security-and-performance-considerations)
+
+## What is RSA
+
+**Rivest–Shamir–Adleman (RSA)** is one of the most well-known algorithms for **asymmetric cryptography**. It uses a **public key** for encryption and a corresponding **private key** for decryption. Each key consists of a pair of large integers.
+
+## How Does RSA Work
+
+### Step 1: Generate a Shared Component
+
+Choose **two large prime numbers**, p and q. The size of these primes is crucial for ensuring strong security. For demonstration, we will use small primes:
+
+```
+p=7
+q=19
+```
+
+Compute their product:
+
+```
+n = p * q = 7 * 19 = 133
+```
+
+This value `n` is used in both the public and private keys.
+
+### Step 2: Generate the Public Exponent
+
+Calculate [Euler's totient function](https://en.wikipedia.org/wiki/Euler%27s_totient_function):
+
+```
+Φ(n) = (p-1)(q-1) = 6 * 18 = 108
+```
+
+Choose an integer `e` such that:
+
+- `1<e<Φ(n)`
+- `gcd(e, Φ(n)) = 1` (i.e. `e` and `Φ(n)`are coprime)
+
+Let's choose `e = 25`.
+Then the **public key** is:
+
+```
+(e, n) = (25, 133)
+```
+
+### Step 3: Generate the Private Exponent
+
+Now we find `d`, the [modular multiplicative inverse](https://en.wikipedia.org/wiki/Modular_multiplicative_inverse) of `e` mod `Φ(n)` such that:
+
+```
+e * d ≡ 1 mod Φ(n)
+```
+
+Here, `d = 13` works, since:
+
+```
+25 × 13 = 325 ≡ 1 mod 108
+```
+
+Thus, the **private key** is:
+
+```
+(d, n) = (13, 133)
+```
+
+### Step 4: Encrypt the Message
+
+Let the plaintext message be `m = 5`. To encrypt it:
+
+<pre>
+  <code>
+    c = m<sup>e</sup> mod n = 5<sup>25</sup> mod 133 = 54
+  </code>
+</pre>
+
+### Step 5: Decrypt the Message
+
+To decrypt the ciphertext:
+
+<pre>
+  <code>
+    m = c<sup>d</sup> mod n = 54<sup>13</sup> mod 133 = 5
+  </code>
+</pre>
+
+This recovers the original message.
+
+> The mathmatical basis for RSA is [Euler's Theorem](https://en.wikipedia.org/wiki/Euler%27s_theorem), which ensures that modular exponentiation with the public and private keys are inverse operations under modulo `n`.
+
+## Security and Performance Considerations
+
+The security of RSA depends on the **difficulty of factoring very large numbers**. With current classical computing power, this remains computationally expensive for sufficiently large key sizes (e.g., 2048 or 4096 bits).
+
+However, quantum computing introduces new risks through advanced algorithms, potentially breaking RSA.
+
+Additionally, RSA’s performance is relatively slow due to the size of keys and the complexity of the exponentiation. It is not suitable for encrypting large volumes of data.
+
+For these reasons, [Elliptic Curve Cryptography (ECC)](https://en.wikipedia.org/wiki/Elliptic-curve_cryptography) is growing in populartiy. It offers comparable or stronger security with smaller key sizes, leading to better performance.
+
+Please check out the [next part](/writings/common-asymmetric-algorithms-ecc) of this series to explore how ECC works.
