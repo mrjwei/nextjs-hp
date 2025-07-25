@@ -62,4 +62,7 @@ export const tags = {
   tricks: {
     color: "#8a455e",
   },
+  casestudy: {
+    color: "#9f24b5",
+  },
 }
