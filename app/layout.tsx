@@ -1,12 +1,15 @@
 import "./global.css"
 
 import type { Metadata } from "next"
+import Head from "next/head"
+import Script from "next/script"
 import { Header } from "./components/header"
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import Footer from "./components/footer"
 import { openSans } from "app/data/fonts"
 import { baseUrl } from "./sitemap"
+import AnalyticsProvider from "./providers"
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -50,7 +53,20 @@ export default function RootLayout({
       lang="en"
       className={cx("text-neutral-800 bg-white text-base", openSans.className)}
     >
+      <Head>
+        <Script async src="https://www.googletagmanager.com/gtag/js?id=G-44FT4BDFH2" />
+        <Script>
+          {`window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+
+          gtag('config', 'G-44FT4BDFH2');`}
+        </Script>
+      </Head>
       <body className="antialiased flex flex-col items-center justify-between min-h-screen">
+        <AnalyticsProvider />
         <Header />
         <main className="relative w-full flex-1 bg-gray-50 flex flex-col">
           {children}
