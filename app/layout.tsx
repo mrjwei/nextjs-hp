@@ -53,7 +53,7 @@ export default function RootLayout({
       lang="en"
       className={cx("text-neutral-800 bg-white text-base", openSans.className)}
     >
-      <Head>
+      <head>
         <Script async src="https://www.googletagmanager.com/gtag/js?id=G-44FT4BDFH2" />
         <Script>
           {`window.dataLayer = window.dataLayer || [];
@@ -64,7 +64,7 @@ export default function RootLayout({
 
           gtag('config', 'G-44FT4BDFH2');`}
         </Script>
-      </Head>
+      </head>
       <body className="antialiased flex flex-col items-center justify-between min-h-screen">
         <AnalyticsProvider />
         <Header />
