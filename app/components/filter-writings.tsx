@@ -39,6 +39,12 @@ export const FilterWritings = ({ writings }) => {
           isActive={filter === "dev"}
           handleClick={(e) => setFilter((e.target as HTMLButtonElement).name)}
         />
+        <Filter
+          label="Security"
+          name="security"
+          isActive={filter === "security"}
+          handleClick={(e) => setFilter((e.target as HTMLButtonElement).name)}
+        />
       </div>
       <div>
         <div className="grid grid-cols-12 gap-y-8 md:gap-8">
