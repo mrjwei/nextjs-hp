@@ -1,10 +1,12 @@
 import { techno } from "app/data/fonts"
-import { Writings } from "app/components/writings"
+import { Grid } from "app/components/grid"
 import { Works } from "app/components/works"
 import { ScrollAndSnap } from "app/components/scroll-and-snap"
 import { MoreButton } from "app/components/more-button"
+import {getAllSortedWritings} from 'app/utils'
 
 export default function Page() {
+  const writings = getAllSortedWritings()
   return (
     <section className="pb-16">
       <ScrollAndSnap>
@@ -45,7 +47,7 @@ export default function Page() {
           <h2 className="heading text-2xl md:text-3xl font-bold mb-8 z-50">
             Latest Writings
           </h2>
-          <Writings numWritings={4} className="content" />
+          <Grid writings={writings} numWritings={4} className="content" />
           <MoreButton link="/writings" label="See More">
             <svg
               xmlns="http://www.w3.org/2000/svg"
