@@ -1,12 +1,18 @@
 import fs from "fs"
 import path from "path"
 
-type Metadata = {
+type TMetadata = {
   title: string
   publishedAt: string
   summary: string
   image?: string
   tags: string[]
+}
+
+export type TWriting = {
+  metadata: TMetadata
+  slug: string
+  content: string
 }
 
 function parseFrontmatter(fileContent: string) {
@@ -15,7 +21,7 @@ function parseFrontmatter(fileContent: string) {
   let frontMatterBlock = match![1]
   let content = fileContent.replace(frontmatterRegex, "").trim()
   let frontMatterLines = frontMatterBlock.trim().split("\n")
-  let metadata: Partial<Metadata> = {}
+  let metadata: Partial<TMetadata> = {}
 
   frontMatterLines.forEach((line) => {
     let [key, ...valueArr] = line.split(": ")
@@ -34,7 +40,7 @@ function parseFrontmatter(fileContent: string) {
     }
   })
 
-  return { metadata: metadata as Metadata, content }
+  return { metadata: metadata as TMetadata, content }
 }
 
 function getMDXFiles(absDirPath) {
@@ -130,3 +136,8 @@ export function formatDate(date: string, includeRelative = false) {
 
   return `${fullDate} (${formattedDate})`
 }
+
+export const capitalize = (s: string) => {
+  return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
