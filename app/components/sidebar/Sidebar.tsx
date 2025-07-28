@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { TWriting } from "app/utils"
+import { TWriting } from "app/components/grid"
 import clsx from "clsx"
 import { TCategory } from "app/components/sidebar"
 import { categories } from "app/data/categories"

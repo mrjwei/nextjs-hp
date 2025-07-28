@@ -1,4 +1,4 @@
-import { FilterWritings } from "app/components/filter-writings"
+import { Grid } from "app/components/grid"
 import { getAllSortedWritings } from "app/utils"
 import { Sidebar, TCategory } from "app/components/sidebar"
 import {capitalize} from 'app/utils'
@@ -23,7 +23,7 @@ export default async function Page({searchParams}) {
           <p className="text-gray-600 mb-4">My blog posts, tutorials, and more.</p>
           <Sidebar writings={writings} activeCategory={category} classname="block md:hidden" />
         </div>
-        <FilterWritings writings={writings} category={category?.value} />
+        <Grid writings={writings} category={category} />
       </div>
     </section>
   )

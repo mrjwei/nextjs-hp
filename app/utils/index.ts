@@ -1,18 +1,12 @@
 import fs from "fs"
 import path from "path"
 
-type TMetadata = {
+export type TMetadata = {
   title: string
   publishedAt: string
   summary: string
   image?: string
   tags: string[]
-}
-
-export type TWriting = {
-  metadata: TMetadata
-  slug: string
-  content: string
 }
 
 function parseFrontmatter(fileContent: string) {

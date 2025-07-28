@@ -1,15 +1,21 @@
-import { getAllSortedWritings } from "app/utils"
+import { TWriting } from "app/components/grid"
 import { WritingCard } from "app/components/article-card"
+import { TCategory } from "app/components/sidebar"
 
-export function Writings({
+export function Grid({
+  writings,
+  category,
   numWritings,
   className = "",
 }: {
+  writings: TWriting[]
+  category?: TCategory
   numWritings?: number
   className?: string
 }) {
-  let writings = getAllSortedWritings()
-
+  if (category) {
+    writings = writings.filter(w => w.metadata.tags.includes(category.value))
+  }
   if (numWritings) {
     writings = writings.slice(0, numWritings)
   }
