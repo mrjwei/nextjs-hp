@@ -28,6 +28,7 @@ export const ScrollAndSnap = ({ children }) => {
             entry.target.scrollIntoView({ behavior: "smooth", block: "start" })
             entry.target.querySelector(".heading")?.classList.add("visible")
             entry.target.querySelector(".content")?.classList.add("visible")
+            entry.target.querySelector(".more-btn")?.classList.add("visible")
           }
         })
       },

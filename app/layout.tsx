@@ -4,6 +4,7 @@ import type { Metadata } from "next"
 import Head from "next/head"
 import Script from "next/script"
 import { Header } from "./components/header"
+import { Cursor } from "app/components/cursor"
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import Footer from "./components/footer"
@@ -67,8 +68,9 @@ export default function RootLayout({
       </head>
       <body className="antialiased flex flex-col items-center justify-between min-h-screen">
         <AnalyticsProvider />
+        <Cursor />
         <Header />
-        <main className="relative w-full flex-1 bg-gray-50 flex flex-col">
+        <main className="relative w-full flex-1 bg-zinc-100 flex flex-col">
           {children}
           <Analytics />
           <SpeedInsights />

@@ -79,17 +79,11 @@ export default function Writing({ params }) {
       return 1
     })
 
-  let prevIndex = writingIndex - 1
-  let nextIndex = writingIndex + 1
+  let oldIndex = writingIndex + 1
+  let newIndex = writingIndex - 1
 
-  if (writingIndex === writings.length - 1) {
-    nextIndex = 0
-  } else if (writingIndex === 0) {
-    prevIndex = writings.length - 1
-  }
-
-  const prevPost = writings[prevIndex]
-  const nextPost = writings[nextIndex]
+  const oldPost = writings[oldIndex]
+  const newPost = writings[newIndex]
 
   if (!writing) {
     notFound()
@@ -137,8 +131,10 @@ export default function Writing({ params }) {
           <CustomMDX source={writing.content} />
         </article>
         <PrevNext
-          prevLink={`/writings/${prevPost.slug}`}
-          nextLink={`/writings/${nextPost.slug}`}
+          oldLink={writingIndex === writings.length - 1 ? '' : `/writings/${oldPost.slug}`}
+          newLink={writingIndex === 0 ? '' : `/writings/${newPost.slug}`}
+          shouldDisableOld={writingIndex === writings.length - 1}
+          shouldDisableNew={writingIndex === 0}
         />
       </section>
       <hr className="border-[1px] border-gray-200" />

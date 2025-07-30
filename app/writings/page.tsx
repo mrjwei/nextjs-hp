@@ -15,12 +15,12 @@ export default async function Page({searchParams}) {
   const category: TCategory | undefined = categoryValue ? categories.find(c => c.value === categoryValue) : undefined
 
   return (
-    <section className="grid grid-cols-12 gap-8 pt-[56px]">
-      <Sidebar writings={writings} activeCategory={category} classname="hidden md:block bg-gray-800 text-white px-4 py-8 md:col-span-3 sticky md:top-[56px] h-screen" />
+    <section className="grid grid-cols-12 gap-8 pt-[48px]">
+      <Sidebar writings={writings} activeCategory={category} classname="hidden md:block bg-gray-800 text-white p-8 md:col-span-3 sticky md:top-[48px] h-screen" />
       <div className="col-span-12 px-4 py-8 md:col-span-9 md:pl-0 md:pr-8">
         <div className="mb-8">
           <h1 className="text-2xl md:text-3xl font-bold mb-2">Writings{category && (category.shouldBeUppercase ? ` - ${category.value.toUpperCase()}` : ` - ${capitalize(category.value)}`)}</h1>
-          <p className="text-gray-600 mb-4">My blog posts, tutorials, and more.</p>
+          <p className="text-lg text-gray-600 mb-4">Design, tech, innovation and more.</p>
           <Sidebar writings={writings} activeCategory={category} classname="block md:hidden" />
         </div>
         <Grid writings={writings} category={category} />

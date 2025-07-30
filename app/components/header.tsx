@@ -36,7 +36,7 @@ export function Header({ className }: { className?: string }) {
     }
     const handleScroll = () => {
       if (headerRef.current) {
-        if (window.scrollY > screen.height - headerRef.current.clientHeight) {
+        if (window.scrollY >= window.innerHeight) {
           setIsLight(true)
         } else {
           setIsLight(false)
@@ -45,7 +45,7 @@ export function Header({ className }: { className?: string }) {
     }
     if (
       headerRef.current &&
-      window.scrollY > screen.height - headerRef.current.clientHeight
+      window.scrollY > window.screen.height - headerRef.current.clientHeight
     ) {
       setIsLight(true)
     } else {
@@ -66,14 +66,14 @@ export function Header({ className }: { className?: string }) {
     <aside
       ref={headerRef}
       className={clsx(
-        "w-full fixed top-0 left-0 flex flex-col items-center bg-gray-800 transition-shadow duration-200 ease-in-out z-50",
+        "w-full fixed top-0 left-0 flex flex-col items-center transition-shadow duration-200 ease-in-out z-50",
         {
           "bg-white shadow-md": isLight,
         },
         className
       )}
     >
-      <div className="w-full h-[56px] lg:max-w-[1024px] px-4 py-2 flex justify-between items-center">
+      <div className="w-full h-[48px] px-12 flex justify-between items-center">
         <div className="flex items-center">
           <button
             type="button"
@@ -124,9 +124,9 @@ export function Header({ className }: { className?: string }) {
                   key={path}
                   href={path}
                   className={clsx(
-                    `transition-all text-gray-300 flex align-middle relative py-1 px-2 m-1 ${openSans.className}`,
+                    `transition-all duration-500 ease-in-out font-semibold text-gray-300 hover:text-gray-100 flex align-middle relative py-1 px-2 m-1 ${openSans.className}`,
                     {
-                      "text-gray-600 hover:text-gray-800": isLight,
+                      "text-gray-500 hover:text-gray-800": isLight,
                     }
                   )}
                 >
@@ -141,7 +141,7 @@ export function Header({ className }: { className?: string }) {
             target="_blank"
             href="https://www.linkedin.com/in/jesse-wei-profile/"
             className={clsx(
-              "px-2 m-1 text-gray-300 hover:text-gray-400 transition-colors duration-200 ease-in-out",
+              "px-2 m-1 text-gray-300 hover:text-gray-100 transition-colors duration-200 ease-in-out",
               {
                 "text-gray-400 hover:text-gray-600": isLight,
               }
@@ -168,7 +168,7 @@ export function Header({ className }: { className?: string }) {
             target="_blank"
             href="https://github.com/mrjwei"
             className={clsx(
-              "px-2 m-1 text-gray-300 hover:text-gray-400 transition-colors duration-200 ease-in-out",
+              "px-2 m-1 text-gray-300 hover:text-gray-100 transition-colors duration-200 ease-in-out",
               {
                 "text-gray-400 hover:text-gray-600": isLight,
               }
@@ -180,7 +180,7 @@ export function Header({ className }: { className?: string }) {
             target="_blank"
             href="https://www.instagram.com/mrjwei/"
             className={clsx(
-              "px-2 m-1 text-gray-300 hover:text-gray-400 transition-colors duration-200 ease-in-out",
+              "px-2 m-1 text-gray-300 hover:text-gray-100 transition-colors duration-200 ease-in-out",
               {
                 "text-gray-400 hover:text-gray-600": isLight,
               }

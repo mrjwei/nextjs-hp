@@ -1,8 +1,9 @@
+import { ArrowRightIcon } from "@heroicons/react/24/outline"
+import {OutlinedButton} from 'app/components/outlined-button'
 import { techno } from "app/data/fonts"
 import { Grid } from "app/components/grid"
 import { Works } from "app/components/works"
 import { ScrollAndSnap } from "app/components/scroll-and-snap"
-import { MoreButton } from "app/components/more-button"
 import {getAllSortedWritings} from 'app/utils'
 
 export default function Page() {
@@ -48,44 +49,30 @@ export default function Page() {
             Latest Writings
           </h2>
           <Grid writings={writings} numWritings={4} className="content" />
-          <MoreButton link="/writings" label="See More">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="size-6"
+          <div className="flex justify-end">
+            <OutlinedButton
+              link='/writings'
+              className="more-btn relative z-0"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
-              />
-            </svg>
-          </MoreButton>
+              <span className="block z-30">See More</span>
+              <ArrowRightIcon className="w-5 ml-2 arrow" />
+            </OutlinedButton>
+          </div>
         </div>
-        <div className="should-snap lg:h-screen px-8 md:px-16 w-full max-w-[1024px] mx-auto pt-24">
+        <div className="should-snap lg:min-h-screen px-8 md:px-16 w-full max-w-[1024px] mx-auto pt-24">
           <h2 className="heading text-2xl md:text-3xl font-bold mb-8 z-50">
             New Artworks
           </h2>
-          <Works numWorks={2} className="content" />
-          <MoreButton link="/artworks" label="See More">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="size-6"
+          <Works numWorks={4} className="content" />
+          <div className="flex justify-end">
+            <OutlinedButton
+              link='/artworks'
+              className="more-btn relative z-0"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
-              />
-            </svg>
-          </MoreButton>
+              <span className="block z-30">See More</span>
+              <ArrowRightIcon className="w-5 ml-2 arrow" />
+            </OutlinedButton>
+          </div>
         </div>
       </ScrollAndSnap>
     </section>
