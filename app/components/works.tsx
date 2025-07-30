@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { getWorks } from "app/utils"
+import { getAllSortedWorks } from "app/utils"
 import { ArtworkCard } from "app/components/artwork-card"
 
 export function Works({
@@ -9,12 +9,7 @@ export function Works({
   numWorks?: number
   className?: string
 }) {
-  let allWorks = getWorks().sort((a, b) => {
-    if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
-      return -1
-    }
-    return 1
-  })
+  let allWorks = getAllSortedWorks()
   if (numWorks) {
     allWorks = allWorks.slice(0, numWorks)
   }

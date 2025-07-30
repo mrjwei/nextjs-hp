@@ -91,8 +91,15 @@ export function getAllSortedWritings() {
   return writings
 }
 
-export function getWorks() {
-  return getMDXData(path.join(process.cwd(), "app", "artworks", "works"))
+export function getAllSortedWorks() {
+  let works = getMDXData(path.join(process.cwd(), "app", "artworks", "works"))
+  works = works.sort((a, b) => {
+    if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
+      return -1
+    }
+    return 1
+  })
+  return works
 }
 
 export function formatDate(date: string, includeRelative = false) {

@@ -63,6 +63,10 @@ export function generateMetadata({ params }) {
 export default function Writing({ params }) {
   let writings = getAllSortedWritings()
   let writing = writings.find((writing) => writing.slug === params.slug)
+  if (!writing) {
+    notFound()
+  }
+
   const writingIndex = writings.findIndex(
     (writing) => writing.slug === params.slug
   )
@@ -78,16 +82,6 @@ export default function Writing({ params }) {
       }
       return 1
     })
-
-  let oldIndex = writingIndex + 1
-  let newIndex = writingIndex - 1
-
-  const oldPost = writings[oldIndex]
-  const newPost = writings[newIndex]
-
-  if (!writing) {
-    notFound()
-  }
 
   return (
     <div className="w-full max-w-[1024px] mx-auto px-8 md:px-16 py-24">
@@ -131,10 +125,9 @@ export default function Writing({ params }) {
           <CustomMDX source={writing.content} />
         </article>
         <PrevNext
-          oldLink={writingIndex === writings.length - 1 ? '' : `/writings/${oldPost.slug}`}
-          newLink={writingIndex === 0 ? '' : `/writings/${newPost.slug}`}
-          shouldDisableOld={writingIndex === writings.length - 1}
-          shouldDisableNew={writingIndex === 0}
+          items={writings}
+          itemIndex={writingIndex}
+          path='writings'
         />
       </section>
       <hr className="border-[1px] border-gray-200" />

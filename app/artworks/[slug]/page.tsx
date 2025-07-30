@@ -1,13 +1,13 @@
 import { notFound } from "next/navigation"
 import { CustomMDX } from "app/components/mdx"
 import { PrevNext } from "app/components/prev-next"
-import { formatDate, getWorks } from "app/utils"
+import { formatDate, getAllSortedWorks } from "app/utils"
 import { baseUrl } from "app/sitemap"
 import Head from "next/head"
 import { BackToTop } from "app/components/back-to-top"
 
 export async function generateStaticParams() {
-  let works = getWorks()
+  let works = getAllSortedWorks()
 
   return works.map((work) => ({
     slug: work.slug,
@@ -15,7 +15,7 @@ export async function generateStaticParams() {
 }
 
 export function generateMetadata({ params }) {
-  let work = getWorks().find((work) => work.slug === params.slug)
+  let work = getAllSortedWorks().find((work) => work.slug === params.slug)
   if (!work) {
     return
   }
@@ -55,25 +55,13 @@ export function generateMetadata({ params }) {
 }
 
 export default function Artwork({ params }) {
-  const works = getWorks()
+  const works = getAllSortedWorks()
   const work = works.find((work) => work.slug === params.slug)
-  const workIndex = works.findIndex((work) => work.slug === params.slug)
-
-  let prevIndex = workIndex - 1
-  let nextIndex = workIndex + 1
-
-  if (workIndex === works.length - 1) {
-    nextIndex = 0
-  } else if (workIndex === 0) {
-    prevIndex = works.length - 1
-  }
-
-  const prevWork = getWorks()[prevIndex]
-  const nextWork = getWorks()[nextIndex]
-
   if (!work) {
     notFound()
   }
+
+  const workIndex = works.findIndex((work) => work.slug === params.slug)
 
   return (
     <div className="w-full max-w-[1024px] mx-auto px-16 py-24">
@@ -114,8 +102,9 @@ export default function Artwork({ params }) {
           <CustomMDX source={work.content} />
         </article>
         <PrevNext
-          prevLink={`/artworks/${prevWork.slug}`}
-          nextLink={`/artworks/${nextWork.slug}`}
+          items={works}
+          itemIndex={workIndex}
+          path='artworks'
         />
       </section>
       <BackToTop />
