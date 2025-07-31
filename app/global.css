@@ -260,6 +260,12 @@ table {
   text-wrap: balance;
 }
 
+@media (pointer: coarse) {
+  .custom-cursor {
+    display: none;
+  }
+}
+
 .custom-cursor {
   @apply fixed w-16 h-16 border-[1.5px] border-gray-400 rounded-full pointer-events-none -translate-[50%] transition-transform duration-200 ease-in-out;
   z-index: 9999;
