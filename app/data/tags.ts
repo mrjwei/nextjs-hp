@@ -65,4 +65,7 @@ export const tags = {
   casestudy: {
     color: "#9f24b5",
   },
+  studentlife: {
+    color: "#8a293e",
+  },
 }
