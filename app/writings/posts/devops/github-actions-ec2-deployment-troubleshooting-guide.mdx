@@ -1,0 +1,146 @@
+---
+title: "Github Actions & EC2 Deployment: Troubleshooting Guide"
+slug: "github-actions-ec2-deployment-troubleshooting-guide"
+publishedAt: "2025-08-17"
+summary: "When working on Assignment 1 of the Software Life Cycle Management unit, we ran into several technical issues, even though we followed the instructions provided by the teaching staff."
+tags: ["dev", "devops", "git", "tutorial"]
+---
+
+- [Issue 1: 502 Bad Request](#issue-1-502-bad-request)
+  - [Understanding the Issue](#understanding-the-issue)
+  - [Fix](#fix)
+- [Issue 2: Failed Authentication and Data Fetching](#issue-2-failed-authentication-and-data-fetching)
+  - [Understanding the Issue](#understanding-the-issue-1)
+  - [Fix](#fix-1)
+- [Issue 3: Running Out of Memory](#issue-3-running-out-of-memory)
+  - [Understanding the Issue](#understanding-the-issue-2)
+  - [Fix](#fix-2)
+- [Issue 4: Running Out of Disk Space](#issue-4-running-out-of-disk-space)
+  - [Understanding the Issue](#understanding-the-issue-3)
+  - [Fix](#fix-3)
+- [Conclusion](#conclusion)
+
+When working on Assignment 1 of the *Software Life Cycle Management* unit, we ran into several technical issues, even though we followed the instructions provided by the teaching staff.
+
+Fortunately, by understanding the role of each step, I was able to troubleshoot the problems and get my application running stably on AWS EC2. In this article, I'll share some of the most common issues and how I fixed them.
+## Issue 1: 502 Bad Request
+
+### Understanding the Issue
+
+The error means Nginx cannot forward your request to the application server (in our case, the Node.js server). The most likely reason is that **the backend process isn't running**.
+
+### Fix
+
+Check if your backend process is running with:
+
+```
+pm2 status
+```
+
+If it shows the process as _stopped_ or _errored_, or if no process is listed at all, start it again from the `backend` directory:
+
+```
+pm2 start "npm run start" --name="backend"
+```
+
+If that doesn’t solve it, another possible cause is that your GitHub Actions runner is still running. Check the _Actions_ tab on GitHub and wait until all jobs finish before trying the `pm2` command again.
+
+## Issue 2: Failed Authentication and Data Fetching
+
+### Understanding the Issue
+
+If you can access your app from your EC2 instance's public IP, but cannot authenticate or fetch data, the most likely cause is that **the base URL in your codebase doesn't match your EC2 public IP**. Since the public IP changes each time the instance is restarted, you need to update your base URL accordingly.
+
+### Fix
+
+Check if the base URL for data fetching matches your current EC2 public IP. If not, update it in your codebase and push the changes in your main branch.
+
+## Issue 3: Running Out of Memory
+
+### Understanding the Issue
+
+During CI/CD, I repeatedly got stuck at the `yarn run build` step. Specifically, the job stopped at:
+
+```
+Creating an optimized production build...
+```
+
+Then it failed with a message that resources weren’t sufficient and the process was killed. This indicates **RAM ran out**, so you need more memory for the job to succeed.
+
+### Fix
+
+You can add **swap space**, which is a portion of your EC2 disk that acts as overflow memory when RAM is full.
+
+Run the following commands to create extra memory space:
+
+```
+# Check memory usage (h stands for human-readable format)
+free -h
+
+# Allocate 2GB disk space
+sudo fallocate -l 2G /swapfile
+
+# Grant read and write permissions to file owner
+sudo chmod 600 /swapfile
+
+# Make swapfile
+sudo mkswap /swapfile
+
+# Enable swap
+sudo swapon /swapfile
+
+# Enable swap automatically when rebooting
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+```
+
+Re-run the failed jobs after enabling swap. This method is quick, free, and effective for preventing `yarn run build` from crashing.
+
+That said, the root cause is the limited performance of the small EC2 instance (t2.micro) used for the assignment. In real-world projects, it’s better to **choose a larger, more powerful instance type**.
+
+## Issue 4: Running Out of Disk Space
+
+### Understanding the Issue
+
+After enabling swap space, you may still get stuck again at:
+
+```
+Creating an optimized production build...
+```
+
+But this time, the error is different:
+
+```
+Failed to compile.
+ENOSPC: no space left on device, write
+```
+
+This means the **disk itself is full**, so you need to free up space.
+
+### Fix
+
+Some ways to reclaim space include removing packages, clearing caches, and deleting old logs. The following commands worked for me:
+
+```
+# Clear yarn cache
+yarn cache clean
+
+# Remove frontend packages
+rm -rf node_modules
+
+# Clear old Linux packages
+sudo apt-get clean
+
+# Delete system logs
+sudo journalctl --vacuum-time=3d
+
+# Clear package cache
+sudo rm -rf /var/cache/apt/archives/*
+```
+
+Once cleaned, re-run your failed GitHub Actions jobs.
+
+## Conclusion
+
+In this article, I shared the most common issues my classmates and I encountered when implementing CI/CD with GitHub Actions and AWS EC2. By understanding the causes behind the errors, I not only managed to fix them myself but also helped friends troubleshoot their deployments.
+
+Looking back, most of the challenges were due to the limitations of the **t2.micro EC2 instance** we used for the assignment. In real-world projects, opting for a more capable instance type would eliminate most of these problems entirely.

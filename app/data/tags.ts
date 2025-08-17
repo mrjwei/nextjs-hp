@@ -68,4 +68,7 @@ export const tags = {
   studentlife: {
     color: "#8a293e",
   },
+  devops: {
+    color: "#754a31",
+  },
 }
