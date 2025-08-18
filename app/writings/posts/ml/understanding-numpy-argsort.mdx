@@ -1,0 +1,102 @@
+---
+title: "Understanding numpy.argsort()"
+slug: "understanding-numpy-argsort"
+publishedAt: "2025-08-18"
+summary: "The argsort method in numpy returns an array of indices that can be used to sort the array itself or another array. At first, its mechanism might feel a little confusing, but the idea is both powerful and straightforward once you understand how it works and why we need it."
+tags: ["dev", "ai", "tutorial"]
+---
+
+- [An Array of Indices](#an-array-of-indices)
+- [Why Use argsort Instead of Just Sorting?](#why-use-argsort-instead-of-just-sorting)
+- [Sorting Higher-Dimensional Arrays](#sorting-higher-dimensional-arrays)
+- [Conclusion](#conclusion)
+
+
+The `argsort` method in numpy returns an array of indices that can be used to sort the array itself or another array. At first, its mechanism might feel a little confusing, but the idea is both powerful and straightforward once you understand how it works and why we need it.
+
+## An Array of Indices
+
+Take this example:
+
+```
+import numpy as np
+
+arr = np.array([10, 15, 3])
+sorted_indices = np.argsort(arr)
+print(sorted_indices)
+```
+
+This outputs:
+
+```
+[2 0 1]
+```
+
+- 2 means the smallest element (3) is at index 2.
+- 0 means the next element in sorted order (10) is at index 0.
+- 1 means the last element (15) is at index 1.
+
+So instead of giving us the sorted array, `argsort` tells us **the positions of the sorted values in the original array**.
+
+## Why Use argsort Instead of Just Sorting?
+
+You may wonder why not just call `np.sort` and be done with it? The difference is that `argsort` preserves **order information**. This becomes useful when you want to sort **related arrays together**.
+
+For example:
+
+```
+fruits = np.array(['orange', 'apple', 'banana'])
+prices = np.array([1.5, 2.5, 1.0])
+```
+
+We want to sort `prices` in ascending order and apply the same ordering to `fruits`:
+
+```
+indices = np.argsort(prices)
+sorted_prices = prices[indices]
+sorted_fruits = fruits[indices]
+print(sorted_prices)
+print(sorted_fruits)
+```
+
+This outputs:
+
+```
+[1.  1.5 2.5]
+['banana' 'orange' 'apple']
+```
+
+Here, `argsort` gave us the index order to sort both arrays consistently. That way, `prices` and `fruits` stay aligned.
+
+## Sorting Higher-Dimensional Arrays
+
+`argsort` works with arrays of any number of dimensions. By default, it sorts along the last axis (axis=-1), but you can specify another axis if needed.
+
+Example with a 3D array:
+
+```
+arr_3d = np.array([
+    [[3, 1, 2],
+     [9, 6, 4]],
+    [[7, 5, 8],
+     [0, 2, 1]]
+])
+
+print(np.argsort(arr_3d, axis=-1))
+```
+
+It outputs:
+
+```
+[[[1 2 0]
+  [2 1 0]]
+ [[1 2 0]
+  [0 2 1]]]
+```
+
+Each sub-array gets sorted independently along the last axis (columns, in this case).
+## Conclusion
+
+`numpy` comes with many specialized methods that can feel unintuitive at first glance. But once you see their purpose, they become simple and powerful tools.
+
+`argsort` is one of those methods:  instead of just sorting values, it gives you the ordering information, which is invaluable when you need to sort related arrays or keep track of ranks and positions.
