@@ -1,0 +1,101 @@
+---
+title: "Understanding R-Squared as a Measure of Model Fit"
+slug: "understanding-r-squared"
+publishedAt: "2025-08-20"
+summary: "The argsort method in numpy returns an array of indices that can be used to sort the array itself or another array. At first, its mechanism might feel a little confusing, but the idea is both powerful and straightforward once you understand how it works and why we need it."
+tags: ["dev", "ai", "tutorial"]
+---
+
+- [An Array of Indices](#an-array-of-indices)
+- [Why Use argsort Instead of Just Sorting?](#why-use-argsort-instead-of-just-sorting)
+- [Sorting Higher-Dimensional Arrays](#sorting-higher-dimensional-arrays)
+- [Conclusion](#conclusion)
+
+## What is R-Squared?
+
+R-squared ($R^2$) is a metric that measures **how much of the variance in the actual data is captured by a model’s predictions**. It’s most commonly used in evaluating linear regression models, but it can also be applied to non-linear models.
+
+The formula is:
+
+<div style={{textAlign: "center"}}>
+$R^2 = 1 - \frac{SS_{res}}{SS_{total}}$
+</div>
+
+Where:
+
+- $SS_{res} = \sum(y_i - \hat{y}_i)^2$ : Sum of squared residuals (errors between actual and predicted values)
+- $SS_{total} = \sum(y_i - \bar{y})^2$ : Total sum of squares (errors between actual values and their mean)
+- $y_i$ : Actual value at index $i$
+- $\hat{y}_i$ : Predicted value at index $i$
+- $\bar{y}$ : Mean of actual values
+
+## R-Squared Value Space and Interpretations
+
+- $R^2 = 1$ : The model perfectly explains all variability in the data ($SS_{res} = 0$).
+- $R^2 = 0$ : The model explains none of the variability; predictions are no better than predicting the mean.
+- $R^2 < 0$ : The model performs worse than simply predicting the mean.
+- $0 < R^2 < 1$ : The model explains part of the variance; the higher the better.
+
+## Limitations
+
+Although $R^2$ is widely used, it can be misleading. A high $R^2$ does not always translate into a good model. Some pitfalls include:
+
+### 1. Overfitting
+
+A model can achieve a very high $R^2$ by overfitting the training data. This means it captures noise rather than general patterns, and will likely perform poorly on unseen data.
+
+### 2. Coincidental Fits
+
+Sometimes a model—especially a linear one applied to non-linear data—may still produce a high $R^2$ by coincidence. Similarly, including irrelevant but correlated features can inflate $R^2$ without improving real predictive power.
+
+### 3. Increasing Complexity
+
+$R^2$ always increases or at least stays the same when you add more features, even if those features are irrelevant. This happens because there is more flexibility for optimization, allowing residuals to shrink.
+
+This can feel abstract, so let’s look at it intuitively and mathematically.
+
+#### Intuitive Justification
+
+Adding more features increases the dimensionality of the model, giving it more flexibility to fit the training data. This flexibility usually lowers residuals, thereby increasing $R^2$.
+
+#### Mathematical Justification
+
+Here’s one way to visualize it:
+
+- Let $A$ be a subset of a larger set $B$.
+- If $x_A \in A$ makes $\min_{x \in A}f(x)$, then because $A \subseteq B$, $\min_{x \in B}f(x)$ cannot be worse—it’s either the same or better.
+<br/>
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/understanding-r-squared/r-squared.png"
+    alt="Mathematical justification illustrated"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Mathematical justification illustrated</figcaption>
+</figure>
+
+This extends naturally to regression with feature sets:
+
+- $X_1$: dataset with fewer features, with coefficient vector $W_1$
+- $X_2$: dataset containing $X_1$ plus extra features, with coefficient vector $W_2$
+- Predictions: $\hat{y}_1 = W_1X_1$, $\hat{y}_2 = W_2X_2$
+
+We can always construct $W_2$ so that it reproduces $\hat{y}_1$ by setting the extra feature coefficients to zero:
+
+<div style={{textAlign: "center"}}>
+$W_2 = \begin{bmatrix} W_1 \\ 0 \\ 0 \end{bmatrix}$
+</div>
+
+Thus:
+
+- If the added features are useless, the residual sum of squares stays the same ($SS_{res_2} = SS_{res_1}$).
+- If the added features do help, the residuals shrink ($SS_{res_2} < SS_{res_1}$).
+
+Either way, $R^2$ never decreases when adding features.
+
+## Conclusion
+
+$R^2$ is a helpful metric for understanding how well a model fits training data, but it must be interpreted with caution. A high $R^2$ can be the result of overfitting, coincidental correlations, or simply adding more features. For a more reliable assessment, $R^2$ should be used alongside other metrics and validation techniques. I’ll be covering these complementary approaches in upcoming articles, so stay tuned!
+
+
+
