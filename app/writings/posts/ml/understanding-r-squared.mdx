@@ -2,14 +2,20 @@
 title: "Understanding R-Squared as a Measure of Model Fit"
 slug: "understanding-r-squared"
 publishedAt: "2025-08-20"
-summary: "The argsort method in numpy returns an array of indices that can be used to sort the array itself or another array. At first, its mechanism might feel a little confusing, but the idea is both powerful and straightforward once you understand how it works and why we need it."
+summary: "R-squared is a metric that measures how much of the variance in the actual data is captured by a model’s predictions. It’s most commonly used in evaluating linear regression models, but it can also be applied to non-linear models."
 tags: ["dev", "ai", "tutorial"]
 ---
 
-- [An Array of Indices](#an-array-of-indices)
-- [Why Use argsort Instead of Just Sorting?](#why-use-argsort-instead-of-just-sorting)
-- [Sorting Higher-Dimensional Arrays](#sorting-higher-dimensional-arrays)
+- [What is R-Squared?](#what-is-r-squared)
+- [R-Squared Value Space and Interpretations](#r-squared-value-space-and-interpretations)
+- [Limitations](#limitations)
+  - [1. Overfitting](#1-overfitting)
+  - [2. Coincidental Fits](#2-coincidental-fits)
+  - [3. Increasing Complexity](#3-increasing-complexity)
+    - [Intuitive Justification](#intuitive-justification)
+    - [Mathematical Justification](#mathematical-justification)
 - [Conclusion](#conclusion)
+
 
 ## What is R-Squared?
 
