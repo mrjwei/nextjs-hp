@@ -11,6 +11,9 @@ export const tags = {
   ai: {
     color: "#0ca691",
   },
+  datascience: {
+    color: "#2c8263",
+  },
   idea: {
     color: "#179107",
   },
