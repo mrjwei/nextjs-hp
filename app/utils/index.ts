@@ -76,6 +76,24 @@ export function getSeries() {
   })
 }
 
+export function getAllSortedSeries(){
+  const series: {subdir: string, items: {metadata: TMetadata, slug: string, content: string}[]}[] = []
+  const subdirs = getSeries()
+  subdirs.forEach((subdir) => {
+    series.push({subdir, items: getWritings(subdir)})
+  })
+  return series
+}
+
+export function getAllSortedSeriesItems(){
+  const writings: {metadata: TMetadata, slug: string, content: string}[] = []
+  const subdirs = getSeries()
+  subdirs.forEach((subdir) => {
+    writings.push(...getWritings(subdir))
+  })
+  return writings
+}
+
 export function getAllSortedWritings() {
   let writings = getWritings()
   let subdirs = getSeries()
@@ -141,4 +159,9 @@ export function formatDate(date: string, includeRelative = false) {
 export const capitalize = (s: string) => {
   return s.charAt(0).toUpperCase() + s.slice(1)
 }
+
+export const ParseSeriesDirName = (dirName: string) => {
+  return dirName.split("-").map((word) => capitalize(word)).join(" ")
+}
+
 

@@ -13,6 +13,9 @@ const navItems = {
   "/": {
     name: "Home",
   },
+  "/writings/series": {
+    name: "Series",
+  },
   "/writings": {
     name: "Writings",
   },
