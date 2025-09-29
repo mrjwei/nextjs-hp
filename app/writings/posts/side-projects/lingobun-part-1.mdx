@@ -1,0 +1,68 @@
+---
+title: "LingoBun Part 1: Rapid Prototyping Made Easy With Emerging Tooling"
+slug: "lingobun-part-1"
+publishedAt: "2025-09-29"
+summary: "As an English learner, I've long struggled to grow my vocabulary. After trying various approaches, I discovered the most effective method for me was to write down new words or terms, along with their usage, when they appeared in their natural context."
+tags: ["web", "dev", "nextjs", "process"]
+---
+
+- [Context](#context)
+- [From Sketch to Working Prototype in One Day](#from-sketch-to-working-prototype-in-one-day)
+- [Why It Was Possible](#why-it-was-possible)
+- [Conclusion](#conclusion)
+
+## Context
+
+As an English learner, I've long struggled to grow my vocabulary. After trying various approaches, I discovered the most effective method for me was to **write down new words or terms, along with their usage, when they appeared in their natural context**.
+
+Two years ago, I started using [Quizlet](https://quizlet.com/), but I found it confusing and distracting. It had many features I didn't need; I just wanted a simple app to help me build my vocabulary.
+
+So I decided to develop *LingoBun*, the vocabulary builder that *I* want to use. In this series, I'll share how I'm developing it—the methods, the challenges, and how I'm solving them.
+
+## From Sketch to Working Prototype in One Day
+
+One of the most exciting things about this project is that I took the idea **from a back-of-the-napkin sketch to a working prototype in a single day**.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/lingobun-part-1/sketch.png"
+    alt="back-of-the-napkin sketch"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Back-of-the-napkin sketch</figcaption>
+</figure>
+
+<br/>
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/lingobun-part-1/prototype.png"
+    alt="prototype"
+    width="800px"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Prototype</figcaption>
+</figure>
+
+Although not all features are finished yet, most core functionality and pages are already in place, and the interface is surprisingly intuitive.
+
+## Why It Was Possible
+
+This speed was largely thanks to advances in web-development tooling:
+
+- **Modern front-end frameworks like [Next.js](https://nextjs.org/) are more powerful than ever.**
+	- Server-side rendering (SSR) and React’s Suspense significantly improve first-paint times and SEO.
+	- Server Components let you colocate server and client logic, removing boilerplate API layers.
+- **High-quality component libraries such as [Shadcn](https://ui.shadcn.com/) make early prototypes look and feel polished.**
+	- Traditionally, prototypes focus on function over form while designers later build pixel-perfect mockups in Figma.
+	- With a good component library, you can get high-fidelity, testable interfaces right away, saving huge amounts of time.
+- **Developer-friendly deployment platforms like [Vercel](https://vercel.com/) streamline the process even further.**
+	- Their simple CLI and intuitive dashboard make it possible to deploy a working app in minutes and scale as needed.
+
+These tools together make it far easier for solo developers or small teams to move from idea to working software at speed, even without leaning on AI-assisted tools.
+
+## Conclusion
+
+In this first part of the series, I've shared how *LingoBun* went from concept to prototype in a day, thanks to modern development tools. Some argue that relying on ready-made tools discourages developers from learning the fundamentals. I disagree, because it takes judgement and experience to select the right tools from a crowded ecosystem, and doing so can actually accelerate your learning and enhance your productivity.
+
+In the next part, I'll dive into specific implementation challenges and how I tackled them.
