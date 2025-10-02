@@ -76,17 +76,27 @@ export function getSeries() {
   })
 }
 
-export function getAllSortedSeries(){
-  const series: {subdir: string, items: {metadata: TMetadata, slug: string, content: string}[]}[] = []
+export function getAllSortedSeries() {
+  const series: {
+    subdir: string
+    items: { metadata: TMetadata; slug: string; content: string }[]
+  }[] = []
   const subdirs = getSeries()
   subdirs.forEach((subdir) => {
-    series.push({subdir, items: getWritings(subdir)})
+    let items = getWritings(subdir)
+    items = items.sort((a, b) => {
+      if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
+        return -1
+      }
+      return 1
+    })
+    series.push({ subdir, items })
   })
   return series
 }
 
-export function getAllSortedSeriesItems(){
-  const writings: {metadata: TMetadata, slug: string, content: string}[] = []
+export function getAllSortedSeriesItems() {
+  const writings: { metadata: TMetadata; slug: string; content: string }[] = []
   const subdirs = getSeries()
   subdirs.forEach((subdir) => {
     writings.push(...getWritings(subdir))
@@ -161,7 +171,8 @@ export const capitalize = (s: string) => {
 }
 
 export const ParseSeriesDirName = (dirName: string) => {
-  return dirName.split("-").map((word) => capitalize(word)).join(" ")
+  return dirName
+    .split("-")
+    .map((word) => capitalize(word))
+    .join(" ")
 }
-
-
