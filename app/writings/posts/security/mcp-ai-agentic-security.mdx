@@ -1,0 +1,61 @@
+---
+title: "MCP and Agentic Security Conference, 2025"
+slug: "mcp-ai-agentic-security"
+publishedAt: "2025-10-02"
+summary: "At a recent conference, I took away some key insights on how the Model Context Protocol (MCP) and AI agents are shaping the future of software engineering and the security concerns that come with them."
+tags: ["ai", "security", "dev"]
+---
+
+- [AI Empowers Humans](#ai-empowers-humans)
+- [AI Raises Security Concerns](#ai-raises-security-concerns)
+- [MCP and Agentic Best Practices](#mcp-and-agentic-best-practices)
+- [Conclusion](#conclusion)
+
+At a recent conference, I took away some key insights on how the **Model Context Protocol (MCP)** and **AI agents** are shaping the future of software engineering and the security concerns that come with them.
+
+## AI Empowers Humans
+
+- Ideas are turning into capabilities quickly.
+- 90% of developers are already using AI for enhanced productivity.
+- Many are going beyond basic use, building **AI agents** that leverage **MCP** to connect with and integrate third-party tools.
+
+## AI Raises Security Concerns
+
+With this rapid adoption comes risk. Reported cybersecurity incidents involving AI agents are emerging and increasing. Some of the most critical threats include:
+	- Prompt injection
+	- Command injection
+	- Tool poisoning
+	- Remote code execution
+	- Unauthenticated access
+
+Threat vectors can exist on either side, the **MCP server**, the **MCP client**, or both. What's striking is **how easy these attacks are to launch** and **how profound their impact can be**.
+
+## MCP and Agentic Best Practices
+
+To reduce these risks, both server-side and client-side defenses are needed.
+
+On the server side:
+- Maintain an MCP registy
+- Mandate authentication
+- Strengthen access controls
+- Use only trusted sources (though trust is not always easy to assess)
+
+On the client side:
+- Sanitize prompts and contexts
+- Avoid concatenating untrusted input into prompts
+- Filter responses to prevent data leaks
+- Keep audit logs of all context access and modifications
+
+Beyond these, **continuous monitoring** and **red teaming** are crucial.
+
+One tip that I found particularly valuable was to *integrate MCP security practices into the Software Development Life Cycle (SDLC)*. For example:
+
+- Model MCP-related threats during architecture design
+- Enforce MCP-specific coding standards
+- Mandate security testing
+
+This could reshape existing software engineering practices, signaling how deeply AI is beginning to influence the field.
+
+## Conclusion
+
+The conference introduced me to the new frontier of MCP and AI agentic security. It helped me realise that security must evolve alongside capability. I'm glad to have learned some useful strategies and one of them is, *when vulnerabilities like injection patterns are discovered, treat them as incidents, investigate the context, assess the impact, and apply preventive and detective measures immediately*.
