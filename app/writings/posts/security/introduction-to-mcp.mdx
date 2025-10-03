@@ -1,0 +1,97 @@
+---
+title: "An Introduction to MCP, Its Usage, and Security Considerations"
+slug: "introduction-to-mcp"
+publishedAt: "2025-10-01"
+summary: "MCP is an open-source protocol that standardizes communication between AI models and external services like databases, APIs, or local tools."
+tags: ["ai", "security", "dev"]
+---
+
+- [MCP Components](#mcp-components)
+- [MCP Core: JSON-Mediated Communication](#mcp-core-json-mediated-communication)
+- [MCP Security Considerations](#mcp-security-considerations)
+- [Conclusion](#conclusion)
+
+[Model Context Protocol (MCP)](https://modelcontextprotocol.io/docs/getting-started/intro) is an open-source protocol that standardizes communication between AI models and external services like databases, APIs, or local tools.
+
+In this article, I'll break down how MCP works, why it's powerful, and some of the security considerations to keep in mind.
+
+## MCP Components
+
+The name _Model Context Protocol_ might sound abstract, but the concept is straightforward: **MCP is to AI–tool communication what HTTP/HTTPS is to web client–server interaction.**
+
+The key components are:
+
+- **MCP server**: provides tools, resources, and prompts for AI models to use (the *context*)
+- **MCP client**: the AI client that connects to the server and consumes those capabilities.
+
+At the core is the **data layer protocol**, which defines [primitives](https://modelcontextprotocol.io/docs/learn/architecture#primitives)that let AI clients and servers describe what they can do. The main primitives are:
+
+- **Tools**: functions the AI can execute to perform tasks
+- **Resources**: data the AI can access
+- **Prompts**: reusable templates that organize interactions with AI models
+
+## MCP Core: JSON-Mediated Communication
+
+At its simplest, MCP is just structured messaging: JSON-RPC over a transport layer (like stdin/stdout, sockets, or HTTP).
+
+For example, an AI client can ask a server what tools are available:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 2,
+  "method": "tools/list"
+}
+```
+
+And the server might respond with:
+
+```json
+[
+  {
+    "name": "docs.search",
+    "description": "Search documents by keyword",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "query": { "type": "string" }
+      },
+      "required": ["query"]
+    }
+  },
+  {
+    "name": "docs.get",
+    "description": "Retrieve a document by ID",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" }
+      },
+      "required": ["id"]
+    }
+  }
+]
+```
+
+Every interaction follows this structured JSON format. That simplicity is the source of MCP's power: **Before MCP**, each service integration required writing custom, one-off connectors. **With MCP**, however, integrations become standardized, portable, and tool-agnostic.
+
+## MCP Security Considerations
+
+The power of MCP also introduces risk. If misconfigured, an MCP server could unintentionally expose sensitive data or system functionality to AI clients.
+
+For instance:
+
+- An MCP server with access to your local filesystem might let an AI read files you didn’t intend to share.
+- A poorly designed tool could act as a backdoor, bypassing normal approval flows or security checks.
+
+This is why MCP servers should be designed with least-priviledge principles: expose only the tools and resources necessary, and enforce access controls.
+
+For more details on common threats and security best practices, check out [MCP and Agentic Security Conference, 2025](./mcp-ai-agentic-security.mdx).
+
+## Conclusion
+
+MCP may sound abstract at first, but once you see it in action, it's actually quite simple. Its strength lies in that simplicity: JSON-based way for AI models to talk to external systems.
+
+That said, with greater integration capabilities come greater responsibility. Developers and organizations should adopt established cybersecurity practices when deploying MCP tools.
+
+If you’re curious about how MCP and AI agents raise new security challenges (like prompt injection and tool poisoning), I’ve written another article summarizing insights from the *MCP and Agentic Security Conference, 2025*. You can read it [here](./mcp-ai-agentic-security.mdx).
