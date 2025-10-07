@@ -1,0 +1,133 @@
+---
+title: "An In-depth Look at the 'Missing Suspense boundary with useSearchParams' Error in Next.js"
+slug: "missing-suspense-boundary"
+publishedAt: "2025-10-07"
+summary: "As an English learner, I've long struggled to grow my vocabulary. After trying various approaches, I discovered the most effective method for me was to write down new words or terms, along with their usage, when they appeared in their natural context."
+tags: ["web", "dev", "nextjs", "reactjs"]
+---
+
+- [Unpacking SSR, CSR, SSG, and Prerendering](#unpacking-ssr-csr-ssg-and-prerendering)
+  - [Server-Side Rendering (SSR) vs. Client-Side Rendering (CSR)](#server-side-rendering-ssr-vs-client-side-rendering-csr)
+  - [Pros and Cons of SSR](#pros-and-cons-of-ssr)
+  - [SSR, SSG, and Prerendering](#ssr-ssg-and-prerendering)
+- [Scoping Client Rendering with Suspense](#scoping-client-rendering-with-suspense)
+- [Conclusion](#conclusion)
+
+
+When developing [LingoBun](./side-projects/lingobun-part-1.mdx), I ran into the following error:
+
+>useSearchParams() should be wrapped in a Suspense boundary at page ~
+
+It happened with this code:
+
+```js
+export const SideSheet = ({ categories }: { categories: ICategory[] }) => {
+  const searchParams = useSearchParams();
+  ...
+}
+```
+<br/>
+```js
+{/* In MyPage.tsx */}
+...
+<SideSheet categories={categories} />
+...
+```
+
+The root cause turned out to be Next.js's prerendering mechanism.
+
+According to the documentation,
+
+> Reading search parameters through `useSearchParams()` without a Suspense boundary will opt the entire page into client-side rendering. This could cause your page to be blank until the client-side JavaScript has loaded.
+
+What does it mean? And how does it relate to prerendering? Let's unpack the key concepts first.
+
+## Unpacking SSR, CSR, SSG, and Prerendering
+
+In modern web development, **server-side rendering (SSR), client-side rendering (CSR), static site generation (SSG)**, and **prerendering** are foundational yet often confusing concepts.
+
+### Server-Side Rendering (SSR) vs. Client-Side Rendering (CSR)
+
+**Server-side rendering (SSR)** renders a web page on the server and sends the complete HTML to the client (e.g. a web browser).
+
+Think back to the first HTML/CSS website you made: the page was built on the server and the browser just displayed what it received. That's the simplest form of server rendering.
+
+In contrast, **client-side rendering (CSR)** builds the page directly in the browser using Javascript. For example, in your first React app, you might have seen something like this in `index.html`:
+
+```html
+<div id="root">
+  <!-- Client-side rendered conent -->
+</div>
+```
+
+React mounts the UI into this root `div` after the browser downloads and executes the Javascript bundle.
+
+### Pros and Cons of SSR
+
+Advantages of SSR:
+
+1. **Better SEO**. The page is already rendered  when crawled by search engines.
+2. **Faster initial display**. There's no need to wait for Javascript execution before seeing conent.
+3. **Smaller frontend bundles**. Less logic is offloaded to the client.
+4. **Easier server-side data fetching**. You can query databases directly.
+
+Drawback of SSR:
+
+1. **Slower time-to-first-byte (TTFB)**. The server must render on every request.
+2. **Less interactive**. The HTML alone isn't interactive until being hydrated by client-side JS.
+
+To balance performance and interactivity, most modern frameworks including Next.js combine SSR and CSR.
+
+### SSR, SSG, and Prerendering
+
+Broadly, **prerendering** refers to rendering pages before they're delivered to users. This can happend at:
+
+- **Request time (SSR)**: rendered dynamically on every request
+- **Build time (SSG)**: rendered once during the build
+
+<br/>
+
+<Table
+  data={{
+    headers: ["Rendering Method", "When HTML is Generated", "Example Function", "Typical Use Case"],
+    rows: [
+      ["SSR", "On every request", "getServerSideProps()", "Dynamic pages with per-user data"],
+      ["SSG", "At build time", "getStaticProps()", "Mostly static content (blogs, docs)"],
+    ],
+  }}
+/>
+
+Next.js uses SSG by default for static routes. However, when a component depends on runtime data like URL query strings, Next.js cannot know those values at build time. As a result, it falls back to client-side rendering (CSR) for the parent component or the whole page that contains the component.
+
+## Scoping Client Rendering with Suspense
+
+The fix was straightforward—wrap the component with `Suspense`:
+
+```javascript
+{/* In MyPage.tsx */}
+...
+<React.Suspense fallback={<Placeholder/>}>
+  <SideSheet categories={categories} />
+</React.Suspense>
+...
+```
+
+But why does this work?
+
+Suspense tells React that a specific subtree may rely on data or conditions that aren’t ready during build. It allows the server to defer that part while rendering the rest of the page.
+
+Here’s what happens conceptually:
+1. React encounters a `Suspense` boundary.
+2. It renders the rest of the page normally.
+3. For the part inside Suspense, it temporarily shows the fallback (e.g. a placeholder or loader).
+4. Once the client-side JavaScript loads and resolves the required data (in this case, searchParams), the real component is streamed in and replaces the fallback.
+
+This way, we **isolate the client-side logic** inside the `Suspense` boundary without forcing the entire page into CSR.
+
+If you’d like to dive deeper, Dan Abramov’s post [Algebraic Effects for the Rest of Us](https://overreacted.io/algebraic-effects-for-the-rest-of-us/) provides a conceptual model behind `Suspense`.
+
+## Conclusion
+
+The "*useSearchParams() should be wrapped in a suspense boundary at page ~*" error can be confusing at first. But once you understand how Next.js prerendering works and how `Suspense` scopes client rendering, the fix becomes intuitive.
+
+Stay tuned for my next article, where I'll explore `Suspense` under the hood.
