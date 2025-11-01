@@ -60,7 +60,7 @@ export function generateMetadata({ params }) {
   }
 }
 
-export default function Writing({ params }) {
+export default async function Writing({ params, searchParams }) {
   let writings = getAllSortedWritings()
   let writing = writings.find((writing) => writing.slug === params.slug)
   if (!writing) {
@@ -82,6 +82,12 @@ export default function Writing({ params }) {
       }
       return 1
     })
+
+  const from = (await searchParams).from || null
+  let fromParts = []
+  if (from) {
+    fromParts = from.split("/").filter((part) => part !== "")
+  }
 
   return (
     <div className="w-full max-w-[1024px] mx-auto px-8 md:px-16 py-24">
@@ -112,6 +118,30 @@ export default function Writing({ params }) {
             }),
           }}
         />
+        {from ? (
+          fromParts.length > 1 ? (
+            <Link
+              href={`/writings/${from}`}
+              className="text-blue-500 hover:underline block mb-4"
+            >
+              Back to Series
+            </Link>
+          ) : (
+            <Link
+              href={`/writings/${from}`}
+              className="text-blue-500 hover:underline block mb-4"
+            >
+              Back to All Series
+            </Link>
+          )
+        ) : (
+          <Link
+            href="/writings"
+            className="text-blue-500 hover:underline block mb-4"
+          >
+            Back to All Writings
+          </Link>
+        )}
         <h1 className="title font-bold text-4xl mb-4">
           {writing.metadata.title}
         </h1>
@@ -124,11 +154,33 @@ export default function Writing({ params }) {
         <article className="prose">
           <CustomMDX source={writing.content} />
         </article>
-        <PrevNext
-          items={writings}
-          itemIndex={writingIndex}
-          path='writings'
-        />
+        <div className="mt-8 flex flex-col md:flex-row md:justify-between items-center">
+          {from ? (
+            fromParts.length > 1 ? (
+              <Link
+                href={`/writings/${from}`}
+                className="text-blue-500 hover:underline mb-4 md:mb-0"
+              >
+                Back to Series
+              </Link>
+            ) : (
+              <Link
+                href={`/writings/${from}`}
+                className="text-blue-500 hover:underline mb-4 md:mb-0"
+              >
+                Back to All Series
+              </Link>
+            )
+          ) : (
+            <Link
+              href="/writings"
+              className="text-blue-500 hover:underline mb-4 md:mb-0"
+            >
+              Back to All Writings
+            </Link>
+          )}
+          <PrevNext items={writings} itemIndex={writingIndex} path="writings" />
+        </div>
       </section>
       <hr className="border-[1px] border-gray-200" />
       <section className="pt-16">

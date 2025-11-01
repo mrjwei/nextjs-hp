@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation"
+import Link from "next/link"
 import { CustomMDX } from "app/components/mdx"
 import { PrevNext } from "app/components/prev-next"
 import { formatDate, getAllSortedWorks } from "app/utils"
@@ -92,6 +93,9 @@ export default function Artwork({ params }) {
             }),
           }}
         />
+        <Link href={`/artworks`} className="text-blue-500 hover:underline block mb-4">
+            Back to All Artworks
+          </Link>
         <h1 className="title font-bold text-4xl">{work.metadata.title}</h1>
         <div className="flex justify-between items-center mt-2 mb-8 text-sm">
           <p className="text-sm text-neutral-600">
@@ -101,11 +105,16 @@ export default function Artwork({ params }) {
         <article className="prose">
           <CustomMDX source={work.content} />
         </article>
-        <PrevNext
-          items={works}
-          itemIndex={workIndex}
-          path='artworks'
-        />
+        <div className="mt-8 flex flex-col md:flex-row md:justify-between items-center">
+          <Link href={`/artworks`} className="text-blue-500 hover:underline mb-4 md:mb-0">
+            Back to All Artworks
+          </Link>
+          <PrevNext
+            items={works}
+            itemIndex={workIndex}
+            path='artworks'
+          />
+        </div>
       </section>
       <BackToTop />
     </div>

@@ -6,7 +6,7 @@ export const OutlinedButton = ({ link, children, className }: {link?: string, ch
     return (
         <Link
           href={link}
-          className={clsx("outline-btn mt-6 relative border-2 border-gray-800 rounded-full px-4 py-1 inline-flex justify-center items-center z-0", className)}
+          className={clsx("outline-btn relative border-2 border-gray-800 rounded-full px-4 py-1 inline-flex justify-center items-center z-0", className)}
         >
           {children}
         </Link>
@@ -15,7 +15,7 @@ export const OutlinedButton = ({ link, children, className }: {link?: string, ch
     return (
       <button
         type="button"
-        className={clsx("outline-btn mt-6 relative border-2 border-gray-800 rounded-full px-4 py-1 inline-flex justify-center items-center z-0", className)}
+        className={clsx("outline-btn relative border-2 border-gray-800 rounded-full px-4 py-1 inline-flex justify-center items-center z-0", className)}
         >
           {children}
         </button>

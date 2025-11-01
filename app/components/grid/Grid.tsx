@@ -7,11 +7,13 @@ export function Grid({
   category,
   numWritings,
   className = "",
+  from
 }: {
   writings: TWriting[]
   category?: TCategory
   numWritings?: number
   className?: string
+  from?: string
 }) {
   if (category) {
     writings = writings.filter(w => w.metadata.tags.includes(category.value))
@@ -24,7 +26,7 @@ export function Grid({
     <div className={className}>
       <div className="grid grid-cols-12 gap-y-8 md:gap-8">
         {writings.map((article) => (
-          <WritingCard article={article} />
+          <WritingCard article={article} from={from} />
         ))}
       </div>
     </div>

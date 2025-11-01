@@ -52,7 +52,7 @@ export default function Page() {
           <div className="flex justify-end">
             <OutlinedButton
               link='/writings'
-              className="more-btn relative z-0"
+              className="more-btn relative z-0 mt-6"
             >
               <span className="block z-30">See More</span>
               <ArrowRightIcon className="w-5 ml-2 arrow" />
@@ -67,7 +67,7 @@ export default function Page() {
           <div className="flex justify-end">
             <OutlinedButton
               link='/artworks'
-              className="more-btn relative z-0"
+              className="more-btn relative z-0 mt-6"
             >
               <span className="block z-30">See More</span>
               <ArrowRightIcon className="w-5 ml-2 arrow" />

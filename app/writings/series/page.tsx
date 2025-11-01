@@ -24,7 +24,7 @@ export default async function AllSeriesPage() {
           return (
             <div className="mb-4" key={s.subdir}>
               <h2 className="font-bold text-lg py-4">{ParseSeriesDirName(s.subdir)}</h2>
-              <Grid writings={s.items} />
+              <Grid writings={s.items} from="/series" />
             </div>
           )
         })}
