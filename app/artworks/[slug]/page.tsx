@@ -65,7 +65,7 @@ export default function Artwork({ params }) {
   const workIndex = works.findIndex((work) => work.slug === params.slug)
 
   return (
-    <div className="w-full max-w-[1024px] mx-auto px-16 py-24">
+    <div className="w-full max-w-[1024px] mx-auto px-8 md:px-16 py-24">
       <Head>
         <title>{work.metadata.title}</title>
         <link rel="canonical" href={`${baseUrl}/artworks/${work.slug}`} />
