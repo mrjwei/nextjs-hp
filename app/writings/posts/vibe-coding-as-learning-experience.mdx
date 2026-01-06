@@ -1,0 +1,83 @@
+---
+title: "Vibe Coding as a Supercharged Learning Experience"
+publishedAt: "2026-01-06"
+summary: "Vibe coding is often described as a way for non-software-engineers to build digital products by leaning heavily on AI, sometimes without writing a single line of code. This can feel magical: you describe what you want, and the system generates working code."
+tags: ["ai", "vibecoding", "nextjs", "dev"]
+---
+
+- [Why bother learning when AI exists?](#why-bother-learning-when-ai-exists)
+- [How I'm using vibe coding while building LingoBun](#how-im-using-vibe-coding-while-building-lingobun)
+- [Conclusion](#conclusion)
+
+
+**Vibe coding** is often described as a way for non-software-engineers to build digital products by leaning heavily on AI, sometimes without writing a single line of code. This can feel magical: you describe what you want, and the system generates working code.
+
+But there's a catch: many people use vide coding *passively*. They treat AI as a black box that produces answers, accept whatever it spits out, and move on. That approach can help you ship something quickly, but it leaves a huge amount of learning on the table.
+
+Used deliberately, vibe coding can be something else entirely: **a way to learn faster and deeper than before**.
+
+## Why bother learning when AI exists?
+
+A reasonable question is: *why bother learning any of this now that AI can do it for us*?
+
+The short answer is that AI is not perfect. AI makes mistakes. It hallucinates. It confidently produces code that looks plausible but is subtly wrong. More importantly, it has no understanding of your project's constraints, trade-offs, or long-term goals.
+
+To use AI effectively, you still need a clear understanding of the problem you're solving, the tool's limitations, and whether the generated code makes sense.
+
+Therefore, vibe coding isn't a shortcut that replaces thinking. It amplifies whatever understanding you already have and exposes the gaps you don't.
+
+## How I'm using vibe coding while building LingoBun
+
+While building [LingoBun](/writings/series/LingoBun), I made a conscious decision not to just let AI do the work for me. Instead, I treat it like a collaborator. I read the generated code, check its correctness, and dig into anything unfamiliar or interesting. When something breaks, I don't just ask AI to fix it repeatedly. I investigate why it broke.
+
+A good example came up when I was implementing subscriptions with [Stripe](https://stripe.com/). Payments were going through successfully, but users' plans were not being upgraded in my database. I prompted the AI agent to fix the issue multiple times, but it kept failing. This was the problematic code:
+```js
+if (event.type === "checkout.session.completed") {
+	const subscription = (await stripe.subscriptions.retrieve(
+	  session.subscription as string
+	)) as unknown as {
+	  id: string
+	  customer: string
+	  items: { data: { price: { id: string } }[] }
+	  current_period_end: number
+	}
+
+	if (!session?.metadata?.userId) {
+	  return new NextResponse("User id is required", { status: 400 })
+	}
+
+	await upsertSubscriptionForCustomer({
+		customerId: subscription.customer as string,
+		subscription,
+	})
+}
+	```
+
+Instead of retrying blindly, I checked Stripe's documentation about event lifecycle more carefully. That's when I realised the core issue: at the time `checkout.session.completed` fires, payment is not yet guaranteed and the `subscription` object may not exist.
+
+The correct event to listen for turned out to be `invoice.payment_succeeded`. Here's the corrected version:
+```js
+if (event.type === "invoice.payment_succeeded") {
+	const invoice = event.data.object as Stripe.Invoice
+	const subscriptionId = invoice.parent?.subscription_details?.subscription
+
+	if (!subscriptionId) {
+		return new NextResponse(null, { status: 200 })
+	}
+
+	const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+
+	await upsertSubscriptionForCustomer({
+		customerId: subscription.customer as string,
+		subscription,
+	})
+}
+	```
+
+This fix solved the problem immediately, but more importantly, it taught me a critical lesson about how Stripe's event model actually works. That's knowledge I'll reuse in future payment integrations.
+
+Using the same pattern, I've been able to deepen my understanding of concepts like Google SSO and OAuth flows, test design, performance optimisation, and how Next.js really behaves under the hood.
+
+## Conclusion
+
+Vibe coding doesn’t remove the need for understanding. It raises the bar for how we understand. Used passively, AI helps you finish tasks; used actively, it helps you grow. That's how I'm approaching the development of [LingoBun](/writings/series/LingoBun), and why building with AI has made me a better learner, not a lazier one.

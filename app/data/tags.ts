@@ -74,4 +74,7 @@ export const tags = {
   devops: {
     color: "#754a31",
   },
+  vibecoding: {
+    color: "#34a853",
+  },
 }
