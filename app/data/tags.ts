@@ -77,4 +77,10 @@ export const tags = {
   vibecoding: {
     color: "#34a853",
   },
+  lingobun: {
+    color: "#fbbc05",
+  },
+  languagelearning: {
+    color: "#ea4335",
+  },
 }
