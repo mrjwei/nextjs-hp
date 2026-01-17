@@ -1,4 +1,4 @@
-import { getAllSortedWritings } from "app/utils"
+import { getAllSortedPortfolio, getAllSortedWritings } from "app/utils"
 
 export const baseUrl = "https://www.jessewei.net"
 
@@ -8,10 +8,15 @@ export default async function sitemap() {
     lastModified: writing.metadata.publishedAt,
   }))
 
-  let routes = ["", "/writings"].map((route) => ({
+  let portfolio = getAllSortedPortfolio().map((item) => ({
+    url: `${baseUrl}/portfolio/${item.slug}`,
+    lastModified: item.metadata.publishedAt,
+  }))
+
+  let routes = ["", "/writings", "/portfolio"].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date().toISOString().split("T")[0],
   }))
 
-  return [...routes, ...writings]
+  return [...routes, ...writings, ...portfolio]
 }

@@ -119,6 +119,60 @@ export function getAllSortedWritings() {
   return writings
 }
 
+export function getPortfolio(subdir = "") {
+  return getMDXData(
+    path.join(process.cwd(), "app", "portfolio", "posts", subdir)
+  )
+}
+
+export function getPortfolioCollections() {
+  const parentPath = path.join(process.cwd(), "app", "portfolio", "posts")
+  if (!fs.existsSync(parentPath)) {
+    return [] as string[]
+  }
+
+  return fs.readdirSync(parentPath).filter((name) => {
+    const fullPath = path.join(parentPath, name)
+    return fs.statSync(fullPath).isDirectory()
+  })
+}
+
+export function getAllSortedPortfolioCollections() {
+  const collections: {
+    subdir: string
+    items: { metadata: TMetadata; slug: string; content: string }[]
+  }[] = []
+
+  const subdirs = getPortfolioCollections()
+  subdirs.forEach((subdir) => {
+    let items = getPortfolio(subdir)
+    items = items.sort((a, b) => {
+      if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
+        return -1
+      }
+      return 1
+    })
+    collections.push({ subdir, items })
+  })
+
+  return collections
+}
+
+export function getAllSortedPortfolio() {
+  let items = getPortfolio()
+  const subdirs = getPortfolioCollections()
+  subdirs.forEach((subdir) => {
+    items.push(...getPortfolio(subdir))
+  })
+  items = items.sort((a, b) => {
+    if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
+      return -1
+    }
+    return 1
+  })
+  return items
+}
+
 export function getAllSortedWorks() {
   let works = getMDXData(path.join(process.cwd(), "app", "artworks", "works"))
   works = works.sort((a, b) => {

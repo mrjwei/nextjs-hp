@@ -7,11 +7,13 @@ import { openSans } from "app/data/fonts"
 export function WritingCard({
   article,
   className,
-  from
+  from,
+  path = "writings",
 }: {
   article: any
   className?: string
   from?: string
+  path?: string
 }) {
   return (
     <div
@@ -20,7 +22,11 @@ export function WritingCard({
         className
       )}
     >
-      <Link key={article.slug} href={`/writings/${article.slug}${from ? `?from=${from}` : ""}`} className="flex-1">
+      <Link
+        key={article.slug}
+        href={`/${path}/${article.slug}${from ? `?from=${from}` : ""}`}
+        className="flex-1"
+      >
         <div className="p-6 pb-4 flex flex-col justify-between">
           <div>
             <div className="mb-4">
