@@ -151,18 +151,58 @@ function splitByFencedCodeBlocks(text) {
 
 function renderImageFigure(src) {
   const safeSrc = String(src || "").trim().replace(/"/g, "&quot;")
-  return (
-    "<br/>\n" +
-    "<figure style={{ textAlign: \"center\" }}>\n" +
-    "  <img\n" +
-    `    src=\"${safeSrc}\"\n` +
-    "    alt=\"\"\n" +
-    "    style={{ marginBottom: \"8px\" }}\n" +
-    "  />\n" +
-    "  <figcaption></figcaption>\n" +
-    "</figure>\n" +
-    "<br/>"
-  )
+  return [
+    "<br/>",
+    "<figure style={{ textAlign: \"center\" }}>",
+    "  <img",
+    `    src=\"${safeSrc}\"`,
+    "    alt=\"\"",
+    "    style={{ marginBottom: \"8px\" }}",
+    "  />",
+    "  <figcaption></figcaption>",
+    "</figure>",
+    "<br/>",
+  ].join("\n")
+}
+
+function normalizeImageSrc(src, postSlug) {
+  const s = String(src || "").trim()
+  if (!s) return s
+  if (/^(https?:)?\/\//i.test(s)) return s
+  if (s.startsWith(`/`)) return s
+  // relative -> assume it belongs to this post
+  return `/${postSlug}/${s}`
+}
+
+function stripMarkdownTableArtifacts(text) {
+  const lines = String(text || "").split("\n")
+
+  const out = []
+  for (const line of lines) {
+    // Remove table separator rows like: | --- | --- |
+    if (/^\s*\|?\s*:?-{3,}:?(\s*\|\s*:?-{3,}:?)+\s*\|?\s*$/.test(line)) {
+      continue
+    }
+
+    // If a line looks like it's part of a table AND contains figure/html breaks, split cells.
+    if (line.includes("|") && (line.includes("<figure") || line.includes("<br/>") || line.includes("<img"))) {
+      const cells = line
+        .split("|")
+        .map((c) => c.trim())
+        .filter((c) => c && c !== "-")
+      for (const cell of cells) {
+        out.push(cell)
+      }
+      continue
+    }
+
+    out.push(line)
+  }
+
+  // Collapse runs of empty lines a bit.
+  return out
+    .join("\n")
+    .replace(/\n{4,}/g, "\n\n\n")
 }
 
 function convertImagesToFigureHtml(mdx, postSlug) {
@@ -175,6 +215,17 @@ function convertImagesToFigureHtml(mdx, postSlug) {
 
       let t = b.content
 
+      // Normalize any existing <figure>...</figure> that contains an <img src="...">.
+      t = t.replace(
+        /<figure[\s\S]*?<img[\s\S]*?\ssrc=("|')([^"']+)("|')[\s\S]*?<\/figure>/gi,
+        (_, _q1, src) => renderImageFigure(normalizeImageSrc(src, postSlug))
+      )
+
+      // Normalize bare <img ... src="..."> tags.
+      t = t.replace(/<img\b[^>]*\ssrc=("|')([^"']+)("|')[^>]*\/?>(?:\s*<\/img>)?/gi, (_, _q, src) => {
+        return renderImageFigure(normalizeImageSrc(src, postSlug))
+      })
+
       // Obsidian embeds: ![[image.png]] -> figure HTML pointing to /<slug>/image.png
       t = t.replace(/!\[\[([^\]]+)\]\]/g, (_, file) => {
         const filename = String(file).split("|")[0].trim()
@@ -185,10 +236,10 @@ function convertImagesToFigureHtml(mdx, postSlug) {
       t = t.replace(/!\[[^\]]*\]\(([^\)]+)\)/g, (_, inner) => {
         const raw = String(inner).trim()
         const src = raw.split(/\s+/)[0]
-        return renderImageFigure(src)
+        return renderImageFigure(normalizeImageSrc(src, postSlug))
       })
 
-      return t
+      return stripMarkdownTableArtifacts(t)
     })
     .join("\n")
 
