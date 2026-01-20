@@ -6,7 +6,7 @@ const path = require("path")
 const { execSync } = require("child_process")
 
 function usage() {
-  return `\nPublish an Obsidian Markdown note into this Next.js HP as MDX.\n\nUsage:\n  npm run publish "My Post Title" -- [--series <folder>] [--file <path>]\n\nOptions:\n  --series <name>      Writes into app/writings/posts/<name>/\n  --file <path>        Path to the source .md file (preferred if not using a vault)\n  --vault <path>       Obsidian vault root to search (default: $OBSIDIAN_VAULT)\n  --no-ai              Skip AI transform; do a safe, basic Markdown→MDX conversion\n  --dry-run            Print planned actions; do not write/commit/push\n  --no-push            Commit locally but do not git push\n  --no-commit          Write file but do not git commit/push\n  --help               Show help\n\nEnv vars (for AI):\n  OPENAI_API_KEY       If set, enables AI transform unless --no-ai\n  OPENAI_BASE_URL      Default: https://api.openai.com/v1\n  OPENAI_MODEL         Default: gpt-4o-mini\n\nExamples:\n  npm run publish "My Post Title" -- --file ~/Vault/My%20Post%20Title.md\n  npm run publish "My Post Title" -- --series LingoBun --file ~/Vault/LingoBun/My%20Post%20Title.md\n  npm run publish "My Post Title" -- --series ml --vault ~/Obsidian\n`
+  return `\nPublish an Obsidian Markdown note into this Next.js HP as MDX.\n\nUsage:\n  npm run publish "My Post Title" -- [--series <folder>] [--file <path>]\n\nOptions:\n  --series <name>      Writes into app/writings/posts/<name>/\n  --file <path>        Path to the source .md file (preferred if not using a vault)\n  --vault <path>       Obsidian vault root to search (default: $OBSIDIAN_VAULT)\n  --assets <path>      Obsidian assets dir (default: $OBSIDIAN_ASSETS or <vault>/assets)\n  --toc                Force (re)generate a TOC (default: enabled)\n  --no-toc             Do not generate a TOC\n  --no-ai              Skip AI transform; do a safe, basic Markdown→MDX conversion\n  --overwrite          Overwrite the output file if it already exists\n  --resume             If output exists, update TOC/assets and run git steps\n  --dry-run            Print planned actions; do not write/commit/push\n  --no-push            Commit locally but do not git push\n  --no-commit          Write/update files but do not git commit/push\n  --help               Show help\n\nEnv vars (for AI):\n  OPENAI_API_KEY       If set, enables AI transform unless --no-ai\n  OPENAI_BASE_URL      Default: https://api.openai.com/v1\n  OPENAI_MODEL         Default: gpt-4o-mini\n\nEnv vars (for Obsidian):\n  OBSIDIAN_VAULT        Default vault root for --vault lookup\n  OBSIDIAN_ASSETS       Default assets folder (e.g. /path/to/vault/assets)\n\nExamples:\n  npm run publish "My Post Title" -- --file ~/Vault/My%20Post%20Title.md\n  npm run publish "My Post Title" -- --series LingoBun -- --file ~/Vault/LingoBun/My%20Post%20Title.md\n  npm run publish "My Post Title" -- --series ml -- --vault ~/Obsidian\n  npm run publish "My Post Title" -- --resume --series LingoBun -- --file ~/Vault/My%20Post%20Title.md\n`
 }
 
 function parseArgs(argv) {
@@ -39,6 +39,22 @@ function parseArgs(argv) {
       args.noCommit = true
       continue
     }
+    if (key === "overwrite") {
+      args.overwrite = true
+      continue
+    }
+    if (key === "resume") {
+      args.resume = true
+      continue
+    }
+    if (key === "toc") {
+      args.toc = true
+      continue
+    }
+    if (key === "no-toc") {
+      args.noToc = true
+      continue
+    }
 
     const value = argv[i + 1]
     if (!value || value.startsWith("--")) {
@@ -60,6 +76,212 @@ function slugify(str) {
     .replace(/&/g, "-and-")
     .replace(/[^\w\-]+/g, "")
     .replace(/\-\-+/g, "-")
+}
+
+function splitFrontmatterFromMdx(mdx) {
+  const fm = /^---\s*[\s\S]*?\s*---\s*/.exec(mdx)
+  if (!fm) return { frontmatter: "", body: mdx }
+  return {
+    frontmatter: fm[0].trimEnd() + "\n\n",
+    body: mdx.slice(fm[0].length),
+  }
+}
+
+function stripCodeFences(lines) {
+  // Returns a boolean array indicating whether each line is inside a fenced code block.
+  const inside = new Array(lines.length).fill(false)
+  let inFence = false
+  let fenceMarker = null
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]
+    const trimmed = line.trim()
+
+    const fence = /^(?:```|~~~)/.exec(trimmed)
+    if (fence) {
+      const marker = fence[0]
+      if (!inFence) {
+        inFence = true
+        fenceMarker = marker
+        inside[i] = true
+        continue
+      }
+
+      if (marker === fenceMarker) {
+        inside[i] = true
+        inFence = false
+        fenceMarker = null
+        continue
+      }
+    }
+
+    inside[i] = inFence
+  }
+
+  return inside
+}
+
+function plainTextFromHeading(raw) {
+  let text = String(raw || "")
+  // Remove trailing markdown heading closing hashes
+  text = text.replace(/\s+#+\s*$/, "")
+  // Remove markdown links [text](url)
+  text = text.replace(/\[([^\]]+)\]\([^\)]+\)/g, "$1")
+  // Remove inline code backticks
+  text = text.replace(/`([^`]+)`/g, "$1")
+  // Remove emphasis markers
+  text = text.replace(/[\*_]/g, "")
+  // Remove HTML tags
+  text = text.replace(/<[^>]+>/g, "")
+  return text.trim()
+}
+
+function generateTocFromBody(body) {
+  const lines = String(body || "").split("\n")
+  const inFence = stripCodeFences(lines)
+
+  const headings = []
+  for (let i = 0; i < lines.length; i++) {
+    if (inFence[i]) continue
+    const line = lines[i]
+    const match = /^(#{2,6})\s+(.+?)\s*$/.exec(line)
+    if (!match) continue
+
+    const level = match[1].length
+    if (level !== 2 && level !== 3) continue
+
+    const text = plainTextFromHeading(match[2])
+    if (!text) continue
+
+    headings.push({ level, text })
+  }
+
+  if (headings.length === 0) return ""
+
+  const tocLines = headings.map((h) => {
+    const indent = h.level === 3 ? "  " : ""
+    const slug = slugify(h.text)
+    return `${indent}- [${h.text}](#${slug})`
+  })
+
+  return tocLines.join("\n") + "\n"
+}
+
+function upsertTocIntoBody(body, tocMarkdown) {
+  if (!tocMarkdown) return body
+
+  const original = String(body || "")
+  const trimmed = original.replace(/^\s+/, "")
+
+  // If the file already starts with a TOC-like list, replace that block.
+  const lines = trimmed.split("\n")
+  let end = 0
+  let sawLinkLine = false
+  for (; end < lines.length; end++) {
+    const line = lines[end]
+    if (line.trim() === "") break
+    const isList = /^\s*-\s+\[/.test(line)
+    if (!isList) {
+      end = 0
+      break
+    }
+    if (line.includes("](#")) sawLinkLine = true
+  }
+
+  if (end > 0 && sawLinkLine) {
+    const rest = lines.slice(end + 1).join("\n")
+    return tocMarkdown + "\n" + rest.trimStart() + (rest.endsWith("\n") ? "" : "\n")
+  }
+
+  return tocMarkdown + "\n" + trimmed
+}
+
+function safeJoin(baseDir, relPath) {
+  const abs = path.join(baseDir, relPath)
+  const normalizedBase = path.resolve(baseDir) + path.sep
+  const normalizedAbs = path.resolve(abs)
+  if (!normalizedAbs.startsWith(normalizedBase)) {
+    throw new Error(`Unsafe path traversal: ${relPath}`)
+  }
+  return normalizedAbs
+}
+
+function extractReferencedPublicAssets(mdx, postSlug) {
+  const results = new Set()
+  const doc = String(mdx || "")
+
+  // Markdown images: ![alt](/slug/file.png)
+  const mdImg = new RegExp(`!\\[[^\\]]*\\]\\(\\/${postSlug}\\/([^\\)]+)\\)`, "g")
+  let m
+  while ((m = mdImg.exec(doc))) {
+    results.add(m[1].split("?")[0].split("#")[0])
+  }
+
+  // HTML images: <img src="/slug/file.png" ...>
+  const htmlImg = new RegExp(`src=\\"\\/${postSlug}\\/([^\\\"]+)\\"`, "g")
+  while ((m = htmlImg.exec(doc))) {
+    results.add(m[1].split("?")[0].split("#")[0])
+  }
+  const htmlImg2 = new RegExp(`src=\\'\\/${postSlug}\\/([^\\']+)\\'`, "g")
+  while ((m = htmlImg2.exec(doc))) {
+    results.add(m[1].split("?")[0].split("#")[0])
+  }
+
+  return Array.from(results)
+}
+
+function findAssetByBasename(assetsDir, requestedPath) {
+  if (!assetsDir) return null
+  const requested = String(requestedPath)
+  const wantedBase = path.basename(requested).toLowerCase()
+  const direct = path.join(assetsDir, requested)
+  if (fs.existsSync(direct) && fs.statSync(direct).isFile()) return direct
+
+  // Search recursively for a matching basename.
+  function walk(dir) {
+    const entries = fs.readdirSync(dir, { withFileTypes: true })
+    for (const e of entries) {
+      const full = path.join(dir, e.name)
+      if (e.isDirectory()) {
+        const hit = walk(full)
+        if (hit) return hit
+      } else if (e.isFile()) {
+        if (e.name.toLowerCase() === wantedBase) return full
+      }
+    }
+    return null
+  }
+
+  return walk(assetsDir)
+}
+
+function copyAssetsToPublic({ mdx, postSlug, assetsDir }) {
+  const assets = extractReferencedPublicAssets(mdx, postSlug)
+  if (assets.length === 0) return []
+
+  const copied = []
+  const absPublicSlugDir = path.join(process.cwd(), "public", postSlug)
+  ensureDirExists(absPublicSlugDir)
+
+  for (const rel of assets) {
+    const src = findAssetByBasename(assetsDir, rel)
+    if (!src) {
+      console.warn(
+        `\nWarning: referenced asset not found in assets dir.\n` +
+          `  referenced: /${postSlug}/${rel}\n` +
+          `  assets dir:  ${assetsDir || "(not set)"}\n`
+      )
+      continue
+    }
+
+    const dest = safeJoin(absPublicSlugDir, rel)
+    ensureDirExists(path.dirname(dest))
+    if (!fs.existsSync(dest)) {
+      fs.copyFileSync(src, dest)
+      copied.push(dest)
+    }
+  }
+
+  return copied
 }
 
 function stripFrontmatter(md) {
@@ -316,13 +538,15 @@ function findMarkdownByTitle({ vaultDir, title }) {
 }
 
 function run(cmd, opts = {}) {
-  return execSync(cmd, {
+  const result = execSync(cmd, {
     stdio: opts.stdio || "pipe",
     cwd: opts.cwd || process.cwd(),
     env: { ...process.env, ...(opts.env || {}) },
   })
-    .toString("utf8")
-    .trim()
+
+  // execSync returns null when stdio is "inherit".
+  if (result == null) return ""
+  return result.toString("utf8").trim()
 }
 
 async function main() {
@@ -359,6 +583,20 @@ async function main() {
     absSourceFile = findMarkdownByTitle({ vaultDir, title })
   }
 
+  const vaultDirForDefaults = args.vault
+    ? path.resolve(String(args.vault))
+    : process.env.OBSIDIAN_VAULT
+    ? path.resolve(process.env.OBSIDIAN_VAULT)
+    : null
+
+  const assetsDir = args.assets
+    ? path.resolve(String(args.assets))
+    : process.env.OBSIDIAN_ASSETS
+    ? path.resolve(process.env.OBSIDIAN_ASSETS)
+    : vaultDirForDefaults
+    ? path.join(vaultDirForDefaults, "assets")
+    : null
+
   if (!absSourceFile || !fs.existsSync(absSourceFile)) {
     console.error(`\nCould not find a source Markdown file for: ${title}`)
     console.error(
@@ -381,6 +619,8 @@ async function main() {
     slug: postSlug,
     outFile: absOutFile,
     aiEnabled: Boolean(process.env.OPENAI_API_KEY) && !args.noAi,
+    tocEnabled: !args.noToc,
+    assetsDir,
     commit: !args.noCommit,
     push: !args.noCommit && !args.noPush,
   }
@@ -410,13 +650,47 @@ async function main() {
     mdx = frontmatter + body
   }
 
-  if (fs.existsSync(absOutFile)) {
-    console.error(`\nRefusing to overwrite existing file: ${absOutFile}\n`)
+  // Ensure TOC (extension-equivalent output) after frontmatter.
+  if (!args.noToc) {
+    const parts = splitFrontmatterFromMdx(mdx)
+    const toc = generateTocFromBody(parts.body)
+    const bodyWithToc = upsertTocIntoBody(parts.body, toc)
+    mdx = parts.frontmatter + bodyWithToc.trimStart()
+  }
+
+  const outputExists = fs.existsSync(absOutFile)
+  if (outputExists && !args.overwrite && !args.resume) {
+    console.error(`\nRefusing to overwrite existing file: ${absOutFile}`)
+    console.error(`Use --resume to update TOC/assets and run git steps, or --overwrite to regenerate.\n`)
     process.exit(1)
   }
 
-  fs.writeFileSync(absOutFile, mdx, "utf8")
+  let finalMdx = mdx
+  if (outputExists && args.resume) {
+    // Update existing file with TOC regeneration if needed.
+    const existing = fs.readFileSync(absOutFile, "utf8")
+    let updated = existing
+    if (!args.noToc) {
+      const parts = splitFrontmatterFromMdx(existing)
+      const toc = generateTocFromBody(parts.body)
+      const bodyWithToc = upsertTocIntoBody(parts.body, toc)
+      updated = parts.frontmatter + bodyWithToc.trimStart()
+    }
+    finalMdx = updated
+  }
+
+  fs.writeFileSync(absOutFile, finalMdx, "utf8")
   console.log(`\nWrote: ${path.relative(process.cwd(), absOutFile)}`)
+
+  // Copy referenced assets into public/<slug>/
+  const copiedAssets = copyAssetsToPublic({
+    mdx: finalMdx,
+    postSlug,
+    assetsDir,
+  })
+  if (copiedAssets.length > 0) {
+    console.log(`Copied ${copiedAssets.length} asset(s) into public/${postSlug}/`)
+  }
 
   if (args.noCommit) {
     console.log("\n--no-commit set; skipping git commit/push.\n")
@@ -424,7 +698,12 @@ async function main() {
   }
 
   try {
-    run(`git add "${absOutFile}"`, { stdio: "inherit" })
+    const relMdx = path.relative(process.cwd(), absOutFile)
+    run(`git add -- "${relMdx}"`, { stdio: "inherit" })
+    const relPublicDir = path.join("public", postSlug)
+    if (fs.existsSync(path.join(process.cwd(), relPublicDir))) {
+      run(`git add -- "${relPublicDir}"`, { stdio: "inherit" })
+    }
     const msg = series ? `publish: ${title} (${series})` : `publish: ${title}`
     run(`git commit -m "${msg.replace(/\"/g, "\\\"")}"`, {
       stdio: "inherit",

@@ -23,6 +23,32 @@ npm run publish "My Post Title"
 npm run publish "My Post Title" -- --series LingoBun --file /absolute/path/to/My Post Title.md
 ```
 
+## Images (Obsidian assets -> public/<slug>/)
+
+If your Obsidian uses an assets folder (e.g. embeds like `![[image.png]]` stored under `/path/to/vault/assets`), set one of:
+
+```bash
+export OBSIDIAN_ASSETS=/absolute/path/to/vault/assets
+```
+
+or pass it explicitly:
+
+```bash
+npm run publish "My Post Title" -- --assets /absolute/path/to/vault/assets --file /absolute/path/to/My Post Title.md
+```
+
+The script copies any referenced `/<slug>/<file>` images into `public/<slug>/`.
+
+## Table of contents
+
+The script auto-generates (or replaces) a TOC block after frontmatter, similar to the output you get from the VS Code “Markdown All in One” extension.
+
+Disable it with:
+
+```bash
+npm run publish "My Post Title" -- --no-toc --file /absolute/path/to/My Post Title.md
+```
+
 ## AI transform (optional)
 
 If `OPENAI_API_KEY` is set, the script will attempt an AI Markdown->MDX transform. Otherwise it falls back to a safe basic conversion.
@@ -40,6 +66,8 @@ export OPENAI_BASE_URL=https://api.openai.com/v1
 - `--dry-run`: print the plan only
 - `--no-commit`: write the file but skip git commit/push
 - `--no-push`: commit locally but skip git push
+- `--resume`: if output exists, update TOC/assets and run git steps
+- `--overwrite`: overwrite output file if it exists
 
 ## Obsidian syntax handled
 
