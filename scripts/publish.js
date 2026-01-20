@@ -566,10 +566,17 @@ async function main() {
   const series = args.series ? String(args.series) : ""
 
   const desiredSlug = slugify(title)
-  const postSlug = pickUniqueSlug(absPostsRoot, desiredSlug)
 
   const relOutDir = path.join("app", "writings", "posts", series)
   const absOutDir = path.join(process.cwd(), relOutDir)
+  const absDesiredOutFile = path.join(absOutDir, `${desiredSlug}.mdx`)
+
+  // If resuming, operate on the originally expected slug if it exists.
+  const postSlug =
+    (args.resume || args.overwrite) && fs.existsSync(absDesiredOutFile)
+      ? desiredSlug
+      : pickUniqueSlug(absPostsRoot, desiredSlug)
+
   const absOutFile = path.join(absOutDir, `${postSlug}.mdx`)
 
   let absSourceFile = args.file ? path.resolve(String(args.file)) : null
