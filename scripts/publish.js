@@ -3,6 +3,7 @@
 
 const fs = require("fs")
 const path = require("path")
+require("dotenv").config({ path: path.resolve(__dirname, "..", ".env") })
 const { execSync } = require("child_process")
 
 function usage() {
@@ -72,10 +73,126 @@ function slugify(str) {
     .toString()
     .toLowerCase()
     .trim()
+    .replace(/[–—]/g, "-")
     .replace(/\s+/g, "-")
     .replace(/&/g, "-and-")
     .replace(/[^\w\-]+/g, "")
     .replace(/\-\-+/g, "-")
+}
+
+function unwrapTopLevelCodeFence(text) {
+  let t = String(text || "").trim()
+
+  // Unwrap a single top-level fenced block like:
+  // ```mdx
+  // ...
+  // ```
+  // (Some LLMs wrap the entire document like this.)
+  for (let i = 0; i < 2; i++) {
+    const m1 = /^```[a-zA-Z0-9_-]*\s*\n([\s\S]*?)\n```\s*$/.exec(t)
+    if (m1) {
+      t = m1[1].trim()
+      continue
+    }
+    const m2 = /^~~~[a-zA-Z0-9_-]*\s*\n([\s\S]*?)\n~~~\s*$/.exec(t)
+    if (m2) {
+      t = m2[1].trim()
+      continue
+    }
+    break
+  }
+
+  return t + "\n"
+}
+
+function splitByFencedCodeBlocks(text) {
+  const lines = String(text || "").split("\n")
+  const blocks = []
+
+  let buf = []
+  let inFence = false
+  let fenceMarker = null
+
+  function flush(type) {
+    if (buf.length === 0) return
+    blocks.push({ type, content: buf.join("\n") })
+    buf = []
+  }
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]
+    const trimmed = line.trim()
+    const fence = /^(?:```|~~~)/.exec(trimmed)
+
+    if (!inFence && fence) {
+      flush("text")
+      inFence = true
+      fenceMarker = fence[0]
+      buf.push(line)
+      continue
+    }
+
+    if (inFence) {
+      buf.push(line)
+      if (fence && fence[0] === fenceMarker) {
+        flush("code")
+        inFence = false
+        fenceMarker = null
+      }
+      continue
+    }
+
+    buf.push(line)
+  }
+
+  flush(inFence ? "code" : "text")
+  return blocks
+}
+
+function renderImageFigure(src) {
+  const safeSrc = String(src || "").trim().replace(/"/g, "&quot;")
+  return (
+    "<br/>\n" +
+    "<figure style={{ textAlign: \"center\" }}>\n" +
+    "  <img\n" +
+    `    src=\"${safeSrc}\"\n` +
+    "    alt=\"\"\n" +
+    "    style={{ marginBottom: \"8px\" }}\n" +
+    "  />\n" +
+    "  <figcaption></figcaption>\n" +
+    "</figure>\n" +
+    "<br/>"
+  )
+}
+
+function convertImagesToFigureHtml(mdx, postSlug) {
+  const parts = splitFrontmatterFromMdx(mdx)
+  const blocks = splitByFencedCodeBlocks(parts.body)
+
+  const rewritten = blocks
+    .map((b) => {
+      if (b.type !== "text") return b.content
+
+      let t = b.content
+
+      // Obsidian embeds: ![[image.png]] -> figure HTML pointing to /<slug>/image.png
+      t = t.replace(/!\[\[([^\]]+)\]\]/g, (_, file) => {
+        const filename = String(file).split("|")[0].trim()
+        return renderImageFigure(`/${postSlug}/${filename}`)
+      })
+
+      // Markdown images: ![alt](src) -> figure HTML (keep src)
+      t = t.replace(/!\[[^\]]*\]\(([^\)]+)\)/g, (_, inner) => {
+        const raw = String(inner).trim()
+        const src = raw.split(/\s+/)[0]
+        return renderImageFigure(src)
+      })
+
+      return t
+    })
+    .join("\n")
+
+  return parts.frontmatter + rewritten
 }
 
 function splitFrontmatterFromMdx(mdx) {
@@ -344,10 +461,10 @@ function parseFrontmatterLoose(md) {
 function basicObsidianToMdx(md, { postSlug }) {
   let out = stripFrontmatter(md)
 
-  // Obsidian embeds: ![[image.png]] → ![](/<slug>/image.png)
+  // Obsidian embeds: ![[image.png]] → centered figure HTML
   out = out.replace(/!\[\[([^\]]+)\]\]/g, (_, file) => {
     const filename = String(file).split("|")[0].trim()
-    return `![](/${postSlug}/${filename})`
+    return renderImageFigure(`/${postSlug}/${filename}`)
   })
 
   // Obsidian wikilinks: [[Page]] or [[Page|Label]] → Label or Page
@@ -420,7 +537,7 @@ async function aiTransformToMdx({ markdown, title, postSlug }) {
 
   const availableTags = loadAvailableTags()
 
-  const system = `You are converting an Obsidian Markdown note into MDX for a Next.js blog.\n\nRequirements:\n- Output MUST be a single valid MDX document.\n- Start with YAML frontmatter containing exactly: title, publishedAt (YYYY-MM-DD), summary, tags (as a JSON array).\n- Keep the content faithful; do not add sections that weren't present.\n- Convert Obsidian wikilinks [[Page]]/[[Page|Label]] to plain text (Label or Page).\n- Convert Obsidian embeds ![[file.png]] to Markdown images pointing to /${postSlug}/file.png (alt text can be empty).\n- Prefer standard Markdown; only use JSX when needed.\n- Tags must be chosen ONLY from this set: ${availableTags.join(", ")}. Use 3-7 tags.`
+  const system = `You are converting an Obsidian Markdown note into MDX for a Next.js blog.\n\nRequirements:\n- Output MUST be a single valid MDX document (do NOT wrap in triple-backtick fences).\n- Start with YAML frontmatter containing exactly: title, publishedAt (YYYY-MM-DD), summary, tags (as a JSON array).\n- Keep the content faithful; do not add sections that weren't present.\n- Convert Obsidian wikilinks [[Page]]/[[Page|Label]] to plain text (Label or Page).\n- Convert Obsidian embeds ![[file.png]] to images served from /${postSlug}/file.png.\n- For ALL images, use this HTML pattern (fill only src):\n  <br/>\n  <figure style={{ textAlign: \"center\" }}>\n    <img src=\"/path/to/image\" alt=\"\" style={{ marginBottom: \"8px\" }} />\n    <figcaption></figcaption>\n  </figure>\n  <br/>\n- Prefer standard Markdown; only use JSX when needed.\n- Tags must be chosen ONLY from this set: ${availableTags.join(", ")}. Use 3-7 tags.`
 
   const user = `Title: ${title}\n\nObsidian Markdown:\n\n${markdown}`
 
@@ -457,7 +574,7 @@ async function aiTransformToMdx({ markdown, title, postSlug }) {
   if (!/\bsummary:\s*/.test(fm[0])) return null
   if (!/\btags:\s*\[/.test(fm[0])) return null
 
-  return content.trim() + "\n"
+  return unwrapTopLevelCodeFence(content)
 }
 
 function loadAvailableTags() {
@@ -529,6 +646,7 @@ function findMarkdownByTitle({ vaultDir, title }) {
         const base = path.basename(e.name, ".md")
         const baseSlug = slugify(base)
         if (baseSlug === desired) return full
+        if (baseSlug.includes(desired) || desired.includes(baseSlug)) return full
       }
     }
     return null
@@ -657,6 +775,12 @@ async function main() {
     mdx = frontmatter + body
   }
 
+  // Normalize common LLM artifacts first.
+  mdx = unwrapTopLevelCodeFence(mdx)
+
+  // Convert any remaining image syntaxes to the required <figure><img/></figure> blocks.
+  mdx = convertImagesToFigureHtml(mdx, postSlug)
+
   // Ensure TOC (extension-equivalent output) after frontmatter.
   if (!args.noToc) {
     const parts = splitFrontmatterFromMdx(mdx)
@@ -676,9 +800,10 @@ async function main() {
   if (outputExists && args.resume) {
     // Update existing file with TOC regeneration if needed.
     const existing = fs.readFileSync(absOutFile, "utf8")
-    let updated = existing
+    let updated = unwrapTopLevelCodeFence(existing)
+    updated = convertImagesToFigureHtml(updated, postSlug)
     if (!args.noToc) {
-      const parts = splitFrontmatterFromMdx(existing)
+      const parts = splitFrontmatterFromMdx(updated)
       const toc = generateTocFromBody(parts.body)
       const bodyWithToc = upsertTocIntoBody(parts.body, toc)
       updated = parts.frontmatter + bodyWithToc.trimStart()
