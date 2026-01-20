@@ -196,36 +196,7 @@ async function aiTransformToMdx({ markdown, title, postSlug }) {
   const baseUrl = process.env.OPENAI_BASE_URL || "https://api.openai.com/v1"
   const model = process.env.OPENAI_MODEL || "gpt-4o-mini"
 
-  const availableTags = [
-    "productivity",
-    "design",
-    "dev",
-    "ai",
-    "datascience",
-    "idea",
-    "process",
-    "uiux",
-    "javascript",
-    "reactjs",
-    "nextjs",
-    "python",
-    "git",
-    "tutorial",
-    "web",
-    "auth",
-    "jwt",
-    "qut",
-    "cs",
-    "security",
-    "reflection",
-    "tricks",
-    "casestudy",
-    "studentlife",
-    "devops",
-    "vibecoding",
-    "lingobun",
-    "languagelearning",
-  ]
+  const availableTags = loadAvailableTags()
 
   const system = `You are converting an Obsidian Markdown note into MDX for a Next.js blog.\n\nRequirements:\n- Output MUST be a single valid MDX document.\n- Start with YAML frontmatter containing exactly: title, publishedAt (YYYY-MM-DD), summary, tags (as a JSON array).\n- Keep the content faithful; do not add sections that weren't present.\n- Convert Obsidian wikilinks [[Page]]/[[Page|Label]] to plain text (Label or Page).\n- Convert Obsidian embeds ![[file.png]] to Markdown images pointing to /${postSlug}/file.png (alt text can be empty).\n- Prefer standard Markdown; only use JSX when needed.\n- Tags must be chosen ONLY from this set: ${availableTags.join(", ")}. Use 3-7 tags.`
 
@@ -265,6 +236,27 @@ async function aiTransformToMdx({ markdown, title, postSlug }) {
   if (!/\btags:\s*\[/.test(fm[0])) return null
 
   return content.trim() + "\n"
+}
+
+function loadAvailableTags() {
+  // Single source of truth is app/data/tags.json (also used by the Next app).
+  const abs = path.join(process.cwd(), "app", "data", "tags.json")
+  try {
+    const raw = fs.readFileSync(abs, "utf8")
+    const obj = JSON.parse(raw)
+    const keys = Object.keys(obj || {})
+    return keys
+      .map((k) => String(k).trim().toLowerCase())
+      .filter(Boolean)
+      .sort()
+  } catch (e) {
+    console.warn(
+      `\nWarning: failed to load available tags from ${abs}. Falling back to allowing any tags.\n${
+        e?.message || e
+      }\n`
+    )
+    return []
+  }
 }
 
 function ensureDirExists(absDir) {
