@@ -1,5 +1,5 @@
 import { Tag } from "app/components/tag"
-import { tags as tagsData } from "app/data/tags"
+import tagsData from "app/data/tags.json"
 import clsx from "clsx"
 
 export const Tags = ({ tags, className = "" }) => {
