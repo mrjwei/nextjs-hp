@@ -1,0 +1,107 @@
+---
+title: "Non-blocking AI Validation User Flow: A Case Study"
+publishedAt: 2026-01-23
+summary: "Exploring the transition from a blocking to a non-blocking validation flow in LingoBun's AI-powered term validation system."
+tags: ["ai", "casestudy", "ux", "productivity", "design"]
+---
+
+- [Why This Was a Problem](#why-this-was-a-problem)
+- [The Non-blocking Way](#the-non-blocking-way)
+- [Why Non-blocking Validation Works Better](#why-non-blocking-validation-works-better)
+  - [User Control and Freedom](#user-control-and-freedom)
+  - [Error Prevention vs. Error Blocking](#error-prevention-vs-error-blocking)
+  - [Progressive Disclosure](#progressive-disclosure)
+  - [Learning Context Matters](#learning-context-matters)
+- [Benchmarking Against Real Products](#benchmarking-against-real-products)
+- [Conclusion](#conclusion)
+
+One of the most positively received features in LingoBun is its AI-powered term validation and suggestion system. During user testing, one participant commented:
+
+> “I think it’s really great that when I register a word and there’s a spelling mistake, the app corrects it for me.”
+
+This feedback confirmed that the feature was doing something right: it helped users catch errors early and reduced friction during vocabulary capture.
+
+However, user testing also revealed a deeper issue. At the time, **the validation flow was strictly blocking**. If a term was deemed "invalid", users could not proceed unless they selected one of the suggested alternatives or manually edited their input to satisfy the system. There was no way to continue with the original term.
+
+That design choice turned out to be more problematic than it initially appeared.
+
+## Why This Was a Problem
+
+The blocking pattern assumed something that wasn't always true: that the system's definition of "valid" should override the user's intent. In practice, language is messy. Users don't only input dictionary-perfect words. They capture slang, informal expressions, emerging terms, fuzzy expressions, and so on. A term may be *technically invalid* according to a model or dataset, yet still be deeply meaningful to the learner.
+
+By hard-blocking progress, the system effectively said, "You're not allowed to proceed unless you comply". This created friction at the most critical moment in the product: capturing new knowledge.
+
+From a UX perspective, this runs counter to well-established guidance. Nielsen Norman Group notes that hard blocking is appropriate primarily when irreversible damage can occur, or when correctness is objective and non-negotiable (e.g. in payment flows or destructive actions).
+
+In LingoBun's case, neither condition applied. Creating a vocabulary entry is low-risk, reversible, and subjective in nature. While correctness remains important, the real goal is **relevance**. When relevance is user-defined, removing user agency becomes a design flaw.
+<br/>
+<figure style={{ textAlign: "center" }}>
+  <br/>
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/non-blocking-ai-validation-user-flow-a-case-study/Pasted image 20260123113121.png"
+    alt=""
+    style={{ marginBottom: "8px", maxWidth: "400px" }}
+  />
+  <figcaption></figcaption>
+</figure>
+  <figcaption></figcaption>
+</figure>
+<br/>
+
+## The Non-blocking Way
+
+The solution was intentionally minimal. Visually, the only change was replacing the primary button label from "**Next**" to "**Continue Anyway**" when a term is flagged as potentially invalid.
+
+Functionally, the flow still pauses to explain the issue, provide suggestions, and encourage users to correct mistakes. But critically, users are no longer trapped. They can now acknowledge the warning and move forward with their original input if that better reflects their intent.
+<br/>
+<figure style={{ textAlign: "center" }}>
+  <br/>
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/non-blocking-ai-validation-user-flow-a-case-study/Pasted image 20260123113142.png"
+    alt=""
+    style={{ marginBottom: "8px", maxWidth: "400px" }}
+  />
+  <figcaption></figcaption>
+</figure>
+  <figcaption></figcaption>
+</figure>
+<br/>
+The real change wasn't cosmetic; it was **conceptual**. The system no longer assumes authority over meaning. Instead, it acts as an advisor. It offers guidance, not enforcement.
+
+## Why Non-blocking Validation Works Better
+
+This shift aligns with several well-established UX principles.
+
+### User Control and Freedom
+
+One of Nielsen Norman Group’s core usability heuristics is _User Control and Freedom_. Users should be able to override system suggestions when appropriate. A clearly labeled "Continue Anyway" restores that freedom without removing guardrails.
+
+### Error Prevention vs. Error Blocking
+
+Preventing errors doesn't require blocking progress. In many contexts—especially creative or learning tools—**soft validation** (warnings with override options) leads to better outcomes than hard stops.
+
+### Progressive Disclosure
+
+The system only intervenes when necessary, and only to the extent required. Users who input common terms experience no friction. Edge cases receive extra guidance, without penalising exploration.
+
+### Learning Context Matters
+
+In learning science, reflection is often more effective than correction alone. Pausing the flow to present suggestions encourages users to think, while still allowing them to proceed. Blocking, on the other hand, discourages experimentation and capture.
+
+## Benchmarking Against Real Products
+
+This pattern isn't unique to LingoBun. For example,
+
+- **Google Docs** flags grammar issues but never prevents writing.
+- **Notion** warns about duplicates or unusual structures but always allows continuation.
+- **Code editors** surface warnings but rarely block execution unless failure is guaranteed.
+
+In all of these tools, the principle is the same: **the system assists, but the user decides**.
+
+## Conclusion
+
+By shifting from a blocking to a non-blocking validation flow, LingoBun preserves the benefits of AI assistance while respecting user intent and context.
+
+The result is a system that feels less authoritative and more collaborative, supporting learning rather than policing it.
