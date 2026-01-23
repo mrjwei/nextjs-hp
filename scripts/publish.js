@@ -784,7 +784,7 @@ async function main() {
   const rawMarkdown = fs.readFileSync(absSourceFile, "utf8")
   const { metadata: srcMeta } = parseFrontmatterLoose(rawMarkdown)
 
-  const publishedAt = srcMeta.publishedAt || getTodayISODate()
+  const publishedAt = getTodayISODate()
   const summary = srcMeta.summary || firstNonEmptyParagraph(rawMarkdown)
   const tags = Array.isArray(srcMeta.tags) ? srcMeta.tags : []
 
