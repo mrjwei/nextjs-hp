@@ -7,7 +7,7 @@ require("dotenv").config({ path: path.resolve(__dirname, "..", ".env") })
 const { execSync } = require("child_process")
 
 function usage() {
-  return `\nPublish an Obsidian Markdown note into this Next.js HP as MDX.\n\nUsage:\n  npm run publish "My Post Title" -- [--series <folder>] [--file <path>]\n\nOptions:\n  --series <name>      Writes into app/writings/posts/<name>/\n  --file <path>        Path to the source .md file (preferred if not using a vault)\n  --vault <path>       Obsidian vault root to search (default: $OBSIDIAN_VAULT)\n  --assets <path>      Obsidian assets dir (default: $OBSIDIAN_ASSETS or <vault>/assets)\n  --toc                Force (re)generate a TOC (default: enabled)\n  --no-toc             Do not generate a TOC\n  --no-ai              Skip AI transform; do a safe, basic Markdown→MDX conversion\n  --overwrite          Overwrite the output file if it already exists\n  --resume             If output exists, update TOC/assets and run git steps\n  --dry-run            Print planned actions; do not write/commit/push\n  --no-push            Commit locally but do not git push\n  --no-commit          Write/update files but do not git commit/push\n  --help               Show help\n\nEnv vars (for AI):\n  OPENAI_API_KEY       If set, enables AI transform unless --no-ai\n  OPENAI_BASE_URL      Default: https://api.openai.com/v1\n  OPENAI_MODEL         Default: gpt-4o-mini\n\nEnv vars (for Obsidian):\n  OBSIDIAN_VAULT        Default vault root for --vault lookup\n  OBSIDIAN_ASSETS       Default assets folder (e.g. /path/to/vault/assets)\n\nExamples:\n  npm run publish "My Post Title" -- --file ~/Vault/My%20Post%20Title.md\n  npm run publish "My Post Title" -- --series LingoBun -- --file ~/Vault/LingoBun/My%20Post%20Title.md\n  npm run publish "My Post Title" -- --series ml -- --vault ~/Obsidian\n  npm run publish "My Post Title" -- --resume --series LingoBun -- --file ~/Vault/My%20Post%20Title.md\n`
+  return `\nPublish an Obsidian Markdown note into this Next.js HP as MDX.\n\nUsage:\n  npm run publish "My Post Title" -- [--series <folder>] [--file <path>]\n\nOptions:\n  --series <name>      Writes into app/writings/posts/<name>/\n  --file <path>        Path to the source .md file (preferred if not using a vault)\n  --vault <path>       Obsidian vault root to search (default: $OBSIDIAN_VAULT)\n  --assets <path>      Obsidian assets dir (default: $OBSIDIAN_ASSETS or <vault>/assets)\n  --toc                Force (re)generate a TOC (default: enabled)\n  --no-toc             Do not generate a TOC\n  --no-ai              Skip AI transform; do a safe, basic Markdown→MDX conversion\n  --overwrite          Overwrite the output file if it already exists\n  --resume             If output exists, update TOC/assets and run git steps\n  --dry-run            Print planned actions; do not write/commit/push\n  --commit             Commit changes locally (default: off)\n  --push               Push commits to remote (requires --commit; default: off)\n  --help               Show help\n\nEnv vars (for AI):\n  OPENAI_API_KEY       If set, enables AI transform unless --no-ai\n  OPENAI_BASE_URL      Default: https://api.openai.com/v1\n  OPENAI_MODEL         Default: gpt-4o-mini\n\nEnv vars (for Obsidian):\n  OBSIDIAN_VAULT        Default vault root for --vault lookup\n  OBSIDIAN_ASSETS       Default assets folder (e.g. /path/to/vault/assets)\n\nExamples:\n  npm run publish "My Post Title" -- --file ~/Vault/My%20Post%20Title.md\n  npm run publish "My Post Title" -- --series LingoBun -- --file ~/Vault/LingoBun/My%20Post%20Title.md\n  npm run publish "My Post Title" -- --series ml -- --vault ~/Obsidian\n  npm run publish "My Post Title" -- --resume --series LingoBun -- --file ~/Vault/My%20Post%20Title.md\n`
 }
 
 function parseArgs(argv) {
@@ -32,12 +32,13 @@ function parseArgs(argv) {
       args.noAi = true
       continue
     }
-    if (key === "no-push") {
-      args.noPush = true
+
+    if (key === "commit") {
+      args.commit = true
       continue
     }
-    if (key === "no-commit") {
-      args.noCommit = true
+    if (key === "push") {
+      args.push = true
       continue
     }
     if (key === "overwrite") {
@@ -150,7 +151,12 @@ function splitByFencedCodeBlocks(text) {
 }
 
 function renderImageFigure(src) {
-  const safeSrc = String(src || "").trim().replace(/"/g, "&quot;")
+  let safeSrc = String(src || "").trim()
+  if (safeSrc && !/^(https?:)?\/\//i.test(safeSrc)) {
+    // Keep '/' intact but encode spaces and other URL-unsafe chars.
+    safeSrc = encodeURI(safeSrc)
+  }
+  safeSrc = safeSrc.replace(/"/g, "&quot;")
   return [
     "<br/>",
     "<figure style={{ textAlign: \"center\" }}>",
@@ -232,12 +238,18 @@ function convertImagesToFigureHtml(mdx, postSlug) {
         return renderImageFigure(`/${postSlug}/${filename}`)
       })
 
-      // Markdown images: ![alt](src) -> figure HTML (keep src)
-      t = t.replace(/!\[[^\]]*\]\(([^\)]+)\)/g, (_, inner) => {
-        const raw = String(inner).trim()
-        const src = raw.split(/\s+/)[0]
-        return renderImageFigure(normalizeImageSrc(src, postSlug))
-      })
+      // Markdown images: ![alt](src "title") or ![alt](<src with spaces> "title")
+      // Prefer keeping the exact image path/name provided by Markdown.
+      t = t.replace(
+        /!\[[^\]]*\]\(\s*(<[^>]+>|[^\s\)]+)(?:\s+(?:"[^"]*"|'[^']*'))?\s*\)/g,
+        (_, urlToken) => {
+          let src = String(urlToken || "").trim()
+          if (src.startsWith("<") && src.endsWith(">")) {
+            src = src.slice(1, -1).trim()
+          }
+          return renderImageFigure(normalizeImageSrc(src, postSlug))
+        }
+      )
 
       return stripMarkdownTableArtifacts(t)
     })
@@ -588,7 +600,7 @@ async function aiTransformToMdx({ markdown, title, postSlug }) {
 
   const availableTags = loadAvailableTags()
 
-  const system = `You are converting an Obsidian Markdown note into MDX for a Next.js blog.\n\nRequirements:\n- Output MUST be a single valid MDX document (do NOT wrap in triple-backtick fences).\n- Start with YAML frontmatter containing exactly: title, publishedAt (YYYY-MM-DD), summary, tags (as a JSON array).\n- Keep the content faithful; do not add sections that weren't present.\n- Convert Obsidian wikilinks [[Page]]/[[Page|Label]] to plain text (Label or Page).\n- Convert Obsidian embeds ![[file.png]] to images served from /${postSlug}/file.png.\n- For ALL images, use this HTML pattern (fill only src):\n  <br/>\n  <figure style={{ textAlign: \"center\" }}>\n    <img src=\"/path/to/image\" alt=\"\" style={{ marginBottom: \"8px\" }} />\n    <figcaption></figcaption>\n  </figure>\n  <br/>\n- Prefer standard Markdown; only use JSX when needed.\n- Tags must be chosen ONLY from this set: ${availableTags.join(", ")}. Use 3-7 tags.`
+  const system = `You are converting an Obsidian Markdown note into MDX for a Next.js blog.\n\nRequirements:\n- Output MUST be a single valid MDX document (do NOT wrap in triple-backtick fences).\n- Start with YAML frontmatter containing exactly: title, publishedAt (YYYY-MM-DD), summary, tags (as a JSON array).\n- Keep the content faithful; do not add sections that weren't present.\n- Convert Obsidian wikilinks [[Page]]/[[Page|Label]] to plain text (Label or Page).\n- For images, preserve the original image filename/path from the note:\n  - Obsidian embeds: ![[Some Image.png]] or ![[folder/Some Image.png]] must become images served from /${postSlug}/Some%20Image.png (or /${postSlug}/folder/Some%20Image.png).\n  - Markdown images: ![alt](relative.png) must become /${postSlug}/relative.png; absolute/remote URLs should stay as-is.\n- For ALL images, use this HTML pattern (fill only src):\n  <br/>\n  <figure style={{ textAlign: \"center\" }}>\n    <img src=\"/path/to/image\" alt=\"\" style={{ marginBottom: \"8px\" }} />\n    <figcaption></figcaption>\n  </figure>\n  <br/>\n- Prefer standard Markdown; only use JSX when needed.\n- Tags must be chosen ONLY from this set: ${availableTags.join(", ")}. Use 3-7 tags.`
 
   const user = `Title: ${title}\n\nObsidian Markdown:\n\n${markdown}`
 
@@ -797,8 +809,9 @@ async function main() {
     aiEnabled: Boolean(process.env.OPENAI_API_KEY) && !args.noAi,
     tocEnabled: !args.noToc,
     assetsDir,
-    commit: !args.noCommit,
-    push: !args.noCommit && !args.noPush,
+    // commit/push are opt-in flags
+    commit: Boolean(args.commit),
+    push: Boolean(args.push) && Boolean(args.commit),
   }
 
   console.log("\nPublish plan:")
@@ -875,8 +888,8 @@ async function main() {
     console.log(`Copied ${copiedAssets.length} asset(s) into public/${postSlug}/`)
   }
 
-  if (args.noCommit) {
-    console.log("\n--no-commit set; skipping git commit/push.\n")
+  if (!plan.commit) {
+    console.log("\nNo --commit flag; skipping git commit/push.\n")
     return
   }
 
@@ -892,10 +905,10 @@ async function main() {
       stdio: "inherit",
     })
 
-    if (!args.noPush) {
+    if (plan.push) {
       run("git push", { stdio: "inherit" })
     } else {
-      console.log("\n--no-push set; commit created locally.\n")
+      console.log("\nNo --push flag; commit created locally.\n")
     }
   } catch (e) {
     console.error(`\nGit step failed. Your MDX file is created at:`)
