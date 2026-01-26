@@ -1,0 +1,170 @@
+---
+title: Multimodal Context for Higher Retention: A Case Study
+publishedAt: 2026-01-26
+summary: This article explores the implementation of media upload and notes features in LingoBun, driven by user research and theoretical evidence on the importance of multimodal context in language learning.
+tags: ["casestudy", "languagelearning", "productivity", "dev"]
+---
+
+- [User Research Insights](#user-research-insights)
+- [Theoretical Evidence: Why Context Works](#theoretical-evidence-why-context-works)
+  - [1. Context Beats Isolation](#1-context-beats-isolation)
+  - [2. Multimodal Input Strengthens Memory](#2-multimodal-input-strengthens-memory)
+  - [3. Personalised Context Enables Deeper Processing](#3-personalised-context-enables-deeper-processing)
+- [From Research to Product Decision](#from-research-to-product-decision)
+- [Media and Notes in LingoBun](#media-and-notes-in-lingobun)
+  - [Media: Constraints Matter](#media-constraints-matter)
+  - [Notes: One Arrow, Two Eagles](#notes-one-arrow-two-eagles)
+- [Conclusion](#conclusion)
+- [References](#references)
+
+Recently, I added media upload (images, for now) and notes features to LingoBun. This decision came directly from user testing, where several participants pointed out that *personalised context* could help them remember and reuse vocabulary more effectively.
+
+In this article, I'll share:
+
+- what multimodal context means in the context of language learning
+- how user research surfaced this need
+- and why I decided to implement the feature despite an overall focus on simplicity.
+
+## User Research Insights
+
+Across multiple rounds of user testing, a recurring theme emerged: learners wanted ways to attach *their own context* to vocabulary entries.
+
+One participant mentioned:
+
+> 例えば、食べ物とかだったら、イラストなり写真がついでについてきたら、分かりやすいかも。
+> _(For example, for food-related words, having an illustration or photo attached might make it easier to understand.)_
+
+Another suggested a notes-based approach:
+
+> (Suggested feature) Notes feature for each word, where you can write notes for each word.
+> It can be used as a hint while quizzing — for example, where you heard or read about this word.
+
+From my own language learning experience, this feedback resonated strongly. However, I didn't implement the feature immediately.
+
+One of LingoBun's core principles is simplicity: every new feature must clearly strengthen the app's core loop rather than dilute it. So before building anything, I wanted to answer one question:
+
+*Does adding personalised context actually improve retention, or does it just feel helpful?*
+
+## Theoretical Evidence: Why Context Works
+
+To validate the idea, I conducted secondary research on vocabulary acquisition, contextual learning, and multimodal memory. Several consistent findings stood out.
+
+### 1. Context Beats Isolation
+
+Studies repeatedly show that vocabulary learned in context is retained better than vocabulary learned in isolation (Nation, 2001; Webb, 2007; Huckin & Coady, 1999).
+
+Nation (2001) and Webb (2007) suggest that encountering words in meaningful sentences leads to deeper lexical knowledge than rote memorisation. Learners who infer meaning from context tend to retain vocabulary better than those who rely solely on direct definition lookup (Huckin & Coady, 1999; Pellicer-Sánchez, 2016).
+
+In short, words learned as part of a meaningful situation stick longer.
+
+### 2. Multimodal Input Strengthens Memory
+
+Memory research also supports the idea that combining multiple modalities enhances recall (Mayer, 2009).
+
+Paivio's Dual Coding Theory proposes that information encoded both verbally and visually is more likely to be remembered (Paivio, 1986). Studies involving images, audio, and text show higher immediate and delayed recall compared to text-only conditions (Mayer, 2009; Kalyuga et al., 1999). One AR-based vocabulary study found that learners exposed to visualised contexts showed significantly improved retention compared to non-visual learning environments (Bacca et al., 2014; Hsu, 2017).
+
+This aligns with a simple intuition: when learners see, read, and personally relate to a word, they form more retrieval paths.
+
+### 3. Personalised Context Enables Deeper Processing
+
+Beyond static examples, self-generated context appears to be especially powerful (Wittrock, 1974).
+
+Research on generative learning suggests that learners remember more when they actively create associations (e.g. mental imagery, personal notes) (Wittrock, 1974; Fiorella & Mayer, 2015). Pairing learner-generated images or annotations with vocabulary has been shown to outperform keyword-only methods in retention tests (Leutner et al., 2009; Zhang & Ren, 2019).
+
+This matters because LingoBun isn't just about exposure; it's about active engagement.
+
+## From Research to Product Decision
+
+Taken together, the evidence supported a clear conclusion:
+
+*Adding visual and textual context doesn't just feel helpful—it measurably improves retention and transfer.*
+
+This insight aligned directly with LingoBun's mission, so I moved forward with two sub-features:
+
+- **Media upload**
+- **Notes**
+
+## Media and Notes in LingoBun
+
+<div style={{ textAlign: "center", marginBottom: "16px" }}>
+  <div style={{display: "flex", justifyContent: "center", alignItems: "center", gap: "40px", marginBottom: "16px" }}>
+    <figure style={{ textAlign: "center" }}>
+      <img
+        src="/multimodal-context-for-higher-retention-a-case-study/media_and_notes_1.png"
+        alt=""
+        style={{ marginBottom: "8px" }}
+      />
+      <figcaption></figcaption>
+    </figure>
+    <figure style={{ textAlign: "center" }}>
+      <img
+        src="/multimodal-context-for-higher-retention-a-case-study/media_and_notes_2.png"
+        alt=""
+        style={{ marginBottom: "8px" }}
+      />
+    </figure>
+  </div>
+  <figcaption style={{ fontSize: "16px", color: "#666" }}>Uploaded image and notes for “cosmetic” and its usage in “cosmetic flaws”</figcaption>
+</div>
+
+
+### Media: Constraints Matter
+
+Media can take many forms—images, videos, audio, and even interactive content. For the private beta, however, the goal is validation, not completeness. So I deliberately constrained the feature:
+
+- Images only (for now)
+- No editing tools (forever)
+- No AI-generated visuals (forever)
+
+This keeps the feature lightweight while still testing the core hypothesis: *does visual context improve recall and usage for learners?*
+
+### Notes: One Arrow, Two Eagles
+
+During testing, some participants mentioned wanting *annotations in their native language or separate definition groups per language*.
+
+While understandable, this approach would significantly increase UI and cognitive complexity. Instead, I introduced a free-form notes field where users can:
+
+- write explanations in any language,
+- add personal reminders,
+- or note where they encountered the word.
+
+Unlike definition fields (which I plan to constrain linguistically in the future), notes remain intentionally flexible. This solves two problems at once:
+
+1. supports multilingual clarification when needed,
+2. preserves simplicity in the core learning flow.
+
+## Conclusion
+
+This feature wasn't driven by instinct alone. It emerged from a loop of **user feedback → theoretical validation → constrained implementation**.
+
+For LingoBun, media and notes are not "power features". Instead, they support deeper understanding and longer-lasting memory without being overwhelming.
+
+I will observe how learners actually use them and let behaviour, not opinion, guide what comes next.
+
+## References
+
+Nation, I. S. P. (2001). Learning vocabulary in another language. Cambridge University Press. https://doi.org/10.1017/CBO9781139524759
+
+Webb, S. (2007). The effects of repetition on vocabulary knowledge. Applied Linguistics, 28(1), 46–65. https://doi.org/10.1093/applin/aml048
+
+Huckin, T., & Coady, J. (1999). Incidental vocabulary acquisition in a second language. Studies in Second Language Acquisition, 21(2), 181–193. https://doi.org/10.1017/S0272263199002028
+
+Pellicer-Sánchez, A. (2016). Incidental L2 vocabulary acquisition from reading: An eye-tracking study. Studies in Second Language Acquisition, 38(1), 97–130. https://doi.org/10.1017/S0272263115000224
+
+Paivio, A. (1986). Mental representations: A dual coding approach. Oxford University Press. https://doi.org/10.1093/acprof:oso/9780195066661.001.0001
+
+Mayer, R. E. (2009). Multimedia learning (2nd ed.). Cambridge University Press. https://doi.org/10.1017/CBO9780511811678
+
+Kalyuga, S., Chandler, P., & Sweller, J. (1999). Managing split-attention and redundancy in multimedia instruction. Applied Cognitive Psychology, 13(4), 351–371. `https://doi.org/10.1002/(SICI)1099-0720(199908)13:4<351::AID-ACP589>3.0.CO;2-6`
+
+Bacca, J., Baldiris, S., Fabregat, R., & Graf, S. (2014). Augmented reality trends in education. Educational Technology & Society, 17(4), 133–149. https://www.jstor.org/stable/jeductechsoci.17.4.133
+
+Hsu, T.-C. (2017). Learning English with augmented reality: Do learning styles matter? Computers & Education, 106, 137–149. https://doi.org/10.1016/j.compedu.2016.12.007
+
+Wittrock, M. C. (1974). Learning as a generative process. Educational Psychologist, 11(2), 87–95. https://doi.org/10.1080/00461527409529129
+
+Fiorella, L., & Mayer, R. E. (2015). Learning as a generative activity: Eight learning strategies that promote understanding. Cambridge University Press. https://doi.org/10.1017/CBO9781107707085
+
+Zhang, H., & Ren, L. (2019). Effects of learner-generated drawing on vocabulary learning. System, 84, 102167. https://doi.org/10.1016/j.system.2019.102167
+
+Leutner, D., Leopold, C., & Sumfleth, E. (2009). Cognitive load and science text comprehension: Effects of drawing and mentally imagining text content. Computers in Human Behavior, 25(2), 284–289. https://doi.org/10.1016/j.chb.2008.12.010
