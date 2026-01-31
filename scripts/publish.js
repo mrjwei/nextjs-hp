@@ -267,6 +267,31 @@ function splitFrontmatterFromMdx(mdx) {
   }
 }
 
+function upsertPublishedAtInMdx(mdx, publishedAt) {
+  const parts = splitFrontmatterFromMdx(mdx)
+  if (!parts.frontmatter) return mdx
+
+  const lines = parts.frontmatter.trimEnd().split("\n")
+  if (lines.length < 2) return mdx
+
+  let found = false
+  for (let i = 1; i < lines.length - 1; i++) {
+    if (/^publishedAt\s*:/.test(lines[i])) {
+      lines[i] = `publishedAt: "${publishedAt}"`
+      found = true
+      break
+    }
+  }
+
+  if (!found) {
+    const titleIndex = lines.findIndex((l) => /^title\s*:/.test(l))
+    const insertAt = titleIndex >= 0 ? titleIndex + 1 : 1
+    lines.splice(insertAt, 0, `publishedAt: "${publishedAt}"`)
+  }
+
+  return lines.join("\n") + "\n\n" + parts.body
+}
+
 function stripCodeFences(lines) {
   // Returns a boolean array indicating whether each line is inside a fenced code block.
   const inside = new Array(lines.length).fill(false)
@@ -841,6 +866,9 @@ async function main() {
 
   // Normalize common LLM artifacts first.
   mdx = unwrapTopLevelCodeFence(mdx)
+
+  // Ensure publishedAt is set to today's date for new output.
+  mdx = upsertPublishedAtInMdx(mdx, publishedAt)
 
   // Convert any remaining image syntaxes to the required <figure><img/></figure> blocks.
   mdx = convertImagesToFigureHtml(mdx, postSlug)
