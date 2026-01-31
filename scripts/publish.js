@@ -276,6 +276,11 @@ function normalizeFiguresAndSpacing(mdx) {
     body = body.replace(/<figure[^>]*>\s*(<figure[\s\S]*?<\/figure>)\s*<\/figure>/gi, "$1")
   } while (body !== prev)
 
+  // Remove any <br/> tags that accidentally end up inside <figure> blocks.
+  body = body.replace(/<figure[\s\S]*?<\/figure>/gi, (block) => {
+    return block.replace(/\s*<br\s*\/?>\s*/gi, "\n")
+  })
+
   // Collapse runs of <br/> tags.
   body = body.replace(/(?:\s*<br\s*\/?>\s*){2,}/gi, "\n<br/>\n")
 
