@@ -158,7 +158,6 @@ function renderImageFigure(src) {
   }
   safeSrc = safeSrc.replace(/"/g, "&quot;")
   return [
-    "<br/>",
     "<figure style={{ textAlign: \"center\" }}>",
     "  <img",
     `    src=\"${safeSrc}\"`,
@@ -167,7 +166,6 @@ function renderImageFigure(src) {
     "  />",
     "  <figcaption></figcaption>",
     "</figure>",
-    "<br/>",
   ].join("\n")
 }
 
@@ -265,6 +263,29 @@ function splitFrontmatterFromMdx(mdx) {
     frontmatter: fm[0].trimEnd() + "\n\n",
     body: mdx.slice(fm[0].length),
   }
+}
+
+function normalizeFiguresAndSpacing(mdx) {
+  const parts = splitFrontmatterFromMdx(mdx)
+  let body = parts.body
+
+  // Unwrap nested figures like <figure>...<figure>...</figure>...</figure>
+  let prev
+  do {
+    prev = body
+    body = body.replace(/<figure[^>]*>\s*(<figure[\s\S]*?<\/figure>)\s*<\/figure>/gi, "$1")
+  } while (body !== prev)
+
+  // Collapse runs of <br/> tags.
+  body = body.replace(/(?:\s*<br\s*\/?>\s*){2,}/gi, "\n<br/>\n")
+
+  // Ensure exactly one <br/> before and after each figure.
+  body = body.replace(
+    /(?:\s*<br\s*\/?>\s*)*(<figure[\s\S]*?<\/figure>)(?:\s*<br\s*\/?>\s*)*/gi,
+    "\n<br/>\n$1\n<br/>\n"
+  )
+
+  return parts.frontmatter + body.trimStart()
 }
 
 function upsertPublishedAtInMdx(mdx, publishedAt) {
@@ -873,6 +894,9 @@ async function main() {
   // Convert any remaining image syntaxes to the required <figure><img/></figure> blocks.
   mdx = convertImagesToFigureHtml(mdx, postSlug)
 
+  // Clean nested figures and normalize <br/> spacing around figures.
+  mdx = normalizeFiguresAndSpacing(mdx)
+
   // Ensure TOC (extension-equivalent output) after frontmatter.
   if (!args.noToc) {
     const parts = splitFrontmatterFromMdx(mdx)
@@ -894,6 +918,7 @@ async function main() {
     const existing = fs.readFileSync(absOutFile, "utf8")
     let updated = unwrapTopLevelCodeFence(existing)
     updated = convertImagesToFigureHtml(updated, postSlug)
+    updated = normalizeFiguresAndSpacing(updated)
     if (!args.noToc) {
       const parts = splitFrontmatterFromMdx(updated)
       const toc = generateTocFromBody(parts.body)
