@@ -10,6 +10,14 @@ This repo stores writings in `app/writings/posts/`. A “series” is a subfolde
 npm run publish "My Post Title" -- --file /absolute/path/to/My Post Title.md
 ```
 
+Note: when you pass `--file`, the published title (first argument) does *not* need to match the source filename.
+
+If the path contains spaces, quoting is recommended (but the script also supports unquoted paths):
+
+```bash
+npm run publish "My Post Title" -- --file "/absolute/path/with spaces/My Post Title.md"
+```
+
 ### Publish by searching an Obsidian vault
 
 ```bash
@@ -17,10 +25,24 @@ export OBSIDIAN_VAULT=/absolute/path/to/YourVault
 npm run publish "My Post Title"
 ```
 
+If your Obsidian note filename differs from the published title, pass `--source`:
+
+```bash
+export OBSIDIAN_VAULT=/absolute/path/to/YourVault
+npm run publish "My Published Title" -- --source "My Obsidian Note Filename"
+```
+
 ### Publish into a series folder
 
 ```bash
 npm run publish "My Post Title" -- --series LingoBun --file /absolute/path/to/My Post Title.md
+```
+
+If you’re searching a vault (no `--file`) and the source filename differs from the published title:
+
+```bash
+export OBSIDIAN_VAULT=/absolute/path/to/YourVault
+npm run publish "My Published Title" -- --series LingoBun --source "My Obsidian Note Filename"
 ```
 
 ## Images (Obsidian assets -> public/<slug>/)

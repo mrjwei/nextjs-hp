@@ -7,7 +7,7 @@ require("dotenv").config({ path: path.resolve(__dirname, "..", ".env") })
 const { execSync } = require("child_process")
 
 function usage() {
-  return `\nPublish an Obsidian Markdown note into this Next.js HP as MDX.\n\nUsage:\n  npm run publish "My Post Title" -- [--series <folder>] [--file <path>]\n\nOptions:\n  --series <name>      Writes into app/writings/posts/<name>/\n  --file <path>        Path to the source .md file (preferred if not using a vault)\n  --vault <path>       Obsidian vault root to search (default: $OBSIDIAN_VAULT)\n  --assets <path>      Obsidian assets dir (default: $OBSIDIAN_ASSETS or <vault>/assets)\n  --toc                Force (re)generate a TOC (default: enabled)\n  --no-toc             Do not generate a TOC\n  --no-ai              Skip AI transform; do a safe, basic Markdown→MDX conversion\n  --overwrite          Overwrite the output file if it already exists\n  --resume             If output exists, update TOC/assets and run git steps\n  --dry-run            Print planned actions; do not write/commit/push\n  --commit             Commit changes locally (default: off)\n  --push               Push commits to remote (requires --commit; default: off)\n  --help               Show help\n\nEnv vars (for AI):\n  OPENAI_API_KEY       If set, enables AI transform unless --no-ai\n  OPENAI_BASE_URL      Default: https://api.openai.com/v1\n  OPENAI_MODEL         Default: gpt-4o-mini\n\nEnv vars (for Obsidian):\n  OBSIDIAN_VAULT        Default vault root for --vault lookup\n  OBSIDIAN_ASSETS       Default assets folder (e.g. /path/to/vault/assets)\n\nExamples:\n  npm run publish "My Post Title" -- --file ~/Vault/My%20Post%20Title.md\n  npm run publish "My Post Title" -- --series LingoBun -- --file ~/Vault/LingoBun/My%20Post%20Title.md\n  npm run publish "My Post Title" -- --series ml -- --vault ~/Obsidian\n  npm run publish "My Post Title" -- --resume --series LingoBun -- --file ~/Vault/My%20Post%20Title.md\n`
+  return `\nPublish an Obsidian Markdown note into this Next.js HP as MDX.\n\nUsage:\n  npm run publish "My Post Title" -- [--series <folder>] [--file <path>]\n\nOptions:\n  --series <name>      Writes into app/writings/posts/<name>/\n  --file <path>        Path to the source .md file (preferred if not using a vault)\n  --source <name>      Source note filename (without .md) to search for in a vault (defaults to the title argument)\n  --vault <path>       Obsidian vault root to search (default: $OBSIDIAN_VAULT)\n  --assets <path>      Obsidian assets dir (default: $OBSIDIAN_ASSETS or <vault>/assets)\n  --toc                Force (re)generate a TOC (default: enabled)\n  --no-toc             Do not generate a TOC\n  --no-ai              Skip AI transform; do a safe, basic Markdown→MDX conversion\n  --overwrite          Overwrite the output file if it already exists\n  --resume             If output exists, update TOC/assets and run git steps\n  --dry-run            Print planned actions; do not write/commit/push\n  --commit             Commit changes locally (default: off)\n  --push               Push commits to remote (requires --commit; default: off)\n  --help               Show help\n\nEnv vars (for AI):\n  OPENAI_API_KEY       If set, enables AI transform unless --no-ai\n  OPENAI_BASE_URL      Default: https://api.openai.com/v1\n  OPENAI_MODEL         Default: gpt-4o-mini\n\nEnv vars (for Obsidian):\n  OBSIDIAN_VAULT        Default vault root for --vault lookup\n  OBSIDIAN_ASSETS       Default assets folder (e.g. /path/to/vault/assets)\n\nExamples:\n  npm run publish "My Post Title" -- --file ~/Vault/My%20Post%20Title.md\n  npm run publish "My Post Title" -- --series LingoBun --file ~/Vault/LingoBun/My%20Post%20Title.md\n  npm run publish "My Post Title" -- --series ml --vault ~/Obsidian\n  npm run publish "Published Title" -- --vault ~/Obsidian --source "My Obsidian Note Filename"\n  npm run publish "My Post Title" -- --resume --series LingoBun --file ~/Vault/My%20Post%20Title.md\n`
 }
 
 function parseArgs(argv) {
@@ -19,7 +19,16 @@ function parseArgs(argv) {
       continue
     }
 
+    // Treat a standalone `--` as a no-op separator.
+    // It's easy to accidentally include `--` twice (e.g. `npm run x -- ... -- --flag`).
+    if (token === "--") {
+      continue
+    }
+
     const key = token.replace(/^--/, "")
+    if (!key) {
+      continue
+    }
     if (key === "help") {
       args.help = true
       continue
@@ -58,12 +67,24 @@ function parseArgs(argv) {
       continue
     }
 
-    const value = argv[i + 1]
-    if (!value || value.startsWith("--")) {
+    // Options with values: allow multi-token values so users don't have to quote
+    // paths/names with spaces. We consume until the next --flag (or end).
+    let j = i + 1
+    const first = argv[j]
+    if (!first || first === "--" || first.startsWith("--")) {
       throw new Error(`Missing value for --${key}`)
     }
-    args[key] = value
-    i++
+
+    const valueTokens = []
+    while (j < argv.length) {
+      const t = argv[j]
+      if (t === "--" || t.startsWith("--")) break
+      valueTokens.push(t)
+      j++
+    }
+
+    args[key] = valueTokens.join(" ")
+    i = j - 1
   }
 
   return args
@@ -819,7 +840,8 @@ async function main() {
       ? path.resolve(process.env.OBSIDIAN_VAULT)
       : null
 
-    absSourceFile = findMarkdownByTitle({ vaultDir, title })
+    const sourceName = args.source ? String(args.source) : title
+    absSourceFile = findMarkdownByTitle({ vaultDir, title: sourceName })
   }
 
   const vaultDirForDefaults = args.vault
@@ -839,7 +861,7 @@ async function main() {
   if (!absSourceFile || !fs.existsSync(absSourceFile)) {
     console.error(`\nCould not find a source Markdown file for: ${title}`)
     console.error(
-      `Provide one via --file, or set $OBSIDIAN_VAULT (or pass --vault) so the script can search by filename.\n`
+      `Provide one via --file, or set $OBSIDIAN_VAULT (or pass --vault) so the script can search by filename (optionally override the filename with --source).\n`
     )
     process.exit(1)
   }
