@@ -111,6 +111,7 @@ export function CustomMDX(props) {
       {...props}
       components={{ ...components, ...(props.components || {}) }}
       options={{
+          blockJS: false,
           mdxOptions: {
             format: "mdx",
             remarkPlugins: [remarkMath],
