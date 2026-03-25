@@ -28,7 +28,12 @@ export function Grid({
     <div className={className}>
       <div className="grid grid-cols-12 gap-y-8 md:gap-8">
         {writings.map((article) => (
-          <WritingCard article={article} from={from} path={path} />
+          <WritingCard
+            key={article.slug}
+            article={article}
+            from={from}
+            path={path}
+          />
         ))}
       </div>
     </div>

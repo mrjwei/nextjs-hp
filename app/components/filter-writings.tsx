@@ -9,7 +9,7 @@ export const FilterWritings = ({ writings, category }) => {
       <div>
         <div className="grid grid-cols-12 gap-y-8 md:gap-8">
           {writings.map((article) => (
-            <WritingCard article={article} />
+            <WritingCard key={article.slug} article={article} />
           ))}
         </div>
       </div>

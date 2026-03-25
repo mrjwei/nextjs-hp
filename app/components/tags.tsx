@@ -7,7 +7,9 @@ export const Tags = ({ tags, className = "" }) => {
     <div className={clsx("flex flex-wrap gap-1 mb-2", className)}>
       {tags
         ?.filter((tag) => Object.keys(tagsData).includes(tag))
-        .map((tag) => <Tag label={tag} color={tagsData[tag].color} />)}
+        .map((tag) => (
+          <Tag key={tag} label={tag} color={tagsData[tag].color} />
+        ))}
     </div>
   )
 }

@@ -18,7 +18,11 @@ export function Works({
     <div className={className}>
       <div className="grid grid-cols-12 gap-y-8 md:gap-8">
         {allWorks.map((work) => (
-          <ArtworkCard work={work} imgClassName="object-cover object-top" />
+          <ArtworkCard
+            key={work.slug}
+            work={work}
+            imgClassName="object-cover object-top"
+          />
         ))}
       </div>
     </div>

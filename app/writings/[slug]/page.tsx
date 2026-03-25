@@ -187,7 +187,7 @@ export default async function Writing({ params, searchParams }) {
         <h2 className="text-2xl font-bold mb-8">You May Also Like</h2>
         <div className="grid grid-cols-12 gap-y-8 md:gap-8">
           {similarWritings.slice(0, 4).map((similarWriting) => (
-            <WritingCard article={similarWriting} />
+            <WritingCard key={similarWriting.slug} article={similarWriting} />
           ))}
         </div>
       </section>

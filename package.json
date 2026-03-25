@@ -2,9 +2,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "lint": "next lint",
     "build": "next build",
     "start": "next start",
+    "typecheck": "tsc --noEmit",
     "publish": "node scripts/publish.js"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "eslint-config-next": "14.2.35"
   },
   "dependencies": {
     "@heroicons/react": "^2.1.5",
