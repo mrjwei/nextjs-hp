@@ -39,3 +39,7 @@ next-env.d.ts
 _*
 
 .idea/
+
+# logs
+
+/logs
