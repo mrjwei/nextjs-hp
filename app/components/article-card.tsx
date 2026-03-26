@@ -1,5 +1,6 @@
 import clsx from "clsx"
 import Link from "next/link"
+import Image from "next/image"
 import { Tags } from "app/components/tags"
 import { formatDate } from "app/utils"
 import { openSans } from "app/data/fonts"
@@ -15,6 +16,9 @@ export function WritingCard({
   from?: string
   path?: string
 }) {
+  const isPortfolio = path === "portfolio"
+  const thumbnailSrc = article?.metadata?.image || "/bg.jpg"
+
   return (
     <div
       className={clsx(
@@ -25,8 +29,19 @@ export function WritingCard({
       <Link
         key={article.slug}
         href={`/${path}/${article.slug}${from ? `?from=${from}` : ""}`}
-        className="flex-1"
+        className="flex-1 flex flex-col"
       >
+        {isPortfolio ? (
+          <div className="relative w-full aspect-[16/9] overflow-hidden rounded-t-2xl bg-neutral-100">
+            <Image
+              src={thumbnailSrc}
+              alt={article?.metadata?.title ? `${article.metadata.title} thumbnail` : "Portfolio thumbnail"}
+              fill
+              sizes="(min-width: 768px) 50vw, 100vw"
+              className="object-cover"
+            />
+          </div>
+        ) : null}
         <div className="p-6 pb-4 flex flex-col justify-between">
           <div>
             <div className="mb-4">

@@ -13,11 +13,6 @@ const CONTENT = {
   portfolio: {
     kind: "portfolio",
     baseDir: path.join(CWD, "app", "portfolio", "posts"),
-    requireTags: true,
-  },
-  artworks: {
-    kind: "artwork",
-    baseDir: path.join(CWD, "app", "artworks", "works"),
     requireTags: false,
   },
 };
@@ -197,13 +192,12 @@ function main() {
     generatedAt: new Date().toISOString(),
     writings: buildIndexSection("writings", CONTENT.writings),
     portfolio: buildIndexSection("portfolio", CONTENT.portfolio),
-    artworks: buildIndexSection("artworks", CONTENT.artworks),
   };
 
   fs.writeFileSync(OUTPUT_PATH, JSON.stringify(index, null, 2) + "\n", "utf-8");
 
   console.log(
-    `Generated content index at ${path.relative(CWD, OUTPUT_PATH)} (writings=${index.writings.length}, portfolio=${index.portfolio.length}, artworks=${index.artworks.length})`
+    `Generated content index at ${path.relative(CWD, OUTPUT_PATH)} (writings=${index.writings.length}, portfolio=${index.portfolio.length})`
   );
 }
 

@@ -1,7 +1,6 @@
 import {
   getAllSortedPortfolio,
   getAllSortedSeries,
-  getAllSortedWorks,
   getAllSortedWritings,
 } from "app/utils"
 
@@ -18,12 +17,6 @@ export default async function sitemap() {
   let portfolio = portfolioList.map((item) => ({
     url: `${baseUrl}/portfolio/${item.slug}`,
     lastModified: item.metadata.publishedAt,
-  }))
-
-  const worksList = getAllSortedWorks()
-  const artworks = worksList.map((work) => ({
-    url: `${baseUrl}/artworks/${work.slug}`,
-    lastModified: work.metadata.publishedAt,
   }))
 
   const seriesList = getAllSortedSeries()
@@ -48,9 +41,6 @@ export default async function sitemap() {
   const portfolioLastMod = maxPublishedAt(
     portfolioList.map((p) => p.metadata.publishedAt)
   )
-  const artworksLastMod = maxPublishedAt(
-    worksList.map((w) => w.metadata.publishedAt)
-  )
   const seriesLastMod = maxPublishedAt(
     seriesList.flatMap((s) => s.items.map((i) => i.metadata.publishedAt))
   )
@@ -61,8 +51,7 @@ export default async function sitemap() {
     { url: `${baseUrl}/writings`, lastModified: writingsLastMod },
     { url: `${baseUrl}/writings/series`, lastModified: seriesLastMod },
     { url: `${baseUrl}/portfolio`, lastModified: portfolioLastMod },
-    { url: `${baseUrl}/artworks`, lastModified: artworksLastMod },
   ]
 
-  return [...routes, ...seriesRoutes, ...writings, ...portfolio, ...artworks]
+  return [...routes, ...seriesRoutes, ...writings, ...portfolio]
 }

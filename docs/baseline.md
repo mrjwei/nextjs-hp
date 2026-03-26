@@ -9,8 +9,8 @@ Use the same set of URLs every time:
 - Home: `/`
 - Writings index: `/writings`
 - One writing: `/writings/<some-slug>`
-- Artworks index: `/artworks`
-- One artwork: `/artworks/<some-slug>`
+- Portfolio index: `/portfolio`
+- One portfolio item: `/portfolio/<some-slug>`
 
 ## Lighthouse (manual)
 

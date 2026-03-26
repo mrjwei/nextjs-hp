@@ -2,12 +2,12 @@ import { ArrowRightIcon } from "@heroicons/react/24/outline"
 import {OutlinedButton} from 'app/components/outlined-button'
 import { techno } from "app/data/fonts"
 import { Grid } from "app/components/grid"
-import { Works } from "app/components/works"
 import { ScrollAndSnap } from "app/components/scroll-and-snap"
-import {getAllSortedWritings} from 'app/utils'
+import { getAllSortedPortfolio, getAllSortedWritings } from "app/utils"
 
 export default function Page() {
   const writings = getAllSortedWritings()
+  const portfolio = getAllSortedPortfolio()
   return (
     <section className="pb-16">
       <ScrollAndSnap>
@@ -66,12 +66,12 @@ export default function Page() {
         </div>
         <div className="should-snap lg:min-h-screen px-8 md:px-16 w-full max-w-[1024px] mx-auto pt-24">
           <h2 className="heading text-2xl md:text-3xl font-bold mb-8 z-50">
-            New Artworks
+            Latest Portfolio
           </h2>
-          <Works numWorks={4} className="content" />
+          <Grid writings={portfolio} numWritings={4} className="content" path="portfolio" />
           <div className="flex justify-end">
             <OutlinedButton
-              link='/artworks'
+              link="/portfolio"
               className="more-btn relative z-0 mt-6"
             >
               <span className="block z-30">See More</span>

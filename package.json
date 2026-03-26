@@ -6,7 +6,7 @@
     "prebuild": "node scripts/generate-content-index.mjs",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "rm -rf .next/types && tsc --noEmit",
     "publish": "node scripts/publish.js"
   },
   "devDependencies": {

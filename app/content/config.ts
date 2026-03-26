@@ -1,7 +1,7 @@
 import path from "path"
 
-export type ContentKind = "writing" | "portfolio" | "artwork"
-export type ContentSectionKey = "writings" | "portfolio" | "artworks"
+export type ContentKind = "writing" | "portfolio"
+export type ContentSectionKey = "writings" | "portfolio"
 
 export const contentConfig: Record<
   ContentSectionKey,
@@ -20,11 +20,6 @@ export const contentConfig: Record<
     kind: "portfolio",
     baseDirParts: ["app", "portfolio", "posts"],
     supportsCollections: true,
-  },
-  artworks: {
-    kind: "artwork",
-    baseDirParts: ["app", "artworks", "works"],
-    supportsCollections: false,
   },
 }
 

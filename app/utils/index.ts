@@ -22,14 +22,13 @@ export type TContentItem = TContentMeta & {
   content: string
 }
 
-type ContentKind = "writing" | "portfolio" | "artwork"
+type ContentKind = "writing" | "portfolio"
 
 type ContentIndexFile = {
   version: 1
   generatedAt: string
   writings?: Array<{ slug: string; filePath: string; collection?: string; metadata: TMetadata }>
   portfolio?: Array<{ slug: string; filePath: string; collection?: string; metadata: TMetadata }>
-  artworks?: Array<{ slug: string; filePath: string; metadata: TMetadata }>
 }
 
 const CONTENT_INDEX_PATH = path.join(
@@ -41,7 +40,6 @@ const CONTENT_INDEX_PATH = path.join(
 
 const writingsBaseDir = getContentBaseDir("writings")
 const portfolioBaseDir = getContentBaseDir("portfolio")
-const artworksBaseDir = getContentBaseDir("artworks")
 
 const tagSchema = z
   .string()
@@ -70,17 +68,12 @@ const writingFrontmatterSchema = baseFrontmatterSchema.extend({
 })
 
 const portfolioFrontmatterSchema = baseFrontmatterSchema.extend({
-  tags: z.array(tagSchema).min(1),
-})
-
-const artworkFrontmatterSchema = baseFrontmatterSchema.extend({
   tags: z.array(tagSchema).default([]),
 })
 
 const frontmatterSchemaByKind: Record<ContentKind, z.ZodType<TMetadata>> = {
   writing: writingFrontmatterSchema,
   portfolio: portfolioFrontmatterSchema,
-  artwork: artworkFrontmatterSchema,
 }
 
 function parseFrontmatter(
@@ -252,20 +245,9 @@ const getAllPortfolioFilePaths = cache(() => {
   return result
 })
 
-const getAllWorksFilePaths = cache(() => {
-  return getMdxFilesInDir(artworksBaseDir).map((file) =>
-    path.join(artworksBaseDir, file)
-  )
-})
-
 const getSlugToPathMap = cache((kind: ContentKind) => {
   const map = new Map<string, string>()
-  const files =
-    kind === "writing"
-      ? getAllWritingsFilePaths()
-      : kind === "portfolio"
-        ? getAllPortfolioFilePaths()
-        : getAllWorksFilePaths()
+  const files = kind === "writing" ? getAllWritingsFilePaths() : getAllPortfolioFilePaths()
 
   for (const absFilePath of files) {
     const slug = fileSlug(absFilePath)
@@ -432,51 +414,6 @@ export function getPortfolioItemBySlug(slug: string): TContentItem | null {
   const absFilePath = getSlugToPathMap("portfolio").get(slug)
   if (!absFilePath) return null
   const { metadata, content } = readMdxWithContent(absFilePath, "portfolio") as {
-    metadata: TMetadata
-    content: string
-  }
-  return { slug, metadata, content }
-}
-
-export const getAllSortedWorks = cache(() => {
-  const index = readContentIndex()
-  if (index?.artworks?.length) {
-    return index.artworks
-      .map((item) => ({ slug: item.slug, metadata: item.metadata }))
-      .sort((a, b) =>
-        new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
-          ? -1
-          : 1
-      )
-  }
-
-  let works = getAllWorksFilePaths().map((absFilePath) => {
-    const { metadata } = readFrontmatterOnly(absFilePath, "artwork")
-    return { metadata, slug: fileSlug(absFilePath) }
-  })
-  works = works.sort((a, b) =>
-    new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
-      ? -1
-      : 1
-  )
-  return works
-})
-
-export function getWorkBySlug(slug: string): TContentItem | null {
-  const index = readContentIndex()
-  const indexed = index?.artworks?.find((item) => item.slug === slug)
-  if (indexed) {
-    const absFilePath = path.join(process.cwd(), indexed.filePath)
-    const { metadata, content } = readMdxWithContent(absFilePath, "artwork") as {
-      metadata: TMetadata
-      content: string
-    }
-    return { slug, metadata, content }
-  }
-
-  const absFilePath = getSlugToPathMap("artwork").get(slug)
-  if (!absFilePath) return null
-  const { metadata, content } = readMdxWithContent(absFilePath, "artwork") as {
     metadata: TMetadata
     content: string
   }
