@@ -34,6 +34,9 @@ export function Header({ className }: { className?: string }) {
   const pathName = usePathname()
   const [isLight, setIsLight] = React.useState(true)
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
+  const menuButtonRef = React.useRef<HTMLButtonElement | null>(null)
+  const mobileMenuRef = React.useRef<HTMLElement | null>(null)
+  const restoreFocusToRef = React.useRef<HTMLElement | null>(null)
 
   React.useEffect(() => {
     if (pathName !== "/") {
@@ -59,8 +62,66 @@ export function Header({ className }: { className?: string }) {
     return () => observer.disconnect()
   }, [pathName])
 
+  React.useEffect(() => {
+    setIsMenuOpen(false)
+  }, [pathName])
+
+  React.useEffect(() => {
+    if (!isMenuOpen) {
+      restoreFocusToRef.current?.focus()
+      restoreFocusToRef.current = null
+      return
+    }
+
+    restoreFocusToRef.current =
+      (document.activeElement as HTMLElement | null) ?? menuButtonRef.current
+
+    const focusables = Array.from(
+      mobileMenuRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      ) ?? []
+    ).filter((el) => !el.hasAttribute("disabled") && el.tabIndex !== -1)
+
+    focusables[0]?.focus()
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!mobileMenuRef.current) return
+
+      if (event.key === "Escape") {
+        event.preventDefault()
+        setIsMenuOpen(false)
+        return
+      }
+
+      if (event.key !== "Tab" || focusables.length === 0) return
+
+      const first = focusables[0]
+      const last = focusables[focusables.length - 1]
+      const active = document.activeElement as HTMLElement | null
+
+      if (event.shiftKey) {
+        if (!active || active === first) {
+          event.preventDefault()
+          last.focus()
+        }
+      } else {
+        if (active === last) {
+          event.preventDefault()
+          first.focus()
+        }
+      }
+    }
+
+    document.addEventListener("keydown", onKeyDown)
+    return () => document.removeEventListener("keydown", onKeyDown)
+  }, [isMenuOpen])
+
   const handleMenuButtonClick = () => {
-    setIsMenuOpen(!isMenuOpen)
+    setIsMenuOpen((open) => !open)
+  }
+
+  const closeMenu = () => {
+    setIsMenuOpen(false)
   }
 
   return (
@@ -73,23 +134,31 @@ export function Header({ className }: { className?: string }) {
         className
       )}
     >
-      <div className="w-full h-[48px] px-12 flex justify-between items-center">
+      <div className="w-full h-[var(--header-height)] px-12 flex justify-between items-center">
         <div className="flex items-center">
           <button
+            ref={menuButtonRef}
             type="button"
             className={clsx("mr-4 transition-all block md:hidden", {
               "text-gray-600 hover:text-gray-800": isLight,
               "text-white": !isLight,
             })}
             onClick={handleMenuButtonClick}
+            aria-haspopup="dialog"
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-nav"
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           >
             <Bars3Icon className="w-8" />
           </button>
           {isMenuOpen && (
             <nav
+              ref={mobileMenuRef}
               className="bg-gray-800 shadow-md absolute w-full top-full left-0 h-screen"
-              id="nav"
-              onClick={handleMenuButtonClick}
+              id="mobile-nav"
+              aria-label="Mobile"
+              role="dialog"
+              aria-modal="true"
             >
               {Object.entries(navItems).map(([path, { name }]) => {
                 return (
@@ -99,6 +168,7 @@ export function Header({ className }: { className?: string }) {
                     className={clsx(
                       `transition-all text-white flex align-middle relative text-lg p-5`
                     )}
+                    onClick={closeMenu}
                   >
                     {name}
                   </Link>

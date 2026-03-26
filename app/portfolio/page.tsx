@@ -35,11 +35,11 @@ export default async function PortfolioPage({ searchParams }) {
   const portfolioItems = activeCollection ? activeCollection.items : allItems
 
   return (
-    <section className="grid grid-cols-12 gap-8 pt-[48px]">
+    <section className="grid grid-cols-12 gap-8 pt-[var(--header-height)]">
       <Sidebar
         items={items}
         targetValue={targetValue}
-        classname="hidden md:block bg-gray-800 text-white p-8 md:col-span-3 sticky md:top-[48px] h-screen"
+        classname="hidden md:block bg-gray-800 text-white p-8 md:col-span-3 sticky md:top-[var(--header-height)] h-screen"
       />
       <div className="col-span-12 px-4 py-8 md:col-span-9 md:pl-0 md:pr-8">
         <div className="mb-8">

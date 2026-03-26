@@ -42,11 +42,11 @@ export default async function Series({ params }) {
   ]
 
   return (
-    <section className="grid grid-cols-12 gap-8 pt-[48px]">
+    <section className="grid grid-cols-12 gap-8 pt-[var(--header-height)]">
       <Sidebar
         items={items}
         targetValue={params.slug}
-        classname="hidden md:block bg-gray-800 text-white p-8 md:col-span-3 sticky md:top-[48px] h-screen"
+        classname="hidden md:block bg-gray-800 text-white p-8 md:col-span-3 sticky md:top-[var(--header-height)] h-screen"
       />
       <div className="col-span-12 md:col-span-9 px-4 py-8">
         <h1 className="text-2xl md:text-3xl font-bold mb-8">

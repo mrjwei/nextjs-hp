@@ -6,6 +6,7 @@
 }
 
 :root {
+  --header-height: 48px;
   --sh-class: #2d5e9d;
   --sh-identifier: #354150;
   --sh-sign: #8996a3;
@@ -15,6 +16,18 @@
   --sh-jsxliterals: #6266d1;
   --sh-property: #e25a1c;
   --sh-entity: #e25a1c;
+}
+
+@layer base {
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  summary:focus-visible,
+  [tabindex]:focus-visible {
+    @apply outline-none ring-2 ring-blue-600;
+  }
 }
 
 @theme {
@@ -159,7 +172,7 @@ html {
 }
 
 .prose {
-  @apply text-lg;
+  @apply text-base leading-7 md:text-lg md:leading-8 max-w-[70ch] mx-auto;
 }
 
 .prose p {
@@ -167,19 +180,23 @@ html {
 }
 
 .prose h1 {
-  @apply text-4xl font-bold tracking-tight mt-6 mb-2;
+  @apply font-bold tracking-tight mt-8 mb-3 text-[clamp(2rem,3vw,3rem)];
 }
 
 .prose h2 {
-  @apply text-2xl font-bold tracking-tight mt-6 mb-2;
+  @apply font-bold tracking-tight mt-8 mb-3 text-[clamp(1.5rem,2.2vw,2.25rem)];
 }
 
 .prose h3 {
-  @apply text-xl font-bold tracking-tight mt-6 mb-2;
+  @apply font-bold tracking-tight mt-8 mb-3 text-[clamp(1.25rem,1.6vw,1.5rem)];
 }
 
 .prose h4 {
-  @apply text-lg font-bold tracking-tight mt-6 mb-2;
+  @apply font-bold tracking-tight mt-8 mb-3 text-[clamp(1.125rem,1.4vw,1.25rem)];
+}
+
+.prose :is(h1, h2, h3, h4) {
+  scroll-margin-top: calc(var(--header-height) + 1rem);
 }
 
 .prose strong {

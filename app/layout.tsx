@@ -66,10 +66,20 @@ export default function RootLayout({
         </Script>
       </head>
       <body className="antialiased flex flex-col items-center justify-between min-h-screen">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-neutral-900 focus:shadow"
+        >
+          Skip to content
+        </a>
         <div id="scroll-top-sentinel" className="h-px w-px" aria-hidden="true" />
         <AnalyticsProvider />
         <Header />
-        <main className="relative w-full flex-1 bg-zinc-100 flex flex-col">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="relative w-full flex-1 bg-zinc-100 flex flex-col scroll-mt-[var(--header-height)]"
+        >
           {children}
           <Analytics />
           <SpeedInsights />

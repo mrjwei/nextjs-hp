@@ -16,8 +16,8 @@ export default async function AllSeriesPage() {
   const items = [{label: "All", value: "all", href: "/writings/series", length: allSeriesItems.length, shouldBeUppercase: false}, ...allSeries.map((s) => ({label: ParseSeriesDirName(s.subdir), value: s.subdir, href: `/writings/series/${s.subdir}`, length: s.items.length}))]
 
   return (
-    <section className="grid grid-cols-12 gap-8 pt-[48px]">
-      <Sidebar items={items} targetValue="all" classname="hidden md:block bg-gray-800 text-white p-8 md:col-span-3 sticky md:top-[48px] h-screen" />
+    <section className="grid grid-cols-12 gap-8 pt-[var(--header-height)]">
+      <Sidebar items={items} targetValue="all" classname="hidden md:block bg-gray-800 text-white p-8 md:col-span-3 sticky md:top-[var(--header-height)] h-screen" />
       <div className="col-span-12 md:col-span-9 px-4 py-8">
       <h1 className="text-2xl md:text-3xl font-bold mb-2">Series</h1>
         {allSeries.map((s) => {
