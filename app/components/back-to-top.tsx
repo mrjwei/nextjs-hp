@@ -5,14 +5,6 @@ import React from "react"
 export const BackToTop = () => {
   const [isVisible, setIsVisible] = React.useState(false)
 
-  const handleScroll = () => {
-    if (window.scrollY > 300) {
-      setIsVisible(true)
-    } else {
-      setIsVisible(false)
-    }
-  }
-
   const handleClick = () => {
     window.scrollTo({
       top: 0,
@@ -21,8 +13,25 @@ export const BackToTop = () => {
   }
 
   React.useEffect(() => {
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
+    const sentinel = document.getElementById("scroll-top-sentinel")
+    if (!sentinel) {
+      setIsVisible(false)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0]
+        setIsVisible(!entry.isIntersecting)
+      },
+      {
+        threshold: 0,
+        rootMargin: "300px 0px 0px 0px",
+      }
+    )
+
+    observer.observe(sentinel)
+    return () => observer.disconnect()
   }, [])
 
   return (

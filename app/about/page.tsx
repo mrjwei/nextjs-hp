@@ -97,6 +97,8 @@ export default function Page() {
               width={563}
               height={517}
               className="max-w-[120px] h-auto"
+              sizes="120px"
+              priority
             />
           </div>
         </div>

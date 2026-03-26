@@ -66,6 +66,7 @@ export default function RootLayout({
         </Script>
       </head>
       <body className="antialiased flex flex-col items-center justify-between min-h-screen">
+        <div id="scroll-top-sentinel" className="h-px w-px" aria-hidden="true" />
         <AnalyticsProvider />
         <Header />
         <main className="relative w-full flex-1 bg-zinc-100 flex flex-col">

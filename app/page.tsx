@@ -11,7 +11,7 @@ export default function Page() {
   return (
     <section className="pb-16">
       <ScrollAndSnap>
-        <div className="should-snap bg-[url(/bg.jpg)] bg-cover text-gray-200 flex flex-col items-center h-screen px-16 pt-28 md:pt-32 xl:pt-48 -z-20">
+        <div className="should-snap relative bg-[url(/bg.jpg)] bg-cover text-gray-200 flex flex-col items-center h-screen px-16 pt-28 md:pt-32 xl:pt-48">
           <h1
             className={`mb-8 md:mb-12 text-6xl lg:text-7xl xl:text-[100px] font-black text-center text-white ${techno.className}`}
           >
@@ -43,6 +43,11 @@ export default function Page() {
               />
             </svg>
           </button>
+          <div
+            id="home-hero-sentinel"
+            className="absolute bottom-0 left-0 h-px w-full pointer-events-none"
+            aria-hidden="true"
+          />
         </div>
         <div className="should-snap lg:h-screen px-8 md:px-16 w-full max-w-[1024px] mx-auto pt-24">
           <h2 className="heading text-2xl md:text-3xl font-bold mb-8 z-50">

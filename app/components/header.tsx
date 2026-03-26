@@ -34,34 +34,29 @@ export function Header({ className }: { className?: string }) {
   const pathName = usePathname()
   const [isLight, setIsLight] = React.useState(true)
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
-  const headerRef = React.useRef<HTMLElement | null>(null)
+
   React.useEffect(() => {
     if (pathName !== "/") {
       setIsLight(true)
       return
     }
-    const handleScroll = () => {
-      if (headerRef.current) {
-        if (window.scrollY >= window.innerHeight) {
-          setIsLight(true)
-        } else {
-          setIsLight(false)
-        }
-      }
-    }
-    if (
-      headerRef.current &&
-      window.scrollY > window.screen.height - headerRef.current.clientHeight
-    ) {
-      setIsLight(true)
-    } else {
-      setIsLight(false)
-    }
-    window.addEventListener("scroll", handleScroll)
 
-    return () => {
-      window.removeEventListener("scroll", handleScroll)
+    const sentinel = document.getElementById("home-hero-sentinel")
+    if (!sentinel) {
+      setIsLight(true)
+      return
     }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0]
+        setIsLight(!entry.isIntersecting)
+      },
+      { threshold: 0 }
+    )
+
+    observer.observe(sentinel)
+    return () => observer.disconnect()
   }, [pathName])
 
   const handleMenuButtonClick = () => {
@@ -70,7 +65,6 @@ export function Header({ className }: { className?: string }) {
 
   return (
     <aside
-      ref={headerRef}
       className={clsx(
         "w-full fixed top-0 left-0 flex flex-col items-center transition-shadow duration-200 ease-in-out z-50",
         {
@@ -118,6 +112,8 @@ export function Header({ className }: { className?: string }) {
               alt="Jesse Wei's Logo"
               width={32}
               height={32}
+              sizes="32px"
+              priority
             />
           </Link>
           <nav
