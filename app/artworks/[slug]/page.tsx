@@ -2,7 +2,7 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import { CustomMDX } from "app/components/mdx"
 import { PrevNext } from "app/components/prev-next"
-import { formatDate, getAllSortedWorks } from "app/utils"
+import { formatDate, getAllSortedWorks, getWorkBySlug } from "app/utils"
 import { baseUrl } from "app/sitemap"
 import Head from "next/head"
 import { BackToTop } from "app/components/back-to-top"
@@ -57,7 +57,7 @@ export function generateMetadata({ params }) {
 
 export default function Artwork({ params }) {
   const works = getAllSortedWorks()
-  const work = works.find((work) => work.slug === params.slug)
+  const work = getWorkBySlug(params.slug)
   if (!work) {
     notFound()
   }

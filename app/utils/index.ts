@@ -1,5 +1,8 @@
 import fs from "fs"
 import path from "path"
+import { cache } from "react"
+import { z } from "zod"
+import { getContentBaseDir } from "app/content/config"
 
 export type TMetadata = {
   title: string
@@ -7,181 +10,477 @@ export type TMetadata = {
   summary: string
   image?: string
   tags: string[]
+  shouldBreakWord?: boolean
 }
 
-function parseFrontmatter(fileContent: string) {
-  let frontmatterRegex = /---\s*([\s\S]*?)\s*---/
-  let match = frontmatterRegex.exec(fileContent)
-  let frontMatterBlock = match![1]
-  let content = fileContent.replace(frontmatterRegex, "").trim()
-  let frontMatterLines = frontMatterBlock.trim().split("\n")
-  let metadata: Partial<TMetadata> = {}
+export type TContentMeta = {
+  metadata: TMetadata
+  slug: string
+}
 
-  frontMatterLines.forEach((line) => {
-    let [key, ...valueArr] = line.split(": ")
-    let value = valueArr.join(": ").trim()
+export type TContentItem = TContentMeta & {
+  content: string
+}
 
-    if (key === "tags") {
-      const match = value.match(/\[.*\]/)
-      if (match) {
-        metadata[key] = JSON.parse(match[0])
-      } else {
-        throw new Error(`Invalid format for "tags": ${value}`)
-      }
-    } else {
-      value = value.replace(/^['"](.*)['"]$/, "$1") // Remove quotes
-      metadata[key] = value
-    }
+type ContentKind = "writing" | "portfolio" | "artwork"
+
+type ContentIndexFile = {
+  version: 1
+  generatedAt: string
+  writings?: Array<{ slug: string; filePath: string; collection?: string; metadata: TMetadata }>
+  portfolio?: Array<{ slug: string; filePath: string; collection?: string; metadata: TMetadata }>
+  artworks?: Array<{ slug: string; filePath: string; metadata: TMetadata }>
+}
+
+const CONTENT_INDEX_PATH = path.join(
+  process.cwd(),
+  "app",
+  "data",
+  "content-index.json"
+)
+
+const writingsBaseDir = getContentBaseDir("writings")
+const portfolioBaseDir = getContentBaseDir("portfolio")
+const artworksBaseDir = getContentBaseDir("artworks")
+
+const tagSchema = z
+  .string()
+  .min(1)
+  .refine((tag) => /^[a-z0-9-_]+$/i.test(tag), {
+    message: "Tag must be alphanumeric/hyphen/underscore",
   })
 
-  return { metadata: metadata as TMetadata, content }
+const dateSchema = z
+  .string()
+  .min(1)
+  .refine((value) => !Number.isNaN(Date.parse(value)), {
+    message: "Invalid date string",
+  })
+
+const baseFrontmatterSchema = z.object({
+  title: z.string().min(1),
+  publishedAt: dateSchema,
+  summary: z.string().min(1),
+  image: z.string().optional(),
+  shouldBreakWord: z.boolean().optional(),
+})
+
+const writingFrontmatterSchema = baseFrontmatterSchema.extend({
+  tags: z.array(tagSchema).min(1),
+})
+
+const portfolioFrontmatterSchema = baseFrontmatterSchema.extend({
+  tags: z.array(tagSchema).min(1),
+})
+
+const artworkFrontmatterSchema = baseFrontmatterSchema.extend({
+  tags: z.array(tagSchema).default([]),
+})
+
+const frontmatterSchemaByKind: Record<ContentKind, z.ZodType<TMetadata>> = {
+  writing: writingFrontmatterSchema,
+  portfolio: portfolioFrontmatterSchema,
+  artwork: artworkFrontmatterSchema,
 }
 
-function getMDXFiles(absDirPath) {
+function parseFrontmatter(
+  fileContent: string,
+  {
+    absFilePath,
+    kind,
+    includeContent,
+  }: { absFilePath: string; kind: ContentKind; includeContent: boolean }
+) {
+  const frontmatterRegex = /^---\s*[\r\n]+([\s\S]*?)[\r\n]+---\s*[\r\n]*/
+  const match = frontmatterRegex.exec(fileContent)
+  if (!match) {
+    throw new Error(
+      `Missing frontmatter (--- ... ---) in ${path.relative(
+        process.cwd(),
+        absFilePath
+      )}`
+    )
+  }
+
+  const frontMatterBlock = match[1]
+  const frontMatterLines = frontMatterBlock
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+
+  const rawMetadata: Record<string, unknown> = {}
+  for (const line of frontMatterLines) {
+    const colonIndex = line.indexOf(":")
+    if (colonIndex === -1) continue
+
+    const key = line.slice(0, colonIndex).trim()
+    let value = line.slice(colonIndex + 1).trim()
+
+    if (key === "tags") {
+      const bracketMatch = value.match(/\[.*\]/)
+      if (!bracketMatch) {
+        throw new Error(
+          `Invalid format for "tags" in ${path.relative(
+            process.cwd(),
+            absFilePath
+          )}: ${value}`
+        )
+      }
+      rawMetadata[key] = JSON.parse(bracketMatch[0])
+      continue
+    }
+
+    if (value === "true") {
+      rawMetadata[key] = true
+      continue
+    }
+    if (value === "false") {
+      rawMetadata[key] = false
+      continue
+    }
+
+    value = value.replace(/^['"](.*)['"]$/, "$1")
+    rawMetadata[key] = value
+  }
+
+  const schema = frontmatterSchemaByKind[kind]
+  const parsed = schema.safeParse(rawMetadata)
+  if (!parsed.success) {
+    const details = parsed.error.issues
+      .map((i) => `${i.path.join(".") || "(root)"}: ${i.message}`)
+      .join("; ")
+    throw new Error(
+      `Invalid frontmatter in ${path.relative(process.cwd(), absFilePath)}: ${details}`
+    )
+  }
+
+  if (!includeContent) {
+    return { metadata: parsed.data }
+  }
+
+  const content = fileContent.replace(frontmatterRegex, "").trim()
+  return { metadata: parsed.data, content }
+}
+
+const getMdxFilesInDir = cache((absDirPath: string) => {
+  if (!fs.existsSync(absDirPath)) return [] as string[]
   return fs
     .readdirSync(absDirPath)
     .filter((file) => path.extname(file) === ".mdx")
-}
+})
 
-function readMDXFile(absFilePath) {
-  let rawContent = fs.readFileSync(absFilePath, "utf-8")
-  return parseFrontmatter(rawContent)
-}
-
-function getMDXData(absDirPath) {
-  let mdxFiles = getMDXFiles(absDirPath)
-  return mdxFiles.map((file) => {
-    let { metadata, content } = readMDXFile(path.join(absDirPath, file))
-    let slug = path.basename(file, path.extname(file))
-
-    return {
-      metadata,
-      slug,
-      content,
-    }
+const getChildDirs = cache((absDirPath: string) => {
+  if (!fs.existsSync(absDirPath)) return [] as string[]
+  return fs.readdirSync(absDirPath).filter((name) => {
+    const fullPath = path.join(absDirPath, name)
+    return fs.existsSync(fullPath) && fs.statSync(fullPath).isDirectory()
   })
+})
+
+const readFrontmatterOnly = cache((absFilePath: string, kind: ContentKind) => {
+  const rawContent = fs.readFileSync(absFilePath, "utf-8")
+  return parseFrontmatter(rawContent, {
+    absFilePath,
+    kind,
+    includeContent: false,
+  })
+})
+
+const readMdxWithContent = cache((absFilePath: string, kind: ContentKind) => {
+  const rawContent = fs.readFileSync(absFilePath, "utf-8")
+  return parseFrontmatter(rawContent, {
+    absFilePath,
+    kind,
+    includeContent: true,
+  })
+})
+
+const readContentIndex = cache((): ContentIndexFile | null => {
+  if (!fs.existsSync(CONTENT_INDEX_PATH)) return null
+  const raw = fs.readFileSync(CONTENT_INDEX_PATH, "utf-8")
+  const parsed = JSON.parse(raw)
+  if (!parsed || parsed.version !== 1) {
+    throw new Error(
+      `Unsupported content index format in ${path.relative(
+        process.cwd(),
+        CONTENT_INDEX_PATH
+      )}`
+    )
+  }
+  return parsed as ContentIndexFile
+})
+
+function fileSlug(absFilePath: string) {
+  return path.basename(absFilePath, path.extname(absFilePath))
 }
 
-export function getWritings(subdir = "") {
-  return getMDXData(
-    path.join(process.cwd(), "app", "writings", "posts", subdir)
+const getWritingsCollections = cache(() => {
+  return getChildDirs(writingsBaseDir)
+})
+
+const getPortfolioCollectionsCached = cache(() => {
+  return getChildDirs(portfolioBaseDir)
+})
+
+const getWritingsFilePaths = cache((collection: string = "") => {
+  const dirPath = collection
+    ? path.join(writingsBaseDir, collection)
+    : writingsBaseDir
+  return getMdxFilesInDir(dirPath).map((file) => path.join(dirPath, file))
+})
+
+const getAllWritingsFilePaths = cache(() => {
+  const result = [...getWritingsFilePaths("")]
+  for (const collection of getWritingsCollections()) {
+    result.push(...getWritingsFilePaths(collection))
+  }
+  return result
+})
+
+const getPortfolioFilePaths = cache((collection: string = "") => {
+  const dirPath = collection
+    ? path.join(portfolioBaseDir, collection)
+    : portfolioBaseDir
+  return getMdxFilesInDir(dirPath).map((file) => path.join(dirPath, file))
+})
+
+const getAllPortfolioFilePaths = cache(() => {
+  const result = [...getPortfolioFilePaths("")]
+  for (const collection of getPortfolioCollectionsCached()) {
+    result.push(...getPortfolioFilePaths(collection))
+  }
+  return result
+})
+
+const getAllWorksFilePaths = cache(() => {
+  return getMdxFilesInDir(artworksBaseDir).map((file) =>
+    path.join(artworksBaseDir, file)
   )
-}
+})
+
+const getSlugToPathMap = cache((kind: ContentKind) => {
+  const map = new Map<string, string>()
+  const files =
+    kind === "writing"
+      ? getAllWritingsFilePaths()
+      : kind === "portfolio"
+        ? getAllPortfolioFilePaths()
+        : getAllWorksFilePaths()
+
+  for (const absFilePath of files) {
+    const slug = fileSlug(absFilePath)
+    if (map.has(slug)) {
+      throw new Error(
+        `Duplicate slug \"${slug}\" for ${kind}: ${path.relative(
+          process.cwd(),
+          absFilePath
+        )}`
+      )
+    }
+    map.set(slug, absFilePath)
+  }
+  return map
+})
 
 export function getSeries() {
-  const parentPath = path.join(process.cwd(), "app", "writings", "posts")
-  return fs.readdirSync(parentPath).filter((name) => {
-    const fullPath = path.join(parentPath, name)
-    return fs.statSync(fullPath).isDirectory()
-  })
+  return getWritingsCollections()
 }
 
-export function getAllSortedSeries() {
+export const getAllSortedSeries = cache(() => {
   const series: {
     subdir: string
-    items: { metadata: TMetadata; slug: string; content: string }[]
+    items: TContentMeta[]
   }[] = []
   const subdirs = getSeries()
   subdirs.forEach((subdir) => {
-    let items = getWritings(subdir)
-    items = items.sort((a, b) => {
-      if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
-        return -1
-      }
-      return 1
+    let items = getWritingsFilePaths(subdir).map((absFilePath) => {
+      const { metadata } = readFrontmatterOnly(absFilePath, "writing")
+      return { metadata, slug: fileSlug(absFilePath) }
     })
+    items = items.sort((a, b) =>
+      new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
+        ? -1
+        : 1
+    )
     series.push({ subdir, items })
   })
   return series
-}
+})
 
-export function getAllSortedSeriesItems() {
-  const writings: { metadata: TMetadata; slug: string; content: string }[] = []
+export const getAllSortedSeriesItems = cache(() => {
+  const writings: TContentMeta[] = []
   const subdirs = getSeries()
   subdirs.forEach((subdir) => {
-    writings.push(...getWritings(subdir))
+    writings.push(
+      ...getWritingsFilePaths(subdir).map((absFilePath) => {
+        const { metadata } = readFrontmatterOnly(absFilePath, "writing")
+        return { metadata, slug: fileSlug(absFilePath) }
+      })
+    )
   })
   return writings
-}
+})
 
-export function getAllSortedWritings() {
-  let writings = getWritings()
-  let subdirs = getSeries()
-  subdirs.forEach((subdir) => {
-    writings.push(...getWritings(subdir))
-  })
-  writings = writings.sort((a, b) => {
-    if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
-      return -1
-    }
-    return 1
-  })
-  return writings
-}
+export const getAllSortedWritings = cache(() => {
+  const index = readContentIndex()
+  if (index?.writings?.length) {
+    return index.writings
+      .map((item) => ({ slug: item.slug, metadata: item.metadata }))
+      .sort((a, b) =>
+        new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
+          ? -1
+          : 1
+      )
+  }
 
-export function getPortfolio(subdir = "") {
-  return getMDXData(
-    path.join(process.cwd(), "app", "portfolio", "posts", subdir)
+  let writings = getAllWritingsFilePaths().map((absFilePath) => {
+    const { metadata } = readFrontmatterOnly(absFilePath, "writing")
+    return { metadata, slug: fileSlug(absFilePath) }
+  })
+  writings = writings.sort((a, b) =>
+    new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
+      ? -1
+      : 1
   )
+  return writings
+})
+
+export function getWritingBySlug(slug: string): TContentItem | null {
+  const index = readContentIndex()
+  const indexed = index?.writings?.find((item) => item.slug === slug)
+  if (indexed) {
+    const absFilePath = path.join(process.cwd(), indexed.filePath)
+    const { metadata, content } = readMdxWithContent(absFilePath, "writing") as {
+      metadata: TMetadata
+      content: string
+    }
+    return { slug, metadata, content }
+  }
+
+  const absFilePath = getSlugToPathMap("writing").get(slug)
+  if (!absFilePath) return null
+  const { metadata, content } = readMdxWithContent(absFilePath, "writing") as {
+    metadata: TMetadata
+    content: string
+  }
+  return { slug, metadata, content }
 }
 
 export function getPortfolioCollections() {
-  const parentPath = path.join(process.cwd(), "app", "portfolio", "posts")
-  if (!fs.existsSync(parentPath)) {
-    return [] as string[]
-  }
-
-  return fs.readdirSync(parentPath).filter((name) => {
-    const fullPath = path.join(parentPath, name)
-    return fs.statSync(fullPath).isDirectory()
-  })
+  return getPortfolioCollectionsCached()
 }
 
-export function getAllSortedPortfolioCollections() {
+export const getAllSortedPortfolioCollections = cache(() => {
   const collections: {
     subdir: string
-    items: { metadata: TMetadata; slug: string; content: string }[]
+    items: TContentMeta[]
   }[] = []
 
   const subdirs = getPortfolioCollections()
   subdirs.forEach((subdir) => {
-    let items = getPortfolio(subdir)
-    items = items.sort((a, b) => {
-      if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
-        return -1
-      }
-      return 1
+    let items = getPortfolioFilePaths(subdir).map((absFilePath) => {
+      const { metadata } = readFrontmatterOnly(absFilePath, "portfolio")
+      return { metadata, slug: fileSlug(absFilePath) }
     })
+    items = items.sort((a, b) =>
+      new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
+        ? -1
+        : 1
+    )
     collections.push({ subdir, items })
   })
 
   return collections
-}
+})
 
-export function getAllSortedPortfolio() {
-  let items = getPortfolio()
-  const subdirs = getPortfolioCollections()
-  subdirs.forEach((subdir) => {
-    items.push(...getPortfolio(subdir))
+export const getAllSortedPortfolio = cache(() => {
+  const index = readContentIndex()
+  if (index?.portfolio?.length) {
+    return index.portfolio
+      .map((item) => ({ slug: item.slug, metadata: item.metadata }))
+      .sort((a, b) =>
+        new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
+          ? -1
+          : 1
+      )
+  }
+
+  let items = getAllPortfolioFilePaths().map((absFilePath) => {
+    const { metadata } = readFrontmatterOnly(absFilePath, "portfolio")
+    return { metadata, slug: fileSlug(absFilePath) }
   })
-  items = items.sort((a, b) => {
-    if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
-      return -1
-    }
-    return 1
-  })
+  items = items.sort((a, b) =>
+    new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
+      ? -1
+      : 1
+  )
   return items
+})
+
+export function getPortfolioItemBySlug(slug: string): TContentItem | null {
+  const index = readContentIndex()
+  const indexed = index?.portfolio?.find((item) => item.slug === slug)
+  if (indexed) {
+    const absFilePath = path.join(process.cwd(), indexed.filePath)
+    const { metadata, content } = readMdxWithContent(
+      absFilePath,
+      "portfolio"
+    ) as { metadata: TMetadata; content: string }
+    return { slug, metadata, content }
+  }
+
+  const absFilePath = getSlugToPathMap("portfolio").get(slug)
+  if (!absFilePath) return null
+  const { metadata, content } = readMdxWithContent(absFilePath, "portfolio") as {
+    metadata: TMetadata
+    content: string
+  }
+  return { slug, metadata, content }
 }
 
-export function getAllSortedWorks() {
-  let works = getMDXData(path.join(process.cwd(), "app", "artworks", "works"))
-  works = works.sort((a, b) => {
-    if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
-      return -1
-    }
-    return 1
+export const getAllSortedWorks = cache(() => {
+  const index = readContentIndex()
+  if (index?.artworks?.length) {
+    return index.artworks
+      .map((item) => ({ slug: item.slug, metadata: item.metadata }))
+      .sort((a, b) =>
+        new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
+          ? -1
+          : 1
+      )
+  }
+
+  let works = getAllWorksFilePaths().map((absFilePath) => {
+    const { metadata } = readFrontmatterOnly(absFilePath, "artwork")
+    return { metadata, slug: fileSlug(absFilePath) }
   })
+  works = works.sort((a, b) =>
+    new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
+      ? -1
+      : 1
+  )
   return works
+})
+
+export function getWorkBySlug(slug: string): TContentItem | null {
+  const index = readContentIndex()
+  const indexed = index?.artworks?.find((item) => item.slug === slug)
+  if (indexed) {
+    const absFilePath = path.join(process.cwd(), indexed.filePath)
+    const { metadata, content } = readMdxWithContent(absFilePath, "artwork") as {
+      metadata: TMetadata
+      content: string
+    }
+    return { slug, metadata, content }
+  }
+
+  const absFilePath = getSlugToPathMap("artwork").get(slug)
+  if (!absFilePath) return null
+  const { metadata, content } = readMdxWithContent(absFilePath, "artwork") as {
+    metadata: TMetadata
+    content: string
+  }
+  return { slug, metadata, content }
 }
 
 export function formatDate(date: string, includeRelative = false) {

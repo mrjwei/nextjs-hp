@@ -3,6 +3,7 @@
   "scripts": {
     "dev": "next dev",
     "lint": "next lint",
+    "prebuild": "node scripts/generate-content-index.mjs",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
@@ -33,6 +34,7 @@
     "remark-math": "^6.0.0",
     "sugar-high": "^0.6.0",
     "tailwindcss": "4.0.0-alpha.13",
-    "typescript": "5.3.3"
+    "typescript": "5.3.3",
+    "zod": "^4.3.6"
   }
 }

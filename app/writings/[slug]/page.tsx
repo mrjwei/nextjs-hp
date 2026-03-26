@@ -4,7 +4,7 @@ import { CustomMDX } from "app/components/mdx"
 import { PrevNext } from "app/components/prev-next"
 import { BackToTop } from "app/components/back-to-top"
 import { WritingCard } from "app/components/article-card"
-import { formatDate, getAllSortedWritings } from "app/utils"
+import { formatDate, getAllSortedWritings, getWritingBySlug } from "app/utils"
 import { baseUrl } from "app/sitemap"
 import Head from "next/head"
 import { openSans } from "app/data/fonts"
@@ -19,8 +19,8 @@ export async function generateStaticParams() {
 }
 
 export function generateMetadata({ params }) {
-  let writing = getAllSortedWritings().find(
-    (writing) => writing.slug === params.slug
+  const writing = getAllSortedWritings().find(
+    (w) => w.slug === params.slug
   )
   if (!writing) {
     return
@@ -61,21 +61,19 @@ export function generateMetadata({ params }) {
 }
 
 export default async function Writing({ params, searchParams }) {
-  let writings = getAllSortedWritings()
-  let writing = writings.find((writing) => writing.slug === params.slug)
+  const writings = getAllSortedWritings()
+  const writing = getWritingBySlug(params.slug)
   if (!writing) {
     notFound()
   }
 
-  const writingIndex = writings.findIndex(
-    (writing) => writing.slug === params.slug
-  )
+  const writingIndex = writings.findIndex((w) => w.slug === params.slug)
+
+  const writingTagSet = new Set(writing.metadata.tags)
 
   let similarWritings = writings
-    .filter(
-      (w) =>
-        w.metadata.tags.some((t) => writing?.metadata.tags) && w !== writing
-    )
+    .filter((w) => w.slug !== writing.slug)
+    .filter((w) => w.metadata.tags.some((t) => writingTagSet.has(t)))
     .sort((a, b) => {
       if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
         return -1

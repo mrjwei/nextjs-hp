@@ -2,7 +2,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { CustomMDX } from "app/components/mdx"
 import { Tags } from "app/components/tags"
-import { formatDate, getAllSortedPortfolio } from "app/utils"
+import { formatDate, getAllSortedPortfolio, getPortfolioItemBySlug } from "app/utils"
 import { openSans } from "app/data/fonts"
 
 export async function generateStaticParams() {
@@ -21,8 +21,7 @@ export function generateMetadata({ params }) {
 }
 
 export default async function PortfolioItemPage({ params, searchParams }) {
-  const items = getAllSortedPortfolio()
-  const item = items.find((p) => p.slug === params.slug)
+  const item = getPortfolioItemBySlug(params.slug)
   if (!item) {
     notFound()
   }

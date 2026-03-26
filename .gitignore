@@ -43,3 +43,6 @@ _*
 # logs
 
 /logs
+
+# generated content index
+app/data/content-index.json
