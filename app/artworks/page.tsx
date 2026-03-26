@@ -14,7 +14,7 @@ export default function Page() {
           My original logos, illustrations and more.
         </p>
       </div>
-      <Works />
+      <Works priorityCount={2} />
     </section>
   )
 }
