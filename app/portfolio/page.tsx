@@ -1,11 +1,13 @@
 import { Grid } from "app/components/grid"
 import { Sidebar } from "app/components/sidebar"
 import { getAllSortedPortfolioCollections, ParseSeriesDirName } from "app/utils"
+import { buildStandardMetadata } from "app/seo/metadata"
 
-export const metadata = {
-  title: "Portfolio | Jesse Wei",
+export const metadata = buildStandardMetadata({
+  title: "Portfolio",
   description: "A selection of my projects and work.",
-}
+  pathname: "/portfolio",
+})
 
 export default async function PortfolioPage({ searchParams }) {
   const allCollections = getAllSortedPortfolioCollections()

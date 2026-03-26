@@ -4,11 +4,17 @@ import { CustomMDX } from "app/components/mdx"
 import { PrevNext } from "app/components/prev-next"
 import { BackToTop } from "app/components/back-to-top"
 import { WritingCard } from "app/components/article-card"
-import { formatDate, getAllSortedWritings, getWritingBySlug } from "app/utils"
+import {
+  ParseSeriesDirName,
+  formatDate,
+  getAllSortedSeries,
+  getAllSortedWritings,
+  getWritingBySlug,
+} from "app/utils"
 import { baseUrl } from "app/sitemap"
-import Head from "next/head"
 import { openSans } from "app/data/fonts"
 import { Tags } from "app/components/tags"
+import { buildStandardMetadata } from "app/seo/metadata"
 
 export async function generateStaticParams() {
   let writings = getAllSortedWritings()
@@ -36,28 +42,14 @@ export function generateMetadata({ params }) {
     ? image
     : `${baseUrl}/og?title=${encodeURIComponent(title)}`
 
-  return {
+  return buildStandardMetadata({
     title,
     description,
-    openGraph: {
-      title,
-      description,
-      type: "article",
-      publishedTime,
-      url: `${baseUrl}/writings/${writing.slug}`,
-      images: [
-        {
-          url: ogImage,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [ogImage],
-    },
-  }
+    pathname: `/writings/${writing.slug}`,
+    type: "article",
+    publishedTime,
+    image: ogImage,
+  })
 }
 
 export default async function Writing({ params, searchParams }) {
@@ -87,13 +79,43 @@ export default async function Writing({ params, searchParams }) {
     fromParts = from.split("/").filter((part) => part !== "")
   }
 
+  const isFromSeries = fromParts[0] === "series"
+  const fromSeriesSlug = isFromSeries && fromParts[1] ? fromParts[1] : null
+
+  const prevNextItems = fromSeriesSlug
+    ? getAllSortedSeries().find((s) => s.subdir === fromSeriesSlug)?.items ??
+      writings
+    : writings
+  const prevNextIndex = prevNextItems.findIndex((w) => w.slug === params.slug)
+
   return (
     <div className="w-full max-w-[1024px] mx-auto px-8 md:px-16 py-24">
-      <Head>
-        <title>{writing.metadata.title}</title>
-        <link rel="canonical" href={`${baseUrl}/writings/${writing.slug}`} />
-      </Head>
       <section className="pb-16">
+        <nav aria-label="Breadcrumb" className="text-sm text-neutral-600 mb-4">
+          <Link href="/" className="hover:underline">Home</Link>
+          <span className="mx-2">/</span>
+          <Link href="/writings" className="hover:underline">Writings</Link>
+          {isFromSeries ? (
+            fromSeriesSlug ? (
+              <>
+                <span className="mx-2">/</span>
+                <Link href="/writings/series" className="hover:underline">Series</Link>
+                <span className="mx-2">/</span>
+                <Link
+                  href={`/writings/series/${fromSeriesSlug}`}
+                  className="hover:underline"
+                >
+                  {ParseSeriesDirName(fromSeriesSlug)}
+                </Link>
+              </>
+            ) : (
+              <>
+                <span className="mx-2">/</span>
+                <Link href="/writings/series" className="hover:underline">Series</Link>
+              </>
+            )
+          ) : null}
+        </nav>
         <script
           type="application/ld+json"
           suppressHydrationWarning
@@ -107,7 +129,7 @@ export default async function Writing({ params, searchParams }) {
               description: writing.metadata.summary,
               image: writing.metadata.image
                 ? `${baseUrl}${writing.metadata.image}`
-                : `/og?title=${encodeURIComponent(writing.metadata.title)}`,
+                : `${baseUrl}/og?title=${encodeURIComponent(writing.metadata.title)}`,
               url: `${baseUrl}/writings/${writing.slug}`,
               author: {
                 "@type": "Person",
@@ -177,7 +199,11 @@ export default async function Writing({ params, searchParams }) {
               Back to All Writings
             </Link>
           )}
-          <PrevNext items={writings} itemIndex={writingIndex} path="writings" />
+          <PrevNext
+            items={prevNextItems}
+            itemIndex={prevNextIndex === -1 ? writingIndex : prevNextIndex}
+            path="writings"
+          />
         </div>
       </section>
       <hr className="border-[1px] border-gray-200" />

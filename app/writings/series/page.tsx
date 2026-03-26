@@ -3,11 +3,13 @@ import { getAllSortedSeries, getAllSortedSeriesItems, ParseSeriesDirName } from 
 import { Sidebar, TCategory } from "app/components/sidebar"
 import {capitalize} from 'app/utils'
 import {categories} from 'app/data/categories'
+import { buildStandardMetadata } from "app/seo/metadata"
 
-export const metadata = {
-  title: "Series | Jesse Wei",
+export const metadata = buildStandardMetadata({
+  title: "Series",
   description: "My series of writings, experiments, and projects.",
-}
+  pathname: "/writings/series",
+})
 
 export default async function AllSeriesPage() {
   const allSeries = getAllSortedSeries()

@@ -1,42 +1,56 @@
 import { baseUrl } from "app/sitemap"
 import { getAllSortedWritings } from "app/utils"
 
+export const revalidate = 3600
+
+function escapeXml(input: string) {
+  return input
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&apos;")
+}
+
 export async function GET() {
-  let allBlogs = getAllSortedWritings()
+  const allBlogs = getAllSortedWritings()
 
   const itemsXml = allBlogs
-    .sort((a, b) => {
-      if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
-        return -1
-      }
-      return 1
-    })
     .map(
-      (post) =>
+      (post) => {
+        const url = `${baseUrl}/writings/${post.slug}`
+        const title = escapeXml(post.metadata.title)
+        const description = escapeXml(post.metadata.summary || "")
+        const pubDate = new Date(post.metadata.publishedAt).toUTCString()
+
+        return (
         `<item>
-          <title>${post.metadata.title}</title>
-          <link>${baseUrl}/writings/${post.slug}</link>
-          <description>${post.metadata.summary || ""}</description>
-          <pubDate>${new Date(
-            post.metadata.publishedAt
-          ).toUTCString()}</pubDate>
+          <title>${title}</title>
+          <link>${url}</link>
+          <guid isPermaLink="true">${url}</guid>
+          <description>${description}</description>
+          <pubDate>${pubDate}</pubDate>
         </item>`
+        )
+      }
     )
     .join("\n")
 
   const rssFeed = `<?xml version="1.0" encoding="UTF-8" ?>
-  <rss version="2.0">
+  <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Jesse Wei | Writings and Works</title>
         <link>${baseUrl}</link>
+        <atom:link href="${baseUrl}/rss" rel="self" type="application/rss+xml" />
         <description>This is my writings and works RSS feed</description>
+        <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
         ${itemsXml}
     </channel>
   </rss>`
 
   return new Response(rssFeed, {
     headers: {
-      "Content-Type": "text/xml",
+      "Content-Type": "application/rss+xml; charset=utf-8",
     },
   })
 }

@@ -2,11 +2,13 @@ import Image from "next/image"
 import Link from "next/link"
 import { ArrowIcon } from "app/components/footer"
 import { openSans } from "app/data/fonts"
+import { buildStandardMetadata } from "app/seo/metadata"
 
-export const metadata = {
-  title: "About Me | Jesse Wei",
+export const metadata = buildStandardMetadata({
+  title: "About",
   description: "Introduction of Jesse Wei",
-}
+  pathname: "/about",
+})
 
 export default function Page() {
   return (

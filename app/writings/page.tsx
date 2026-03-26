@@ -3,11 +3,13 @@ import { getAllSortedWritings } from "app/utils"
 import { Sidebar, TCategory } from "app/components/sidebar"
 import {capitalize} from 'app/utils'
 import {categories} from 'app/data/categories'
+import { buildStandardMetadata } from "app/seo/metadata"
 
-export const metadata = {
-  title: "Writings | Jesse Wei",
+export const metadata = buildStandardMetadata({
+  title: "Writings",
   description: "My blog posts, tutorials and more.",
-}
+  pathname: "/writings",
+})
 
 export default async function Page({searchParams}) {
   const writings = getAllSortedWritings()

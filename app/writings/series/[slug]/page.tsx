@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { Grid } from "app/components/grid"
 import { getAllSortedSeries, ParseSeriesDirName } from "app/utils"
 import { Sidebar } from "app/components/sidebar"
+import { buildStandardMetadata } from "app/seo/metadata"
 
 export async function generateStaticParams() {
   let allSeries = getAllSortedSeries()
@@ -12,9 +13,13 @@ export async function generateStaticParams() {
   }))
 }
 
-export const metadata = {
-  title: "Series | Jesse Wei",
-  description: "My series of writings, experiments, and projects.",
+export function generateMetadata({ params }) {
+  const seriesTitle = ParseSeriesDirName(params.slug)
+  return buildStandardMetadata({
+    title: `Series - ${seriesTitle}`,
+    description: `Writings in the ${seriesTitle} series.`,
+    pathname: `/writings/series/${params.slug}`,
+  })
 }
 
 export default async function Series({ params }) {

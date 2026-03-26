@@ -4,8 +4,8 @@ import { CustomMDX } from "app/components/mdx"
 import { PrevNext } from "app/components/prev-next"
 import { formatDate, getAllSortedWorks, getWorkBySlug } from "app/utils"
 import { baseUrl } from "app/sitemap"
-import Head from "next/head"
 import { BackToTop } from "app/components/back-to-top"
+import { buildStandardMetadata } from "app/seo/metadata"
 
 export async function generateStaticParams() {
   let works = getAllSortedWorks()
@@ -31,28 +31,14 @@ export function generateMetadata({ params }) {
     ? image
     : `${baseUrl}/og?title=${encodeURIComponent(title)}`
 
-  return {
+  return buildStandardMetadata({
     title,
     description,
-    openGraph: {
-      title,
-      description,
-      type: "article",
-      publishedTime,
-      url: `${baseUrl}/writings/${work.slug}`,
-      images: [
-        {
-          url: ogImage,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [ogImage],
-    },
-  }
+    pathname: `/artworks/${work.slug}`,
+    type: "article",
+    publishedTime,
+    image: ogImage,
+  })
 }
 
 export default function Artwork({ params }) {
@@ -66,29 +52,30 @@ export default function Artwork({ params }) {
 
   return (
     <div className="w-full max-w-[1024px] mx-auto px-8 md:px-16 py-24">
-      <Head>
-        <title>{work.metadata.title}</title>
-        <link rel="canonical" href={`${baseUrl}/artworks/${work.slug}`} />
-      </Head>
       <section>
+        <nav aria-label="Breadcrumb" className="text-sm text-neutral-600 mb-4">
+          <Link href="/" className="hover:underline">Home</Link>
+          <span className="mx-2">/</span>
+          <Link href="/artworks" className="hover:underline">Artworks</Link>
+        </nav>
         <script
           type="application/ld+json"
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "Publishingworks",
+              "@type": "VisualArtwork",
               headline: work.metadata.title,
               datePublished: work.metadata.publishedAt,
               dateModified: work.metadata.publishedAt,
               description: work.metadata.summary,
               image: work.metadata.image
                 ? `${baseUrl}${work.metadata.image}`
-                : `/og?title=${encodeURIComponent(work.metadata.title)}`,
+                : `${baseUrl}/og?title=${encodeURIComponent(work.metadata.title)}`,
               url: `${baseUrl}/artworks/${work.slug}`,
               author: {
                 "@type": "Person",
-                name: "Jesse Wei | Writings and Works",
+                name: "Jesse Wei",
               },
             }),
           }}

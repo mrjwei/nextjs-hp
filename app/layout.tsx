@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
     default: "Jesse Wei | A Creator who blends design and technology",
-    template: "%s",
+    template: "%s | Jesse Wei",
   },
   description:
     "Jesse Wei is a creator, passionate about blending design and technology to craft innovative and impactful products.",

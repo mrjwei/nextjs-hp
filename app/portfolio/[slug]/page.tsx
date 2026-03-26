@@ -4,6 +4,7 @@ import { CustomMDX } from "app/components/mdx"
 import { Tags } from "app/components/tags"
 import { formatDate, getAllSortedPortfolio, getPortfolioItemBySlug } from "app/utils"
 import { openSans } from "app/data/fonts"
+import { buildStandardMetadata } from "app/seo/metadata"
 
 export async function generateStaticParams() {
   const items = getAllSortedPortfolio()
@@ -15,8 +16,14 @@ export function generateMetadata({ params }) {
   if (!item) return
 
   return {
-    title: item.metadata.title,
-    description: item.metadata.summary,
+    ...buildStandardMetadata({
+      title: item.metadata.title,
+      description: item.metadata.summary,
+      pathname: `/portfolio/${item.slug}`,
+      type: "article",
+      publishedTime: item.metadata.publishedAt,
+      image: item.metadata.image,
+    }),
   }
 }
 
@@ -31,6 +38,11 @@ export default async function PortfolioItemPage({ params, searchParams }) {
   return (
     <div className="w-full max-w-[1024px] mx-auto px-8 md:px-16 py-24">
       <section className="pb-16">
+        <nav aria-label="Breadcrumb" className="text-sm text-neutral-600 mb-4">
+          <Link href="/" className="hover:underline">Home</Link>
+          <span className="mx-2">/</span>
+          <Link href="/portfolio" className="hover:underline">Portfolio</Link>
+        </nav>
         <Link
           href={from ? `/${from}`.replace(/\/\/+/g, "/") : "/portfolio"}
           className="text-blue-500 hover:underline block mb-4"

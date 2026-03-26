@@ -1,9 +1,11 @@
 import { Works } from "app/components/works"
+import { buildStandardMetadata } from "app/seo/metadata"
 
-export const metadata = {
-  title: "Artworks | Jesse Wei",
+export const metadata = buildStandardMetadata({
+  title: "Artworks",
   description: "View my artworks.",
-}
+  pathname: "/artworks",
+})
 
 export default function Page() {
   return (
