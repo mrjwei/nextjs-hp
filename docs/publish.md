@@ -1,6 +1,14 @@
 # Publishing workflow (Obsidian -> MDX -> git push)
 
-This repo stores writings in `app/writings/posts/`. A “series” is a subfolder inside that directory.
+This repo stores writings in `app/writings/posts/`.
+
+Collections (previously called “series” in the UI) are driven by frontmatter:
+
+- `series`: collection slug (e.g. `ml-journey`)
+- `seriesTitle` (optional): display title override
+- `seriesOrder` (optional): non-negative integer used to order items within a collection
+
+For convenience/back-compat, if a writing is inside a subfolder (e.g. `app/writings/posts/ml/...`), that folder name is treated as its `series` slug unless `series` is explicitly set.
 
 ## Quick start
 
@@ -32,7 +40,7 @@ export OBSIDIAN_VAULT=/absolute/path/to/YourVault
 npm run publish "My Published Title" -- --source "My Obsidian Note Filename"
 ```
 
-### Publish into a series folder
+### Publish into a collection folder
 
 ```bash
 npm run publish "My Post Title" -- --series LingoBun --file /absolute/path/to/My Post Title.md

@@ -88,11 +88,30 @@ function parseFrontmatter(fileContent, absFilePath) {
       continue;
     }
 
+    if (/^-?\d+$/.test(value)) {
+      meta[key] = Number(value);
+      continue;
+    }
+
     value = value.replace(/^['\"](.*)['\"]$/, "$1");
     meta[key] = value;
   }
 
   return meta;
+}
+
+function inferSeriesFromPath(absFilePath, baseDir) {
+  const rel = path.relative(baseDir, absFilePath);
+  const parts = rel.split(path.sep).filter(Boolean);
+  if (parts.length <= 1) return undefined;
+  return parts[0];
+}
+
+function titleCaseFromSlug(value) {
+  return String(value)
+    .split("-")
+    .map((word) => (word ? word[0].toUpperCase() + word.slice(1) : word))
+    .join(" ");
 }
 
 function assertString(value, field, absFilePath) {
@@ -165,6 +184,19 @@ function buildIndexSection(sectionKey, config) {
 
     const tags = assertTags(meta.tags, absFilePath, config.requireTags);
 
+    const inferredSeries =
+      config.kind === "writing" ? inferSeriesFromPath(absFilePath, config.baseDir) : undefined;
+
+    let series = typeof meta.series === "string" ? meta.series : inferredSeries;
+    if (config.kind === "writing" && !series) {
+      series = "general";
+    }
+
+    const seriesTitle = typeof meta.seriesTitle === "string" ? meta.seriesTitle : undefined;
+    const seriesOrder = Number.isInteger(meta.seriesOrder) && meta.seriesOrder >= 0 ? meta.seriesOrder : undefined;
+
+    const tagsWithSeries = series && !tags.includes(series) ? [...tags, series] : tags;
+
     if (meta.shouldBreakWord != null && typeof meta.shouldBreakWord !== "boolean") {
       throw new Error(
         `Invalid frontmatter in ${path.relative(CWD, absFilePath)}: shouldBreakWord must be a boolean`
@@ -179,8 +211,11 @@ function buildIndexSection(sectionKey, config) {
         publishedAt: meta.publishedAt,
         summary: meta.summary,
         image: typeof meta.image === "string" ? meta.image : undefined,
-        tags,
+        tags: tagsWithSeries,
         shouldBreakWord: typeof meta.shouldBreakWord === "boolean" ? meta.shouldBreakWord : undefined,
+        series,
+        seriesTitle: series ? (seriesTitle || titleCaseFromSlug(series)) : undefined,
+        seriesOrder: series ? seriesOrder : undefined,
       },
     };
   });

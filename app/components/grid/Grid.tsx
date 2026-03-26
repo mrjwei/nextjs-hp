@@ -1,25 +1,21 @@
 import { TWriting } from "app/components/grid"
 import { WritingCard } from "app/components/article-card"
-import { TCategory } from "app/components/sidebar"
 
 export function Grid({
   writings,
-  category,
   numWritings,
   className = "",
   from,
   path = "writings",
+  selectedTags,
 }: {
   writings: TWriting[]
-  category?: TCategory
   numWritings?: number
   className?: string
   from?: string
   path?: string
+  selectedTags?: string[]
 }) {
-  if (category) {
-    writings = writings.filter(w => w.metadata.tags.includes(category.value))
-  }
   if (numWritings) {
     writings = writings.slice(0, numWritings)
   }
@@ -33,6 +29,7 @@ export function Grid({
             article={article}
             from={from}
             path={path}
+            selectedTags={selectedTags}
           />
         ))}
       </div>

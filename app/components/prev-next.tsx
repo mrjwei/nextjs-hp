@@ -1,12 +1,18 @@
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline"
 import { OutlinedButton } from "app/components/outlined-button"
 
-export const PrevNext = ({ items, itemIndex, path }) => {
+export const PrevNext = ({ items, itemIndex, path, linkFor }) => {
   let oldIndex = itemIndex + 1
   let newIndex = itemIndex - 1
 
   const oldItem = items[oldIndex]
   const newItem = items[newIndex]
+
+  const hrefFor = (item) => {
+    if (!item) return ""
+    if (typeof linkFor === "function") return linkFor(item)
+    return `/${path}/${item.slug}`
+  }
 
   return (
     <div className="flex justify-between gap-4 md:gap-8">
@@ -15,7 +21,7 @@ export const PrevNext = ({ items, itemIndex, path }) => {
        * so swapping old & next links to reflect this ordering
        */}
       <OutlinedButton
-        link={itemIndex === items.length - 1 ? "" : `/${path}/${oldItem.slug}`}
+        link={itemIndex === items.length - 1 ? "" : hrefFor(oldItem)}
         className={{
           "!border-gray-400 text-gray-400 disable-transform":
             itemIndex === items.length - 1,
@@ -25,7 +31,7 @@ export const PrevNext = ({ items, itemIndex, path }) => {
         <span className="block z-50">Prev</span>
       </OutlinedButton>
       <OutlinedButton
-        link={itemIndex === 0 ? "" : `/${path}/${newItem.slug}`}
+        link={itemIndex === 0 ? "" : hrefFor(newItem)}
         className={{
           "!border-gray-400 text-gray-400 disable-transform !px-2 md:px-4":
             itemIndex === 0,

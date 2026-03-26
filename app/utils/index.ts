@@ -11,6 +11,9 @@ export type TMetadata = {
   image?: string
   tags: string[]
   shouldBreakWord?: boolean
+  series?: string
+  seriesTitle?: string
+  seriesOrder?: number
 }
 
 export type TContentMeta = {
@@ -61,6 +64,9 @@ const baseFrontmatterSchema = z.object({
   summary: z.string().min(1),
   image: z.string().optional(),
   shouldBreakWord: z.boolean().optional(),
+  series: z.string().min(1).optional(),
+  seriesTitle: z.string().min(1).optional(),
+  seriesOrder: z.number().int().nonnegative().optional(),
 })
 
 const writingFrontmatterSchema = baseFrontmatterSchema.extend({
@@ -132,6 +138,11 @@ function parseFrontmatter(
       continue
     }
 
+    if (/^-?\d+$/.test(value)) {
+      rawMetadata[key] = Number(value)
+      continue
+    }
+
     value = value.replace(/^['"](.*)['"]$/, "$1")
     rawMetadata[key] = value
   }
@@ -145,6 +156,35 @@ function parseFrontmatter(
     throw new Error(
       `Invalid frontmatter in ${path.relative(process.cwd(), absFilePath)}: ${details}`
     )
+  }
+
+  if (kind === "writing") {
+    // Option C: explicit series metadata.
+    // Back-compat: infer a series slug from the immediate folder under writingsBaseDir.
+    if (!parsed.data.series) {
+      const rel = path.relative(writingsBaseDir, absFilePath)
+      const parts = rel.split(path.sep)
+      const maybeDir = parts.length > 1 ? parts[0] : ""
+      if (maybeDir) {
+        parsed.data.series = maybeDir
+      }
+    }
+
+    // If a writing lives directly under writingsBaseDir, treat it as "general".
+    if (!parsed.data.series) {
+      parsed.data.series = "general"
+    }
+
+    if (parsed.data.series && !parsed.data.seriesTitle) {
+      parsed.data.seriesTitle = ParseSeriesDirName(parsed.data.series)
+    }
+
+    // Use tags to power collection browsing/routes.
+    if (parsed.data.series && Array.isArray(parsed.data.tags)) {
+      if (!parsed.data.tags.includes(parsed.data.series)) {
+        parsed.data.tags = [...parsed.data.tags, parsed.data.series]
+      }
+    }
   }
 
   if (!includeContent) {
@@ -265,42 +305,49 @@ const getSlugToPathMap = cache((kind: ContentKind) => {
 })
 
 export function getSeries() {
-  return getWritingsCollections()
+  return getAllSortedSeries().map((s) => s.subdir)
 }
 
 export const getAllSortedSeries = cache(() => {
-  const series: {
-    subdir: string
-    items: TContentMeta[]
-  }[] = []
-  const subdirs = getSeries()
-  subdirs.forEach((subdir) => {
-    let items = getWritingsFilePaths(subdir).map((absFilePath) => {
-      const { metadata } = readFrontmatterOnly(absFilePath, "writing")
-      return { metadata, slug: fileSlug(absFilePath) }
-    })
-    items = items.sort((a, b) =>
-      new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
+  const all = getAllSortedWritings()
+  const bySeries = new Map<string, TContentMeta[]>()
+
+  for (const item of all) {
+    const seriesSlug = item.metadata.series
+    if (!seriesSlug) continue
+    if (!bySeries.has(seriesSlug)) bySeries.set(seriesSlug, [])
+    bySeries.get(seriesSlug)!.push(item)
+  }
+
+  const result = Array.from(bySeries.entries()).map(([subdir, items]) => {
+    const hasOrder = items.some(
+      (i) => typeof i.metadata.seriesOrder === "number"
+    )
+
+    const sorted = [...items].sort((a, b) => {
+      if (hasOrder) {
+        const ao = a.metadata.seriesOrder ?? Number.POSITIVE_INFINITY
+        const bo = b.metadata.seriesOrder ?? Number.POSITIVE_INFINITY
+        if (ao !== bo) return ao - bo
+      }
+
+      return new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
         ? -1
         : 1
-    )
-    series.push({ subdir, items })
+    })
+
+    return { subdir, items: sorted }
   })
-  return series
+
+  result.sort((a, b) =>
+    ParseSeriesDirName(a.subdir).localeCompare(ParseSeriesDirName(b.subdir))
+  )
+
+  return result
 })
 
 export const getAllSortedSeriesItems = cache(() => {
-  const writings: TContentMeta[] = []
-  const subdirs = getSeries()
-  subdirs.forEach((subdir) => {
-    writings.push(
-      ...getWritingsFilePaths(subdir).map((absFilePath) => {
-        const { metadata } = readFrontmatterOnly(absFilePath, "writing")
-        return { metadata, slug: fileSlug(absFilePath) }
-      })
-    )
-  })
-  return writings
+  return getAllSortedSeries().flatMap((s) => s.items)
 })
 
 export const getAllSortedWritings = cache(() => {

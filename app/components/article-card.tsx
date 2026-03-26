@@ -10,14 +10,23 @@ export function WritingCard({
   className,
   from,
   path = "writings",
+  selectedTags,
 }: {
   article: any
   className?: string
   from?: string
   path?: string
+  selectedTags?: string[]
 }) {
   const isPortfolio = path === "portfolio"
   const thumbnailSrc = article?.metadata?.image || "/bg.jpg"
+
+  const writingCollection = path === "writings" ? article?.metadata?.series : null
+
+  const href =
+    path === "writings" && writingCollection
+      ? `/writings/${writingCollection}/${article.slug}`
+      : `/${path}/${article.slug}`
 
   return (
     <div
@@ -28,14 +37,18 @@ export function WritingCard({
     >
       <Link
         key={article.slug}
-        href={`/${path}/${article.slug}${from ? `?from=${from}` : ""}`}
+        href={`${href}${from ? `?from=${from}` : ""}`}
         className="flex-1 flex flex-col"
       >
         {isPortfolio ? (
           <div className="relative w-full aspect-[16/9] overflow-hidden rounded-t-2xl bg-neutral-100">
             <Image
               src={thumbnailSrc}
-              alt={article?.metadata?.title ? `${article.metadata.title} thumbnail` : "Portfolio thumbnail"}
+              alt={
+                article?.metadata?.title
+                  ? `${article.metadata.title} thumbnail`
+                  : "Portfolio thumbnail"
+              }
               fill
               sizes="(min-width: 768px) 50vw, 100vw"
               className="object-cover"
@@ -57,7 +70,6 @@ export function WritingCard({
                   ? article.metadata.summary.slice(0, 100) + "..."
                   : article.metadata.summary}
               </p>
-              <Tags tags={article.metadata.tags} />
             </div>
           </div>
           <small className={`text-neutral-500 ${openSans.className}`}>
@@ -65,6 +77,31 @@ export function WritingCard({
           </small>
         </div>
       </Link>
+
+      <div className="px-6 pb-6">
+        <Tags
+          tags={article.metadata.tags}
+          hrefForTag={
+            path === "writings"
+              ? (tag) => {
+                  const current = Array.isArray(selectedTags)
+                    ? selectedTags
+                    : []
+
+                  const next = current.includes(tag)
+                    ? current.filter((t) => t !== tag)
+                    : [...current, tag]
+
+                  const qs = next.length
+                    ? `?tags=${encodeURIComponent(next.join(","))}`
+                    : ""
+
+                  return `/writings${qs}`
+                }
+              : undefined
+          }
+        />
+      </div>
     </div>
   )
 }
