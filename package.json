@@ -4,7 +4,7 @@
     "dev": "next dev",
     "lint": "next lint",
     "prebuild": "node scripts/generate-content-index.mjs",
-    "build": "next build",
+    "build": "npm run prebuild && next build",
     "start": "next start",
     "typecheck": "rm -rf .next/types && tsc --noEmit",
     "publish": "node scripts/publish.js"
