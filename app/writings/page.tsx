@@ -87,17 +87,17 @@ export default async function Page({
       <Sidebar
         items={items}
         targetValue="all"
-        classname="hidden md:block bg-gray-800 text-white p-8 md:col-span-3 sticky md:top-[var(--header-height)] h-screen"
+        classname="hidden md:block bg-neutral-900 text-white p-8 md:col-span-3 sticky md:top-[var(--header-height)] h-screen"
       />
-      <div className="col-span-12 px-4 py-8 md:col-span-9 md:pl-0 md:pr-8">
+      <div className="col-span-12 px-6 py-8 md:col-span-9 md:pl-0 md:pr-8">
         <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold mb-2">Writings</h1>
-          <p className="text-lg text-gray-600 mb-4">Design, tech, innovation and more.</p>
+          <h1 className="text-2xl md:text-3xl font-bold mb-3 text-neutral-900">Writings</h1>
+          <p className="text-lg text-neutral-600 mb-6">Design, tech, innovation and more.</p>
           <Sidebar items={items} targetValue={undefined} classname="block md:hidden" />
 
           {selectedTags.length ? (
-            <div className="mt-4 text-sm text-neutral-700 flex flex-wrap items-center gap-2">
-              <span>Filtering by tags:</span>
+            <div className="mt-6 text-sm text-neutral-700 flex flex-wrap items-center gap-2">
+              <span className="font-medium">Filtering by tags:</span>
               {selectedTags
                 .filter((tag) => Object.keys(tagsData).includes(tag))
                 .map((tag) => (
@@ -109,16 +109,16 @@ export default async function Page({
                     closeHref={removeTagHref(tag)}
                   />
                 ))}
-              <Link href="/writings" className="ml-1 text-blue-500 hover:underline">
+              <Link href="/writings" className="ml-1 text-blue-600 hover:text-blue-700 hover:underline font-medium transition-colors">
                 Clear
               </Link>
             </div>
           ) : null}
         </div>
         {filteredWritings.length === 0 ? (
-          <div className="text-neutral-700">
-            <p className="mb-2">No writings found for those tags.</p>
-            <Link href="/writings" className="text-blue-500 hover:underline">
+          <div className="text-neutral-700 bg-white rounded-xl border border-neutral-200 p-8 shadow-sm">
+            <p className="mb-3 font-medium text-neutral-900">No writings found for those tags.</p>
+            <Link href="/writings" className="text-blue-600 hover:text-blue-700 hover:underline font-medium transition-colors">
               View all writings
             </Link>
           </div>

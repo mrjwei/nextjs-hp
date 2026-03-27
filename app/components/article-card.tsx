@@ -31,7 +31,7 @@ export function WritingCard({
   return (
     <div
       className={clsx(
-        "col-span-12 md:col-span-6 h-full flex flex-col bg-white transition duration-300 ease-in-out shadow-md hover:shadow-xl rounded-2xl",
+        "col-span-12 md:col-span-6 h-full flex flex-col bg-white transition-all duration-300 ease-in-out shadow-sm hover:shadow-lg border border-neutral-200 hover:border-neutral-300 rounded-xl overflow-hidden group",
         className
       )}
     >
@@ -41,7 +41,7 @@ export function WritingCard({
         className="flex-1 flex flex-col"
       >
         {isPortfolio ? (
-          <div className="relative w-full aspect-[16/9] overflow-hidden rounded-t-2xl bg-neutral-100">
+          <div className="relative w-full aspect-[16/9] overflow-hidden bg-neutral-100">
             <Image
               src={thumbnailSrc}
               alt={
@@ -51,7 +51,7 @@ export function WritingCard({
               }
               fill
               sizes="(min-width: 768px) 50vw, 100vw"
-              className="object-cover"
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
             />
           </div>
         ) : null}
@@ -59,21 +59,21 @@ export function WritingCard({
           <div>
             <div className="mb-4">
               <h3
-                className={clsx("text-lg leading-normal font-bold mb-2", {
+                className={clsx("text-lg leading-normal font-semibold mb-2 text-neutral-900 group-hover:text-blue-600 transition-colors", {
                   "break-all": article.metadata.shouldBreakWord,
                 })}
               >
                 {article.metadata.title}
               </h3>
-              <p className="text-neutral-600 text-base leading-5 mb-4">
+              <p className="text-neutral-600 text-base leading-6 mb-4">
                 {article.metadata.summary.length > 100
                   ? article.metadata.summary.slice(0, 100) + "..."
                   : article.metadata.summary}
               </p>
             </div>
           </div>
-          <small className={`text-neutral-500 ${openSans.className}`}>
-            Published at: {formatDate(article.metadata.publishedAt, false)}
+          <small className={`text-neutral-500 text-sm ${openSans.className}`}>
+            Published: {formatDate(article.metadata.publishedAt, false)}
           </small>
         </div>
       </Link>

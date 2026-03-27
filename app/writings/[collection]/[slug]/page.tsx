@@ -98,17 +98,17 @@ export default async function WritingInCollection({ params, searchParams }) {
 
   return (
     <div className="w-full max-w-[1024px] mx-auto px-8 md:px-16 py-24">
-      <section className="pb-16">
+      <section className="pb-16 bg-white rounded-2xl shadow-sm border border-neutral-200 p-8 md:p-12">
         <nav aria-label="Breadcrumb" className="text-sm text-neutral-600 mb-4">
-          <Link href="/" className="hover:underline">
+          <Link href="/" className="hover:underline hover:text-neutral-900 transition-colors">
             Home
           </Link>
-          <span className="mx-2">/</span>
-          <Link href="/writings" className="hover:underline">
+          <span className="mx-2 text-neutral-400">/</span>
+          <Link href="/writings" className="hover:underline hover:text-neutral-900 transition-colors">
             Writings
           </Link>
-          <span className="mx-2">/</span>
-          <Link href={`/writings/${collection}`} className="hover:underline">
+          <span className="mx-2 text-neutral-400">/</span>
+          <Link href={`/writings/${collection}`} className="hover:underline hover:text-neutral-900 transition-colors">
             {formatCollectionLabel(collection)}
           </Link>
         </nav>
@@ -138,12 +138,12 @@ export default async function WritingInCollection({ params, searchParams }) {
 
         <Link
           href={`/writings/${collection}`}
-          className="text-blue-500 hover:underline block mb-4"
+          className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:underline transition-colors font-medium block mb-6"
         >
-          Back to Collection
+          ← Back to Collection
         </Link>
 
-        <h1 className="title font-bold text-4xl mb-4">
+        <h1 className="title font-bold text-4xl mb-4 text-neutral-900">
           {writing.metadata.title}
         </h1>
         <Tags
@@ -161,9 +161,9 @@ export default async function WritingInCollection({ params, searchParams }) {
             return `/writings${qs}`
           }}
         />
-        <div className="flex justify-between items-center mt-2 mb-12 text-sm">
-          <p className={`text-sm text-neutral-500 ${openSans.className}`}>
-            Published at: {formatDate(writing.metadata.publishedAt)}
+        <div className="flex justify-between items-center mt-2 mb-12 text-sm border-b border-neutral-200 pb-6">
+          <p className={`text-sm text-neutral-600 ${openSans.className}`}>
+            Published: {formatDate(writing.metadata.publishedAt)}
           </p>
         </div>
 
@@ -171,12 +171,12 @@ export default async function WritingInCollection({ params, searchParams }) {
           <CustomMDX source={writing.content} />
         </article>
 
-        <div className="mt-8 flex flex-col md:flex-row md:justify-between items-center">
+        <div className="mt-8 flex flex-col md:flex-row md:justify-between items-center pt-8 border-t border-neutral-200">
           <Link
             href={`/writings/${collection}`}
-            className="text-blue-500 hover:underline mb-4 md:mb-0"
+            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:underline transition-colors font-medium mb-4 md:mb-0"
           >
-            Back to Collection
+            ← Back to Collection
           </Link>
           <PrevNext
             items={collectionItems}
@@ -187,10 +187,8 @@ export default async function WritingInCollection({ params, searchParams }) {
         </div>
       </section>
 
-      <hr className="border-[1px] border-gray-200" />
-
-      <section className="pt-16">
-        <h2 className="text-2xl font-bold mb-8">You May Also Like</h2>
+      <section className="pt-16 bg-white rounded-2xl shadow-sm border border-neutral-200 p-8 md:p-12 mt-8">
+        <h2 className="text-2xl font-bold mb-8 text-neutral-900">You May Also Like</h2>
         <div className="grid grid-cols-12 gap-y-8 md:gap-8">
           {similarWritings.slice(0, 4).map((similarWriting) => (
             <WritingCard key={similarWriting.slug} article={similarWriting} />

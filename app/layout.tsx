@@ -51,7 +51,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cx("text-neutral-800 bg-white text-base", openSans.className)}
+      className={cx("text-neutral-900 bg-neutral-50 text-base", openSans.className)}
     >
       <head>
         <Script async src="https://www.googletagmanager.com/gtag/js?id=G-44FT4BDFH2" />
@@ -78,7 +78,7 @@ export default function RootLayout({
         <main
           id="main-content"
           tabIndex={-1}
-          className="relative w-full flex-1 bg-zinc-100 flex flex-col scroll-mt-[var(--header-height)]"
+          className="relative w-full flex-1 bg-neutral-50 flex flex-col scroll-mt-[var(--header-height)]"
         >
           {children}
           <Analytics />

@@ -128,13 +128,13 @@ export function Header({ className }: { className?: string }) {
         className
       )}
     >
-      <div className="w-full h-[var(--header-height)] px-12 flex justify-between items-center">
-        <div className="flex items-center">
+      <div className="w-full h-[var(--header-height)] px-8 md:px-12 flex justify-between items-center">
+        <div className="flex items-center gap-4">
           <button
             ref={menuButtonRef}
             type="button"
-            className={clsx("mr-4 transition-all block md:hidden", {
-              "text-gray-600 hover:text-gray-800": isLight,
+            className={clsx("transition-all block md:hidden hover:scale-110", {
+              "text-neutral-700 hover:text-neutral-900": isLight,
               "text-white": !isLight,
             })}
             onClick={handleMenuButtonClick}
@@ -143,12 +143,12 @@ export function Header({ className }: { className?: string }) {
             aria-controls="mobile-nav"
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           >
-            <Bars3Icon className="w-8" />
+            <Bars3Icon className="w-7" />
           </button>
           {isMenuOpen && (
             <nav
               ref={mobileMenuRef}
-              className="bg-gray-800 shadow-md absolute w-full top-full left-0 h-screen"
+              className="bg-neutral-900 shadow-lg absolute w-full top-full left-0 h-screen"
               id="mobile-nav"
               aria-label="Mobile"
               role="dialog"
@@ -160,7 +160,7 @@ export function Header({ className }: { className?: string }) {
                     key={path}
                     href={path}
                     className={clsx(
-                      `transition-all text-white flex align-middle relative text-lg p-5`
+                      `transition-all text-white hover:bg-neutral-800 flex align-middle relative text-lg p-5 border-b border-neutral-800`
                     )}
                     onClick={closeMenu}
                   >
@@ -170,7 +170,7 @@ export function Header({ className }: { className?: string }) {
               })}
             </nav>
           )}
-          <Link href="/" aria-label="home" className="mr-4">
+          <Link href="/" aria-label="home" className="hover:opacity-80 transition-opacity">
             <Image
               src={isLight ? "/logo.svg" : "/logo-light.svg"}
               alt="Jesse Wei's Logo"
@@ -190,9 +190,9 @@ export function Header({ className }: { className?: string }) {
                   key={path}
                   href={path}
                   className={clsx(
-                    `transition-all duration-500 ease-in-out font-semibold text-gray-300 hover:text-gray-100 flex align-middle relative py-1 px-2 m-1 ${openSans.className}`,
+                    `transition-all duration-300 ease-in-out font-medium text-neutral-300 hover:text-white flex align-middle relative py-1 px-3 m-1 rounded-md hover:bg-white/10 ${openSans.className}`,
                     {
-                      "text-gray-500 hover:text-gray-800": isLight,
+                      "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100": isLight,
                     }
                   )}
                 >
@@ -202,16 +202,17 @@ export function Header({ className }: { className?: string }) {
             })}
           </nav>
         </div>
-        <div className="flex items-center">
+        <div className="flex items-center gap-1">
           <Link
             target="_blank"
             href="https://www.linkedin.com/in/jesse-wei-profile/"
             className={clsx(
-              "px-2 m-1 text-gray-300 hover:text-gray-100 transition-colors duration-200 ease-in-out",
+              "px-2 py-1 rounded-md text-neutral-300 hover:text-white hover:bg-white/10 transition-all duration-200 ease-in-out",
               {
-                "text-gray-400 hover:text-gray-600": isLight,
+                "text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100": isLight,
               }
             )}
+            aria-label="LinkedIn profile"
           >
             {icons.linkedin}
           </Link>
@@ -234,11 +235,12 @@ export function Header({ className }: { className?: string }) {
             target="_blank"
             href="https://github.com/mrjwei"
             className={clsx(
-              "px-2 m-1 text-gray-300 hover:text-gray-100 transition-colors duration-200 ease-in-out",
+              "px-2 py-1 rounded-md text-neutral-300 hover:text-white hover:bg-white/10 transition-all duration-200 ease-in-out",
               {
-                "text-gray-400 hover:text-gray-600": isLight,
+                "text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100": isLight,
               }
             )}
+            aria-label="GitHub profile"
           >
             {icons.github}
           </Link>
@@ -246,11 +248,12 @@ export function Header({ className }: { className?: string }) {
             target="_blank"
             href="https://www.instagram.com/mrjwei/"
             className={clsx(
-              "px-2 m-1 text-gray-300 hover:text-gray-100 transition-colors duration-200 ease-in-out",
+              "px-2 py-1 rounded-md text-neutral-300 hover:text-white hover:bg-white/10 transition-all duration-200 ease-in-out",
               {
-                "text-gray-400 hover:text-gray-600": isLight,
+                "text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100": isLight,
               }
             )}
+            aria-label="Instagram profile"
           >
             {icons.instagram}
           </Link>
