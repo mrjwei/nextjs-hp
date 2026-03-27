@@ -229,7 +229,17 @@ const readMdxWithContent = cache((absFilePath: string, kind: ContentKind) => {
 })
 
 const readContentIndex = cache((): ContentIndexFile | null => {
-  if (!fs.existsSync(CONTENT_INDEX_PATH)) return null
+  if (!fs.existsSync(CONTENT_INDEX_PATH)) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error(
+        `Missing generated content index at ${path.relative(
+          process.cwd(),
+          CONTENT_INDEX_PATH
+        )}. This should be created during build (e.g. via scripts/generate-content-index.mjs).`
+      )
+    }
+    return null
+  }
   const raw = fs.readFileSync(CONTENT_INDEX_PATH, "utf-8")
   const parsed = JSON.parse(raw)
   if (!parsed || parsed.version !== 1) {

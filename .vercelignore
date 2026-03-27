@@ -1,0 +1,3 @@
+# Ensure Vercel deployments include the generated content index.
+# The file is gitignored (generated), but should still be deployed.
+!app/data/content-index.json
