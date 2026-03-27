@@ -177,6 +177,7 @@ function buildIndexSection(sectionKey, config) {
 
     const raw = fs.readFileSync(absFilePath, "utf-8");
     const meta = parseFrontmatter(raw, absFilePath);
+    const content = raw.replace(/^---\s*[\r\n]+([\s\S]*?)[\r\n]+---\s*[\r\n]*/, "");
 
     assertString(meta.title, "title", absFilePath);
     assertDateString(meta.publishedAt, "publishedAt", absFilePath);
@@ -217,6 +218,7 @@ function buildIndexSection(sectionKey, config) {
         seriesTitle: series ? (seriesTitle || titleCaseFromSlug(series)) : undefined,
         seriesOrder: series ? seriesOrder : undefined,
       },
+      content,
     };
   });
 }

@@ -30,8 +30,20 @@ type ContentKind = "writing" | "portfolio"
 type ContentIndexFile = {
   version: 1
   generatedAt: string
-  writings?: Array<{ slug: string; filePath: string; collection?: string; metadata: TMetadata }>
-  portfolio?: Array<{ slug: string; filePath: string; collection?: string; metadata: TMetadata }>
+  writings?: Array<{
+    slug: string
+    filePath: string
+    collection?: string
+    metadata: TMetadata
+    content?: string
+  }>
+  portfolio?: Array<{
+    slug: string
+    filePath: string
+    collection?: string
+    metadata: TMetadata
+    content?: string
+  }>
 }
 
 const CONTENT_INDEX_PATH = path.join(
@@ -388,6 +400,15 @@ export function getWritingBySlug(slug: string): TContentItem | null {
   const index = readContentIndex()
   const indexed = index?.writings?.find((item) => item.slug === slug)
   if (indexed) {
+    if (process.env.NODE_ENV === "production") {
+      if (typeof indexed.content !== "string") {
+        throw new Error(
+          `Content index entry for writing "${slug}" is missing embedded content. Re-run the content index generator.`
+        )
+      }
+      return { slug, metadata: indexed.metadata, content: indexed.content }
+    }
+
     const absFilePath = path.join(process.cwd(), indexed.filePath)
     const { metadata, content } = readMdxWithContent(absFilePath, "writing") as {
       metadata: TMetadata
@@ -460,6 +481,15 @@ export function getPortfolioItemBySlug(slug: string): TContentItem | null {
   const index = readContentIndex()
   const indexed = index?.portfolio?.find((item) => item.slug === slug)
   if (indexed) {
+    if (process.env.NODE_ENV === "production") {
+      if (typeof indexed.content !== "string") {
+        throw new Error(
+          `Content index entry for portfolio "${slug}" is missing embedded content. Re-run the content index generator.`
+        )
+      }
+      return { slug, metadata: indexed.metadata, content: indexed.content }
+    }
+
     const absFilePath = path.join(process.cwd(), indexed.filePath)
     const { metadata, content } = readMdxWithContent(
       absFilePath,
