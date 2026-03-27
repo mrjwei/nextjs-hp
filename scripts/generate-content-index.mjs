@@ -188,6 +188,8 @@ function buildIndexSection(sectionKey, config) {
     const inferredSeries =
       config.kind === "writing" ? inferSeriesFromPath(absFilePath, config.baseDir) : undefined;
 
+    const inferredCollection = inferSeriesFromPath(absFilePath, config.baseDir);
+
     let series = typeof meta.series === "string" ? meta.series : inferredSeries;
     if (config.kind === "writing" && !series) {
       series = "general";
@@ -207,6 +209,7 @@ function buildIndexSection(sectionKey, config) {
     return {
       slug,
       filePath: path.relative(CWD, absFilePath),
+      collection: inferredCollection,
       metadata: {
         title: meta.title,
         publishedAt: meta.publishedAt,

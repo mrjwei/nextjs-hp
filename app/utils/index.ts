@@ -431,10 +431,70 @@ export function getPortfolioCollections() {
 }
 
 export const getAllSortedPortfolioCollections = cache(() => {
-  const collections: {
-    subdir: string
-    items: TContentMeta[]
-  }[] = []
+  const index = readContentIndex()
+
+  // In production (and often in CI/standalone output), the MDX files under
+  // app/portfolio/posts may not be present at runtime due to output tracing.
+  // Prefer the generated content index when available.
+  if (index?.portfolio?.length) {
+    const baseRel = path
+      .relative(process.cwd(), portfolioBaseDir)
+      .replaceAll(path.sep, "/")
+
+    const byCollection = new Map<string, TContentMeta[]>()
+
+    for (const item of index.portfolio) {
+      const normalized = String(item.filePath).replaceAll("\\\\", "/")
+
+      let collection =
+        typeof item.collection === "string" && item.collection.trim().length
+          ? item.collection.trim()
+          : undefined
+
+      if (!collection) {
+        if (normalized.startsWith(baseRel + "/")) {
+          const relUnderBase = normalized.slice(baseRel.length + 1)
+          const parts = relUnderBase.split("/").filter(Boolean)
+          collection = parts.length > 1 ? parts[0] : "general"
+        } else {
+          collection = "general"
+        }
+      }
+
+      if (!byCollection.has(collection)) byCollection.set(collection, [])
+      byCollection.get(collection)!.push({ slug: item.slug, metadata: item.metadata })
+    }
+
+    const result = Array.from(byCollection.entries()).map(([subdir, items]) => {
+      const sorted = [...items].sort((a, b) =>
+        new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
+          ? -1
+          : 1
+      )
+      return { subdir, items: sorted }
+    })
+
+    result.sort((a, b) =>
+      ParseSeriesDirName(a.subdir).localeCompare(ParseSeriesDirName(b.subdir))
+    )
+
+    return result
+  }
+
+  // Dev fallback: read directly from the filesystem.
+  const collections: { subdir: string; items: TContentMeta[] }[] = []
+
+  // Include base-level posts (if any) under a conventional collection.
+  let rootItems = getPortfolioFilePaths("").map((absFilePath) => {
+    const { metadata } = readFrontmatterOnly(absFilePath, "portfolio")
+    return { metadata, slug: fileSlug(absFilePath) }
+  })
+  rootItems = rootItems.sort((a, b) =>
+    new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt) ? -1 : 1
+  )
+  if (rootItems.length) {
+    collections.push({ subdir: "general", items: rootItems })
+  }
 
   const subdirs = getPortfolioCollections()
   subdirs.forEach((subdir) => {
