@@ -7,7 +7,7 @@ import { Header } from "./components/header"
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import Footer from "./components/footer"
-import { openSans } from "app/data/fonts"
+import { openSans, plexMono } from "app/data/fonts"
 import { baseUrl } from "./sitemap"
 import AnalyticsProvider from "./providers"
 
@@ -51,7 +51,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cx("text-neutral-900 bg-neutral-50 text-base", openSans.className)}
+      className={cx(
+        "text-neutral-900 bg-neutral-50 text-base",
+        openSans.variable,
+        plexMono.variable
+      )}
     >
       <head>
         <Script async src="https://www.googletagmanager.com/gtag/js?id=G-44FT4BDFH2" />

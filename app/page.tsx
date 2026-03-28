@@ -1,6 +1,6 @@
 import { ArrowRightIcon } from "@heroicons/react/24/outline"
 import {OutlinedButton} from 'app/components/outlined-button'
-import { openSans, techno } from "app/data/fonts"
+import { openSans } from "app/data/fonts"
 import { Grid } from "app/components/grid"
 import { ScrollAndSnap } from "app/components/scroll-and-snap"
 import { getAllSortedPortfolio, getAllSortedWritings } from "app/utils"
@@ -13,7 +13,7 @@ export default function Page() {
       <ScrollAndSnap>
         <div className="should-snap relative bg-[url(/bg.jpg)] bg-cover text-gray-200 flex flex-col items-center h-screen px-16 pt-28 md:pt-32 xl:pt-48">
           <h1
-            className={`mb-8 md:mb-12 text-6xl lg:text-7xl xl:text-[100px] font-black text-center text-white tracking-normal ${techno.className}`}
+            className={`mb-8 md:mb-12 text-6xl lg:text-7xl xl:text-[100px] font-bold text-center text-white tracking-tight ${openSans.className}`}
           >
             <span className="block relative z-10">Designing With Intent.</span>
             <span className="block relative z-10 mb-4 xl:mb-8">

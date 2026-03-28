@@ -1,22 +1,17 @@
-import { League_Spartan, Open_Sans, Roboto_Slab } from "next/font/google"
+import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google"
 
-export const openSans = Open_Sans({
+export const openSans = IBM_Plex_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   style: ["normal", "italic"],
   display: "swap",
+  variable: "--font-sans",
 })
 
-export const spartan = League_Spartan({
+export const plexMono = IBM_Plex_Mono({
   subsets: ["latin"],
-  weight: ["400", "700"],
-  style: ["normal"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
   display: "swap",
-})
-
-export const techno = Roboto_Slab({
-  subsets: ["latin"],
-  weight: ["900"],
-  style: ["normal"],
-  display: "swap",
+  variable: "--font-mono",
 })
