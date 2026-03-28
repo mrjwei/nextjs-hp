@@ -16,7 +16,13 @@ export function Sidebar({
         {items.map((item) => {
           return (
             <li key={item.label}>
-              <Item label={item.label} href={item.href} shouldHighlight={targetValue === item.value} length={item.length} />
+              <Item
+                label={item.label}
+                href={item.href}
+                shouldHighlight={targetValue === item.value}
+                length={item.length}
+                shouldBeUppercase={item.shouldBeUppercase}
+              />
             </li>
           )
         })}
