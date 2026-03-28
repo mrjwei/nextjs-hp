@@ -18,28 +18,16 @@ export default function Page() {
         <div className="grid grid-cols-12 gap-8 md:gap-16">
           <div className="text-neutral-800 col-span-12 order-2 md:col-span-8 md:order-1">
             <p className="mb-4">
-              Hi, I am Jesse, a creator passionate about{" "}
-              <strong>blending design and technology</strong> to craft
-              innovative and impactful products.
+              Hi, I am Jesse. I build things at the <strong>intersection of design, engineering, and emerging technologies</strong>.
             </p>
             <p className="mb-4">
-              With 10 years of experience in{" "}
-              <strong>creative problem-solving</strong>, I’ve helped businesses
-              and individuals thrive while{" "}
-              <strong>leading digital service development projects</strong> that
-              merge design expertise with software engineering.
+              My career began in product design, where I spent years thinking deeply about how people interact with technology and how good products are shaped by real user needs. Over time, I became increasingly curious about what happens beneath the interface: the systems, architectures, and technologies that make products work. That curiosity led me to <strong>transition from design into software engineering</strong> and pursue a Master’s degree in IT in Australia.
             </p>
             <p className="mb-4">
-              Currently, I’m focused on{" "}
-              <strong>
-                envisioning and developing next-generation design tools
-              </strong>{" "}
-              that challenge traditional workflows and practices, pushing the
-              boundaries of what’s possible in design.
+              Today, I focus on building useful tools and understanding complex systems. My interests range from software engineering and AI-powered applications to system architecture and knowledge systems. I enjoy <strong>turning complex ideas into practical solutions</strong> and I like <strong>writing about my explorations and how technology works in general</strong>. Having lived and worked across China and Japan and now studying in Australia, I bring a global perspective and a multidisciplinary mindset to problem-solving.
             </p>
             <p className="mb-4">
-              Outside of work, I enjoy illustrating vector art and watching
-              Premier League matches.
+              I’m particularly interested in the <strong>future of intelligent systems, software engineering and creative workflows, and technology that amplifies human capability</strong>. My goal is to combine design thinking, engineering skills, and curiosity to create technology that is both powerful and accessible.
             </p>
             <p>
               I’m always open to connecting and collaborating on exciting
