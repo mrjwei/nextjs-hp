@@ -12,7 +12,7 @@ export function Sidebar({
 }) {
   return (
     <aside className={classname}>
-      <ul className="flex flex-wrap gap-2 md:block md:gap-0">
+      <ul className="flex flex-wrap gap-2 md:block md:space-y-2">
         {items.map((item) => {
           return (
             <li key={item.label}>
