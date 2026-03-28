@@ -190,9 +190,10 @@ export function Header({ className }: { className?: string }) {
                   key={path}
                   href={path}
                   className={clsx(
-                    `transition-all duration-300 ease-in-out font-medium text-neutral-300 hover:text-white flex align-middle relative py-1 px-3 m-1 rounded-md hover:bg-white/10 ${openSans.className}`,
+                    `transition-all duration-300 ease-in-out font-medium flex align-middle relative py-1 px-3 m-1 rounded-md ${openSans.className}`,
                     {
                       "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100": isLight,
+                      "text-neutral-300 hover:text-white hover:bg-white/10": !isLight,
                     }
                   )}
                 >
@@ -207,9 +208,10 @@ export function Header({ className }: { className?: string }) {
             target="_blank"
             href="https://www.linkedin.com/in/jesse-wei-profile/"
             className={clsx(
-              "px-2 py-1 rounded-md text-neutral-300 hover:text-white hover:bg-white/10 transition-all duration-200 ease-in-out",
+              "px-2 py-1 rounded-md transition-all duration-200 ease-in-out",
               {
                 "text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100": isLight,
+                "text-neutral-300 hover:text-white hover:bg-white/10": !isLight,
               }
             )}
             aria-label="LinkedIn profile"
@@ -235,9 +237,10 @@ export function Header({ className }: { className?: string }) {
             target="_blank"
             href="https://github.com/mrjwei"
             className={clsx(
-              "px-2 py-1 rounded-md text-neutral-300 hover:text-white hover:bg-white/10 transition-all duration-200 ease-in-out",
+              "px-2 py-1 rounded-md transition-all duration-200 ease-in-out",
               {
                 "text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100": isLight,
+                "text-neutral-300 hover:text-white hover:bg-white/10": !isLight,
               }
             )}
             aria-label="GitHub profile"
@@ -248,9 +251,10 @@ export function Header({ className }: { className?: string }) {
             target="_blank"
             href="https://www.instagram.com/mrjwei/"
             className={clsx(
-              "px-2 py-1 rounded-md text-neutral-300 hover:text-white hover:bg-white/10 transition-all duration-200 ease-in-out",
+              "px-2 py-1 rounded-md transition-all duration-200 ease-in-out",
               {
                 "text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100": isLight,
+                "text-neutral-300 hover:text-white hover:bg-white/10": !isLight,
               }
             )}
             aria-label="Instagram profile"
