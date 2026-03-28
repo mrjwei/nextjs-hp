@@ -23,7 +23,7 @@ export const PrevNext = ({ items, itemIndex, path, linkFor }) => {
       <OutlinedButton
         link={itemIndex === items.length - 1 ? "" : hrefFor(oldItem)}
         className={{
-          "!border-gray-400 text-gray-400 disable-transform":
+          "!border-gray-400 !text-gray-400 disable-transform":
             itemIndex === items.length - 1,
         }}
       >
@@ -33,8 +33,7 @@ export const PrevNext = ({ items, itemIndex, path, linkFor }) => {
       <OutlinedButton
         link={itemIndex === 0 ? "" : hrefFor(newItem)}
         className={{
-          "!border-gray-400 text-gray-400 disable-transform !px-2 md:px-4":
-            itemIndex === 0,
+          "!border-gray-400 !text-gray-400 disable-transform": itemIndex === 0,
         }}
       >
         <span className="block z-50">Next</span>
