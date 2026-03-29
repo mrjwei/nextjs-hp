@@ -5,6 +5,17 @@ import { Sidebar } from "app/components/sidebar"
 import { ParseSeriesDirName, getAllSortedWritings } from "app/utils"
 import { buildStandardMetadata } from "app/seo/metadata"
 
+export const dynamic = "force-static"
+
+export async function generateStaticParams() {
+  const writings = getAllSortedWritings()
+  const collections = Array.from(
+    new Set(writings.map((w) => w.metadata.series || "general"))
+  )
+
+  return collections.map((collection) => ({ collection }))
+}
+
 function formatCollectionLabel(value: string) {
   if (value.includes("-")) return ParseSeriesDirName(value)
   if (value.length <= 4) return value.toUpperCase()

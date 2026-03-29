@@ -3,8 +3,7 @@ import { ParseSeriesDirName, getAllSortedWritings } from "app/utils"
 import { Sidebar } from "app/components/sidebar"
 import { buildStandardMetadata } from "app/seo/metadata"
 import Link from "next/link"
-import tagsData from "app/data/tags.json"
-import { Tag } from "app/components/tag"
+import { WritingsFilterController } from "app/writings/writings-filter.client"
 
 export const metadata = buildStandardMetadata({
   title: "Writings",
@@ -12,48 +11,16 @@ export const metadata = buildStandardMetadata({
   pathname: "/writings",
 })
 
+export const dynamic = "force-static"
+
 function formatCollectionLabel(value: string) {
   if (value.includes("-")) return ParseSeriesDirName(value)
   if (value.length <= 4) return value.toUpperCase()
   return value
 }
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams?: { tags?: string | string[] }
-}) {
+export default async function Page() {
   const writings = getAllSortedWritings()
-
-  const rawTags = searchParams?.tags
-  const selectedTags = Array.from(
-    new Set(
-      (Array.isArray(rawTags) ? rawTags : rawTags ? [rawTags] : [])
-        .flatMap((v) => String(v).split(","))
-        .map((v) => v.trim())
-        .filter(Boolean)
-    )
-  )
-
-  const toggleTagHref = (tag: string) => {
-    const next = selectedTags.includes(tag)
-      ? selectedTags.filter((t) => t !== tag)
-      : [...selectedTags, tag]
-    const qs = next.length ? `?tags=${encodeURIComponent(next.join(","))}` : ""
-    return `/writings${qs}`
-  }
-
-  const removeTagHref = (tag: string) => {
-    const next = selectedTags.filter((t) => t !== tag)
-    const qs = next.length ? `?tags=${encodeURIComponent(next.join(","))}` : ""
-    return `/writings${qs}`
-  }
-
-  const filteredWritings = selectedTags.length
-    ? writings.filter((w) =>
-        selectedTags.some((tag) => (w.metadata.tags ?? []).includes(tag))
-      )
-    : writings
 
   const collectionCounts = new Map<string, number>()
   for (const writing of writings) {
@@ -95,35 +62,29 @@ export default async function Page({
           <p className="text-lg text-neutral-600 mb-6">Design, tech, innovation and more.</p>
           <Sidebar items={items} targetValue={undefined} classname="block md:hidden" />
 
-          {selectedTags.length ? (
-            <div className="mt-6 text-sm text-neutral-700 flex flex-wrap items-center gap-2">
-              <span className="font-medium">Filtering by tags:</span>
-              {selectedTags
-                .filter((tag) => Object.keys(tagsData).includes(tag))
-                .map((tag) => (
-                  <Tag
-                    key={tag}
-                    label={tag}
-                    color={(tagsData as any)[tag].color}
-                    href={`/writings?tags=${encodeURIComponent(selectedTags.join(","))}`}
-                    closeHref={removeTagHref(tag)}
-                  />
-                ))}
-              <Link href="/writings" className="ml-1 text-blue-600 hover:text-blue-700 hover:underline font-medium transition-colors">
-                Clear
-              </Link>
-            </div>
-          ) : null}
+          <WritingsFilterController />
         </div>
-        {filteredWritings.length === 0 ? (
+
+        {writings.length === 0 ? (
           <div className="text-neutral-700 bg-white rounded-xl border border-neutral-200 p-8 shadow-sm">
-            <p className="mb-3 font-medium text-neutral-900">No writings found for those tags.</p>
-            <Link href="/writings" className="text-blue-600 hover:text-blue-700 hover:underline font-medium transition-colors">
-              View all writings
-            </Link>
+            <p className="mb-3 font-medium text-neutral-900">No writings found.</p>
           </div>
         ) : (
-          <Grid writings={filteredWritings} selectedTags={selectedTags} />
+          <>
+            <Grid writings={writings} selectedTags={[]} />
+            <div
+              id="writings-empty-state"
+              className="hidden text-neutral-700 bg-white rounded-xl border border-neutral-200 p-8 shadow-sm"
+            >
+              <p className="mb-3 font-medium text-neutral-900">No writings found for those tags.</p>
+              <Link
+                href="/writings"
+                className="text-blue-600 hover:text-blue-700 hover:underline font-medium transition-colors"
+              >
+                View all writings
+              </Link>
+            </div>
+          </>
         )}
       </div>
     </section>

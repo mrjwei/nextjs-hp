@@ -2,6 +2,7 @@ import { Grid } from "app/components/grid"
 import { Sidebar } from "app/components/sidebar"
 import { getAllSortedPortfolioCollections, ParseSeriesDirName } from "app/utils"
 import { buildStandardMetadata } from "app/seo/metadata"
+import { PortfolioFilterController } from "app/portfolio/portfolio-filter.client"
 
 export const metadata = buildStandardMetadata({
   title: "Portfolio",
@@ -9,13 +10,10 @@ export const metadata = buildStandardMetadata({
   pathname: "/portfolio",
 })
 
-export default async function PortfolioPage({ searchParams }) {
-  const allCollections = getAllSortedPortfolioCollections()
-  const collectionValue = searchParams?.collection
-  const activeCollection = collectionValue
-    ? allCollections.find((c) => c.subdir === collectionValue)
-    : undefined
+export const dynamic = "force-static"
 
+export default async function PortfolioPage() {
+  const allCollections = getAllSortedPortfolioCollections()
   const allItems = allCollections.flatMap((c) => c.items)
   const items = [
     {
@@ -33,8 +31,8 @@ export default async function PortfolioPage({ searchParams }) {
     })),
   ]
 
-  const targetValue = activeCollection ? activeCollection.subdir : "all"
-  const portfolioItems = activeCollection ? activeCollection.items : allItems
+  const targetValue = "all"
+  const portfolioItems = allItems
 
   return (
     <section className="grid grid-cols-12 gap-8 pt-[var(--header-height)]">
@@ -49,7 +47,9 @@ export default async function PortfolioPage({ searchParams }) {
           <p className="text-lg text-gray-600 mb-4">
             Selected projects and experiments. (More coming soon.)
           </p>
-          <Sidebar items={items} targetValue={activeCollection?.subdir} classname="block md:hidden" />
+          <Sidebar items={items} targetValue={undefined} classname="block md:hidden" />
+
+          <PortfolioFilterController />
         </div>
 
         {portfolioItems.length === 0 ? (
@@ -60,7 +60,13 @@ export default async function PortfolioPage({ searchParams }) {
             </p>
           </div>
         ) : (
-          <Grid writings={portfolioItems} path="portfolio" />
+          <>
+            <Grid writings={portfolioItems} path="portfolio" />
+            <div id="portfolio-empty-state" className="hidden bg-white shadow-md rounded-2xl p-6">
+              <h2 className="text-lg font-bold mb-2">No items found</h2>
+              <p className="text-neutral-600">Try a different collection.</p>
+            </div>
+          </>
         )}
       </div>
     </section>

@@ -1,5 +1,7 @@
 import { ImageResponse } from 'next/og'
 
+export const runtime = 'edge'
+
 export function GET(request: Request) {
   let url = new URL(request.url)
   let title = url.searchParams.get('title') || 'Jesse Wei'
@@ -17,6 +19,11 @@ export function GET(request: Request) {
     {
       width: 1200,
       height: 630,
+      headers: {
+        // Cache per unique URL (including ?title=...) at the CDN.
+        // This dramatically reduces origin/compute for bot crawls.
+        'Cache-Control': 'public, immutable, no-transform, s-maxage=31536000, stale-while-revalidate=86400',
+      },
     }
   )
 }

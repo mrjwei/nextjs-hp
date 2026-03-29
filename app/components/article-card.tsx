@@ -11,12 +11,18 @@ export function WritingCard({
   from,
   path = "writings",
   selectedTags,
+  wrapperProps,
 }: {
   article: any
   className?: string
   from?: string
   path?: string
   selectedTags?: string[]
+  wrapperProps?:
+    | (React.HTMLAttributes<HTMLDivElement> & {
+        [key: `data-${string}`]: string | undefined
+      })
+    | undefined
 }) {
   const isPortfolio = path === "portfolio"
   const thumbnailSrc = article?.metadata?.image || "/bg.jpg"
@@ -30,9 +36,11 @@ export function WritingCard({
 
   return (
     <div
+      {...wrapperProps}
       className={clsx(
         "col-span-12 md:col-span-6 h-full flex flex-col bg-white transition-all duration-300 ease-in-out shadow-sm hover:shadow-lg border border-neutral-200 hover:border-neutral-300 rounded-xl overflow-hidden group",
-        className
+        className,
+        wrapperProps?.className
       )}
     >
       <Link
