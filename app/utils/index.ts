@@ -441,9 +441,18 @@ export const getAllSortedPortfolioCollections = cache(() => {
       .relative(process.cwd(), portfolioBaseDir)
       .replaceAll(path.sep, "/")
 
+    const isProd = process.env.NODE_ENV === "production"
+
     const byCollection = new Map<string, TContentMeta[]>()
 
     for (const item of index.portfolio) {
+      if (!isProd) {
+        const absFilePath = path.join(process.cwd(), item.filePath)
+        if (!fs.existsSync(absFilePath)) {
+          continue
+        }
+      }
+
       const normalized = String(item.filePath).replaceAll("\\\\", "/")
 
       let collection =
@@ -462,7 +471,16 @@ export const getAllSortedPortfolioCollections = cache(() => {
       }
 
       if (!byCollection.has(collection)) byCollection.set(collection, [])
-      byCollection.get(collection)!.push({ slug: item.slug, metadata: item.metadata })
+      byCollection.get(collection)!.push({
+        slug: item.slug,
+        metadata: {
+          ...item.metadata,
+          series:
+            typeof item.metadata.series === "string" && item.metadata.series.trim().length
+              ? item.metadata.series
+              : collection,
+        },
+      })
     }
 
     const result = Array.from(byCollection.entries()).map(([subdir, items]) => {
@@ -487,7 +505,7 @@ export const getAllSortedPortfolioCollections = cache(() => {
   // Include base-level posts (if any) under a conventional collection.
   let rootItems = getPortfolioFilePaths("").map((absFilePath) => {
     const { metadata } = readFrontmatterOnly(absFilePath, "portfolio")
-    return { metadata, slug: fileSlug(absFilePath) }
+    return { metadata: { ...metadata, series: metadata.series || "general" }, slug: fileSlug(absFilePath) }
   })
   rootItems = rootItems.sort((a, b) =>
     new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt) ? -1 : 1
@@ -500,7 +518,7 @@ export const getAllSortedPortfolioCollections = cache(() => {
   subdirs.forEach((subdir) => {
     let items = getPortfolioFilePaths(subdir).map((absFilePath) => {
       const { metadata } = readFrontmatterOnly(absFilePath, "portfolio")
-      return { metadata, slug: fileSlug(absFilePath) }
+      return { metadata: { ...metadata, series: metadata.series || subdir }, slug: fileSlug(absFilePath) }
     })
     items = items.sort((a, b) =>
       new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
@@ -516,7 +534,38 @@ export const getAllSortedPortfolioCollections = cache(() => {
 export const getAllSortedPortfolio = cache(() => {
   const index = readContentIndex()
   if (index?.portfolio?.length) {
-    return index.portfolio
+    const isProd = process.env.NODE_ENV === "production"
+    const baseRel = path
+      .relative(process.cwd(), portfolioBaseDir)
+      .replaceAll(path.sep, "/")
+
+    const items = (isProd
+      ? index.portfolio
+      : index.portfolio.filter((item) =>
+          fs.existsSync(path.join(process.cwd(), item.filePath))
+        )
+    ).map((item) => {
+      const normalized = String(item.filePath).replaceAll("\\\\", "/")
+      const derivedCollection =
+        typeof item.collection === "string" && item.collection.trim().length
+          ? item.collection.trim()
+          : normalized.startsWith(baseRel + "/")
+            ? (normalized.slice(baseRel.length + 1).split("/").filter(Boolean)[0] || "general")
+            : "general"
+
+      return {
+        ...item,
+        metadata: {
+          ...item.metadata,
+          series:
+            typeof item.metadata.series === "string" && item.metadata.series.trim().length
+              ? item.metadata.series
+              : derivedCollection,
+        },
+      }
+    })
+
+    return items
       .map((item) => ({ slug: item.slug, metadata: item.metadata }))
       .sort((a, b) =>
         new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
@@ -527,7 +576,16 @@ export const getAllSortedPortfolio = cache(() => {
 
   let items = getAllPortfolioFilePaths().map((absFilePath) => {
     const { metadata } = readFrontmatterOnly(absFilePath, "portfolio")
-    return { metadata, slug: fileSlug(absFilePath) }
+    const relUnderBase = path
+      .relative(portfolioBaseDir, absFilePath)
+      .replaceAll(path.sep, "/")
+    const derivedCollection = relUnderBase.includes("/")
+      ? relUnderBase.split("/")[0]
+      : "general"
+    return {
+      metadata: { ...metadata, series: metadata.series || derivedCollection },
+      slug: fileSlug(absFilePath),
+    }
   })
   items = items.sort((a, b) =>
     new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
@@ -547,15 +605,44 @@ export function getPortfolioItemBySlug(slug: string): TContentItem | null {
           `Content index entry for portfolio "${slug}" is missing embedded content. Re-run the content index generator.`
         )
       }
-      return { slug, metadata: indexed.metadata, content: indexed.content }
+      const series =
+        typeof indexed.metadata.series === "string" && indexed.metadata.series.trim().length
+          ? indexed.metadata.series
+          : typeof indexed.collection === "string" && indexed.collection.trim().length
+            ? indexed.collection.trim()
+            : "general"
+
+      return {
+        slug,
+        metadata: { ...indexed.metadata, series },
+        content: indexed.content,
+      }
     }
 
     const absFilePath = path.join(process.cwd(), indexed.filePath)
+    if (!fs.existsSync(absFilePath)) {
+      return null
+    }
     const { metadata, content } = readMdxWithContent(
       absFilePath,
       "portfolio"
     ) as { metadata: TMetadata; content: string }
-    return { slug, metadata, content }
+    const series =
+      typeof metadata.series === "string" && metadata.series.trim().length
+        ? metadata.series
+        : typeof indexed.collection === "string" && indexed.collection.trim().length
+          ? indexed.collection.trim()
+          : path
+              .relative(portfolioBaseDir, absFilePath)
+              .replaceAll(path.sep, "/")
+              .includes("/")
+            ? path
+                .relative(portfolioBaseDir, absFilePath)
+                .replaceAll(path.sep, "/")
+                .split("/")[0]
+            : "general"
+
+    return { slug, metadata: { ...metadata, series }, content }
   }
 
   const absFilePath = getSlugToPathMap("portfolio").get(slug)
@@ -564,7 +651,20 @@ export function getPortfolioItemBySlug(slug: string): TContentItem | null {
     metadata: TMetadata
     content: string
   }
-  return { slug, metadata, content }
+  const series =
+    typeof metadata.series === "string" && metadata.series.trim().length
+      ? metadata.series
+      : path
+          .relative(portfolioBaseDir, absFilePath)
+          .replaceAll(path.sep, "/")
+          .includes("/")
+        ? path
+            .relative(portfolioBaseDir, absFilePath)
+            .replaceAll(path.sep, "/")
+            .split("/")[0]
+        : "general"
+
+  return { slug, metadata: { ...metadata, series }, content }
 }
 
 export function formatDate(date: string, includeRelative = false) {
