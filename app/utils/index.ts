@@ -374,7 +374,7 @@ export const getAllSortedSeriesItems = cache(() => {
 
 export const getAllSortedWritings = cache(() => {
   const index = readContentIndex()
-  if (index?.writings?.length) {
+  if (process.env.NODE_ENV === "production" && index?.writings?.length) {
     return index.writings
       .map((item) => ({ slug: item.slug, metadata: item.metadata }))
       .sort((a, b) =>
@@ -436,7 +436,7 @@ export const getAllSortedPortfolioCollections = cache(() => {
   // In production (and often in CI/standalone output), the MDX files under
   // app/portfolio/posts may not be present at runtime due to output tracing.
   // Prefer the generated content index when available.
-  if (index?.portfolio?.length) {
+  if (process.env.NODE_ENV === "production" && index?.portfolio?.length) {
     const baseRel = path
       .relative(process.cwd(), portfolioBaseDir)
       .replaceAll(path.sep, "/")

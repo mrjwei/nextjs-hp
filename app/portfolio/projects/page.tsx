@@ -1,22 +1,27 @@
+import Link from "next/link"
+import { notFound } from "next/navigation"
 import { Grid } from "app/components/grid"
 import { Sidebar } from "app/components/sidebar"
 import { getAllSortedPortfolioCollections, ParseSeriesDirName } from "app/utils"
 import { buildStandardMetadata } from "app/seo/metadata"
 
-export const metadata = buildStandardMetadata({
-  title: "Portfolio",
-  description: "A selection of my projects and work.",
-  pathname: "/portfolio",
-})
-
 export const dynamic = "force-static"
 
-export default async function PortfolioPage() {
+export const metadata = buildStandardMetadata({
+  title: "Portfolio - Projects",
+  description: "Portfolio projects.",
+  pathname: "/portfolio/projects",
+})
+
+export default async function PortfolioProjectsPage() {
+  const collection = "projects"
   const allCollections = getAllSortedPortfolioCollections()
   const allItems = allCollections.flatMap((c) => c.items)
+
   const shownCollections = allCollections.filter(
     (c) => c.subdir === "projects" || c.subdir === "artworks"
   )
+
   const items = [
     {
       label: "All",
@@ -33,36 +38,37 @@ export default async function PortfolioPage() {
     })),
   ]
 
-  const portfolioItems = allItems
+  const filtered = allCollections.find((c) => c.subdir === collection)?.items ?? []
+  if (filtered.length === 0) {
+    notFound()
+  }
 
   return (
     <section className="grid grid-cols-12 gap-8 pt-[var(--header-height)]">
       <Sidebar
         items={items}
-        targetValue="all"
+        targetValue={collection}
         classname="hidden md:block bg-gray-800 text-white p-8 md:col-span-3 sticky md:top-[var(--header-height)] h-screen"
       />
       <div className="col-span-12 px-4 py-8 md:col-span-9 md:pl-0 md:pr-8">
         <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold mb-2">Portfolio</h1>
-          <p className="text-lg text-gray-600 mb-4">
-            Selected projects and experiments. (More coming soon.)
-          </p>
-          <Sidebar items={items} targetValue="all" classname="block md:hidden" />
+          <nav aria-label="Breadcrumb" className="text-sm text-neutral-600 mb-4">
+            <Link href="/" className="hover:underline">
+              Home
+            </Link>
+            <span className="mx-2">/</span>
+            <Link href="/portfolio" className="hover:underline">
+              Portfolio
+            </Link>
+          </nav>
+
+          <h1 className="text-2xl md:text-3xl font-bold mb-2">Projects</h1>
+          <p className="text-lg text-gray-600 mb-4">All portfolio items in “Projects”.</p>
+
+          <Sidebar items={items} targetValue={collection} classname="block md:hidden" />
         </div>
 
-        {portfolioItems.length === 0 ? (
-          <div className="bg-white shadow-md rounded-2xl p-6">
-            <h2 className="text-lg font-bold mb-2">No items yet</h2>
-            <p className="text-neutral-600">
-              Add MDX files under <code>app/portfolio/posts</code> to populate this page.
-            </p>
-          </div>
-        ) : (
-          <>
-            <Grid writings={portfolioItems} path="portfolio" />
-          </>
-        )}
+        <Grid writings={filtered} path="portfolio" />
       </div>
     </section>
   )
