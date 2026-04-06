@@ -7,6 +7,7 @@ import { Header } from "./components/header"
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import Footer from "./components/footer"
+import { NewsletterPopup } from "./components/newsletter-popup"
 import { openSans, plexMono } from "app/data/fonts"
 import { baseUrl } from "./sitemap"
 import AnalyticsProvider from "./providers"
@@ -78,6 +79,7 @@ export default function RootLayout({
         </a>
         <div id="scroll-top-sentinel" className="h-px w-px" aria-hidden="true" />
         <AnalyticsProvider />
+        <NewsletterPopup />
         <Header />
         <main
           id="main-content"

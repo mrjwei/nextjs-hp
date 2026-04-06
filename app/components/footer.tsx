@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { openSans } from "app/data/fonts"
+import { NewsletterForm } from "app/components/newsletter-form"
 
 export function ArrowIcon() {
   return (
@@ -21,8 +22,16 @@ export function ArrowIcon() {
 export default function Footer() {
   return (
     <footer className="w-full bg-gray-200">
-      <div className="w-full max-w-[1024px] mx-auto flex flex-col items-center px-2 md:px-0">
-        <ul className="font-sm mt-8 flex space-x-3 lg:space-x-8 text-neutral-600">
+      <div className="w-full max-w-[1024px] mx-auto flex flex-col items-center px-4 py-8 md:px-0">
+        <div className="w-full max-w-[520px] flex flex-col items-center text-center">
+          <h2 className="text-lg font-bold text-neutral-800">Get new posts by email</h2>
+          <p className="mt-1 text-neutral-600">Occasional updates. No spam.</p>
+          <div className="mt-3 w-full flex justify-center">
+            <NewsletterForm className="max-w-[420px]" />
+          </div>
+        </div>
+
+        <ul className="font-sm mt-6 flex space-x-3 lg:space-x-8 text-neutral-600">
           {/* <li>
             <a
               className="flex items-center transition-all hover:text-neutral-800"
@@ -82,7 +91,7 @@ export default function Footer() {
             </Link>
           </li>
         </ul>
-        <p className="mt-8 text-neutral-600">
+        <p className="mt-6 text-neutral-600">
           © {new Date().getFullYear()} Jesse Wei
         </p>
       </div>
