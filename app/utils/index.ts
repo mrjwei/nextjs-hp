@@ -46,7 +46,7 @@ type ContentIndexFile = {
   }>
 }
 
-const CONTENT_INDEX_PATH = path.join(
+export const CONTENT_INDEX_PATH = path.join(
   process.cwd(),
   "app",
   "data",
@@ -240,7 +240,7 @@ const readMdxWithContent = cache((absFilePath: string, kind: ContentKind) => {
   })
 })
 
-const readContentIndex = cache((): ContentIndexFile | null => {
+export const readContentIndex = cache((): ContentIndexFile | null => {
   if (!fs.existsSync(CONTENT_INDEX_PATH)) {
     if (process.env.NODE_ENV === "production") {
       throw new Error(

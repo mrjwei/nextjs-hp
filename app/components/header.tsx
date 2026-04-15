@@ -8,6 +8,7 @@ import Image from "next/image"
 import { Bars3Icon } from "@heroicons/react/24/outline"
 import { openSans } from "app/data/fonts"
 import { icons } from "app/data/icons"
+import { SearchPalette } from "./SearchPalette"
 
 const navItems = {
   "/": {
@@ -204,6 +205,7 @@ export function Header({ className }: { className?: string }) {
           </nav>
         </div>
         <div className="flex items-center gap-1">
+          <SearchPalette isLight={isLight} />
           <Link
             target="_blank"
             href="https://www.linkedin.com/in/jesse-wei-profile/"
