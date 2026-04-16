@@ -111,6 +111,11 @@ export function SearchPalette({ isLight }: { isLight: boolean }) {
         onOpenChange={setOpen}
         label="Global Command Menu"
         className="fixed inset-0 z-[100] flex pt-[10vh] sm:pt-[20vh] items-start justify-center backdrop-blur-sm bg-black/40"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            setOpen(false);
+          }
+        }}
       >
         <div className="w-[90vw] max-w-[640px] rounded-xl bg-white shadow-2xl overflow-hidden border border-neutral-200 flex flex-col font-sans">
           <div className="flex items-center px-4 py-3 border-b border-neutral-100 gap-3">
