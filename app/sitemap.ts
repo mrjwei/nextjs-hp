@@ -9,12 +9,13 @@ export default async function sitemap() {
   const writingsList = getAllSortedWritings()
 
   const primaryCollectionSlug = (metadata: { series?: string }) =>
-    metadata.series || "general"
+    metadata.series
 
   let writings = writingsList.map((writing) => {
     const collection = primaryCollectionSlug(writing.metadata)
+    let url = collection ? `${baseUrl}/writings/${collection}/${writing.slug}` : `${baseUrl}/writings/${writing.slug}`
     return {
-      url: `${baseUrl}/writings/${collection}/${writing.slug}`,
+      url,
       lastModified: writing.metadata.publishedAt,
     }
   })
@@ -22,6 +23,7 @@ export default async function sitemap() {
   const collectionToLatestPublishedAt = new Map<string, string>()
   for (const w of writingsList) {
     const collection = primaryCollectionSlug(w.metadata)
+    if (!collection) continue
     const existing = collectionToLatestPublishedAt.get(collection)
     if (!existing || new Date(w.metadata.publishedAt) > new Date(existing)) {
       collectionToLatestPublishedAt.set(collection, w.metadata.publishedAt)

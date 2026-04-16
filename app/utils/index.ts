@@ -182,11 +182,6 @@ function parseFrontmatter(
       }
     }
 
-    // If a writing lives directly under writingsBaseDir, treat it as "general".
-    if (!parsed.data.series) {
-      parsed.data.series = "general"
-    }
-
     if (parsed.data.series && !parsed.data.seriesTitle) {
       parsed.data.seriesTitle = ParseSeriesDirName(parsed.data.series)
     }

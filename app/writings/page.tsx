@@ -24,8 +24,10 @@ export default async function Page() {
 
   const collectionCounts = new Map<string, number>()
   for (const writing of writings) {
-    const series = writing.metadata.series || "general"
-    collectionCounts.set(series, (collectionCounts.get(series) ?? 0) + 1)
+    if (writing.metadata.series) {
+      const series = writing.metadata.series
+      collectionCounts.set(series, (collectionCounts.get(series) ?? 0) + 1)
+    }
   }
 
   const collections = Array.from(collectionCounts.entries())

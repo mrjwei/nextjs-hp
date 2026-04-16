@@ -21,14 +21,11 @@ function formatCollectionLabel(value: string) {
   return value
 }
 
-function primaryCollectionSlug(metadata: { series?: string; tags?: string[] }) {
-  return metadata.series || "general"
-}
 
 export async function generateStaticParams() {
   const writings = getAllSortedWritings()
-  return writings.map((w) => ({
-    collection: primaryCollectionSlug(w.metadata),
+  return writings.filter(w => w.metadata.series).map((w) => ({
+    slugOrCollection: w.metadata.series as string,
     slug: w.slug,
   }))
 }
@@ -37,8 +34,8 @@ export function generateMetadata({ params }) {
   const writing = getAllSortedWritings().find((w) => w.slug === params.slug)
   if (!writing) return
 
-  const collection = primaryCollectionSlug(writing.metadata)
-  if (collection !== params.collection) {
+  const collection = writing.metadata.series
+  if (collection !== params.slugOrCollection) {
     return
   }
 
@@ -48,7 +45,7 @@ export function generateMetadata({ params }) {
   return buildStandardMetadata({
     title,
     description,
-    pathname: `/writings/${params.collection}/${writing.slug}`,
+    pathname: `/writings/${params.slugOrCollection}/${writing.slug}`,
     type: "article",
     publishedTime,
     image,
@@ -62,15 +59,15 @@ export default async function WritingInCollection({ params, searchParams }) {
     notFound()
   }
 
-  const collection = params.collection
+  const collection = params.slugOrCollection
 
-  const writingCollection = primaryCollectionSlug(writing.metadata)
+  const writingCollection = writing.metadata.series
   if (writingCollection !== collection) {
     notFound()
   }
 
   const collectionItems = writings.filter(
-    (w) => primaryCollectionSlug(w.metadata) === collection
+    (w) => w.metadata.series === collection
   )
 
   const writingIndex = collectionItems.findIndex((w) => w.slug === params.slug)

@@ -191,9 +191,6 @@ function buildIndexSection(sectionKey, config) {
     const inferredCollection = inferSeriesFromPath(absFilePath, config.baseDir);
 
     let series = typeof meta.series === "string" ? meta.series : inferredSeries;
-    if (config.kind === "writing" && !series) {
-      series = "general";
-    }
 
     const seriesTitle = typeof meta.seriesTitle === "string" ? meta.seriesTitle : undefined;
     const seriesOrder = Number.isInteger(meta.seriesOrder) && meta.seriesOrder >= 0 ? meta.seriesOrder : undefined;

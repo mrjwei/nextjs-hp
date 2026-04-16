@@ -4,7 +4,7 @@ import { getAllSortedWritings } from "app/utils"
 export const revalidate = 3600
 
 function primaryCollectionSlug(metadata: { series?: string }) {
-  return metadata.series || "general"
+  return metadata.series
 }
 
 function escapeXml(input: string) {
@@ -23,7 +23,7 @@ export async function GET() {
     .map(
       (post) => {
         const collection = primaryCollectionSlug(post.metadata)
-        const url = `${baseUrl}/writings/${collection}/${post.slug}`
+        const url = collection ? `${baseUrl}/writings/${collection}/${post.slug}` : `${baseUrl}/writings/${post.slug}`
         const title = escapeXml(post.metadata.title)
         const description = escapeXml(post.metadata.summary || "")
         const pubDate = new Date(post.metadata.publishedAt).toUTCString()
