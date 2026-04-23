@@ -1,5 +1,6 @@
 {
   "design": { "color": "#7d0fd6" },
+  "strategy": { "color": "#d60f0f" },
   "dev": { "color": "#d60fbc" },
   "ai": { "color": "#0ca691" },
   "explanation": { "color": "#ab8326" },

@@ -1,0 +1,53 @@
+---
+title: "Shortest-Path Algorithms"
+publishedAt: "2026-04-23"
+summary: "Imagine this: as a UI/UX designer, you spend a month gathering stakeholder input, mapping the problem space, and crafting what feels like a thorough, bulletproof set of requirements, only to be told they've changed. So you start over, not knowing whether they'll change again. Meanwhile, nothing gets built. No users see anything. No one learns anything."
+tags: ["design", "strategy"]
+---
+
+Imagine this: as a UI/UX designer, you spend a month gathering stakeholder input, mapping the problem space, and crafting what feels like a thorough, bulletproof set of requirements, only to be told they've changed. So you start over, not knowing whether they'll change again. Meanwhile, nothing gets built. No users see anything. No one learns anything.
+
+This is how requirement-driven development works, and it is fundamentally broken. Teams spend disproportionate time perfecting specifications instead of experimenting, learning, and iterating. As Jeff Gothelf and Josh Seiden argue in Lean UX, an obsession with rigid requirements leads to missed market opportunities and delayed releases. But there's a deeper problem: any implemented requirement is still subject to user testing, and when users push back, the requirements change anyway. Which means requirements were never facts to begin with; they were assumptions dressed up in formal language. The difference is that requirements prioritise exhaustiveness and the illusion of certainty, while assumptions prioritise learning.
+
+## Assume, learn, and improve
+
+Organisations that embrace this honestly get a competitive edge. Amazon is the clearest example. Their teams work backwards, starting from a hypothetical press release rather than a requirements document, because they know that the best way to understand what to build is to imagine it shipped, not to specify it in advance. They deploy to production every second, which means their learning loop is extraordinarily short and every experiment generates real signal.
+
+At the process level, Basecamp's Shape Up methodology makes the same argument more concretely. Rather than asking "how long will this take?", which presupposes a known scope, teams ask "how much is this idea worth?" That time budget, which Shape Up calls an appetite, then shapes what gets built, not the other way around. The scope is deliberately left variable, which means teams make trade-offs and discover what actually matters rather than executing a predetermined spec. The result is that assumptions get tested inside the build cycle itself, continuously, rather than front-loaded into a document that the team then defends.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/stop-writing-requirements-start-making-assumptions/table.png"
+    alt=""
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Comparing requirements and assumptions</figcaption>
+</figure>
+
+The timing has never been better for the shift. Historically, the cost argument for requirements made some sense: prototyping was slow, building was expensive, and mistakes were hard to undo. So teams front-loaded their thinking into specifications before committing to development. That calculus has collapsed. AI has made prototyping fast and experimentation cheap. The bottleneck is no longer execution; it's the quality of your thinking. Teams that are still spending weeks on requirements documents are optimising for a constraint that no longer exists.
+
+## Where the tension is most visible: Japan's SMEs
+
+Organisational culture shapes how readily teams can make this shift, and few contexts illustrate the tension more clearly than SMEs in Japan.
+
+Consensus-driven decision-making is deeply embedded in Japanese workplace culture. In practice, this means that before any idea moves forward, it typically needs to travel through multiple layers of discussion and sign-off. The effect on product development is predictable: exhaustive requirements become a form of organisational protection. A detailed spec isn't just a planning tool; it's evidence that due diligence was done, that risk was considered, that no one acted unilaterally. Deviating from that process feels not just inefficient but culturally inappropriate.
+
+I experienced this directly working at SMEs in Japan. Design briefs frequently arrived not from user research but from sales teams or management, filtered through several layers of interpretation before reaching the designer. By the time a "requirement" landed on my desk, it had often already been debated, adjusted, and consensus-stamped, which made questioning it feel like reopening a closed door. The result was a process optimised for internal alignment rather than user learning.
+
+This is where the assumption-first approach becomes not just appealing but necessary. When requirements originate from sales teams rather than research, they are already assumptions - just unacknowledged ones. Making that honesty explicit changes the conversation. Instead of asking "did we get the requirements right?", the team starts asking "what did we learn, and what do we do next?" That's a question any stakeholder can engage with, regardless of their design literacy.
+
+The other structural reality in Japan's SMEs is that dedicated UX functions are rare. There is often no researcher, no strategist, no one whose job is to validate ideas before they become specifications. In that vacuum, the assumption-first model isn't a methodology choice; it's a survival skill. Small, cheap experiments fill the role that formal research would play in larger organisations, and they do it faster.
+
+With the cost of experimentation now dramatically lower thanks to AI tooling, the practical barriers that once justified front-loading requirements have largely disappeared. The cultural ones remain, but they're not insurmountable. The shift begins when teams recognise that their requirements were always assumptions. The only question is whether those assumptions get tested before or after something gets built.
+
+## The shift worth making
+
+Requirements and assumptions are not as different as we've been taught. Both represent a team's best current understanding of what to build. The difference is honesty and speed.
+Treating your best thinking as an assumption rather than a requirement doesn't weaken your process. It frees the team to test earlier, learn faster, and change direction without the psychological weight of admitting a specification was wrong. You're not revising a spec; you're updating your understanding. In high-consensus cultures especially, that reframe matters: it transforms what could feel like failure into what it actually is - progress.
+The tools now exist to make experimentation fast and cheap. The remaining work is cultural and cognitive: learning to hold your best ideas lightly enough to let users tell you whether you're right.
+That's not a compromise on rigour. It's what rigour actually looks like.
+
+## References
+
+- Gothelf, J. & Seiden, J. - Lean UX (3rd ed., O'Reilly, 2021)
+- Singer, R. - Shape Up: Stop Running in Circles and Ship Work that Matters (Basecamp, 2019) - available free at basecamp.com/shapeup
