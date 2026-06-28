@@ -20,77 +20,56 @@ export function ArrowIcon() {
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-gray-200">
-      <div className="w-full max-w-[1024px] mx-auto flex flex-col items-center px-4 py-8 md:px-0">
-        <div className="w-full max-w-[520px] flex flex-col items-center text-center">
-          <h2 className="text-lg font-bold text-neutral-800">Get new posts by email</h2>
-          <p className="mt-1 text-neutral-600">Occasional updates. No spam.</p>
-          <div className="mt-3 w-full flex justify-center">
+    <footer className="w-full border-t border-[var(--border-subtle)] bg-[var(--surface-sunken)]">
+      <div className="w-full max-w-[1024px] mx-auto flex flex-col items-center px-4 py-12 md:px-0">
+        <div className="w-full max-w-[480px] flex flex-col items-center text-center">
+          <h2 className="font-serif text-xl font-medium text-[var(--text-strong)]">
+            Get new posts by email
+          </h2>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">
+            Occasional updates. No spam.
+          </p>
+          <div className="mt-4 w-full flex justify-center">
             <NewsletterForm className="max-w-[420px]" />
           </div>
         </div>
 
-        <ul className="font-sm mt-6 flex space-x-3 lg:space-x-8 text-neutral-600">
-          {/* <li>
-            <a
-              className="flex items-center transition-all hover:text-neutral-800"
-              rel="noopener noreferrer"
-              target="_blank"
-              href="/rss"
-            >
-              <ArrowIcon />
-              <p className={`ml-2 h-7`}>rss</p>
-            </a>
-          </li> */}
-
+        <ul className="mt-9 flex gap-4 text-sm text-[var(--text-muted)] lg:gap-8">
           <li>
             <Link
-              className="flex items-center transition-all hover:text-neutral-800"
+              className="flex items-center gap-2 transition-colors hover:text-[var(--text-strong)]"
               rel="noopener noreferrer"
               target="_blank"
               href="https://www.linkedin.com/in/jesse-wei-profile/"
             >
               <ArrowIcon />
-              <p className={`ml-2 h-7`}>LinkedIn</p>
+              LinkedIn
             </Link>
           </li>
-          {/*
           <li>
             <Link
-              className="flex items-center transition-all hover:text-neutral-800"
-              rel="noopener noreferrer"
-              target="_blank"
-              href="https://bsky.app/profile/mrjwei.bsky.social"
-            >
-              <ArrowIcon />
-              <p className={`ml-2 h-7`}>Bluesky</p>
-            </Link>
-          </li>
-          */}
-          <li>
-            <Link
-              className="flex items-center transition-all hover:text-neutral-800"
+              className="flex items-center gap-2 transition-colors hover:text-[var(--text-strong)]"
               rel="noopener noreferrer"
               target="_blank"
               href="https://github.com/mrjwei"
             >
               <ArrowIcon />
-              <p className={`ml-2 h-7`}>GitHub</p>
+              GitHub
             </Link>
           </li>
           <li>
             <Link
-              className="flex items-center transition-all hover:text-neutral-800"
+              className="flex items-center gap-2 transition-colors hover:text-[var(--text-strong)]"
               rel="noopener noreferrer"
               target="_blank"
               href="https://www.instagram.com/mrjwei/"
             >
               <ArrowIcon />
-              <p className={`ml-2 h-7`}>Instagram</p>
+              Instagram
             </Link>
           </li>
         </ul>
-        <p className="mt-6 text-neutral-600">
+        <p className="mt-8 text-xs text-[var(--text-subtle)]">
           © {new Date().getFullYear()} Jesse Wei
         </p>
       </div>

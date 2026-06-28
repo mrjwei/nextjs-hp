@@ -96,13 +96,13 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
 
     return (
       <div className="w-full max-w-[1024px] mx-auto px-8 md:px-16 py-24">
-        <section className="pb-16 bg-white rounded-2xl shadow-sm border border-neutral-200 p-8 md:p-12">
-          <nav aria-label="Breadcrumb" className="text-sm text-neutral-600 mb-4">
-            <Link href="/" className="hover:underline hover:text-neutral-900 transition-colors">
+        <section className="pb-16 bg-[var(--surface-card)] rounded-lg shadow-xs border border-[var(--border-subtle)] p-8 md:p-12">
+          <nav aria-label="Breadcrumb" className="text-sm text-[var(--text-muted)] mb-4">
+            <Link href="/" className="hover:underline hover:text-[var(--text-strong)] transition-colors">
               Home
             </Link>
-            <span className="mx-2 text-neutral-400">/</span>
-            <Link href="/writings" className="hover:underline hover:text-neutral-900 transition-colors">
+            <span className="mx-2 text-[var(--text-subtle)]">/</span>
+            <Link href="/writings" className="hover:underline hover:text-[var(--text-strong)] transition-colors">
               Writings
             </Link>
           </nav>
@@ -132,12 +132,12 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
 
           <Link
             href={`/writings`}
-            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:underline transition-colors font-medium block mb-6"
+            className="inline-flex items-center gap-2 text-[var(--accent-text)] hover:underline transition-colors font-medium block mb-6"
           >
             ← Back to All Writings
           </Link>
 
-          <h1 className="title font-bold text-4xl mb-4 text-neutral-900">
+          <h1 className="display text-4xl mb-4">
             {writing.metadata.title}
           </h1>
           <Tags
@@ -155,8 +155,8 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
               return `/writings${qs}`
             }}
           />
-          <div className="flex justify-between items-center mt-2 mb-12 text-sm border-b border-neutral-200 pb-6">
-            <p className={`text-sm text-neutral-600`}>
+          <div className="flex justify-between items-center mt-2 mb-12 text-sm border-b border-[var(--border-subtle)] pb-6">
+            <p className="text-sm text-[var(--text-muted)]">
               Published: {formatDate(writing.metadata.publishedAt)}
             </p>
           </div>
@@ -165,10 +165,10 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
             <CustomMDX source={writing.content} />
           </article>
 
-          <div className="mt-8 flex flex-col md:flex-row md:justify-between items-center pt-8 border-t border-neutral-200">
+          <div className="mt-8 flex flex-col md:flex-row md:justify-between items-center pt-8 border-t border-[var(--border-subtle)]">
             <Link
               href={`/writings`}
-              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:underline transition-colors font-medium mb-4 md:mb-0"
+              className="inline-flex items-center gap-2 text-[var(--accent-text)] hover:underline transition-colors font-medium mb-4 md:mb-0"
             >
               ← Back to All Writings
             </Link>
@@ -181,8 +181,8 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
           </div>
         </section>
 
-        <section className="pt-16 bg-white rounded-2xl shadow-sm border border-neutral-200 p-8 md:p-12 mt-8">
-          <h2 className="text-2xl font-bold mb-8 text-neutral-900">You May Also Like</h2>
+        <section className="pt-16 bg-[var(--surface-card)] rounded-lg shadow-xs border border-[var(--border-subtle)] p-8 md:p-12 mt-8">
+          <h2 className="display text-2xl mb-8">You May Also Like</h2>
           <div className="grid grid-cols-12 gap-y-8 md:gap-8">
             {similarWritings.slice(0, 4).map((similarWriting) => (
               <WritingCard key={similarWriting.slug} article={similarWriting} />
@@ -236,11 +236,11 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
       <Sidebar
         items={items}
         targetValue={slugOrCollection}
-        classname="hidden md:block bg-gray-800 text-white p-8 md:col-span-3 sticky md:top-[var(--header-height)] h-screen"
+        classname="hidden md:block bg-[var(--surface-sunken)] border-r border-[var(--border-subtle)] p-8 md:col-span-3 sticky md:top-[var(--header-height)] h-screen"
       />
       <div className="col-span-12 px-4 py-8 md:col-span-9 md:pl-0 md:pr-8">
         <div className="mb-8">
-          <nav aria-label="Breadcrumb" className="text-sm text-neutral-600 mb-4">
+          <nav aria-label="Breadcrumb" className="text-sm text-[var(--text-muted)] mb-4">
             <Link href="/" className="hover:underline">
               Home
             </Link>
@@ -250,11 +250,12 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
             </Link>
           </nav>
 
-          <h1 className="text-2xl md:text-3xl font-bold mb-2">
+          <span className="eyebrow">Collection</span>
+          <h1 className="display mt-3 mb-2 text-3xl md:text-4xl">
             {formatCollectionLabel(slugOrCollection)}
           </h1>
-          <p className="text-lg text-gray-600 mb-4">
-            All writings in “{formatCollectionLabel(slugOrCollection)}”.
+          <p className="text-lg text-[var(--text-muted)] mb-4">
+            All writings in &ldquo;{formatCollectionLabel(slugOrCollection)}&rdquo;.
           </p>
 
           <Sidebar

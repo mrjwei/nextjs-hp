@@ -3,11 +3,16 @@
 import React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import clsx from "clsx"
 import Image from "next/image"
-import { Bars3Icon } from "@heroicons/react/24/outline"
+import { Menu } from "lucide-react"
 import { icons } from "app/data/icons"
 import { SearchPalette } from "./SearchPalette"
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 
 const navItems = {
   "/": {
@@ -24,226 +29,83 @@ const navItems = {
   },
 }
 
-export function Header({ className }: { className?: string }) {
+export function Header() {
   const pathName = usePathname()
-  const [isLight, setIsLight] = React.useState(true)
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
-  const menuButtonRef = React.useRef<HTMLButtonElement | null>(null)
-  const mobileMenuRef = React.useRef<HTMLElement | null>(null)
-  const restoreFocusToRef = React.useRef<HTMLElement | null>(null)
-
-  React.useEffect(() => {
-    if (pathName !== "/") {
-      setIsLight(true)
-      return
-    }
-
-    const sentinel = document.getElementById("home-hero-sentinel")
-    if (!sentinel) {
-      setIsLight(true)
-      return
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0]
-        setIsLight(!entry.isIntersecting)
-      },
-      { threshold: 0 }
-    )
-
-    observer.observe(sentinel)
-    return () => observer.disconnect()
-  }, [pathName])
 
   React.useEffect(() => {
     setIsMenuOpen(false)
   }, [pathName])
-
-  React.useEffect(() => {
-    if (!isMenuOpen) {
-      restoreFocusToRef.current?.focus()
-      restoreFocusToRef.current = null
-      return
-    }
-
-    restoreFocusToRef.current =
-      (document.activeElement as HTMLElement | null) ?? menuButtonRef.current
-
-    const focusables = Array.from(
-      mobileMenuRef.current?.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      ) ?? []
-    ).filter((el) => !el.hasAttribute("disabled") && el.tabIndex !== -1)
-
-    focusables[0]?.focus()
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (!mobileMenuRef.current) return
-
-      if (event.key === "Escape") {
-        event.preventDefault()
-        setIsMenuOpen(false)
-        return
-      }
-
-      if (event.key !== "Tab" || focusables.length === 0) return
-
-      const first = focusables[0]
-      const last = focusables[focusables.length - 1]
-      const active = document.activeElement as HTMLElement | null
-
-      if (event.shiftKey) {
-        if (!active || active === first) {
-          event.preventDefault()
-          last.focus()
-        }
-      } else {
-        if (active === last) {
-          event.preventDefault()
-          first.focus()
-        }
-      }
-    }
-
-    document.addEventListener("keydown", onKeyDown)
-    return () => document.removeEventListener("keydown", onKeyDown)
-  }, [isMenuOpen])
-
-  const handleMenuButtonClick = () => {
-    setIsMenuOpen((open) => !open)
-  }
-
-  const closeMenu = () => {
-    setIsMenuOpen(false)
-  }
 
   return (
-    <aside
-      className={clsx(
-        "w-full fixed top-0 left-0 flex flex-col items-center transition-shadow duration-200 ease-in-out z-50",
-        {
-          "bg-white shadow-md": isLight,
-        },
-        className
-      )}
-    >
-      <div className="w-full h-[var(--header-height)] px-8 md:px-12 flex justify-between items-center">
-        <div className="flex items-center gap-4">
-          <button
-            ref={menuButtonRef}
-            type="button"
-            className={clsx("transition-all block md:hidden hover:scale-110", {
-              "text-neutral-700 hover:text-neutral-900": isLight,
-              "text-white": !isLight,
-            })}
-            onClick={handleMenuButtonClick}
-            aria-haspopup="dialog"
-            aria-expanded={isMenuOpen}
-            aria-controls="mobile-nav"
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          >
-            <Bars3Icon className="w-7" />
-          </button>
-          {isMenuOpen && (
-            <nav
-              ref={mobileMenuRef}
-              className="bg-neutral-900 shadow-lg absolute w-full top-full left-0 h-screen"
-              id="mobile-nav"
-              aria-label="Mobile"
-              role="dialog"
-              aria-modal="true"
-            >
-              {Object.entries(navItems).map(([path, { name }]) => {
-                return (
+    <header className="w-full fixed top-0 left-0 z-50 flex flex-col items-center bg-[rgba(255,255,255,0.82)] backdrop-blur-md border-b border-[var(--border-subtle)]">
+      <div className="w-full h-[var(--header-height)] px-6 md:px-10 flex justify-between items-center max-w-[1280px]">
+        <div className="flex items-center gap-6">
+          <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+            <SheetTrigger asChild>
+              <button
+                type="button"
+                className="block md:hidden rounded-md p-1.5 text-[var(--text-body)] hover:bg-[var(--surface-active)] transition-colors duration-150"
+                aria-label="Open menu"
+              >
+                <Menu className="size-6" />
+              </button>
+            </SheetTrigger>
+            <SheetContent side="right">
+              <SheetTitle className="font-serif text-lg">Jesse Wei</SheetTitle>
+              <nav className="flex flex-col gap-1" aria-label="Mobile">
+                {Object.entries(navItems).map(([path, { name }]) => (
                   <Link
                     key={path}
                     href={path}
-                    className={clsx(
-                      `transition-all text-white hover:bg-neutral-800 flex align-middle relative text-lg p-5 border-b border-neutral-800`
-                    )}
-                    onClick={closeMenu}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="rounded-md px-3 py-2.5 text-base font-medium text-[var(--text-body)] hover:bg-[var(--surface-active)] transition-colors"
                   >
                     {name}
                   </Link>
-                )
-              })}
-            </nav>
-          )}
-          <Link href="/" aria-label="home" className="hover:opacity-80 transition-opacity">
-            <Image
-              src={isLight ? "/logo.svg" : "/logo-light.svg"}
-              alt="Jesse Wei's Logo"
-              width={32}
-              height={32}
-              sizes="32px"
-              priority
-            />
-          </Link>
-          <nav
-            className="hidden md:flex md:flex-row md:items-start relative px-0 pb-0 fade md:overflow-auto scroll-pr-6 md:relative"
-            id="nav"
+                ))}
+              </nav>
+            </SheetContent>
+          </Sheet>
+
+          <Link
+            href="/"
+            aria-label="Jesse Wei — home"
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
-            {Object.entries(navItems).map(([path, { name }]) => {
-              return (
-                <Link
-                  key={path}
-                  href={path}
-                  className={clsx(
-                    `transition-all duration-300 ease-in-out font-medium flex align-middle relative py-1 px-3 m-1 rounded-md`,
-                    {
-                      "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100": isLight,
-                      "text-neutral-300 hover:text-white hover:bg-white/10": !isLight,
-                    }
-                  )}
-                >
-                  {name}
-                </Link>
-              )
-            })}
+            <Image src="/logo.svg" alt="" width={28} height={28} sizes="28px" priority />
+            <span className="font-serif text-lg font-medium tracking-tight hidden sm:inline text-[var(--text-strong)]">
+              Jesse Wei
+            </span>
+          </Link>
+
+          <nav className="hidden md:flex md:items-center md:gap-1" id="nav">
+            {Object.entries(navItems).map(([path, { name }]) => (
+              <Link
+                key={path}
+                href={path}
+                className="rounded-md px-3 py-1.5 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-strong)] hover:bg-[var(--surface-active)] transition-colors duration-150 ease-[var(--ease-out)]"
+              >
+                {name}
+              </Link>
+            ))}
           </nav>
         </div>
+
         <div className="flex items-center gap-1">
-          <SearchPalette isLight={isLight} />
+          <SearchPalette isLight />
           <Link
             target="_blank"
             href="https://www.linkedin.com/in/jesse-wei-profile/"
-            className={clsx(
-              "px-2 py-1 rounded-md transition-all duration-200 ease-in-out",
-              {
-                "text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100": isLight,
-                "text-neutral-300 hover:text-white hover:bg-white/10": !isLight,
-              }
-            )}
+            className="px-2 py-1.5 rounded-md text-[var(--text-muted)] hover:text-[var(--text-strong)] hover:bg-[var(--surface-active)] transition-colors duration-150 ease-[var(--ease-out)]"
             aria-label="LinkedIn profile"
           >
             {icons.linkedin}
           </Link>
-          {/*
-          <Link
-            target="_blank"
-            href="https://bsky.app/profile/mrjwei.bsky.social"
-            className={clsx(
-              "px-2 m-1 text-gray-300 hover:text-gray-400 transition-colors duration-200 ease-in-out",
-              {
-                "text-gray-400 hover:text-gray-600": isLight,
-              }
-            )}
-          >
-            {icons.bluesky}
-          </Link>
-          */}
-
           <Link
             target="_blank"
             href="https://github.com/mrjwei"
-            className={clsx(
-              "px-2 py-1 rounded-md transition-all duration-200 ease-in-out",
-              {
-                "text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100": isLight,
-                "text-neutral-300 hover:text-white hover:bg-white/10": !isLight,
-              }
-            )}
+            className="px-2 py-1.5 rounded-md text-[var(--text-muted)] hover:text-[var(--text-strong)] hover:bg-[var(--surface-active)] transition-colors duration-150 ease-[var(--ease-out)]"
             aria-label="GitHub profile"
           >
             {icons.github}
@@ -251,19 +113,13 @@ export function Header({ className }: { className?: string }) {
           <Link
             target="_blank"
             href="https://www.instagram.com/mrjwei/"
-            className={clsx(
-              "px-2 py-1 rounded-md transition-all duration-200 ease-in-out",
-              {
-                "text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100": isLight,
-                "text-neutral-300 hover:text-white hover:bg-white/10": !isLight,
-              }
-            )}
+            className="px-2 py-1.5 rounded-md text-[var(--text-muted)] hover:text-[var(--text-strong)] hover:bg-[var(--surface-active)] transition-colors duration-150 ease-[var(--ease-out)]"
             aria-label="Instagram profile"
           >
             {icons.instagram}
           </Link>
         </div>
       </div>
-    </aside>
+    </header>
   )
 }

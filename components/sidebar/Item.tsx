@@ -59,16 +59,22 @@ export const Item = ({
   return (
     <Link
       className={clsx(
-        "w-full flex justify-between items-center border border-neutral-200 md:border-transparent text-gray-800 px-1 py-0.5 hover:bg-gray-800 hover:text-white md:px-4 md:py-1.5 md:text-white md:hover:bg-gray-600 rounded-lg ease-in-out duration-300 focus:outline-none focus-visible:ring-neutral-900 focus-visible:ring-offset-2 focus-visible:ring-offset-white md:focus-visible:ring-white/70 md:focus-visible:ring-offset-neutral-900",
-        {
-          "bg-white md:bg-transparent": !shouldHighlight,
-          "bg-gray-800 text-white md:bg-gray-600": shouldHighlight,
-        }
+        "w-full flex justify-between items-center gap-2 border border-[var(--border-subtle)] px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-150 ease-[var(--ease-out)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]",
+        shouldHighlight
+          ? "bg-[var(--accent-subtle)] border-[var(--accent-border)] text-[var(--accent-text)]"
+          : "bg-[var(--surface-card)] text-[var(--text-body)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-default)]"
       )}
       href={href}
     >
-      <span className="block font-semibold">{displayLabel}</span>
-      <span className="block md:bg-white md:text-gray-800 text-sm font-medium min-w-6 rounded-md text-center">
+      <span className="block">{displayLabel}</span>
+      <span
+        className={clsx(
+          "block text-xs font-mono min-w-6 rounded-sm text-center px-1",
+          shouldHighlight
+            ? "text-[var(--accent-text)]"
+            : "text-[var(--text-subtle)]"
+        )}
+      >
         {length}
       </span>
     </Link>

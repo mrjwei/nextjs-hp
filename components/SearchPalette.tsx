@@ -95,10 +95,10 @@ export function SearchPalette({ isLight }: { isLight: boolean }) {
       <button
         onClick={() => setOpen(true)}
         className={clsx(
-          "px-2 py-1 rounded-md transition-all duration-200 ease-in-out flex items-center justify-center",
+          "px-2 py-1.5 rounded-md transition-colors duration-150 ease-[var(--ease-out)] flex items-center justify-center",
           {
-            "text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100": isLight,
-            "text-neutral-300 hover:text-white hover:bg-white/10": !isLight,
+            "text-[var(--text-muted)] hover:text-[var(--text-strong)] hover:bg-[var(--surface-active)]": isLight,
+            "text-white/70 hover:text-white hover:bg-white/10": !isLight,
           }
         )}
         aria-label="Search"
@@ -110,31 +110,31 @@ export function SearchPalette({ isLight }: { isLight: boolean }) {
         open={open}
         onOpenChange={setOpen}
         label="Global Command Menu"
-        className="fixed inset-0 z-[100] flex pt-[10vh] sm:pt-[20vh] items-start justify-center backdrop-blur-sm bg-black/40"
+        className="fixed inset-0 z-[100] flex pt-[10vh] sm:pt-[20vh] items-start justify-center backdrop-blur-sm bg-[rgba(11,16,27,0.45)]"
         onClick={(e) => {
           if (e.target === e.currentTarget) {
             setOpen(false);
           }
         }}
       >
-        <div className="w-[90vw] max-w-[640px] rounded-xl bg-white shadow-2xl overflow-hidden border border-neutral-200 flex flex-col font-sans">
-          <div className="flex items-center px-4 py-3 border-b border-neutral-100 gap-3">
+        <div className="w-[90vw] max-w-[640px] rounded-lg bg-[var(--surface-card)] shadow-xl overflow-hidden border border-[var(--border-subtle)] flex flex-col font-sans">
+          <div className="flex items-center px-4 py-3 border-b border-[var(--border-subtle)] gap-3">
             {loading ? (
-              <Loader2Icon className="w-5 h-5 text-neutral-400 animate-spin" />
+              <Loader2Icon className="w-5 h-5 text-[var(--text-subtle)] animate-spin" />
             ) : (
-              <SearchIcon className="w-5 h-5 text-neutral-400" />
+              <SearchIcon className="w-5 h-5 text-[var(--text-subtle)]" />
             )}
             <Command.Input
               value={query}
               onValueChange={setQuery}
               placeholder="Search posts..."
-              className="w-full rounded bg-transparent outline-none border-none text-neutral-800 placeholder-neutral-400 text-lg font-medium"
+              className="w-full rounded bg-transparent outline-none border-none text-[var(--text-strong)] placeholder-[var(--text-subtle)] text-lg font-medium"
             />
           </div>
           {results.length > 0 && (
-            <Command.List className="max-h-[300px] overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent">
+            <Command.List className="max-h-[300px] overflow-y-auto p-2">
             {query && !loading && results.length === 0 && (
-              <Command.Empty className="p-4 text-center text-sm text-neutral-500">
+              <Command.Empty className="p-4 text-center text-sm text-[var(--text-muted)]">
                 No results found.
               </Command.Empty>
             )}
@@ -146,10 +146,10 @@ export function SearchPalette({ isLight }: { isLight: boolean }) {
                   setOpen(false);
                   router.push(getPath(result.type, result.slug, result.collection));
                 }}
-                className="px-4 py-3 cursor-pointer rounded-lg hover:bg-neutral-100 aria-selected:bg-neutral-100 flex flex-col gap-1 text-left"
+                className="px-4 py-3 cursor-pointer rounded-md hover:bg-[var(--surface-active)] aria-selected:bg-[var(--surface-active)] flex flex-col gap-1 text-left"
               >
-                <span className="font-semibold text-neutral-900">{result.title}</span>
-                <span className="text-xs text-neutral-500 capitalize">{result.type}</span>
+                <span className="font-semibold text-[var(--text-strong)]">{result.title}</span>
+                <span className="text-xs text-[var(--text-muted)] capitalize">{result.type}</span>
               </Command.Item>
             ))}
           </Command.List>

@@ -43,15 +43,15 @@ export default async function PortfolioItemPage({ params, searchParams }) {
 
   return (
     <div className="w-full max-w-[1024px] mx-auto px-8 md:px-16 py-24">
-      <section className="pb-16 bg-white rounded-2xl shadow-sm border border-neutral-200 p-8 md:p-12">
-        <nav aria-label="Breadcrumb" className="text-sm text-neutral-600 mb-4">
-          <Link href="/" className="hover:underline hover:text-neutral-900 transition-colors">
+      <section className="pb-16 bg-[var(--surface-card)] rounded-lg shadow-xs border border-[var(--border-subtle)] p-8 md:p-12">
+        <nav aria-label="Breadcrumb" className="text-sm text-[var(--text-muted)] mb-4">
+          <Link href="/" className="hover:underline hover:text-[var(--text-strong)] transition-colors">
             Home
           </Link>
-          <span className="mx-2 text-neutral-400">/</span>
+          <span className="mx-2 text-[var(--text-subtle)]">/</span>
           <Link
             href="/portfolio"
-            className="hover:underline hover:text-neutral-900 transition-colors"
+            className="hover:underline hover:text-[var(--text-strong)] transition-colors"
           >
             Portfolio
           </Link>
@@ -59,17 +59,17 @@ export default async function PortfolioItemPage({ params, searchParams }) {
 
         <Link
           href={from ? `/${from}`.replace(/\/\/+/, "/") : "/portfolio"}
-          className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:underline transition-colors font-medium block mb-6"
+          className="inline-flex items-center gap-2 text-[var(--accent-text)] hover:underline transition-colors font-medium block mb-6"
         >
           ← Back to Portfolio
         </Link>
 
-        <h1 className="title font-bold text-4xl mb-4 text-neutral-900">
+        <h1 className="display text-4xl mb-4">
           {item.metadata.title}
         </h1>
         <Tags tags={item.metadata.tags} className="mb-4" />
-        <div className="flex justify-between items-center mt-2 mb-12 text-sm border-b border-neutral-200 pb-6">
-          <p className={`text-sm text-neutral-600`}>
+        <div className="flex justify-between items-center mt-2 mb-12 text-sm border-b border-[var(--border-subtle)] pb-6">
+          <p className="text-sm text-[var(--text-muted)]">
             Published: {formatDate(item.metadata.publishedAt)}
           </p>
         </div>
@@ -80,8 +80,8 @@ export default async function PortfolioItemPage({ params, searchParams }) {
       </section>
 
       {moreWorks.length ? (
-        <section className="pt-16 bg-white rounded-2xl shadow-sm border border-neutral-200 p-8 md:p-12 mt-8">
-          <h2 className="text-2xl font-bold mb-8 text-neutral-900">More Works</h2>
+        <section className="pt-16 bg-[var(--surface-card)] rounded-lg shadow-xs border border-[var(--border-subtle)] p-8 md:p-12 mt-8">
+          <h2 className="display text-2xl mb-8">More Works</h2>
           <div className="grid grid-cols-12 gap-y-8 md:gap-8">
             {moreWorks.map((work) => (
               <WritingCard key={work.slug} article={work} path="portfolio" />

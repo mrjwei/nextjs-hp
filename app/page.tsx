@@ -1,64 +1,135 @@
 import Link from "next/link"
+import Image from "next/image"
 import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Grid } from "@/components/grid"
-import { getAllSortedPortfolio, getAllSortedWritings } from "app/utils"
+import { ArrowIcon } from "@/components/footer"
+import { getAllSortedPortfolio, getAllSortedWritings, formatDate } from "app/utils"
 
 export default function Page() {
   const writings = getAllSortedWritings()
   const portfolio = getAllSortedPortfolio()
+
   return (
     <section className="w-full">
       {/* Hero */}
-      <div className="mx-auto w-full max-w-[1120px] px-8 pt-24 pb-20 md:pt-32">
+      <div className="mx-auto w-full max-w-[1120px] px-8 pt-28 pb-20 md:pt-36 md:pb-28">
         <span className="eyebrow">Designer &amp; engineer</span>
         <h1 className="display mt-6 text-5xl leading-[1.04] md:text-6xl">
           Calm, considered software.
         </h1>
-        <p className="mt-6 max-w-[54ch] text-lg leading-relaxed text-text-muted md:text-xl">
-          I build tools that hold up — clear, quiet, and made with care from the
-          type up.
+        <p className="mt-6 max-w-[54ch] text-lg leading-relaxed text-[var(--text-muted)] md:text-xl">
+          I build tools that hold up — clear, quiet, and made with care from
+          the type up.
         </p>
         <div className="mt-9 flex flex-wrap gap-3">
-          <Button asChild variant="primary">
+          <Button asChild variant="primary" size="lg">
             <Link href="/portfolio">See selected work</Link>
           </Button>
-          <Button asChild variant="ghost">
+          <Button asChild variant="ghost" size="lg">
             <Link href="/about">About</Link>
           </Button>
         </div>
       </div>
 
-      {/* Latest writings */}
-      <div className="mx-auto w-full max-w-[1024px] px-8 py-16">
-        <div className="mb-8 flex items-baseline justify-between">
-          <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
-            Latest writings
-          </h2>
-          <Link
-            href="/writings"
-            className="inline-flex items-center gap-1 text-sm font-medium text-brand-accent-text hover:underline"
-          >
-            See all <ArrowRight className="size-4" />
-          </Link>
+      {/* Selected work */}
+      <div className="w-full bg-[var(--surface-sunken)] border-y border-[var(--border-subtle)]">
+        <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
+          <div className="mb-10 flex items-baseline justify-between">
+            <h2 className="display text-2xl md:text-3xl">Selected work</h2>
+            <Link
+              href="/portfolio"
+              className="inline-flex items-center gap-1 text-sm font-medium text-[var(--accent-text)] hover:underline"
+            >
+              See all
+              <ArrowRight className="size-4" />
+            </Link>
+          </div>
+          <Grid writings={portfolio} numWritings={4} path="portfolio" />
         </div>
-        <Grid writings={writings} numWritings={4} />
       </div>
 
-      {/* Latest portfolio */}
-      <div className="mx-auto w-full max-w-[1024px] px-8 py-16">
-        <div className="mb-8 flex items-baseline justify-between">
-          <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
-            Latest work
-          </h2>
+      {/* Writing */}
+      <div className="mx-auto w-full max-w-[760px] px-8 py-20">
+        <div className="mb-10 flex items-baseline justify-between">
+          <h2 className="display text-2xl md:text-3xl">Writing</h2>
           <Link
-            href="/portfolio"
-            className="inline-flex items-center gap-1 text-sm font-medium text-brand-accent-text hover:underline"
+            href="/writings"
+            className="inline-flex items-center gap-1 text-sm font-medium text-[var(--accent-text)] hover:underline"
           >
-            See all <ArrowRight className="size-4" />
+            See all
+            <ArrowRight className="size-4" />
           </Link>
         </div>
-        <Grid writings={portfolio} numWritings={4} path="portfolio" />
+        <ul className="flex flex-col">
+          {writings.slice(0, 6).map((writing) => {
+            const href = writing.metadata.series
+              ? `/writings/${writing.metadata.series}/${writing.slug}`
+              : `/writings/${writing.slug}`
+            return (
+              <li
+                key={writing.slug}
+                className="border-b border-[var(--border-subtle)] first:border-t"
+              >
+                <Link
+                  href={href}
+                  className="group flex flex-col gap-1 py-5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
+                >
+                  <span className="font-medium text-[var(--text-strong)] transition-colors group-hover:text-[var(--accent-text)]">
+                    {writing.metadata.title}
+                  </span>
+                  <span className="font-mono text-xs text-[var(--text-subtle)] shrink-0">
+                    {formatDate(writing.metadata.publishedAt, false)}
+                  </span>
+                </Link>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
+
+      {/* About — inverted band */}
+      <div className="w-full bg-[var(--surface-inverse)]">
+        <div className="mx-auto w-full max-w-[1120px] px-8 py-20 md:py-24">
+          <div className="grid grid-cols-12 gap-10 md:gap-16 items-center">
+            <div className="col-span-12 md:col-span-4 order-1">
+              <Image
+                src="/avatar.png"
+                alt="Jesse Wei's avatar"
+                width={563}
+                height={517}
+                className="w-full max-w-[220px] h-auto rounded-lg"
+                sizes="220px"
+              />
+            </div>
+            <div className="col-span-12 md:col-span-8 order-2">
+              <span className="eyebrow text-[var(--text-subtle)]">About</span>
+              <p className="display mt-4 text-2xl leading-snug text-[var(--text-ondark)] md:text-3xl">
+                I work at the intersection of design, engineering, and
+                emerging technologies — turning complex ideas into practical,
+                considered products.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-4">
+                <Link
+                  href="/about"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-[var(--text-ondark)] hover:underline"
+                >
+                  More about me
+                  <ArrowRight className="size-4" />
+                </Link>
+                <Link
+                  href="https://www.linkedin.com/in/jesse-wei-profile/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-white/70 hover:text-white transition-colors"
+                >
+                  <ArrowIcon />
+                  LinkedIn
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   )

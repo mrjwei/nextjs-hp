@@ -199,7 +199,7 @@ export function WritingsFilterController() {
       })}
       <a
         href="/writings"
-        className="ml-1 text-blue-600 hover:text-blue-700 hover:underline font-medium transition-colors"
+        className="ml-1 text-[var(--accent-text)] hover:underline font-medium transition-colors"
       >
         Clear
       </a>

@@ -40,21 +40,22 @@ export default async function PortfolioPage() {
       <Sidebar
         items={items}
         targetValue="all"
-        classname="hidden md:block bg-gray-800 text-white p-8 md:col-span-3 sticky md:top-[var(--header-height)] h-screen"
+        classname="hidden md:block bg-[var(--surface-sunken)] border-r border-[var(--border-subtle)] p-8 md:col-span-3 sticky md:top-[var(--header-height)] h-screen"
       />
       <div className="col-span-12 px-4 py-8 md:col-span-9 md:pl-0 md:pr-8">
         <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold mb-2">Portfolio</h1>
-          <p className="text-lg text-gray-600 mb-4">
+          <span className="eyebrow">Portfolio</span>
+          <h1 className="display mt-3 mb-2 text-3xl md:text-4xl">Portfolio</h1>
+          <p className="text-lg text-[var(--text-muted)] mb-4">
             Selected projects and experiments. (More coming soon.)
           </p>
           <Sidebar items={items} targetValue="all" classname="block md:hidden" />
         </div>
 
         {portfolioItems.length === 0 ? (
-          <div className="bg-white shadow-md rounded-2xl p-6">
-            <h2 className="text-lg font-bold mb-2">No items yet</h2>
-            <p className="text-neutral-600">
+          <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] shadow-xs rounded-lg p-6">
+            <h2 className="text-lg font-semibold mb-2 text-[var(--text-strong)]">No items yet</h2>
+            <p className="text-[var(--text-muted)]">
               Add MDX files under <code>app/portfolio/posts</code> to populate this page.
             </p>
           </div>
