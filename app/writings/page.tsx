@@ -1,6 +1,6 @@
-import { Grid } from "app/components/grid"
+import { Grid } from "@/components/grid"
 import { ParseSeriesDirName, getAllSortedWritings } from "app/utils"
-import { Sidebar } from "app/components/sidebar"
+import { Sidebar } from "@/components/sidebar"
 import { buildStandardMetadata } from "app/seo/metadata"
 import Link from "next/link"
 import { WritingsFilterController } from "app/writings/writings-filter.client"

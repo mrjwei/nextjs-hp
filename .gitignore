@@ -46,3 +46,7 @@ _*
 
 # generated content index
 app/data/content-index.json
+
+tsconfig.tsbuildinfo
+.DS_Store
+logs/

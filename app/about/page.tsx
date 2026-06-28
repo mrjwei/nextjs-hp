@@ -1,7 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowIcon } from "app/components/footer"
-import { openSans } from "app/data/fonts"
+import { ArrowIcon } from "@/components/footer"
 import { buildStandardMetadata } from "app/seo/metadata"
 
 export const metadata = buildStandardMetadata({
@@ -39,7 +38,7 @@ export default function Page() {
                 href="https://www.linkedin.com/in/jesse-wei-profile/"
               >
                 <ArrowIcon />
-                <span className={`ml-1 h-7 ${openSans.className}`}>
+                <span className={`ml-1 h-7`}>
                   LinkedIn
                 </span>
               </Link>
@@ -51,7 +50,7 @@ export default function Page() {
                 href="https://bsky.app/profile/mrjwei.bsky.social"
               >
                 <ArrowIcon />
-                <span className={`ml-1 h-7 ${openSans.className}`}>
+                <span className={`ml-1 h-7`}>
                   Bluesky
                 </span>
               </Link>
@@ -63,7 +62,7 @@ export default function Page() {
                 href="https://github.com/mrjwei"
               >
                 <ArrowIcon />
-                <span className={`ml-1 h-7 ${openSans.className}`}>GitHub</span>
+                <span className={`ml-1 h-7`}>GitHub</span>
               </Link>
               <span>,&nbsp;</span>
               <Link
@@ -73,7 +72,7 @@ export default function Page() {
                 href="https://www.instagram.com/mrjwei/"
               >
                 <ArrowIcon />
-                <span className={`ml-1 h-7 ${openSans.className}`}>
+                <span className={`ml-1 h-7`}>
                   Instagram
                 </span>
               </Link>

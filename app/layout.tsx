@@ -3,12 +3,11 @@ import "./global.css"
 import type { Metadata } from "next"
 import Head from "next/head"
 import Script from "next/script"
-import { Header } from "./components/header"
+import { Header } from "@/components/header"
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import Footer from "./components/footer"
-import { NewsletterPopup } from "./components/newsletter-popup"
-import { openSans, plexMono } from "app/data/fonts"
+import Footer from "@/components/footer"
+import { geistSans, geistMono, newsreader } from "app/data/fonts"
 import { baseUrl } from "./sitemap"
 import AnalyticsProvider from "./providers"
 
@@ -53,9 +52,10 @@ export default function RootLayout({
     <html
       lang="en"
       className={cx(
-        "text-neutral-900 bg-neutral-50 text-base",
-        openSans.variable,
-        plexMono.variable
+        "text-base",
+        geistSans.variable,
+        geistMono.variable,
+        newsreader.variable
       )}
     >
       <head>
@@ -70,7 +70,7 @@ export default function RootLayout({
           gtag('config', 'G-44FT4BDFH2');`}
         </Script>
       </head>
-      <body className="antialiased flex flex-col items-center justify-between min-h-screen">
+      <body className="antialiased flex flex-col items-center justify-between min-h-screen bg-surface-page text-text-body">
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-neutral-900 focus:shadow"
@@ -79,12 +79,11 @@ export default function RootLayout({
         </a>
         <div id="scroll-top-sentinel" className="h-px w-px" aria-hidden="true" />
         <AnalyticsProvider />
-        <NewsletterPopup />
         <Header />
         <main
           id="main-content"
           tabIndex={-1}
-          className="relative w-full flex-1 bg-neutral-50 flex flex-col scroll-mt-[var(--header-height)]"
+          className="relative w-full flex-1 bg-surface-page flex flex-col scroll-mt-[var(--header-height)]"
         >
           {children}
           <Analytics />

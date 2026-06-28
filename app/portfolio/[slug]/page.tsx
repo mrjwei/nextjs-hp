@@ -1,11 +1,10 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { CustomMDX } from "app/components/mdx"
-import { BackToTop } from "app/components/back-to-top"
-import { WritingCard } from "app/components/article-card"
-import { Tags } from "app/components/tags"
+import { CustomMDX } from "@/components/mdx"
+import { BackToTop } from "@/components/back-to-top"
+import { WritingCard } from "@/components/article-card"
+import { Tags } from "@/components/tags"
 import { formatDate, getAllSortedPortfolio, getPortfolioItemBySlug } from "app/utils"
-import { openSans } from "app/data/fonts"
 import { buildStandardMetadata } from "app/seo/metadata"
 
 export async function generateStaticParams() {
@@ -70,7 +69,7 @@ export default async function PortfolioItemPage({ params, searchParams }) {
         </h1>
         <Tags tags={item.metadata.tags} className="mb-4" />
         <div className="flex justify-between items-center mt-2 mb-12 text-sm border-b border-neutral-200 pb-6">
-          <p className={`text-sm text-neutral-600 ${openSans.className}`}>
+          <p className={`text-sm text-neutral-600`}>
             Published: {formatDate(item.metadata.publishedAt)}
           </p>
         </div>

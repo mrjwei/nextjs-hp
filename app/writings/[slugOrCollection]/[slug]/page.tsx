@@ -1,11 +1,10 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { CustomMDX } from "app/components/mdx"
-import { PrevNext } from "app/components/prev-next"
-import { BackToTop } from "app/components/back-to-top"
-import { WritingCard } from "app/components/article-card"
-import { Tags } from "app/components/tags"
-import { openSans } from "app/data/fonts"
+import { CustomMDX } from "@/components/mdx"
+import { PrevNext } from "@/components/prev-next"
+import { BackToTop } from "@/components/back-to-top"
+import { WritingCard } from "@/components/article-card"
+import { Tags } from "@/components/tags"
 import {
   ParseSeriesDirName,
   formatDate,
@@ -159,7 +158,7 @@ export default async function WritingInCollection({ params, searchParams }) {
           }}
         />
         <div className="flex justify-between items-center mt-2 mb-12 text-sm border-b border-neutral-200 pb-6">
-          <p className={`text-sm text-neutral-600 ${openSans.className}`}>
+          <p className={`text-sm text-neutral-600`}>
             Published: {formatDate(writing.metadata.publishedAt)}
           </p>
         </div>

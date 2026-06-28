@@ -1,5 +1,5 @@
-import { TCategory } from "app/components/sidebar"
-import { Item } from "app/components/sidebar/Item"
+import { TCategory } from "@/components/sidebar"
+import { Item } from "@/components/sidebar/Item"
 
 export function Sidebar({
   items,

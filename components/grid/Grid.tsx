@@ -1,5 +1,5 @@
-import { TWriting } from "app/components/grid"
-import { WritingCard } from "app/components/article-card"
+import { TWriting } from "@/components/grid"
+import { WritingCard } from "@/components/article-card"
 
 export function Grid({
   writings,

@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { Grid } from "app/components/grid"
-import { Sidebar } from "app/components/sidebar"
+import { Grid } from "@/components/grid"
+import { Sidebar } from "@/components/sidebar"
 import { getAllSortedPortfolioCollections, ParseSeriesDirName } from "app/utils"
 import { buildStandardMetadata } from "app/seo/metadata"
 

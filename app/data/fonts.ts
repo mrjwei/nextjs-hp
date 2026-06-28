@@ -1,17 +1,19 @@
-import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google"
+import { GeistSans } from "geist/font/sans"
+import { GeistMono } from "geist/font/mono"
+import { Newsreader } from "next/font/google"
 
-export const openSans = IBM_Plex_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
-  display: "swap",
-  variable: "--font-sans",
-})
+// Geist — UI + body (self-hosted via the `geist` package).
+// Exposes CSS var `--font-geist-sans`.
+export const geistSans = GeistSans
 
-export const plexMono = IBM_Plex_Mono({
+// Geist Mono — labels, code, metadata. Exposes `--font-geist-mono`.
+export const geistMono = GeistMono
+
+// Newsreader — editorial serif for display headlines & pull-quotes.
+export const newsreader = Newsreader({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   style: ["normal", "italic"],
   display: "swap",
-  variable: "--font-mono",
+  variable: "--font-newsreader",
 })

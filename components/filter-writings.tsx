@@ -1,4 +1,4 @@
-import { WritingCard } from "app/components/article-card"
+import { WritingCard } from "@/components/article-card"
 
 export const FilterWritings = ({ writings, category }) => {
   if (category) {

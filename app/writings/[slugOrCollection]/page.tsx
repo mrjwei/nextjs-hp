@@ -1,15 +1,14 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { Grid } from "app/components/grid"
-import { Sidebar } from "app/components/sidebar"
+import { Grid } from "@/components/grid"
+import { Sidebar } from "@/components/sidebar"
 import { ParseSeriesDirName, getAllSortedWritings, getWritingBySlug, formatDate } from "app/utils"
 import { buildStandardMetadata } from "app/seo/metadata"
-import { CustomMDX } from "app/components/mdx"
-import { PrevNext } from "app/components/prev-next"
-import { BackToTop } from "app/components/back-to-top"
-import { WritingCard } from "app/components/article-card"
-import { Tags } from "app/components/tags"
-import { openSans } from "app/data/fonts"
+import { CustomMDX } from "@/components/mdx"
+import { PrevNext } from "@/components/prev-next"
+import { BackToTop } from "@/components/back-to-top"
+import { WritingCard } from "@/components/article-card"
+import { Tags } from "@/components/tags"
 import { baseUrl } from "app/sitemap"
 
 export const dynamic = "force-static"
@@ -157,7 +156,7 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
             }}
           />
           <div className="flex justify-between items-center mt-2 mb-12 text-sm border-b border-neutral-200 pb-6">
-            <p className={`text-sm text-neutral-600 ${openSans.className}`}>
+            <p className={`text-sm text-neutral-600`}>
               Published: {formatDate(writing.metadata.publishedAt)}
             </p>
           </div>

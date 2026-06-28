@@ -1,4 +1,4 @@
-import {TCategory} from 'app/components/sidebar';
+import {TCategory} from '@/components/sidebar';
 
 export const categories: TCategory[] = [
   { label: "Design", value: "design" },

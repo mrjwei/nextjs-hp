@@ -1,9 +1,8 @@
 import clsx from "clsx"
 import Link from "next/link"
 import Image from "next/image"
-import { Tags } from "app/components/tags"
+import { Tags } from "@/components/tags"
 import { formatDate } from "app/utils"
-import { openSans } from "app/data/fonts"
 
 export function WritingCard({
   article,
@@ -80,7 +79,7 @@ export function WritingCard({
               </p>
             </div>
           </div>
-          <small className={`text-neutral-500 text-sm ${openSans.className}`}>
+          <small className={`text-neutral-500 text-sm`}>
             Published: {formatDate(article.metadata.publishedAt, false)}
           </small>
         </div>

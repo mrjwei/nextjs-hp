@@ -1,4 +1,4 @@
-import { Tag } from "app/components/tag"
+import { Tag } from "@/components/tag"
 import tagsData from "app/data/tags.json"
 import clsx from "clsx"
 

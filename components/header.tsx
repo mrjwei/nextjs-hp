@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation"
 import clsx from "clsx"
 import Image from "next/image"
 import { Bars3Icon } from "@heroicons/react/24/outline"
-import { openSans } from "app/data/fonts"
 import { icons } from "app/data/icons"
 import { SearchPalette } from "./SearchPalette"
 
@@ -191,7 +190,7 @@ export function Header({ className }: { className?: string }) {
                   key={path}
                   href={path}
                   className={clsx(
-                    `transition-all duration-300 ease-in-out font-medium flex align-middle relative py-1 px-3 m-1 rounded-md ${openSans.className}`,
+                    `transition-all duration-300 ease-in-out font-medium flex align-middle relative py-1 px-3 m-1 rounded-md`,
                     {
                       "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100": isLight,
                       "text-neutral-300 hover:text-white hover:bg-white/10": !isLight,
