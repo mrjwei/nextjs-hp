@@ -422,7 +422,7 @@
 .prose > ul:first-of-type {
   background: var(--surface-sunken);
   border: 1px solid var(--border-subtle);
-  @apply p-8 rounded-xl !mb-12 list-none pl-0;
+  @apply p-8 rounded-xl !mb-12 list-none;
   box-shadow: var(--shadow-xs);
 }
 
