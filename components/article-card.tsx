@@ -62,7 +62,7 @@ export function WritingCard({
                 className="object-cover transition-transform duration-300 ease-[var(--ease-out)] group-hover:scale-105"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center font-serif text-2xl text-[var(--text-subtle)]">
+              <div className="flex h-full w-full items-center justify-center font-sans font-semibold text-2xl text-[var(--text-subtle)]">
                 {article.metadata.title?.[0]}
               </div>
             )}

@@ -45,7 +45,7 @@ export default async function PortfolioPage() {
       <div className="col-span-12 px-4 py-8 md:col-span-9 md:pl-0 md:pr-8">
         <div className="mb-8">
           <span className="eyebrow">Portfolio</span>
-          <h1 className="display mt-3 mb-2 text-3xl md:text-4xl">Portfolio</h1>
+          <h1 className="mt-3 mb-2 text-3xl md:text-4xl font-semibold tracking-tight text-[var(--text-strong)]">Portfolio</h1>
           <p className="text-lg text-[var(--text-muted)] mb-4">
             Selected projects and experiments. (More coming soon.)
           </p>

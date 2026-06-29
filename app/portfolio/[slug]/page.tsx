@@ -81,7 +81,7 @@ export default async function PortfolioItemPage({ params, searchParams }) {
 
       {moreWorks.length ? (
         <section className="pt-16 bg-[var(--surface-card)] rounded-lg shadow-xs border border-[var(--border-subtle)] p-8 md:p-12 mt-8">
-          <h2 className="display text-2xl mb-8">More Works</h2>
+          <h2 className="text-2xl font-semibold tracking-tight text-[var(--text-strong)] mb-8">More Works</h2>
           <div className="grid grid-cols-12 gap-y-8 md:gap-8">
             {moreWorks.map((work) => (
               <WritingCard key={work.slug} article={work} path="portfolio" />

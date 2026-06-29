@@ -71,12 +71,9 @@ export function Header() {
           <Link
             href="/"
             aria-label="Jesse Wei — home"
-            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            className="flex items-center hover:opacity-80 transition-opacity"
           >
-            <Image src="/logo.svg" alt="" width={28} height={28} sizes="28px" priority />
-            <span className="font-serif text-lg font-medium tracking-tight hidden sm:inline text-[var(--text-strong)]">
-              Jesse Wei
-            </span>
+            <Image src="/logo.svg" alt="Jesse Wei" width={28} height={28} sizes="28px" priority />
           </Link>
 
           <nav className="hidden md:flex md:items-center md:gap-1" id="nav">

@@ -13,7 +13,7 @@ export default function Page() {
   return (
     <section className="py-24 w-full px-8 md:px-16 max-w-[1024px] mx-auto">
       <span className="eyebrow">About</span>
-      <h1 className="display mt-3 mb-10 text-4xl md:text-5xl">About me</h1>
+      <h1 className="mt-3 mb-10 text-4xl md:text-5xl font-semibold tracking-tight text-[var(--text-strong)]">About me</h1>
       <div className="grid grid-cols-12 gap-8 md:gap-16">
         <div className="text-[var(--text-body)] col-span-12 order-2 md:col-span-8 md:order-1">
           <p className="mb-4">

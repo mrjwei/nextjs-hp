@@ -61,7 +61,7 @@ export default async function Page() {
       <div className="col-span-12 px-6 py-8 md:col-span-9 md:pl-0 md:pr-8">
         <div className="mb-8">
           <span className="eyebrow">Writings</span>
-          <h1 className="display mt-3 mb-3 text-3xl md:text-4xl">Writings</h1>
+          <h1 className="mt-3 mb-3 text-3xl md:text-4xl font-semibold tracking-tight text-[var(--text-strong)]">Writings</h1>
           <p className="text-lg text-[var(--text-muted)] mb-6">
             Design, tech, innovation and more.
           </p>

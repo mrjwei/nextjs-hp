@@ -1,10 +1,8 @@
 import Link from "next/link"
-import Image from "next/image"
 import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Grid } from "@/components/grid"
-import { ArrowIcon } from "@/components/footer"
-import { getAllSortedPortfolio, getAllSortedWritings, formatDate } from "app/utils"
+import { getAllSortedPortfolio, getAllSortedWritings } from "app/utils"
 
 export default function Page() {
   const writings = getAllSortedWritings()
@@ -13,7 +11,7 @@ export default function Page() {
   return (
     <section className="w-full">
       {/* Hero */}
-      <div className="mx-auto w-full max-w-[1120px] px-8 pt-28 pb-20 md:pt-36 md:pb-28">
+      <div className="mx-auto w-full max-w-[1120px] px-8 pt-28 pb-20 md:pt-36 md:pb-24">
         <span className="eyebrow">Designer &amp; engineer</span>
         <h1 className="display mt-6 text-5xl leading-[1.04] md:text-6xl">
           Calm, considered software.
@@ -24,19 +22,46 @@ export default function Page() {
         </p>
         <div className="mt-9 flex flex-wrap gap-3">
           <Button asChild variant="primary" size="lg">
-            <Link href="/portfolio">See selected work</Link>
+            <Link href="/writings">Read the writing</Link>
           </Button>
           <Button asChild variant="ghost" size="lg">
-            <Link href="/about">About</Link>
+            <Link href="/portfolio">See selected work</Link>
           </Button>
         </div>
       </div>
 
+      {/* Writing — prioritized, as cards */}
+      <div className="w-full bg-[var(--surface-sunken)] border-t border-[var(--border-subtle)]">
+          <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
+            <div className="mb-10 flex items-end justify-between">
+              <div>
+                <span className="eyebrow">Writing</span>
+                <h2 className="mt-2.5 text-3xl font-semibold tracking-tight text-[var(--text-strong)]">
+                  Notes &amp; explorations
+                </h2>
+              </div>
+              <Link
+                href="/writings"
+                className="inline-flex items-center gap-1 text-sm font-medium text-[var(--accent-text)] hover:underline"
+              >
+                See all
+                <ArrowRight className="size-4" />
+              </Link>
+            </div>
+            <Grid writings={writings} numWritings={6} path="writings" />
+          </div>
+      </div>
+
       {/* Selected work */}
-      <div className="w-full bg-[var(--surface-sunken)] border-y border-[var(--border-subtle)]">
+      <div className="w-full border-t border-[var(--border-subtle)]">
         <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
-          <div className="mb-10 flex items-baseline justify-between">
-            <h2 className="display text-2xl md:text-3xl">Selected work</h2>
+          <div className="mb-10 flex items-end justify-between">
+            <div>
+              <span className="eyebrow">Selected work</span>
+              <h2 className="mt-2.5 text-3xl font-semibold tracking-tight text-[var(--text-strong)]">
+                A few things I&apos;ve made
+              </h2>
+            </div>
             <Link
               href="/portfolio"
               className="inline-flex items-center gap-1 text-sm font-medium text-[var(--accent-text)] hover:underline"
@@ -49,47 +74,8 @@ export default function Page() {
         </div>
       </div>
 
-      {/* Writing */}
-      <div className="mx-auto w-full max-w-[760px] px-8 py-20">
-        <div className="mb-10 flex items-baseline justify-between">
-          <h2 className="display text-2xl md:text-3xl">Writing</h2>
-          <Link
-            href="/writings"
-            className="inline-flex items-center gap-1 text-sm font-medium text-[var(--accent-text)] hover:underline"
-          >
-            See all
-            <ArrowRight className="size-4" />
-          </Link>
-        </div>
-        <ul className="flex flex-col">
-          {writings.slice(0, 6).map((writing) => {
-            const href = writing.metadata.series
-              ? `/writings/${writing.metadata.series}/${writing.slug}`
-              : `/writings/${writing.slug}`
-            return (
-              <li
-                key={writing.slug}
-                className="border-b border-[var(--border-subtle)] first:border-t"
-              >
-                <Link
-                  href={href}
-                  className="group flex flex-col gap-1 py-5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
-                >
-                  <span className="font-medium text-[var(--text-strong)] transition-colors group-hover:text-[var(--accent-text)]">
-                    {writing.metadata.title}
-                  </span>
-                  <span className="font-mono text-xs text-[var(--text-subtle)] shrink-0">
-                    {formatDate(writing.metadata.publishedAt, false)}
-                  </span>
-                </Link>
-              </li>
-            )
-          })}
-        </ul>
-      </div>
-
       {/* About — inverted band */}
-      <div className="w-full bg-[var(--surface-inverse)]">
+      {/* <div className="w-full bg-[var(--surface-inverse)]">
         <div className="mx-auto w-full max-w-[1120px] px-8 py-20 md:py-24">
           <div className="grid grid-cols-12 gap-10 md:gap-16 items-center">
             <div className="col-span-12 md:col-span-4 order-1">
@@ -130,7 +116,7 @@ export default function Page() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </section>
   )
 }
