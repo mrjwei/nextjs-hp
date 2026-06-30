@@ -3,6 +3,7 @@
   "strategy": { "color": "#d60f0f" },
   "dev": { "color": "#d60fbc" },
   "ai": { "color": "#0ca691" },
+  "self-study": { "color": "#0c6fa6" },
   "explanation": { "color": "#ab8326" },
   "security": { "color": "#70276d" },
   "casestudy": { "color": "#9f24b5" }
