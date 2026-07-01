@@ -1,0 +1,92 @@
+---
+title: "Revamping My Personal Website With Claude Design + Claude Code"
+slug: "revamping-my-personal-website-with-claude-design-claude-code"
+publishedAt: "2026-07-01"
+summary: "I used Claude Design to generate a new design system for this site and Claude Code to implement it with Shadcn UI, going from concept to a shipped redesign in about two hours without opening Figma."
+tags: ["design", "ai", "casestudy", "process"]
+---
+
+- [Context](#context)
+- [The Process and Tools](#the-process-and-tools)
+- [Before vs After](#before-vs-after)
+  - [Before](#before)
+  - [After](#after)
+- [Takeaways](#takeaways)
+
+## Context
+
+I'd been thinking about brushing up this personal website for a while: improve load time, give it a more professional feel, and shift the emphasis toward the content rather than the chrome around it. At the same time, I wanted to run an experiment with Claude Design and see how far it could go in automating the design process, and what quality of output it could actually produce.
+
+## The Process and Tools
+
+The process started with Claude Design, which I used to generate a design system to my specifications. From there, I shared that design system with Claude Code inside this project via the `claude_design` MCP, and asked it to replace the site's existing components with Shadcn UI components aligned to the new system.
+
+Notably, no Figma, Balsamiq, or any other canvas-based design tool was involved at any point. The entire loop, from generating the design system to having it implemented in code, took about two hours.
+
+## Before vs After
+
+### Before
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/revamping-my-personal-website-with-claude-design-claude-code/before-home.png"
+    alt="Original homepage with a moody, colorful gradient hero image and bold sans-serif headline"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>The original homepage: a dramatic gradient hero image behind a bold sans-serif headline.</figcaption>
+</figure>
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/revamping-my-personal-website-with-claude-design-claude-code/before-writings.png"
+    alt="Original writings list page with a dark sidebar for category filters"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>The original writings list, with a dark sidebar for category filters.</figcaption>
+</figure>
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/revamping-my-personal-website-with-claude-design-claude-code/before-article.png"
+    alt="Original article page with sans-serif type and a gray 'IN THIS ARTICLE' box"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>The original article page, set entirely in sans-serif with an uppercase "IN THIS ARTICLE" box.</figcaption>
+</figure>
+
+### After
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/revamping-my-personal-website-with-claude-design-claude-code/after-home.png"
+    alt="Redesigned homepage with a minimal, editorial layout and serif headline reading 'Calm, considered software'"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>The redesigned homepage: no hero image, just a quiet serif headline and clear content sections.</figcaption>
+</figure>
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/revamping-my-personal-website-with-claude-design-claude-code/after-writings.png"
+    alt="Redesigned writings list page with a light sidebar for category filters"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>The redesigned writings list, now with a light sidebar that matches the rest of the site.</figcaption>
+</figure>
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/revamping-my-personal-website-with-claude-design-claude-code/after-article.png"
+    alt="Redesigned article page with serif headline and a monospace 'IN THIS ARTICLE' label"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>The redesigned article page, with a serif headline and a monospace "IN THIS ARTICLE" label.</figcaption>
+</figure>
+
+## Takeaways
+
+The level of consistency in the design system Claude Code generated is impressive. It would be practically impossible for a human designer to produce something of comparable quality in ten minutes.
+
+The resulting design also aligns well with what I set out to achieve: the new site looks cleaner and more professional, and it puts the focus on content rather than appearance.
+
+If this trajectory holds, AI-as-a-canvas is where UI design is headed.
