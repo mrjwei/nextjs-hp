@@ -6,8 +6,9 @@ import Link from "next/link"
 import { WritingsFilterController } from "app/writings/writings-filter.client"
 
 export const metadata = buildStandardMetadata({
-  title: "Writings",
-  description: "My blog posts, tutorials and more.",
+  title: "Writing",
+  description:
+    "Technical and design writing — cryptography, AI agents, design systems, and the reasoning behind them.",
   pathname: "/writings",
 })
 
@@ -60,10 +61,11 @@ export default async function Page() {
       />
       <div className="col-span-12 px-6 py-8 md:col-span-9 md:pl-0 md:pr-8">
         <div className="mb-8">
-          <span className="eyebrow">Writings</span>
-          <h1 className="mt-3 mb-3 text-3xl md:text-4xl font-semibold tracking-tight text-[var(--text-strong)]">Writings</h1>
+          <span className="eyebrow">Writing</span>
+          <h1 className="mt-3 mb-3 text-3xl md:text-4xl font-semibold tracking-tight text-[var(--text-strong)]">Writing</h1>
           <p className="text-lg text-[var(--text-muted)] mb-6">
-            Design, tech, innovation and more.
+            Technical and design writing — cryptography, AI agents, design
+            systems, and the reasoning behind them.
           </p>
           <Sidebar items={items} targetValue={undefined} classname="block md:hidden" />
 

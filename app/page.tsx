@@ -12,13 +12,12 @@ export default function Page() {
     <section className="w-full">
       {/* Hero */}
       <div className="mx-auto w-full max-w-[1120px] px-8 pt-28 pb-20 md:pt-36 md:pb-24">
-        <span className="eyebrow">Designer &amp; engineer</span>
+        <span className="eyebrow">Design engineer &middot; Japan</span>
         <h1 className="display mt-6 text-5xl leading-[1.04] md:text-6xl">
-          Calm, considered software.
+          I design software and then build it.
         </h1>
         <p className="mt-6 max-w-[54ch] text-lg leading-relaxed text-[var(--text-muted)] md:text-xl">
-          I build tools that hold up — clear, quiet, and made with care from
-          the type up.
+          Ten years across product design and engineering. I treat design systems as data, prototypes as the spec, and AI as part of the workflow.
         </p>
         <div className="mt-9 flex flex-wrap gap-3">
           <Button asChild variant="primary" size="lg">
@@ -35,9 +34,9 @@ export default function Page() {
           <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
             <div className="mb-10 flex items-end justify-between">
               <div>
-                <span className="eyebrow">Writing</span>
+                <span className="eyebrow">Latest</span>
                 <h2 className="mt-2.5 text-3xl font-semibold tracking-tight text-[var(--text-strong)]">
-                  Notes &amp; explorations
+                  Writing
                 </h2>
               </div>
               <Link
@@ -57,9 +56,9 @@ export default function Page() {
         <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
           <div className="mb-10 flex items-end justify-between">
             <div>
-              <span className="eyebrow">Selected work</span>
+              <span className="eyebrow">Portfolio</span>
               <h2 className="mt-2.5 text-3xl font-semibold tracking-tight text-[var(--text-strong)]">
-                A few things I&apos;ve made
+                Selected work
               </h2>
             </div>
             <Link

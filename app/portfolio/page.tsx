@@ -5,7 +5,8 @@ import { buildStandardMetadata } from "app/seo/metadata"
 
 export const metadata = buildStandardMetadata({
   title: "Portfolio",
-  description: "A selection of my projects and work.",
+  description:
+    "Long-form case studies — the decisions, constraints, and trade-offs, not just the final screens.",
   pathname: "/portfolio",
 })
 
@@ -47,7 +48,8 @@ export default async function PortfolioPage() {
           <span className="eyebrow">Portfolio</span>
           <h1 className="mt-3 mb-2 text-3xl md:text-4xl font-semibold tracking-tight text-[var(--text-strong)]">Portfolio</h1>
           <p className="text-lg text-[var(--text-muted)] mb-4">
-            Selected projects and experiments. (More coming soon.)
+            Long-form case studies — the decisions, constraints, and trade-offs,
+            not just the final screens.
           </p>
           <Sidebar items={items} targetValue="all" classname="block md:hidden" />
         </div>

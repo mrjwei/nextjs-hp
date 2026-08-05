@@ -14,15 +14,15 @@ import AnalyticsProvider from "./providers"
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: "Jesse Wei | A Creator who blends design and technology",
+    default: "Jesse Wei — Design engineer building AI-native products",
     template: "%s | Jesse Wei",
   },
   description:
-    "Jesse Wei is a creator, passionate about blending design and technology to craft innovative and impactful products.",
+    "Design engineer with 10+ years across product design and software. I design and ship full products — interface, system, and the AI underneath. Based in Japan, working in English and Japanese.",
   openGraph: {
-    title: "Jesse Wei | A Creator who blends design and technology",
+    title: "Jesse Wei — Design engineer building AI-native products",
     description:
-      "Jesse Wei is a creator, passionate about blending design and technology to craft innovative and impactful products.",
+      "Design engineer with 10+ years across product design and software. I design and ship full products — interface, system, and the AI underneath. Based in Japan, working in English and Japanese.",
     url: baseUrl,
     siteName: "Jesse Wei",
     locale: "en_US",

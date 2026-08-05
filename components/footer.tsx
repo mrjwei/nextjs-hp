@@ -24,10 +24,11 @@ export default function Footer() {
       <div className="w-full max-w-[1024px] mx-auto flex flex-col items-center px-4 py-12 md:px-0">
         <div className="w-full max-w-[480px] flex flex-col items-center text-center">
           <h2 className="font-serif text-xl font-medium text-[var(--text-strong)]">
-            Get new posts by email
+            New writing, occasionally
           </h2>
           <p className="mt-1 text-sm text-[var(--text-muted)]">
-            Occasional updates. No spam.
+            Design systems, AI agents, and the odd cryptography deep-dive. No
+            spam.
           </p>
           <div className="mt-4 w-full flex justify-center">
             <NewsletterForm className="max-w-[420px]" />
