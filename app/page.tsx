@@ -14,10 +14,10 @@ export default function Page() {
       <div className="mx-auto w-full max-w-[1120px] px-8 pt-28 pb-20 md:pt-36 md:pb-24">
         <span className="eyebrow">Design engineer &middot; Japan</span>
         <h1 className="display mt-6 text-5xl leading-[1.04] md:text-6xl">
-          I design software and then build it.
+          Design as a business decision, not a deliverable.
         </h1>
         <p className="mt-6 max-w-[54ch] text-lg leading-relaxed text-[var(--text-muted)] md:text-xl">
-          Ten years across product design and engineering. I treat design systems as data, prototypes as the spec, and AI as part of the workflow.
+          Ten years turning design into how companies operate. I lead the strategy and ship the production code, so decisions survive the build.
         </p>
         <div className="mt-9 flex flex-wrap gap-3">
           <Button asChild variant="primary" size="lg">
