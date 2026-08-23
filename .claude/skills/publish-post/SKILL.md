@@ -1,3 +1,8 @@
+---
+name: publish-post
+description: Publish one or more drafts from the drafts directory.
+---
+
 # Publish Post
 
 Publish one or more drafts from `app/_drafts/` by moving them into `app/writings/posts/`, where the site's content index (`scripts/generate-content-index.mjs`) picks them up.

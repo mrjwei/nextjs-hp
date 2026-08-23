@@ -1,3 +1,8 @@
+---
+name: new-draft
+description: Convert an Obsidian markdown file into a draft MDX post.
+---
+
 # New Draft from Obsidian
 
 Convert an Obsidian markdown file into a draft MDX post saved under `app/_drafts/`. This does **not** publish the post — `app/_drafts/` is excluded from the site's content index (see `scripts/generate-content-index.mjs`, which only scans `app/writings/posts/` and `app/portfolio/posts/`), so the draft won't appear on the site until it's published with `/publish-post`.
