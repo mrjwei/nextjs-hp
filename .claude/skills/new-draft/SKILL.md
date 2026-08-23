@@ -1,8 +1,8 @@
-# New Post from Obsidian
+# New Draft from Obsidian
 
-Convert an Obsidian markdown file into a published MDX post on this site.
+Convert an Obsidian markdown file into a draft MDX post saved under `app/_drafts/`. This does **not** publish the post — `app/_drafts/` is excluded from the site's content index (see `scripts/generate-content-index.mjs`, which only scans `app/writings/posts/` and `app/portfolio/posts/`), so the draft won't appear on the site until it's published with `/publish-post`.
 
-**Usage:** `/new-post <obsidian-file-path>`
+**Usage:** `/new-draft <obsidian-file-path>`
 
 The argument `$ARGUMENTS` is the absolute path to the Obsidian `.md` file.
 
@@ -55,7 +55,7 @@ Produce a frontmatter block following this exact schema (match what existing pos
 ---
 title: "..."
 slug: "..."          # only include if the post is in a subfolder
-publishedAt: "YYYY-MM-DD"   # today's date
+publishedAt: "YYYY-MM-DDTHH:MM:SS"   # now, including time
 summary: "..."       # 1–2 sentence summary of the article
 tags: ["tag1", "tag2"]      # infer from content; use existing tag vocabulary where possible
 ---
@@ -63,7 +63,7 @@ tags: ["tag1", "tag2"]      # infer from content; use existing tag vocabulary wh
 
 - **title**: use the Obsidian file's H1 heading if present, otherwise derive from the filename.
 - **slug**: include this field only when the post lives in a subfolder (matches existing conventions).
-- **publishedAt**: use today's date.
+- **publishedAt**: use the current date **and time** (e.g. via `date +"%Y-%m-%dT%H:%M:%S"`), not just the date — this is a placeholder/target value, and the time component is what lets `/publish-post` tell apart multiple drafts created on the same day when picking which one is closest to now. `/publish-post` strips the time and overwrites this field with the actual publish date when the draft is published.
 - **summary**: write a concise 1–2 sentence summary that captures the main point.
 - **tags**: infer relevant tags from content. Common tags used on this site: `dev`, `ai`, `design`, `security`, `tutorial`, `casestudy`, `process`, `reflection`, `devops`, `datascience`, `git`, `vibecoding`, `lingobun`, `react`, `javascript`, `css`, `ux`, `ml`.
 
@@ -110,14 +110,14 @@ Transform the (now improved) Obsidian markdown body into MDX, following the styl
 
 ### 7. Write the output file
 
-Write the final MDX to:
-- `app/writings/posts/<category>/<slug>.mdx` if a category was chosen
-- `app/writings/posts/<slug>.mdx` if placed at root
+Write the final MDX to `app/_drafts/` (not `app/writings/posts/` — the post stays a draft until `/publish-post` moves it):
+- `app/_drafts/<category>/<slug>.mdx` if a category was chosen
+- `app/_drafts/<slug>.mdx` if placed at root
 
 ### 8. Report back
 
 After writing, print:
-- The output MDX file path
+- The output MDX file path (under `app/_drafts/`), and a note that it's a draft — run `/publish-post` when it's ready to go live
 - The public assets folder path (if any images were copied)
 - **Content changes made**: summarize what was improved — e.g. "expanded 3 outline sections into prose", "fixed incorrect event name `checkout.session.completed` → `invoice.payment_succeeded`", "tightened introduction paragraph"
 - **Flagged uncertainties**: any factual claims you were unsure about and left unchanged for review
