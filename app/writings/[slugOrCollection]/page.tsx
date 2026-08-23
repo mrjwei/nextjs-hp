@@ -121,7 +121,7 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
 
         <Link
           href={`/writings`}
-          className="inline-flex items-center gap-2 text-[var(--accent-text)] hover:underline transition-colors font-medium block mb-6"
+          className="inline-flex items-center gap-2 text-[var(--accent-text)] hover:underline transition-colors font-medium mb-6"
         >
           ← Back to All Writings
         </Link>

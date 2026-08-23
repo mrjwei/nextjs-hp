@@ -26,8 +26,8 @@ export function ReadingSeriesBadge({
           </Link>
         )}
         {nextHref && (
-          <Link href={nextHref} className="text-[var(--accent-text)] hover:underline">
-            Next part →
+          <Link href={nextHref} className="font-medium inline-flex items-center gap-2 text-[var(--accent-text)] hover:underline">
+            Next Part →
           </Link>
         )}
       </div>
