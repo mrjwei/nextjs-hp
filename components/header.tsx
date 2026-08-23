@@ -19,7 +19,7 @@ const navItems = {
     name: "Home",
   },
   "/writings": {
-    name: "Writing",
+    name: "Writings",
   },
   "/portfolio": {
     name: "Portfolio",
@@ -51,19 +51,30 @@ export function Header() {
                 <Menu className="size-6" />
               </button>
             </SheetTrigger>
-            <SheetContent side="right">
+            <SheetContent side="left">
               <SheetTitle className="font-serif text-lg">Jesse Wei</SheetTitle>
               <nav className="flex flex-col gap-1" aria-label="Mobile">
-                {Object.entries(navItems).map(([path, { name }]) => (
-                  <Link
-                    key={path}
-                    href={path}
-                    onClick={() => setIsMenuOpen(false)}
-                    className="rounded-md px-3 py-2.5 text-base font-medium text-[var(--text-body)] hover:bg-[var(--surface-active)] transition-colors"
-                  >
-                    {name}
-                  </Link>
-                ))}
+                {Object.entries(navItems).map(([path, { name }]) => {
+                  return path == pathName ? (
+                    <Link
+                      key={path}
+                      href={path}
+                      onClick={() => setIsMenuOpen(false)}
+                      className="rounded-md px-3 py-2.5 text-base font-medium text-[var(--text-body)] bg-[var(--surface-active)] transition-colors"
+                    >
+                      {name}
+                    </Link>
+                  ) : (
+                    <Link
+                      key={path}
+                      href={path}
+                      onClick={() => setIsMenuOpen(false)}
+                      className="rounded-md px-3 py-2.5 text-base font-medium text-[var(--text-body)] transition-colors"
+                    >
+                      {name}
+                    </Link>
+                  )
+                })}
               </nav>
             </SheetContent>
           </Sheet>
@@ -73,19 +84,36 @@ export function Header() {
             aria-label="Jesse Wei — home"
             className="flex items-center hover:opacity-80 transition-opacity"
           >
-            <Image src="/logo.svg" alt="Jesse Wei" width={28} height={28} sizes="28px" priority />
+            <Image
+              src="/logo.svg"
+              alt="Jesse Wei"
+              width={28}
+              height={28}
+              sizes="28px"
+              priority
+            />
           </Link>
 
           <nav className="hidden md:flex md:items-center md:gap-1" id="nav">
-            {Object.entries(navItems).map(([path, { name }]) => (
-              <Link
-                key={path}
-                href={path}
-                className="rounded-md px-3 py-1.5 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-strong)] hover:bg-[var(--surface-active)] transition-colors duration-150 ease-[var(--ease-out)]"
-              >
-                {name}
-              </Link>
-            ))}
+            {Object.entries(navItems).map(([path, { name }]) => {
+              return path == pathName ? (
+                <Link
+                  key={path}
+                  href={path}
+                  className="rounded-md px-3 py-1.5 text-sm font-medium text-[var(--text-strong)] bg-[var(--surface-active)] transition-colors duration-150 ease-[var(--ease-out)]"
+                >
+                  {name}
+                </Link>
+              ) : (
+                <Link
+                  key={path}
+                  href={path}
+                  className="rounded-md px-3 py-1.5 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-strong)] hover:bg-[var(--surface-active)] transition-colors duration-150 ease-[var(--ease-out)]"
+                >
+                  {name}
+                </Link>
+              )
+            })}
           </nav>
         </div>
 
