@@ -1,5 +1,5 @@
 import { Grid } from "@/components/grid"
-import { getAllSortedWritings } from "app/utils"
+import { getAllSortedWritings, getAllSortedWritingSeries } from "app/utils"
 import { normalizeTag, formatTagLabel } from "app/utils/tags"
 import { buildStandardMetadata } from "app/seo/metadata"
 import Link from "next/link"
@@ -42,8 +42,30 @@ export default async function Page() {
     }))
     .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label))
 
+  const series = getAllSortedWritingSeries().map((s) => ({
+    slug: s.slug,
+    title: s.title,
+    count: s.items.length,
+  }))
+
   return (
-    <WritingsTagFilter tags={tags} totalCount={writings.length}>
+    <WritingsTagFilter
+      tags={tags}
+      totalCount={writings.length}
+      series={series}
+      heading={
+        <>
+          <span className="eyebrow">Writing</span>
+          <h1 className="mt-3 mb-3 text-3xl md:text-4xl font-semibold tracking-tight text-[var(--text-strong)]">
+            Writing
+          </h1>
+          <p className="text-lg text-[var(--text-muted)] mb-6">
+            Technical and design writing — cryptography, AI agents, design
+            systems, and the reasoning behind them.
+          </p>
+        </>
+      }
+    >
       {writings.length === 0 ? (
         <div className="text-[var(--text-body)] bg-[var(--surface-card)] rounded-lg border border-[var(--border-subtle)] p-8 shadow-xs">
           <p className="mb-3 font-medium text-[var(--text-strong)]">No writings found.</p>

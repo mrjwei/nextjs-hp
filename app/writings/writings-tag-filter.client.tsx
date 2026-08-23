@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import Link from "next/link"
 import clsx from "clsx"
 import { normalizeTag } from "app/utils/tags"
 
@@ -10,6 +11,14 @@ export type TTagFacet = {
   count: number
   color: string
 }
+
+export type TSeriesFacet = {
+  slug: string
+  title: string
+  count: number
+}
+
+const SERIES_DEFAULT_VISIBLE = 4
 
 function parseSelectedTagsFromSearch(search: string): string[] {
   try {
@@ -74,6 +83,91 @@ function applyFilterToDom(selectedTags: string[]): number {
   }
 
   return visibleCount
+}
+
+function SeriesList({
+  series,
+  basePath,
+  variant,
+}: {
+  series: TSeriesFacet[]
+  basePath: string
+  variant: "desktop" | "mobile"
+}) {
+  const [expanded, setExpanded] = useState(false)
+
+  if (series.length === 0) return null
+
+  const currentSlug = basePath === "/writings" ? undefined : basePath.replace("/writings/", "")
+  const visible = expanded ? series : series.slice(0, SERIES_DEFAULT_VISIBLE)
+  const hiddenCount = series.length - SERIES_DEFAULT_VISIBLE
+
+  if (variant === "mobile") {
+    return (
+      <div className="mb-4">
+        <h2 className="eyebrow mb-2">Series</h2>
+        <div className={clsx("flex flex-wrap gap-2", expanded && "max-h-40 overflow-y-auto")}>
+          {visible.map((s) => (
+            <Link
+              key={s.slug}
+              href={`/writings/${s.slug}`}
+              className={clsx(
+                "flex items-center gap-2 border px-3 py-1.5 rounded-md text-sm font-medium transition-colors",
+                s.slug === currentSlug
+                  ? "bg-[var(--accent-subtle)] border-[var(--accent-border)] text-[var(--accent-text)]"
+                  : "bg-[var(--surface-card)] border-[var(--border-subtle)] text-[var(--text-body)] hover:bg-[var(--surface-hover)]"
+              )}
+            >
+              {s.title}
+              <span className="text-xs font-mono">{s.count}</span>
+            </Link>
+          ))}
+        </div>
+        {hiddenCount > 0 && (
+          <button
+            type="button"
+            onClick={() => setExpanded((e) => !e)}
+            className="mt-2 text-sm text-[var(--accent-text)] hover:underline font-medium"
+          >
+            {expanded ? "Show less" : `Show ${hiddenCount} more`}
+          </button>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="mb-6">
+      <h2 className="eyebrow mb-4">Series</h2>
+      <ul className={clsx("space-y-2 pr-1", expanded && "max-h-56 overflow-y-auto")}>
+        {visible.map((s) => (
+          <li key={s.slug}>
+            <Link
+              href={`/writings/${s.slug}`}
+              className={clsx(
+                "w-full flex justify-between items-center gap-2 border px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-150 ease-[var(--ease-out)]",
+                s.slug === currentSlug
+                  ? "bg-[var(--accent-subtle)] border-[var(--accent-border)] text-[var(--accent-text)]"
+                  : "bg-[var(--surface-card)] border-[var(--border-subtle)] text-[var(--text-body)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-default)]"
+              )}
+            >
+              <span>{s.title}</span>
+              <span className="text-xs font-mono min-w-6 text-center">{s.count}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+      {hiddenCount > 0 && (
+        <button
+          type="button"
+          onClick={() => setExpanded((e) => !e)}
+          className="mt-2 text-sm text-[var(--accent-text)] hover:underline font-medium"
+        >
+          {expanded ? "Show less" : `Show ${hiddenCount} more`}
+        </button>
+      )}
+    </div>
+  )
 }
 
 function TagList({
@@ -187,12 +281,18 @@ function TagList({
 }
 
 export function WritingsTagFilter({
+  basePath = "/writings",
   tags,
   totalCount,
+  series = [],
+  heading,
   children,
 }: {
+  basePath?: string
   tags: TTagFacet[]
   totalCount: number
+  series?: TSeriesFacet[]
+  heading: React.ReactNode
   children: React.ReactNode
 }) {
   const knownTags = useMemo(() => new Set(tags.map((t) => t.value)), [tags])
@@ -222,9 +322,9 @@ export function WritingsTagFilter({
     setVisibleCount(applyFilterToDom(selectedTags))
   }, [selectedTags])
 
-  // Intercept clicks on any in-page link that navigates to /writings (with or
-  // without a tags query), e.g. tag pills rendered on writing cards or on a
-  // writing's detail page, so toggling a tag never triggers a full reload.
+  // Intercept clicks on any in-page link that navigates to this page's own
+  // basePath (with or without a tags query), e.g. tag pills rendered on
+  // writing cards, so toggling a tag never triggers a full reload.
   useEffect(() => {
     const onClickCapture = (event: MouseEvent) => {
       if (event.defaultPrevented) return
@@ -241,7 +341,7 @@ export function WritingsTagFilter({
         return
       }
 
-      if (url.pathname !== "/writings") return
+      if (url.pathname !== basePath) return
 
       const explicitTag = anchor.getAttribute("data-tag")
       const rawTags = url.searchParams.get("tags")
@@ -251,7 +351,7 @@ export function WritingsTagFilter({
         event.stopPropagation()
 
         setSelectedTags([])
-        window.history.replaceState({}, "", "/writings")
+        window.history.replaceState({}, "", basePath)
         return
       }
 
@@ -269,7 +369,7 @@ export function WritingsTagFilter({
           ? current.filter((t) => t !== candidate)
           : [...current, candidate]
 
-        window.history.replaceState({}, "", `/writings${buildSearch(next)}`)
+        window.history.replaceState({}, "", `${basePath}${buildSearch(next)}`)
         return next
       })
     }
@@ -278,7 +378,7 @@ export function WritingsTagFilter({
     return () => {
       document.removeEventListener("click", onClickCapture, true)
     }
-  }, [knownTags])
+  }, [knownTags, basePath])
 
   const toggleTag = (tag: string) => {
     setSelectedTags((current) => {
@@ -286,14 +386,14 @@ export function WritingsTagFilter({
         ? current.filter((t) => t !== tag)
         : [...current, tag]
 
-      window.history.replaceState({}, "", `/writings${buildSearch(next)}`)
+      window.history.replaceState({}, "", `${basePath}${buildSearch(next)}`)
       return next
     })
   }
 
   const clearTags = () => {
     setSelectedTags([])
-    window.history.replaceState({}, "", "/writings")
+    window.history.replaceState({}, "", basePath)
   }
 
   const selected = new Set(selectedTags)
@@ -305,6 +405,8 @@ export function WritingsTagFilter({
   return (
     <section className="grid grid-cols-12 gap-8 pt-[var(--header-height)]">
       <aside className="hidden md:block bg-[var(--surface-sunken)] border-r border-[var(--border-subtle)] p-8 md:col-span-3 sticky md:top-[var(--header-height)] h-screen overflow-y-auto">
+        <SeriesList series={series} basePath={basePath} variant="desktop" />
+
         <h2 className="eyebrow mb-4">Filter by tag</h2>
         <TagList
           tags={tags}
@@ -318,16 +420,10 @@ export function WritingsTagFilter({
 
       <div className="col-span-12 px-6 py-8 md:col-span-9 md:pl-0 md:pr-8">
         <div className="mb-8">
-          <span className="eyebrow">Writing</span>
-          <h1 className="mt-3 mb-3 text-3xl md:text-4xl font-semibold tracking-tight text-[var(--text-strong)]">
-            Writing
-          </h1>
-          <p className="text-lg text-[var(--text-muted)] mb-6">
-            Technical and design writing — cryptography, AI agents, design
-            systems, and the reasoning behind them.
-          </p>
+          {heading}
 
           <div className="block md:hidden mb-4">
+            <SeriesList series={series} basePath={basePath} variant="mobile" />
             <TagList
               tags={tags}
               selected={selected}

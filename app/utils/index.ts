@@ -363,6 +363,39 @@ export const getSeriesParts = cache((partOf: string) => {
     .sort((a, b) => (a.metadata.partNumber ?? 0) - (b.metadata.partNumber ?? 0))
 })
 
+export type TWritingSeries = {
+  slug: string
+  title: string
+  items: TContentMeta[]
+}
+
+export const getAllSortedWritingSeries = cache((): TWritingSeries[] => {
+  const bySlug = new Map<string, TContentMeta[]>()
+
+  for (const writing of getAllSortedWritings()) {
+    const slug = writing.metadata.partOf
+    if (!slug) continue
+    if (!bySlug.has(slug)) bySlug.set(slug, [])
+    bySlug.get(slug)!.push(writing)
+  }
+
+  const result = Array.from(bySlug.entries()).map(([slug, items]) => {
+    const sorted = [...items].sort(
+      (a, b) => (a.metadata.partNumber ?? 0) - (b.metadata.partNumber ?? 0)
+    )
+    const title =
+      sorted.find((i) => i.metadata.partOfTitle)?.metadata.partOfTitle ?? slug
+
+    return { slug, title, items: sorted }
+  })
+
+  result.sort(
+    (a, b) => b.items.length - a.items.length || a.title.localeCompare(b.title)
+  )
+
+  return result
+})
+
 export function getWritingBySlug(slug: string): TContentItem | null {
   const index = readContentIndex()
   const indexed = index?.writings?.find((item) => item.slug === slug)
