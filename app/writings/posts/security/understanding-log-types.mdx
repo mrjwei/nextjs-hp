@@ -1,0 +1,117 @@
+---
+title: "Understanding the Log Types in a Wazuh + Claude Security Pipeline"
+slug: "understanding-log-types"
+publishedAt: "2026-08-23"
+summary: "A field guide to the five log types flowing through my IFN737 research pipeline — from raw attack execution logs to Wazuh alerts to Claude's structured classifications — and how they connect."
+tags: ["security", "ai", "dev"]
+partOf: "ai-assisted-siem-workflow"
+partOfTitle: "AI-Assisted SIEM Workflow"
+partNumber: 1
+---
+
+- [Log Type 1: Attack Simulation Ground Truth](#log-type-1-attack-simulation-ground-truth)
+- [Log Type 2: Application Logs](#log-type-2-application-logs)
+- [Log Type 3: HTTP Access Logs](#log-type-3-http-access-logs)
+- [Log Type 4: Wazuh Alerts](#log-type-4-wazuh-alerts)
+- [Log Type 5: VM System Logs](#log-type-5-vm-system-logs)
+- [How the Log Types Connect](#how-the-log-types-connect)
+
+For my IFN738 research capstone, I'm evaluating how well an LLM can triage security alerts compared to a traditional SIEM. The setup runs simulated attacks against a deliberately vulnerable app ([OWASP Juice Shop](https://owasp.org/www-project-juice-shop/)), lets [Wazuh](https://wazuh.com/) detect what it can from the resulting traffic, and then hands Wazuh's alerts to Claude for a second, LLM-generated classification. Comparing the three — what was actually executed, what Wazuh flagged, and what Claude classified — is the core of the research design.
+
+That comparison only works if I'm precise about which log came from where. Five distinct log types pass through the pipeline, and mixing them up (or feeding the wrong one to the wrong stage) would quietly invalidate the results. This post is my reference for what each one is, where it lives, and what role it plays.
+
+## Log Type 1: Attack Simulation Ground Truth
+
+**Where:** Written by `attacks.py` (WP1) on the Ubuntu VM as each attack step executes against Juice Shop.
+
+**What it contains:** One structured record per attack action, labelled with the OWASP category and a human-readable description — this is the "answer key" for the whole pipeline:
+
+```json
+{
+  "session": "20260501_081327",
+  "timestamp": "2026-05-01T08:13:27Z",
+  "category": "A03",
+  "label": "sql_injection",
+  "description": "Login bypass via SQL injection"
+}
+```
+
+**Role in the project:** This is the ground truth against which both Wazuh's detections (WP2) and Claude's classifications (WP3) are scored — the basis of the three-way comparison for RQ1 and RQ2. It shares no field with a Wazuh alert object, so mapping this log to the Wazuh alerts (Log Type 4) relies on a timestamp-proximity and URL-pattern heuristic, disambiguated by HTTP status code. That's a documented methodological limitation I haven't fully resolved yet.
+
+## Log Type 2: Application Logs
+
+**Where:** Inside the Docker container, viewable via `docker logs juice-shop`.
+
+**What it contains:** Application-level events — server startup, challenge completions, errors, restored progress:
+
+```
+info: Server listening on port 3000
+info: Solved 2-star loginAdminChallenge (Login Admin)
+info: Port 3000 is available (OK)
+```
+
+**Role in the project:** Minimal direct value. Useful for confirming a challenge was triggered, but not for security event analysis, so these are not fed to Wazuh or Claude.
+
+## Log Type 3: HTTP Access Logs
+
+**Where:** `~/juice-shop/logs/access.log.YYYY-MM-DD` on the VM host, written via the volume mount.
+
+**What it contains:** Every HTTP request Juice Shop receives, in Apache combined format:
+
+```
+::ffff:172.17.0.1 - - [24/Apr/2026:00:28:22 +0000] "POST /rest/user/login HTTP/1.1" 401 26 "-" "curl/8.5.0"
+```
+
+**Role in the project:** This is the raw data source for detection. The Wazuh agent watches this file, parses each line, and generates alerts when rules match — it's the bridge between WP1 and WP2. Without this file, Wazuh sees nothing from Juice Shop.
+
+## Log Type 4: Wazuh Alerts
+
+**Where:** Inside the Wazuh manager container at `/var/ossec/logs/alerts/alerts.json`, also reachable via the API on port 55000 and indexed into OpenSearch (`wazuh-alerts-4.x-*`).
+
+**What it contains:** Structured JSON objects generated when Wazuh's detection rules fire against the access log lines. Each alert includes rule metadata, MITRE ATT&CK mappings, severity level, the original log line, and decoded fields:
+
+```json
+{
+  "timestamp": "2026-04-24T00:28:22.647+0000",
+  "rule": {"level": 6, "description": "A web attack returned code 200 (success)", "id": "31106"},
+  "data": {"protocol": "POST", "srcip": "::ffff:172.17.0.1", "url": "/rest/user/login"},
+  "full_log": "::ffff:172.17.0.1 - - [24/Apr/2026:00:28:22 +0000] ...",
+  "location": "/home/jesse/juice-shop/logs/access.log.2026-04-24"
+}
+```
+
+**Role in the project:** This is the input to the LLM layer (WP3). `wp2_collector.py` retrieves these alerts via the OpenSearch indexer and hands them to Claude, which returns a 7-field structured JSON output for analyst triage. These alerts are also the second leg of the three-way comparison: what Wazuh detected versus what was actually executed (Log Type 1) versus what Claude classified.
+
+## Log Type 5: VM System Logs
+
+**Where:** The system journal (`journald`) on the Ubuntu VM, also monitored by Wazuh.
+
+**What it contains:** OS-level events — SSH sessions, sudo commands, PAM authentication, package installations, agent start/stop. These filled early `alerts.json` output before Juice Shop logging was working correctly.
+
+**Role in the project:** Noise, for research purposes. These are filtered out before alerts reach Claude — `wp2_collector.py` already restricts collection to `location=/home/jesse/juice-shop/logs/access.log*`.
+
+## How the Log Types Connect
+
+```
+Attack script (attacks.py) executes
+    ├──> attack_log.jsonl (Log Type 1) ── ground truth
+    │
+    ↓
+Juice Shop receives HTTP requests
+    ↓
+Morgan writes to access.log (Log Type 3) ── primary raw data
+    ↓
+Wazuh agent reads access.log
+    ↓
+Wazuh manager fires rules → alerts.json / OpenSearch (Log Type 4)
+    ↓
+wp2_collector.py retrieves alerts (filtered to Juice Shop access log only)
+    ↓
+Claude API (Sonnet, via Anthropic API) analyses alerts
+    ↓
+Structured 7-field JSON output ── WP3 output, scored against Log Type 1
+```
+
+_(Log Type 5 — VM journald — sits outside this chain; it's filtered out before reaching WP3. Log Type 2 — the application's stdout — sits outside it too, since it's read manually rather than by any pipeline stage.)_
+
+Keeping these five straight is what makes the eventual comparison trustworthy: Log Type 1 defines what "correct" means, Log Type 4 is what a conventional SIEM manages to catch, and the Claude output scored against both is what actually answers my research questions. Log Types 2 and 5 exist for debugging visibility, not evaluation — worth having on hand when something in the pipeline looks wrong, but they don't feed the results.
