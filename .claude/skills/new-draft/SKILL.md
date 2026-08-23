@@ -86,7 +86,7 @@ Classify the article into one or more of these states and handle each accordingl
 
 - **Incorrect or inaccurate content**: signs include factual errors you can identify (wrong API names, outdated behavior, incorrect technical descriptions, broken logic in explanations). → Correct the errors. If you are confident the information is wrong, fix it and note the correction in your final report. If you are uncertain, flag it in the report rather than silently changing it.
 
-These states are not mutually exclusive — an article can be all three. Apply all relevant improvements.
+These states are not mutually exclusive — an article can be all three. Apply all relevant improvements. Add context such as project background, relevant concepts, etc. to begin the article if it starts abruptly. Add a conclusion or next steps if the article ends abruptly.
 
 **5b. Preserve the author's intent and voice**
 
