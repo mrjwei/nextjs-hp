@@ -14,6 +14,7 @@ import { BackToTop } from "@/components/back-to-top"
 import { WritingCard } from "@/components/article-card"
 import { Tags } from "@/components/tags"
 import { ReadingSeriesBadge } from "@/components/reading-series"
+import { BackLink } from "@/components/back-link"
 import { SeriesView } from "app/writings/series-view"
 import { baseUrl } from "app/sitemap"
 
@@ -53,7 +54,7 @@ export function generateMetadata({ params }) {
   const series = getAllSortedWritingSeries().find((s) => s.slug === slugOrCollection)
   if (series) {
     return buildStandardMetadata({
-      title: `Writing — ${series.title}`,
+      title: `Writings — ${series.title}`,
       description: `${series.items.length} posts in the "${series.title}" series.`,
       pathname: `/writings/${slugOrCollection}`,
     })
@@ -102,18 +103,37 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
       : []
     const partIndex = seriesParts.findIndex((w) => w.slug === writing.slug)
 
+    const backHref = writing.metadata.partOf ? `/writings/${writing.metadata.partOf}` : "/writings"
+    const backLabel = writing.metadata.partOf ? "Back to Series Top" : "Back to All Writings"
+
     return (
       <div className="w-full max-w-[1024px] mx-auto px-8 md:px-16 py-24">
         <section className="pb-16 bg-[var(--surface-card)] rounded-lg shadow-xs border border-[var(--border-subtle)] p-8 md:p-12">
-          <nav aria-label="Breadcrumb" className="text-sm text-[var(--text-muted)] mb-4">
-            <Link href="/" className="hover:underline hover:text-[var(--text-strong)] transition-colors">
-              Home
-            </Link>
-            <span className="mx-2 text-[var(--text-subtle)]">/</span>
-            <Link href="/writings" className="hover:underline hover:text-[var(--text-strong)] transition-colors">
-              Writings
-            </Link>
-          </nav>
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-x-4 gap-y-2 mb-6">
+            <nav aria-label="Breadcrumb" className="min-w-0 sm:flex-1 text-sm text-[var(--text-muted)]">
+              <Link href="/" className="hover:underline hover:text-[var(--text-strong)] transition-colors">
+                Home
+              </Link>
+              <span className="mx-2 text-[var(--text-subtle)]">/</span>
+              <Link href="/writings" className="hover:underline hover:text-[var(--text-strong)] transition-colors">
+                Writings
+              </Link>
+              {writing.metadata.partOf && (
+                <>
+                  <span className="mx-2 text-[var(--text-subtle)]">/</span>
+                  <Link
+                    href={`/writings/${writing.metadata.partOf}`}
+                    className="hover:underline hover:text-[var(--text-strong)] transition-colors"
+                  >
+                    {writing.metadata.partOfTitle ?? writing.metadata.partOf}
+                  </Link>
+                </>
+              )}
+              <span className="mx-2 text-[var(--text-subtle)]">/</span>
+              <span className="text-[var(--text-strong)]">{writing.metadata.title}</span>
+            </nav>
+            <BackLink href={backHref} label={backLabel} />
+          </div>
 
           <script
             type="application/ld+json"
@@ -137,13 +157,6 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
               }),
             }}
           />
-
-          <Link
-            href={`/writings`}
-            className="inline-flex items-center gap-2 text-[var(--accent-text)] hover:underline transition-colors font-medium mb-6"
-          >
-            ← Back to All Writings
-          </Link>
 
           <h1 className="display text-4xl mb-4">
             {writing.metadata.title}
@@ -188,10 +201,10 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
 
           <div className="mt-8 flex flex-col md:flex-row md:justify-between items-center pt-8 border-t border-[var(--border-subtle)]">
             <Link
-              href={`/writings`}
+              href={backHref}
               className="inline-flex items-center gap-2 text-[var(--accent-text)] hover:underline transition-colors font-medium mb-4 md:mb-0"
             >
-              ← Back to All Writings
+              ← {backLabel}
             </Link>
             <PrevNext
               items={collectionItems}

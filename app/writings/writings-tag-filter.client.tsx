@@ -203,23 +203,27 @@ function TagList({
         </button>
         {tags.map((tag) => {
           const isSelected = selected.has(tag.value)
+          const isDisabled = tag.count === 0
           return (
             <button
               key={tag.value}
               type="button"
+              disabled={isDisabled}
               aria-pressed={isSelected}
               onClick={() => onToggle(tag.value)}
               className={clsx(
                 "flex items-center gap-2 border px-3 py-1.5 rounded-md text-sm font-medium transition-colors",
-                isSelected
-                  ? "bg-[var(--surface-card)]"
-                  : "bg-[var(--surface-card)] border-[var(--border-subtle)] text-[var(--text-body)] hover:bg-[var(--surface-hover)]"
+                isDisabled
+                  ? "bg-[var(--surface-card)] border-[var(--border-subtle)] text-[var(--text-subtle)] opacity-50 cursor-not-allowed"
+                  : isSelected
+                    ? "bg-[var(--surface-card)]"
+                    : "bg-[var(--surface-card)] border-[var(--border-subtle)] text-[var(--text-body)] hover:bg-[var(--surface-hover)]"
               )}
-              style={isSelected ? { borderColor: tag.color, color: tag.color } : undefined}
+              style={isSelected && !isDisabled ? { borderColor: tag.color, color: tag.color } : undefined}
             >
               <span
                 className="w-2 h-2 rounded-full shrink-0"
-                style={{ backgroundColor: tag.color }}
+                style={{ backgroundColor: tag.color, opacity: isDisabled ? 0.5 : 1 }}
               />
               {tag.label}
               <span className="text-xs font-mono">{tag.count}</span>
@@ -231,52 +235,59 @@ function TagList({
   }
 
   return (
-    <ul className="space-y-2">
-      <li>
-        <button
-          type="button"
-          onClick={onClear}
-          className={clsx(
-            "w-full flex justify-between items-center gap-2 border px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-150 ease-[var(--ease-out)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]",
-            selected.size === 0
-              ? "bg-[var(--accent-subtle)] border-[var(--accent-border)] text-[var(--accent-text)]"
-              : "bg-[var(--surface-card)] border-[var(--border-subtle)] text-[var(--text-body)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-default)]"
-          )}
-        >
-          <span>All</span>
-          <span className="text-xs font-mono min-w-6 text-center">{totalCount}</span>
-        </button>
-      </li>
-      {tags.map((tag) => {
-        const isSelected = selected.has(tag.value)
-        return (
-          <li key={tag.value}>
-            <label
-              className={clsx(
-                "w-full flex items-center gap-2 border px-3 py-1.5 rounded-md text-sm font-medium cursor-pointer transition-colors duration-150 ease-[var(--ease-out)]",
-                isSelected
-                  ? "bg-[var(--surface-card)]"
-                  : "bg-[var(--surface-card)] border-[var(--border-subtle)] text-[var(--text-body)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-default)]"
-              )}
-              style={isSelected ? { borderColor: tag.color, color: tag.color } : undefined}
-            >
-              <input
-                type="checkbox"
-                className="shrink-0"
-                checked={isSelected}
-                onChange={() => onToggle(tag.value)}
-              />
-              <span
-                className="w-2 h-2 rounded-full shrink-0"
-                style={{ backgroundColor: tag.color }}
-              />
-              <span className="flex-1">{tag.label}</span>
-              <span className="text-xs font-mono min-w-6 text-center">{tag.count}</span>
-            </label>
-          </li>
-        )
-      })}
-    </ul>
+    <>
+      <button
+        type="button"
+        onClick={onClear}
+        className={clsx(
+          "w-full flex justify-between items-center gap-2 border px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-150 ease-[var(--ease-out)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]",
+          selected.size === 0
+            ? "bg-[var(--accent-subtle)] border-[var(--accent-border)] text-[var(--accent-text)]"
+            : "bg-[var(--surface-card)] border-[var(--border-subtle)] text-[var(--text-body)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-default)]"
+        )}
+      >
+        <span>All</span>
+        <span className="text-xs font-mono min-w-6 text-center">{totalCount}</span>
+      </button>
+      <ul className="space-y-2 mt-2 max-h-64 overflow-y-auto pr-1">
+        {tags.map((tag) => {
+          const isSelected = selected.has(tag.value)
+          const isDisabled = tag.count === 0
+          return (
+            <li key={tag.value}>
+              <label
+                className={clsx(
+                  "w-full flex items-center gap-2 border px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-150 ease-[var(--ease-out)]",
+                  isDisabled
+                    ? "bg-[var(--surface-card)] border-[var(--border-subtle)] text-[var(--text-subtle)] opacity-50 cursor-not-allowed"
+                    : clsx(
+                        "cursor-pointer",
+                        isSelected
+                          ? "bg-[var(--surface-card)]"
+                          : "bg-[var(--surface-card)] border-[var(--border-subtle)] text-[var(--text-body)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-default)]"
+                      )
+                )}
+                style={isSelected && !isDisabled ? { borderColor: tag.color, color: tag.color } : undefined}
+              >
+                <input
+                  type="checkbox"
+                  className="shrink-0"
+                  disabled={isDisabled}
+                  checked={isSelected}
+                  onChange={() => onToggle(tag.value)}
+                />
+                <span
+                  className="w-2 h-2 rounded-full shrink-0"
+                  style={{ backgroundColor: tag.color, opacity: isDisabled ? 0.5 : 1 }}
+                />
+                <span className="flex-1">{tag.label}</span>
+                <span className="text-xs font-mono min-w-6 text-center">{tag.count}</span>
+              </label>
+            </li>
+          )
+        })}
+      </ul>
+    </>
   )
 }
 

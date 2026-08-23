@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Grid } from "@/components/grid"
+import { BackLink } from "@/components/back-link"
 import { WritingsTagFilter, TSeriesFacet } from "app/writings/writings-tag-filter.client"
 import { normalizeTag, formatTagLabel } from "app/utils/tags"
 import type { TContentMeta } from "app/utils"
@@ -62,15 +63,11 @@ export function SeriesView({
             <span className="text-[var(--text-strong)]">{seriesTitle}</span>
           </nav>
 
-          <Link
-            href="/writings"
-            className="inline-flex items-center gap-2 text-[var(--accent-text)] hover:underline transition-colors font-medium mb-4"
-          >
-            ← Back to All Writings
-          </Link>
-
-          <span className="eyebrow block">Series</span>
-          <h1 className="mt-3 mb-3 text-3xl md:text-4xl font-semibold tracking-tight text-[var(--text-strong)]">
+          <div className="flex items-center justify-between mb-3">
+            <span className="eyebrow">Series</span>
+            <BackLink href="/writings" label="Back to All Writings" />
+          </div>
+          <h1 className="mb-3 text-3xl md:text-4xl font-semibold tracking-tight text-[var(--text-strong)]">
             {seriesTitle}
           </h1>
           <p className="text-lg text-[var(--text-muted)] mb-6">

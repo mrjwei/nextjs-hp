@@ -7,7 +7,7 @@ import { WritingsTagFilter } from "app/writings/writings-tag-filter.client"
 import tagsData from "app/data/tags.json"
 
 export const metadata = buildStandardMetadata({
-  title: "Writing",
+  title: "Writings",
   description:
     "Technical and design writing — cryptography, AI agents, design systems, and the reasoning behind them.",
   pathname: "/writings",
@@ -55,9 +55,9 @@ export default async function Page() {
       series={series}
       heading={
         <>
-          <span className="eyebrow">Writing</span>
+          <span className="eyebrow">Writings</span>
           <h1 className="mt-3 mb-3 text-3xl md:text-4xl font-semibold tracking-tight text-[var(--text-strong)]">
-            Writing
+            Writings
           </h1>
           <p className="text-lg text-[var(--text-muted)] mb-6">
             Technical and design writing — cryptography, AI agents, design
