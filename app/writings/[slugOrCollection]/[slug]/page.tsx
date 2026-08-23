@@ -6,20 +6,12 @@ import { BackToTop } from "@/components/back-to-top"
 import { WritingCard } from "@/components/article-card"
 import { Tags } from "@/components/tags"
 import {
-  ParseSeriesDirName,
   formatDate,
   getAllSortedWritings,
   getWritingBySlug,
 } from "app/utils"
 import { baseUrl } from "app/sitemap"
 import { buildStandardMetadata } from "app/seo/metadata"
-
-function formatCollectionLabel(value: string) {
-  if (value.includes("-")) return ParseSeriesDirName(value)
-  if (value.length <= 4) return value.toUpperCase()
-  return value
-}
-
 
 export async function generateStaticParams() {
   const writings = getAllSortedWritings()
@@ -103,10 +95,6 @@ export default async function WritingInCollection({ params, searchParams }) {
           <Link href="/writings" className="hover:underline hover:text-[var(--text-strong)] transition-colors">
             Writings
           </Link>
-          <span className="mx-2 text-[var(--text-subtle)]">/</span>
-          <Link href={`/writings/${collection}`} className="hover:underline hover:text-[var(--text-strong)] transition-colors">
-            {formatCollectionLabel(collection)}
-          </Link>
         </nav>
 
         <script
@@ -133,10 +121,10 @@ export default async function WritingInCollection({ params, searchParams }) {
         />
 
         <Link
-          href={`/writings/${collection}`}
+          href="/writings"
           className="inline-flex items-center gap-2 text-[var(--accent-text)] hover:underline transition-colors font-medium block mb-6"
         >
-          ← Back to Collection
+          ← Back to All Writings
         </Link>
 
         <h1 className="display text-4xl mb-4">
@@ -169,10 +157,10 @@ export default async function WritingInCollection({ params, searchParams }) {
 
         <div className="mt-8 flex flex-col md:flex-row md:justify-between items-center pt-8 border-t border-[var(--border-subtle)]">
           <Link
-            href={`/writings/${collection}`}
+            href="/writings"
             className="inline-flex items-center gap-2 text-[var(--accent-text)] hover:underline transition-colors font-medium mb-4 md:mb-0"
           >
-            ← Back to Collection
+            ← Back to All Writings
           </Link>
           <PrevNext
             items={collectionItems}

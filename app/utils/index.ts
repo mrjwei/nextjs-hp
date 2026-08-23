@@ -321,52 +321,6 @@ const getSlugToPathMap = cache((kind: ContentKind) => {
   return map
 })
 
-export function getSeries() {
-  return getAllSortedSeries().map((s) => s.subdir)
-}
-
-export const getAllSortedSeries = cache(() => {
-  const all = getAllSortedWritings()
-  const bySeries = new Map<string, TContentMeta[]>()
-
-  for (const item of all) {
-    const seriesSlug = item.metadata.series
-    if (!seriesSlug) continue
-    if (!bySeries.has(seriesSlug)) bySeries.set(seriesSlug, [])
-    bySeries.get(seriesSlug)!.push(item)
-  }
-
-  const result = Array.from(bySeries.entries()).map(([subdir, items]) => {
-    const hasOrder = items.some(
-      (i) => typeof i.metadata.seriesOrder === "number"
-    )
-
-    const sorted = [...items].sort((a, b) => {
-      if (hasOrder) {
-        const ao = a.metadata.seriesOrder ?? Number.POSITIVE_INFINITY
-        const bo = b.metadata.seriesOrder ?? Number.POSITIVE_INFINITY
-        if (ao !== bo) return ao - bo
-      }
-
-      return new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
-        ? -1
-        : 1
-    })
-
-    return { subdir, items: sorted }
-  })
-
-  result.sort((a, b) =>
-    ParseSeriesDirName(a.subdir).localeCompare(ParseSeriesDirName(b.subdir))
-  )
-
-  return result
-})
-
-export const getAllSortedSeriesItems = cache(() => {
-  return getAllSortedSeries().flatMap((s) => s.items)
-})
-
 export const getAllSortedWritings = cache(() => {
   const index = readContentIndex()
   if (process.env.NODE_ENV === "production" && index?.writings?.length) {
