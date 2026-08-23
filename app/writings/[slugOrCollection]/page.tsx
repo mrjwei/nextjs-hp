@@ -1,12 +1,13 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { getAllSortedWritings, getWritingBySlug, formatDate } from "app/utils"
+import { getAllSortedWritings, getWritingBySlug, getWritingHref, formatDate } from "app/utils"
 import { buildStandardMetadata } from "app/seo/metadata"
 import { CustomMDX } from "@/components/mdx"
 import { PrevNext } from "@/components/prev-next"
 import { BackToTop } from "@/components/back-to-top"
 import { WritingCard } from "@/components/article-card"
 import { Tags } from "@/components/tags"
+import { ReadingSeriesBadge } from "@/components/reading-series"
 import { baseUrl } from "app/sitemap"
 
 export const dynamic = "force-static"
@@ -75,6 +76,13 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
   const collectionItems = writings.filter(w => !w.metadata.series)
   const writingIndex = collectionItems.findIndex(w => w.slug === writing.slug)
 
+  const seriesParts = writing.metadata.partOf
+    ? writings
+        .filter((w) => w.metadata.partOf === writing.metadata.partOf)
+        .sort((a, b) => (a.metadata.partNumber ?? 0) - (b.metadata.partNumber ?? 0))
+    : []
+  const partIndex = seriesParts.findIndex((w) => w.slug === writing.slug)
+
   return (
     <div className="w-full max-w-[1024px] mx-auto px-8 md:px-16 py-24">
       <section className="pb-16 bg-[var(--surface-card)] rounded-lg shadow-xs border border-[var(--border-subtle)] p-8 md:p-12">
@@ -121,6 +129,19 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
         <h1 className="display text-4xl mb-4">
           {writing.metadata.title}
         </h1>
+        {seriesParts.length > 1 && partIndex !== -1 && (
+          <ReadingSeriesBadge
+            title={writing.metadata.partOfTitle ?? writing.metadata.partOf!}
+            partNumber={partIndex + 1}
+            total={seriesParts.length}
+            prevHref={partIndex > 0 ? getWritingHref(seriesParts[partIndex - 1]) : undefined}
+            nextHref={
+              partIndex < seriesParts.length - 1
+                ? getWritingHref(seriesParts[partIndex + 1])
+                : undefined
+            }
+          />
+        )}
         <Tags
           tags={writing.metadata.tags}
           className="mb-4"

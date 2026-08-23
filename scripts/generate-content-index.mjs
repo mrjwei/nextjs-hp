@@ -195,6 +195,10 @@ function buildIndexSection(sectionKey, config) {
     const seriesTitle = typeof meta.seriesTitle === "string" ? meta.seriesTitle : undefined;
     const seriesOrder = Number.isInteger(meta.seriesOrder) && meta.seriesOrder >= 0 ? meta.seriesOrder : undefined;
 
+    const partOf = typeof meta.partOf === "string" ? meta.partOf : undefined;
+    const partOfTitle = typeof meta.partOfTitle === "string" ? meta.partOfTitle : undefined;
+    const partNumber = Number.isInteger(meta.partNumber) && meta.partNumber > 0 ? meta.partNumber : undefined;
+
     const tagsWithSeries = series && !tags.includes(series) ? [...tags, series] : tags;
 
     if (meta.shouldBreakWord != null && typeof meta.shouldBreakWord !== "boolean") {
@@ -217,6 +221,9 @@ function buildIndexSection(sectionKey, config) {
         series,
         seriesTitle: series ? (seriesTitle || titleCaseFromSlug(series)) : undefined,
         seriesOrder: series ? seriesOrder : undefined,
+        partOf,
+        partOfTitle,
+        partNumber,
       },
       content,
     };

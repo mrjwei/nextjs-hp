@@ -14,6 +14,9 @@ export type TMetadata = {
   series?: string
   seriesTitle?: string
   seriesOrder?: number
+  partOf?: string
+  partOfTitle?: string
+  partNumber?: number
 }
 
 export type TContentMeta = {
@@ -79,6 +82,9 @@ const baseFrontmatterSchema = z.object({
   series: z.string().min(1).optional(),
   seriesTitle: z.string().min(1).optional(),
   seriesOrder: z.number().int().nonnegative().optional(),
+  partOf: z.string().min(1).optional(),
+  partOfTitle: z.string().min(1).optional(),
+  partNumber: z.number().int().positive().optional(),
 })
 
 const writingFrontmatterSchema = baseFrontmatterSchema.extend({
@@ -343,6 +349,18 @@ export const getAllSortedWritings = cache(() => {
       : 1
   )
   return writings
+})
+
+export function getWritingHref(writing: TContentMeta) {
+  return writing.metadata.series
+    ? `/writings/${writing.metadata.series}/${writing.slug}`
+    : `/writings/${writing.slug}`
+}
+
+export const getSeriesParts = cache((partOf: string) => {
+  return getAllSortedWritings()
+    .filter((w) => w.metadata.partOf === partOf)
+    .sort((a, b) => (a.metadata.partNumber ?? 0) - (b.metadata.partNumber ?? 0))
 })
 
 export function getWritingBySlug(slug: string): TContentItem | null {

@@ -5,10 +5,12 @@ import { PrevNext } from "@/components/prev-next"
 import { BackToTop } from "@/components/back-to-top"
 import { WritingCard } from "@/components/article-card"
 import { Tags } from "@/components/tags"
+import { ReadingSeriesBadge } from "@/components/reading-series"
 import {
   formatDate,
   getAllSortedWritings,
   getWritingBySlug,
+  getWritingHref,
 } from "app/utils"
 import { baseUrl } from "app/sitemap"
 import { buildStandardMetadata } from "app/seo/metadata"
@@ -62,6 +64,13 @@ export default async function WritingInCollection({ params, searchParams }) {
   )
 
   const writingIndex = collectionItems.findIndex((w) => w.slug === params.slug)
+
+  const seriesParts = writing.metadata.partOf
+    ? writings
+        .filter((w) => w.metadata.partOf === writing.metadata.partOf)
+        .sort((a, b) => (a.metadata.partNumber ?? 0) - (b.metadata.partNumber ?? 0))
+    : []
+  const partIndex = seriesParts.findIndex((w) => w.slug === writing.slug)
 
   const writingTagSet = new Set(writing.metadata.tags)
 
@@ -130,6 +139,19 @@ export default async function WritingInCollection({ params, searchParams }) {
         <h1 className="display text-4xl mb-4">
           {writing.metadata.title}
         </h1>
+        {seriesParts.length > 1 && partIndex !== -1 && (
+          <ReadingSeriesBadge
+            title={writing.metadata.partOfTitle ?? writing.metadata.partOf!}
+            partNumber={partIndex + 1}
+            total={seriesParts.length}
+            prevHref={partIndex > 0 ? getWritingHref(seriesParts[partIndex - 1]) : undefined}
+            nextHref={
+              partIndex < seriesParts.length - 1
+                ? getWritingHref(seriesParts[partIndex + 1])
+                : undefined
+            }
+          />
+        )}
         <Tags
           tags={writing.metadata.tags}
           className="mb-4"
