@@ -20,23 +20,6 @@ export default async function sitemap() {
     }
   })
 
-  const collectionToLatestPublishedAt = new Map<string, string>()
-  for (const w of writingsList) {
-    const collection = primaryCollectionSlug(w.metadata)
-    if (!collection) continue
-    const existing = collectionToLatestPublishedAt.get(collection)
-    if (!existing || new Date(w.metadata.publishedAt) > new Date(existing)) {
-      collectionToLatestPublishedAt.set(collection, w.metadata.publishedAt)
-    }
-  }
-
-  const collectionRoutes = Array.from(collectionToLatestPublishedAt.entries()).map(
-    ([collection, lastModified]) => ({
-      url: `${baseUrl}/writings/${collection}`,
-      lastModified,
-    })
-  )
-
   const portfolioList = getAllSortedPortfolio()
   let portfolio = portfolioList.map((item) => ({
     url: `${baseUrl}/portfolio/${item.slug}`,
@@ -67,5 +50,5 @@ export default async function sitemap() {
     { url: `${baseUrl}/portfolio`, lastModified: portfolioLastMod },
   ]
 
-  return [...routes, ...collectionRoutes, ...writings, ...portfolio]
+  return [...routes, ...writings, ...portfolio]
 }
