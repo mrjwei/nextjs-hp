@@ -1,0 +1,135 @@
+---
+title: "Deterministic Attack-to-Alert Mapping with Correlation IDs"
+slug: "deterministic-attack-to-alert-mapping"
+publishedAt: "2026-08-25"
+summary: "Timestamp-proximity matching between attack ground truth and Wazuh alerts wasn't reliable enough for evaluation, so I threaded a correlation ID through the whole pipeline via the HTTP Referer header to get a deterministic join instead."
+tags: ["security", "dev"]
+partOf: "ai-assisted-siem-workflow"
+partOfTitle: "AI-Assisted SIEM Workflow"
+partNumber: 2
+---
+
+- [The Problem: Generic Alerts, Ambiguous Timestamps](#the-problem-generic-alerts-ambiguous-timestamps)
+- [The Solution: Correlation IDs](#the-solution-correlation-ids)
+- [The Result](#the-result)
+
+In my IFN738 research capstone pipeline, WP1 (attack simulation) produces a ground-truth log of every attack executed against a target app, and WP2 (Wazuh) produces alerts from watching that app's HTTP traffic. Scoring the pipeline depends on matching the two up — knowing exactly which attack, if any, produced which alert. Until recently, that match was a guess: nearest-timestamp matching. This post covers how I replaced it with a deterministic join.
+
+## The Problem: Generic Alerts, Ambiguous Timestamps
+
+Different attack types can hit the same URL. Here are two attack records against `/rest/user/login`, seconds apart:
+
+```bash
+# attack_log.jsonl
+{"session":"20260505_070841","timestamp":"2026-05-05T07:09:42Z","category":"A07","label":"brute_force","description":"Automated credential stuffing against login endpoint"}
+
+{"session":"20260505_070841","timestamp":"2026-05-05T07:09:50Z","category":"A07","label":"weak_credentials","description":"Login with default weak admin password admin123"}
+```
+
+But the access log Wazuh actually reads is too generic to tell them apart — it only ever sees an HTTP method, a URL, and a status code:
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/deterministic-attack-to-alert-mapping/access-log-url-status-code.png"
+    alt="An access.log line with the URL and status code fields highlighted"
+    style={{ marginBottom: "8px" }}
+  />
+</figure>
+
+Wazuh's rules only match on two things: the status code (largely 4xx error codes) and a known-bad string in the URL. An attack that succeeds without hitting either of those triggers nothing. That asymmetry made timestamp matching unreliable in both directions — sometimes an alert had no attack anywhere near it, and sometimes an attack produced no alert at all, so there was nothing to match against.
+
+Concretely, this attack record has no `attack_seq` or `url` field to anchor on:
+
+```bash
+{
+  "session":"20260505_070841",
+  "timestamp":"2026-05-05T07:09:50Z",
+  "category":"A07",
+  "label":"weak_credentials",
+  "description":"Login with default weak admin password admin123"
+}
+```
+
+and the corresponding access log lines carried no correlation ID at all:
+
+```bash
+::ffff:172.19.0.1 - - [05/Aug/2026:11:37:30 +0000] "POST /rest/user/login HTTP/1.1" 200 799 - "curl/8.5.0"
+::ffff:172.19.0.1 - - [05/Aug/2026:11:37:30 +0000] "POST /rest/user/login HTTP/1.1" 200 799 - "curl/8.5.0"
+```
+
+The best I could do was find the nearest Wazuh alert by timestamp — here, an attack fired at `2026-05-05T07:09:50Z` and the closest alert landed 5 seconds later at `2026-05-05T07:09:55.129Z`:
+
+```bash
+{
+  "agent": {"ip": "127.0.0.1", "name": "jesse", "id": "001"},
+  "manager": {"name": "wazuh.manager"},
+  "data": {"protocol": "POST", "srcip": "::ffff:172.17.0.1", "id": "401", "url": "/rest/user/login"},
+  "rule": {"firedtimes": 27, "level": 5, "description": "Web server 400 error code.", "groups": ["web", "accesslog", "attack"], "id": "31101"},
+  "decoder": {"name": "web-accesslog"},
+  "full_log": "::ffff:172.17.0.1 - - [05/May/2026:07:09:55 +0000] \"POST /rest/user/login HTTP/1.1\" 401 26 \"-\" \"curl/8.5.0\"",
+  "@timestamp": "2026-05-05T07:09:55.129Z",
+  "location": "/home/jesse/juice-shop/logs/access.log.2026-05-05",
+  "id": "1777964995.24311",
+  "timestamp": "2026-05-05T07:09:55.129+0000"
+}
+```
+
+It's likely that this alert was caused by the attack five seconds earlier, but "likely" isn't good enough to score a pipeline against. I needed something deterministic.
+
+## The Solution: Correlation IDs
+
+The fix touches all three logs. First, the attack ground truth gains a correlation ID, an explicit attack sequence number, and the target URL:
+
+```bash
+# Before
+{
+  "session":"20260505_070841",
+  "timestamp":"2026-05-05T07:09:50Z",
+  "category":"A07",
+  "label":"weak_credentials",
+  "description":"Login with default weak admin password admin123"
+}
+
+# After
+{"kind":"attack",
+ "session":"20260805_115430",
+ "timestamp":"2026-08-05T11:55:40Z",
+ "attack_seq":9,
+ "category":"A07",
+ "label":"weak_credentials",
+ "description":"Login with default weak admin password admin123",
+ "url":"/rest/user/login"
+}
+```
+
+Second, when the attack script fires each request, it now sets the correlation ID as the request's HTTP `Referer` header. Morgan (Juice Shop's access logger) already writes the referer field into every access log line, so this required no changes to Wazuh's own logging configuration — the ID just rides along in a field that was previously an unused `-`:
+
+```bash
+# Before (no correlation ID)
+::ffff:172.19.0.1 - - [05/Aug/2026:11:37:30 +0000] "POST /rest/user/login HTTP/1.1" 200 799 - "curl/8.5.0"
+
+# After (with correlation ID)
+::ffff:172.19.0.1 - - [05/Aug/2026:11:37:30 +0000] "POST /rest/user/login HTTP/1.1" 200 799 "wp1-20260805_113707-4-1" "curl/8.5.0"
+```
+
+Because Wazuh decodes the full access log line into `full_log` on every alert, the correlation ID comes through untouched on the alert side too, with zero changes to Wazuh's detection rules:
+
+```bash
+# Before (no correlation ID)
+{
+  "data": {"protocol": "POST", "srcip": "::ffff:172.17.0.1", "id": "401", "url": "/rest/user/login"},
+  "full_log": "::ffff:172.17.0.1 - - [05/May/2026:07:09:55 +0000] \"POST /rest/user/login HTTP/1.1\" 401 26 \"-\" \"curl/8.5.0\"",
+  "@timestamp": "2026-05-05T07:09:55.129Z"
+}
+
+# After (with correlation ID)
+{
+  "data": {"protocol": "POST", "srcip": "::ffff:172.19.0.1", "id": "401", "url": "/rest/user/login"},
+  "full_log": "::ffff:172.19.0.1 - - [05/Aug/2026:11:54:56 +0000] \"POST /rest/user/login HTTP/1.1\" 401 26 \"wp1-20260805_115430-4-7\" \"curl/8.5.0\"",
+  "@timestamp": "2026-08-05T11:54:57.528Z"
+}
+```
+
+## The Result
+
+With the correlation ID present in both logs, a Wazuh alert carrying `wp1-20260805_115430-4-7` maps cleanly back to the attack record with matching session `20260805_115430` and `attack_seq` 7 — no timestamp guessing involved. Just as importantly, the reverse direction now works too: any attack that produced *no* alert is just as identifiable as one that did, since I can check for its correlation ID directly rather than inferring absence from a lack of nearby alerts. That was blocking any meaningful WP4 (quantitative) evaluation before — you can't build a confusion matrix out of a fuzzy join. With a deterministic one in place, comparing Wazuh's detection rate against the attack ground truth is now a straightforward lookup rather than a judgment call.
