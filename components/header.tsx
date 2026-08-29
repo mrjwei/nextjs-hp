@@ -7,6 +7,7 @@ import Image from "next/image"
 import { Menu } from "lucide-react"
 import { icons } from "app/data/icons"
 import { SearchPalette } from "./SearchPalette"
+import { getLangFromPathname, toggleLangPath } from "app/i18n/config"
 import {
   Sheet,
   SheetContent,
@@ -14,24 +15,26 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 
-const navItems = {
-  "/": {
-    name: "Home",
+const navItemsByLang = {
+  en: {
+    "/": { name: "Home" },
+    "/writings": { name: "Writings" },
+    "/portfolio": { name: "Portfolio" },
+    "/about": { name: "About" },
   },
-  "/writings": {
-    name: "Writings",
-  },
-  "/portfolio": {
-    name: "Portfolio",
-  },
-  "/about": {
-    name: "About",
+  ja: {
+    "/ja": { name: "ホーム" },
+    "/ja/writings": { name: "記事" },
+    "/ja/portfolio": { name: "作品" },
+    "/ja/about": { name: "プロフィール" },
   },
 }
 
 export function Header() {
   const pathName = usePathname()
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
+  const lang = getLangFromPathname(pathName)
+  const navItems = navItemsByLang[lang]
 
   React.useEffect(() => {
     setIsMenuOpen(false)
@@ -76,11 +79,32 @@ export function Header() {
                   )
                 })}
               </nav>
+              <div className="mt-4 pt-4 border-t border-[var(--border-subtle)] flex items-center gap-2 px-3 text-sm font-medium">
+                <Link
+                  href={toggleLangPath(pathName, "en")}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={
+                    lang === "en" ? "text-[var(--text-strong)]" : "text-[var(--text-subtle)]"
+                  }
+                >
+                  EN
+                </Link>
+                <span className="text-[var(--text-subtle)]">/</span>
+                <Link
+                  href={toggleLangPath(pathName, "ja")}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={
+                    lang === "ja" ? "text-[var(--text-strong)]" : "text-[var(--text-subtle)]"
+                  }
+                >
+                  日本語
+                </Link>
+              </div>
             </SheetContent>
           </Sheet>
 
           <Link
-            href="/"
+            href={lang === "ja" ? "/ja" : "/"}
             aria-label="Jesse Wei — home"
             className="flex items-center hover:opacity-80 transition-opacity"
           >
@@ -118,6 +142,33 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-1">
+          <div
+            className="flex items-center gap-0.5 pr-1 mr-1 border-r border-[var(--border-subtle)] text-xs font-medium"
+            aria-label="Language"
+          >
+            <Link
+              href={toggleLangPath(pathName, "en")}
+              aria-current={lang === "en" ? "true" : undefined}
+              className={
+                lang === "en"
+                  ? "px-1.5 py-1 rounded text-[var(--text-strong)]"
+                  : "px-1.5 py-1 rounded text-[var(--text-subtle)] hover:text-[var(--text-strong)] hover:bg-[var(--surface-active)] transition-colors duration-150"
+              }
+            >
+              EN
+            </Link>
+            <Link
+              href={toggleLangPath(pathName, "ja")}
+              aria-current={lang === "ja" ? "true" : undefined}
+              className={
+                lang === "ja"
+                  ? "px-1.5 py-1 rounded text-[var(--text-strong)]"
+                  : "px-1.5 py-1 rounded text-[var(--text-subtle)] hover:text-[var(--text-strong)] hover:bg-[var(--surface-active)] transition-colors duration-150"
+              }
+            >
+              日本語
+            </Link>
+          </div>
           <SearchPalette isLight />
           <Link
             target="_blank"

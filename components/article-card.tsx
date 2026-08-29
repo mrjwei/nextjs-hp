@@ -3,6 +3,12 @@ import Link from "next/link"
 import Image from "next/image"
 import { Tags } from "@/components/tags"
 import { formatDate } from "app/utils"
+import type { Lang } from "app/i18n/config"
+
+const copy: Record<Lang, { published: string; portfolioThumbnail: string }> = {
+  en: { published: "Published:", portfolioThumbnail: "Portfolio thumbnail" },
+  ja: { published: "公開日:", portfolioThumbnail: "ポートフォリオのサムネイル" },
+}
 
 export function WritingCard({
   article,
@@ -11,6 +17,7 @@ export function WritingCard({
   path = "writings",
   selectedTags,
   wrapperProps,
+  lang = "en",
 }: {
   article: any
   className?: string
@@ -22,16 +29,19 @@ export function WritingCard({
         [key: `data-${string}`]: string | undefined
       })
     | undefined
+  lang?: Lang
 }) {
+  const t = copy[lang]
   const isPortfolio = path === "portfolio"
   const thumbnailSrc = article?.metadata?.image
 
   const writingCollection = path === "writings" ? article?.metadata?.series : null
+  const prefix = lang === "ja" ? "/ja" : ""
 
   const href =
     path === "writings" && writingCollection
-      ? `/writings/${writingCollection}/${article.slug}`
-      : `/${path}/${article.slug}`
+      ? `${prefix}/writings/${writingCollection}/${article.slug}`
+      : `${prefix}/${path}/${article.slug}`
 
   return (
     <div
@@ -55,7 +65,7 @@ export function WritingCard({
                 alt={
                   article?.metadata?.title
                     ? `${article.metadata.title} thumbnail`
-                    : "Portfolio thumbnail"
+                    : t.portfolioThumbnail
                 }
                 fill
                 sizes="(min-width: 768px) 50vw, 100vw"
@@ -89,7 +99,7 @@ export function WritingCard({
             </div>
           </div>
           <small className="text-[var(--text-subtle)] text-sm">
-            Published: {formatDate(article.metadata.publishedAt, false)}
+            {t.published} {formatDate(article.metadata.publishedAt, false)}
           </small>
         </div>
       </Link>
@@ -112,7 +122,7 @@ export function WritingCard({
                     ? `?tags=${encodeURIComponent(next.join(","))}`
                     : ""
 
-                  return `/writings${qs}`
+                  return `${prefix}/writings${qs}`
                 }
               : undefined
           }

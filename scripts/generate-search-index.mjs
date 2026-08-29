@@ -49,14 +49,16 @@ async function generateSearchIndex() {
 
     const title = post.metadata?.title || post.slug;
     const summary = post.metadata?.summary || "";
+    const lang = post.metadata?.lang === "ja" ? "ja" : "en";
 
     searchDocuments.push({
-      id: post.slug, // MiniSearch needs a unique ID
+      id: `${lang}:${post.slug}`, // MiniSearch needs a unique ID; slugs can repeat across languages
       slug: post.slug,
       collection: post.collection,
       title: title,
       summary: summary,
       type: post.type,
+      lang: lang,
       content: mainContent
     });
   }

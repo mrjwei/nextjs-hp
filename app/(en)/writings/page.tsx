@@ -11,6 +11,8 @@ export const metadata = buildStandardMetadata({
   description:
     "Technical and design writing — cryptography, AI agents, design systems, and the reasoning behind them.",
   pathname: "/writings",
+  alternatePathname: "/ja/writings",
+  alternateLang: "ja",
 })
 
 export const dynamic = "force-static"

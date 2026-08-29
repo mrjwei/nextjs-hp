@@ -1,15 +1,10 @@
-import "./global.css"
+import "../global.css"
 
 import type { Metadata } from "next"
-import Head from "next/head"
 import Script from "next/script"
-import { Header } from "@/components/header"
-import { Analytics } from "@vercel/analytics/react"
-import { SpeedInsights } from "@vercel/speed-insights/next"
-import Footer from "@/components/footer"
+import { RootShell } from "@/components/root-shell"
 import { geistSans, geistMono, newsreader } from "app/data/fonts"
-import { baseUrl } from "./sitemap"
-import AnalyticsProvider from "./providers"
+import { baseUrl } from "../sitemap"
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -19,6 +14,12 @@ export const metadata: Metadata = {
   },
   description:
     "Design engineer with 10+ years across product design and software. I design and ship full products — interface, system, and the AI underneath. Based in Japan, working in English and Japanese.",
+  alternates: {
+    languages: {
+      en: baseUrl,
+      ja: `${baseUrl}/ja`,
+    },
+  },
   openGraph: {
     title: "Jesse Wei — Design engineer building AI-native products",
     description:
@@ -43,7 +44,7 @@ export const metadata: Metadata = {
 
 const cx = (...classes) => classes.filter(Boolean).join(" ")
 
-export default function RootLayout({
+export default function EnRootLayout({
   children,
 }: {
   children: React.ReactNode
@@ -70,27 +71,7 @@ export default function RootLayout({
           gtag('config', 'G-44FT4BDFH2');`}
         </Script>
       </head>
-      <body className="antialiased flex flex-col items-center justify-between min-h-screen bg-surface-page text-text-body">
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-neutral-900 focus:shadow"
-        >
-          Skip to content
-        </a>
-        <div id="scroll-top-sentinel" className="h-px w-px" aria-hidden="true" />
-        <AnalyticsProvider />
-        <Header />
-        <main
-          id="main-content"
-          tabIndex={-1}
-          className="relative w-full flex-1 bg-surface-page flex flex-col scroll-mt-[var(--header-height)]"
-        >
-          {children}
-          <Analytics />
-          <SpeedInsights />
-        </main>
-        <Footer />
-      </body>
+      <RootShell lang="en">{children}</RootShell>
     </html>
   )
 }

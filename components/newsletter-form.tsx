@@ -3,12 +3,38 @@
 import React from "react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import type { Lang } from "app/i18n/config"
 
 type SubscribeResponse =
   | { ok: true; message: string }
   | { ok: false; message: string }
 
-export function NewsletterForm({ className }: { className?: string }) {
+const copy: Record<
+  Lang,
+  { emailLabel: string; submit: string; submitting: string; genericError: string }
+> = {
+  en: {
+    emailLabel: "Email",
+    submit: "Subscribe",
+    submitting: "Subscribing…",
+    genericError: "Something went wrong. Please try again.",
+  },
+  ja: {
+    emailLabel: "メールアドレス",
+    submit: "登録する",
+    submitting: "登録中…",
+    genericError: "問題が発生しました。もう一度お試しください。",
+  },
+}
+
+export function NewsletterForm({
+  className,
+  lang = "en",
+}: {
+  className?: string
+  lang?: Lang
+}) {
+  const t = copy[lang]
   const [email, setEmail] = React.useState("")
   const [botField, setBotField] = React.useState("")
   const [status, setStatus] = React.useState<"idle" | "loading" | "success" | "error">(
@@ -30,24 +56,24 @@ export function NewsletterForm({ className }: { className?: string }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, botField }),
+        body: JSON.stringify({ email, botField, lang }),
       })
 
       const data = (await response.json()) as SubscribeResponse
 
       if (!data.ok) {
         setStatus("error")
-        setMessage(data.message || "Something went wrong. Please try again.")
+        setMessage(data.message || t.genericError)
         return
       }
 
       setStatus("success")
-      setMessage(data.message || "Subscribed!")
+      setMessage(data.message || t.submit)
       setEmail("")
       setBotField("")
     } catch {
       setStatus("error")
-      setMessage("Something went wrong. Please try again.")
+      setMessage(t.genericError)
     }
   }
 
@@ -56,7 +82,7 @@ export function NewsletterForm({ className }: { className?: string }) {
   return (
     <form onSubmit={onSubmit} className={cn("w-full", className)}>
       <label className="sr-only" htmlFor="newsletter-email">
-        Email
+        {t.emailLabel}
       </label>
       <div className="flex flex-col items-start gap-2">
         <div className="flex w-full flex-col gap-2 sm:flex-row sm:justify-start">
@@ -88,7 +114,7 @@ export function NewsletterForm({ className }: { className?: string }) {
             type="submit"
             disabled={isDisabled}
           >
-            {status === "loading" ? "Subscribing…" : "Subscribe"}
+            {status === "loading" ? t.submitting : t.submit}
           </Button>
         </div>
 

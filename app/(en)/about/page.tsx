@@ -8,6 +8,8 @@ export const metadata = buildStandardMetadata({
   description:
     "Jesse Wei is a product designer and engineer based in Japan — ten years building design culture, design-driven development workflows, and maintainable design systems.",
   pathname: "/about",
+  alternatePathname: "/ja/about",
+  alternateLang: "ja",
 })
 
 export default function Page() {

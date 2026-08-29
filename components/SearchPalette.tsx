@@ -3,9 +3,10 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Command } from "cmdk";
 import { SearchIcon, Loader2Icon } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import clsx from "clsx";
 import MiniSearch from "minisearch";
+import { getLangFromPathname } from "app/i18n/config";
 
 type SearchResultItem = {
   id: string;
@@ -14,6 +15,12 @@ type SearchResultItem = {
   title: string;
   summary: string;
   type: string;
+  lang?: "en" | "ja";
+};
+
+const copy = {
+  en: { placeholder: "Search posts...", noResults: "No results found." },
+  ja: { placeholder: "記事を検索...", noResults: "見つかりませんでした。" },
 };
 
 export function SearchPalette({ isLight }: { isLight: boolean }) {
@@ -22,6 +29,9 @@ export function SearchPalette({ isLight }: { isLight: boolean }) {
   const [documents, setDocuments] = useState<SearchResultItem[]>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+  const lang = getLangFromPathname(pathname);
+  const t = copy[lang];
 
   // Load the pre-generated search-index.json once the dialog is opened
   useEffect(() => {
@@ -47,23 +57,25 @@ export function SearchPalette({ isLight }: { isLight: boolean }) {
     return () => { isMounted = false; };
   }, [open, documents.length]);
 
-  // Setup MiniSearch configuration and index the loaded document data
+  // Setup MiniSearch configuration and index the loaded document data,
+  // scoped to the language of the page the palette was opened from.
   const miniSearch = useMemo(() => {
     const searcher = new MiniSearch({
       fields: ["title", "summary", "content"], // fields to index for full-text search
-      storeFields: ["slug", "title", "type", "collection"],   // fields to return with search results
+      storeFields: ["slug", "title", "type", "collection", "lang"],   // fields to return with search results
       searchOptions: {
         fuzzy: 0.2, // Allow some typos
         prefix: true // Enable prefix matching (match partial words typed)
       }
     });
 
-    if (documents.length > 0) {
-      searcher.addAll(documents);
+    const scoped = documents.filter((doc) => (doc.lang ?? "en") === lang);
+    if (scoped.length > 0) {
+      searcher.addAll(scoped);
     }
 
     return searcher;
-  }, [documents]);
+  }, [documents, lang]);
 
   const results = useMemo(() => {
     if (!query) return [];
@@ -85,9 +97,10 @@ export function SearchPalette({ isLight }: { isLight: boolean }) {
   }, []);
 
   const getPath = (type: string, slug: string, collection?: string) => {
-    if (type === "portfolio") return `/portfolio/${slug}`;
-    if (collection) return `/writings/${collection}/${slug}`;
-    return `/writings/${slug}`; // Assume writing by default
+    const prefix = lang === "ja" ? "/ja" : "";
+    if (type === "portfolio") return `${prefix}/portfolio/${slug}`;
+    if (collection) return `${prefix}/writings/${collection}/${slug}`;
+    return `${prefix}/writings/${slug}`; // Assume writing by default
   };
 
   return (
@@ -127,7 +140,7 @@ export function SearchPalette({ isLight }: { isLight: boolean }) {
             <Command.Input
               value={query}
               onValueChange={setQuery}
-              placeholder="Search posts..."
+              placeholder={t.placeholder}
               className="w-full rounded bg-transparent outline-none border-none text-[var(--text-strong)] placeholder-[var(--text-subtle)] text-lg font-medium"
             />
           </div>
@@ -135,7 +148,7 @@ export function SearchPalette({ isLight }: { isLight: boolean }) {
             <Command.List className="max-h-[300px] overflow-y-auto p-2">
             {query && !loading && results.length === 0 && (
               <Command.Empty className="p-4 text-center text-sm text-[var(--text-muted)]">
-                No results found.
+                {t.noResults}
               </Command.Empty>
             )}
             {results.map((result) => (

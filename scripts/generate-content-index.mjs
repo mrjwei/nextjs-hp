@@ -7,13 +7,21 @@ const OUTPUT_PATH = path.join(CWD, "app", "data", "content-index.json");
 const CONTENT = {
   writings: {
     kind: "writing",
-    baseDir: path.join(CWD, "app", "writings", "posts"),
     requireTags: true,
+    baseDirsByLang: {
+      en: path.join(CWD, "app", "writings", "posts"),
+      // Japanese translations live in a mirrored tree, keyed by the same
+      // slug — e.g. app/writings/posts-ja/foo.mdx translates posts/foo.mdx.
+      ja: path.join(CWD, "app", "writings", "posts-ja"),
+    },
   },
   portfolio: {
     kind: "portfolio",
-    baseDir: path.join(CWD, "app", "portfolio", "posts"),
     requireTags: false,
+    baseDirsByLang: {
+      en: path.join(CWD, "app", "portfolio", "posts"),
+      ja: path.join(CWD, "app", "portfolio", "posts-ja"),
+    },
   },
 };
 
@@ -158,19 +166,19 @@ function assertTags(value, absFilePath, requireTags) {
   return value;
 }
 
-function buildIndexSection(sectionKey, config) {
-  if (!isDirectory(config.baseDir)) {
+function buildIndexSectionForLang(sectionKey, config, lang, baseDir) {
+  if (!isDirectory(baseDir)) {
     return [];
   }
 
-  const files = scanMdxFilesRecursive(config.baseDir);
+  const files = scanMdxFilesRecursive(baseDir);
   const seenSlugs = new Map();
 
   return files.map((absFilePath) => {
     const slug = path.basename(absFilePath, ".mdx");
     if (seenSlugs.has(slug)) {
       throw new Error(
-        `Duplicate slug "${slug}" for ${config.kind}: ${path.relative(CWD, absFilePath)}`
+        `Duplicate slug "${slug}" for ${config.kind} (${lang}): ${path.relative(CWD, absFilePath)}`
       );
     }
     seenSlugs.set(slug, absFilePath);
@@ -186,9 +194,9 @@ function buildIndexSection(sectionKey, config) {
     const tags = assertTags(meta.tags, absFilePath, config.requireTags);
 
     const inferredSeries =
-      config.kind === "writing" ? inferSeriesFromPath(absFilePath, config.baseDir) : undefined;
+      config.kind === "writing" ? inferSeriesFromPath(absFilePath, baseDir) : undefined;
 
-    const inferredCollection = inferSeriesFromPath(absFilePath, config.baseDir);
+    const inferredCollection = inferSeriesFromPath(absFilePath, baseDir);
 
     let series = typeof meta.series === "string" ? meta.series : inferredSeries;
 
@@ -224,10 +232,17 @@ function buildIndexSection(sectionKey, config) {
         partOf,
         partOfTitle,
         partNumber,
+        lang,
       },
       content,
     };
   });
+}
+
+function buildIndexSection(sectionKey, config) {
+  return Object.entries(config.baseDirsByLang).flatMap(([lang, baseDir]) =>
+    buildIndexSectionForLang(sectionKey, config, lang, baseDir)
+  );
 }
 
 function main() {

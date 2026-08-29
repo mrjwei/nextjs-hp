@@ -1,5 +1,6 @@
 import { TWriting } from "@/components/grid"
 import { WritingCard } from "@/components/article-card"
+import type { Lang } from "app/i18n/config"
 
 export function Grid({
   writings,
@@ -8,6 +9,7 @@ export function Grid({
   from,
   path = "writings",
   selectedTags,
+  lang = "en",
 }: {
   writings: TWriting[]
   numWritings?: number
@@ -15,6 +17,7 @@ export function Grid({
   from?: string
   path?: string
   selectedTags?: string[]
+  lang?: Lang
 }) {
   if (numWritings) {
     writings = writings.slice(0, numWritings)
@@ -30,6 +33,7 @@ export function Grid({
             from={from}
             path={path}
             selectedTags={selectedTags}
+            lang={lang}
             wrapperProps={{
               "data-writing-tags":
                 path === "writings" ? (article.metadata.tags ?? []).join(",") : undefined,

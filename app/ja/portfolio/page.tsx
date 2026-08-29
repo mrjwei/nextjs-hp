@@ -1,35 +1,43 @@
 import { Grid } from "@/components/grid"
 import { Sidebar } from "@/components/sidebar"
-import { getAllSortedPortfolioCollections, ParseSeriesDirName } from "app/utils"
+import { JaEmptyNotice } from "@/components/ja-empty-notice"
+import { getAllSortedPortfolioCollections } from "app/utils"
 import { buildStandardMetadata } from "app/seo/metadata"
 
 export const metadata = buildStandardMetadata({
-  title: "Portfolio",
+  title: "ポートフォリオ",
   description:
-    "Long-form case studies — the decisions, constraints, and trade-offs, not just the final screens.",
-  pathname: "/portfolio",
+    "厳選したケーススタディ——最終画面だけでなく、その裏にある意思決定・制約・トレードオフまで。",
+  pathname: "/ja/portfolio",
+  alternatePathname: "/portfolio",
+  alternateLang: "en",
 })
 
 export const dynamic = "force-static"
 
+const collectionLabel: Record<string, string> = {
+  projects: "プロジェクト",
+  artworks: "アートワーク",
+}
+
 export default async function PortfolioPage() {
-  const allCollections = getAllSortedPortfolioCollections()
+  const allCollections = getAllSortedPortfolioCollections("ja")
   const allItems = allCollections.flatMap((c) => c.items)
   const shownCollections = allCollections.filter(
     (c) => c.subdir === "projects" || c.subdir === "artworks"
   )
   const items = [
     {
-      label: "All",
+      label: "すべて",
       value: "all",
-      href: "/portfolio",
+      href: "/ja/portfolio",
       length: allItems.length,
       shouldBeUppercase: false,
     },
     ...shownCollections.map((c) => ({
-      label: ParseSeriesDirName(c.subdir),
+      label: collectionLabel[c.subdir] ?? c.subdir,
       value: c.subdir,
-      href: `/portfolio/${c.subdir}`,
+      href: `/ja/portfolio/${c.subdir}`,
       length: c.items.length,
     })),
   ]
@@ -45,26 +53,20 @@ export default async function PortfolioPage() {
       />
       <div className="col-span-12 px-4 py-8 md:col-span-9 md:pl-0 md:pr-8">
         <div className="mb-8">
-          <span className="eyebrow">Portfolio</span>
-          <h1 className="mt-3 mb-2 text-3xl md:text-4xl font-semibold tracking-tight text-[var(--text-strong)]">Portfolio</h1>
+          <span className="eyebrow">ポートフォリオ</span>
+          <h1 className="mt-3 mb-2 text-3xl md:text-4xl font-semibold tracking-tight text-[var(--text-strong)]">
+            ポートフォリオ
+          </h1>
           <p className="text-lg text-[var(--text-muted)] mb-4">
-            Long-form case studies — the decisions, constraints, and trade-offs,
-            not just the final screens.
+            厳選したケーススタディ——最終画面だけでなく、その裏にある意思決定・制約・トレードオフまで。
           </p>
           <Sidebar items={items} targetValue="all" classname="block md:hidden" />
         </div>
 
         {portfolioItems.length === 0 ? (
-          <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] shadow-xs rounded-lg p-6">
-            <h2 className="text-lg font-semibold mb-2 text-[var(--text-strong)]">No items yet</h2>
-            <p className="text-[var(--text-muted)]">
-              Add MDX files under <code>app/portfolio/posts</code> to populate this page.
-            </p>
-          </div>
+          <JaEmptyNotice englishHref="/portfolio" englishLabel="英語版のポートフォリオを見る" />
         ) : (
-          <>
-            <Grid writings={portfolioItems} path="portfolio" />
-          </>
+          <Grid writings={portfolioItems} path="portfolio" lang="ja" />
         )}
       </div>
     </section>

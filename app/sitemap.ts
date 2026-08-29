@@ -48,7 +48,26 @@ export default async function sitemap() {
     { url: `${baseUrl}/about`, lastModified: today },
     { url: `${baseUrl}/writings`, lastModified: writingsLastMod },
     { url: `${baseUrl}/portfolio`, lastModified: portfolioLastMod },
+    { url: `${baseUrl}/ja`, lastModified: today },
+    { url: `${baseUrl}/ja/about`, lastModified: today },
+    { url: `${baseUrl}/ja/writings`, lastModified: today },
+    { url: `${baseUrl}/ja/portfolio`, lastModified: today },
   ]
 
-  return [...routes, ...writings, ...portfolio]
+  const writingsJaList = getAllSortedWritings("ja")
+  const writingsJa = writingsJaList.map((writing) => {
+    const collection = primaryCollectionSlug(writing.metadata)
+    const url = collection
+      ? `${baseUrl}/ja/writings/${collection}/${writing.slug}`
+      : `${baseUrl}/ja/writings/${writing.slug}`
+    return { url, lastModified: writing.metadata.publishedAt }
+  })
+
+  const portfolioJaList = getAllSortedPortfolio("ja")
+  const portfolioJa = portfolioJaList.map((item) => ({
+    url: `${baseUrl}/ja/portfolio/${item.slug}`,
+    lastModified: item.metadata.publishedAt,
+  }))
+
+  return [...routes, ...writings, ...portfolio, ...writingsJa, ...portfolioJa]
 }

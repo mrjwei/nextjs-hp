@@ -8,6 +8,9 @@ type StandardMetadataInput = {
   image?: string
   type?: "website" | "article"
   publishedTime?: string
+  /** Pathname of the equivalent page in the other language, if one exists (e.g. "/ja/about" from "/about"). */
+  alternatePathname?: string
+  alternateLang?: "en" | "ja"
 }
 
 function toAbsoluteUrl(url: string) {
@@ -22,6 +25,8 @@ export function buildStandardMetadata({
   image,
   type = "website",
   publishedTime,
+  alternatePathname,
+  alternateLang,
 }: StandardMetadataInput): Metadata {
   const canonical = `${baseUrl}${pathname}`
 
@@ -29,11 +34,21 @@ export function buildStandardMetadata({
     image ? image : `/og?title=${encodeURIComponent(title)}`
   )
 
+  const thisLang = pathname.startsWith("/ja") ? "ja" : "en"
+
   return {
     title,
     description,
     alternates: {
       canonical,
+      ...(alternatePathname && alternateLang
+        ? {
+            languages: {
+              [thisLang]: canonical,
+              [alternateLang]: `${baseUrl}${alternatePathname}`,
+            },
+          }
+        : null),
     },
     openGraph: {
       title,

@@ -1,5 +1,19 @@
 import Link from "next/link"
 import { NewsletterForm } from "@/components/newsletter-form"
+import type { Lang } from "app/i18n/config"
+
+const copy: Record<Lang, { heading: string; subtext: string }> = {
+  en: {
+    heading: "New writing, occasionally",
+    subtext:
+      "Design systems, AI agents, and the odd cryptography deep-dive. No spam.",
+  },
+  ja: {
+    heading: "たまに、新しい記事を",
+    subtext:
+      "デザインシステム、AIエージェント、時々暗号技術の深掘りも。スパムはありません。",
+  },
+}
 
 export function ArrowIcon() {
   return (
@@ -18,20 +32,19 @@ export function ArrowIcon() {
   )
 }
 
-export default function Footer() {
+export default function Footer({ lang = "en" }: { lang?: Lang }) {
+  const t = copy[lang]
+
   return (
     <footer className="w-full border-t border-[var(--border-subtle)] bg-[var(--surface-sunken)]">
       <div className="w-full max-w-[1024px] mx-auto flex flex-col items-center px-4 py-12 md:px-0">
         <div className="w-full max-w-[480px] flex flex-col items-center text-center">
           <h2 className="font-serif text-xl font-medium text-[var(--text-strong)]">
-            New writing, occasionally
+            {t.heading}
           </h2>
-          <p className="mt-1 text-sm text-[var(--text-muted)]">
-            Design systems, AI agents, and the odd cryptography deep-dive. No
-            spam.
-          </p>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">{t.subtext}</p>
           <div className="mt-4 w-full flex justify-center">
-            <NewsletterForm className="max-w-[420px]" />
+            <NewsletterForm className="max-w-[420px]" lang={lang} />
           </div>
         </div>
 

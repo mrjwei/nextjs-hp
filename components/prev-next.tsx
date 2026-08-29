@@ -2,7 +2,13 @@ import Link from "next/link"
 import { ArrowRight, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-export const PrevNext = ({ items, itemIndex, path, linkFor }) => {
+const copy = {
+  en: { prev: "Prev", next: "Next" },
+  ja: { prev: "前へ", next: "次へ" },
+}
+
+export const PrevNext = ({ items, itemIndex, path, linkFor, lang = "en" }) => {
+  const t = copy[lang]
   const oldIndex = itemIndex + 1
   const newIndex = itemIndex - 1
 
@@ -28,25 +34,25 @@ export const PrevNext = ({ items, itemIndex, path, linkFor }) => {
         <Button asChild variant="secondary">
           <Link href={hrefFor(oldItem)}>
             <ArrowLeft className="size-4" />
-            <span>Prev</span>
+            <span>{t.prev}</span>
           </Link>
         </Button>
       ) : (
         <Button variant="secondary" disabled>
           <ArrowLeft className="size-4" />
-          <span>Prev</span>
+          <span>{t.prev}</span>
         </Button>
       )}
       {hasNext ? (
         <Button asChild variant="secondary">
           <Link href={hrefFor(newItem)}>
-            <span>Next</span>
+            <span>{t.next}</span>
             <ArrowRight className="size-4" />
           </Link>
         </Button>
       ) : (
         <Button variant="secondary" disabled>
-          <span>Next</span>
+          <span>{t.next}</span>
           <ArrowRight className="size-4" />
         </Button>
       )}

@@ -4,6 +4,41 @@ import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import clsx from "clsx"
 import { normalizeTag } from "app/utils/tags"
+import type { Lang } from "app/i18n/config"
+
+const copy: Record<
+  Lang,
+  {
+    series: string
+    showLess: string
+    showMore: (n: number) => string
+    filterByTag: string
+    all: string
+    showingFiltered: (visible: number, total: number, tags: string) => string
+    clear: string
+  }
+> = {
+  en: {
+    series: "Series",
+    showLess: "Show less",
+    showMore: (n) => `Show ${n} more`,
+    filterByTag: "Filter by tag",
+    all: "All",
+    showingFiltered: (visible, total, tags) =>
+      `Showing ${visible} of ${total} writings tagged ${tags}.`,
+    clear: "Clear",
+  },
+  ja: {
+    series: "シリーズ",
+    showLess: "閉じる",
+    showMore: (n) => `他${n}件を表示`,
+    filterByTag: "タグで絞り込む",
+    all: "すべて",
+    showingFiltered: (visible, total, tags) =>
+      `「${tags}」に一致する記事: ${total}件中${visible}件を表示中。`,
+    clear: "クリア",
+  },
+}
 
 export type TTagFacet = {
   value: string
@@ -89,28 +124,31 @@ function SeriesList({
   series,
   basePath,
   variant,
+  t,
 }: {
   series: TSeriesFacet[]
   basePath: string
   variant: "desktop" | "mobile"
+  t: (typeof copy)[Lang]
 }) {
   const [expanded, setExpanded] = useState(false)
 
   if (series.length === 0) return null
 
-  const currentSlug = basePath === "/writings" ? undefined : basePath.replace("/writings/", "")
+  const seriesBase = basePath.endsWith("/writings") ? basePath : basePath.replace(/\/writings\/.*/, "/writings")
+  const currentSlug = basePath === seriesBase ? undefined : basePath.replace(`${seriesBase}/`, "")
   const visible = expanded ? series : series.slice(0, SERIES_DEFAULT_VISIBLE)
   const hiddenCount = series.length - SERIES_DEFAULT_VISIBLE
 
   if (variant === "mobile") {
     return (
       <div className="mb-4">
-        <h2 className="eyebrow mb-2">Series</h2>
+        <h2 className="eyebrow mb-2">{t.series}</h2>
         <div className={clsx("flex flex-wrap gap-2", expanded && "max-h-40 overflow-y-auto")}>
           {visible.map((s) => (
             <Link
               key={s.slug}
-              href={`/writings/${s.slug}`}
+              href={`${seriesBase}/${s.slug}`}
               className={clsx(
                 "flex items-center gap-2 border px-3 py-1.5 rounded-md text-sm font-medium transition-colors",
                 s.slug === currentSlug
@@ -129,7 +167,7 @@ function SeriesList({
             onClick={() => setExpanded((e) => !e)}
             className="mt-2 text-sm text-[var(--accent-text)] hover:underline font-medium"
           >
-            {expanded ? "Show less" : `Show ${hiddenCount} more`}
+            {expanded ? t.showLess : t.showMore(hiddenCount)}
           </button>
         )}
       </div>
@@ -138,12 +176,12 @@ function SeriesList({
 
   return (
     <div className="mb-6">
-      <h2 className="eyebrow mb-4">Series</h2>
+      <h2 className="eyebrow mb-4">{t.series}</h2>
       <ul className={clsx("space-y-2 pr-1", expanded && "max-h-56 overflow-y-auto")}>
         {visible.map((s) => (
           <li key={s.slug}>
             <Link
-              href={`/writings/${s.slug}`}
+              href={`${seriesBase}/${s.slug}`}
               className={clsx(
                 "w-full flex justify-between items-center gap-2 border px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-150 ease-[var(--ease-out)]",
                 s.slug === currentSlug
@@ -163,7 +201,7 @@ function SeriesList({
           onClick={() => setExpanded((e) => !e)}
           className="mt-2 text-sm text-[var(--accent-text)] hover:underline font-medium"
         >
-          {expanded ? "Show less" : `Show ${hiddenCount} more`}
+          {expanded ? t.showLess : t.showMore(hiddenCount)}
         </button>
       )}
     </div>
@@ -177,6 +215,7 @@ function TagList({
   onToggle,
   onClear,
   variant,
+  t,
 }: {
   tags: TTagFacet[]
   selected: Set<string>
@@ -184,6 +223,7 @@ function TagList({
   onToggle: (tag: string) => void
   onClear: () => void
   variant: "desktop" | "mobile"
+  t: (typeof copy)[Lang]
 }) {
   if (variant === "mobile") {
     return (
@@ -198,7 +238,7 @@ function TagList({
               : "bg-[var(--surface-card)] border-[var(--border-subtle)] text-[var(--text-body)]"
           )}
         >
-          All
+          {t.all}
           <span className="text-xs font-mono">{totalCount}</span>
         </button>
         {tags.map((tag) => {
@@ -246,7 +286,7 @@ function TagList({
             : "bg-[var(--surface-card)] border-[var(--border-subtle)] text-[var(--text-body)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-default)]"
         )}
       >
-        <span>All</span>
+        <span>{t.all}</span>
         <span className="text-xs font-mono min-w-6 text-center">{totalCount}</span>
       </button>
       <ul className="space-y-2 mt-2 max-h-64 overflow-y-auto pr-1">
@@ -298,6 +338,7 @@ export function WritingsTagFilter({
   series = [],
   heading,
   children,
+  lang = "en",
 }: {
   basePath?: string
   tags: TTagFacet[]
@@ -305,7 +346,9 @@ export function WritingsTagFilter({
   series?: TSeriesFacet[]
   heading: React.ReactNode
   children: React.ReactNode
+  lang?: Lang
 }) {
+  const labels = copy[lang]
   const knownTags = useMemo(() => new Set(tags.map((t) => t.value)), [tags])
 
   const [selectedTags, setSelectedTags] = useState<string[]>([])
@@ -416,9 +459,9 @@ export function WritingsTagFilter({
   return (
     <section className="grid grid-cols-12 gap-8 pt-[var(--header-height)]">
       <aside className="hidden md:block bg-[var(--surface-sunken)] border-r border-[var(--border-subtle)] p-8 md:col-span-3 sticky md:top-[var(--header-height)] h-screen overflow-y-auto">
-        <SeriesList series={series} basePath={basePath} variant="desktop" />
+        <SeriesList series={series} basePath={basePath} variant="desktop" t={labels} />
 
-        <h2 className="eyebrow mb-4">Filter by tag</h2>
+        <h2 className="eyebrow mb-4">{labels.filterByTag}</h2>
         <TagList
           tags={tags}
           selected={selected}
@@ -426,6 +469,7 @@ export function WritingsTagFilter({
           onToggle={toggleTag}
           onClear={clearTags}
           variant="desktop"
+          t={labels}
         />
       </aside>
 
@@ -434,7 +478,7 @@ export function WritingsTagFilter({
           {heading}
 
           <div className="block md:hidden mb-4">
-            <SeriesList series={series} basePath={basePath} variant="mobile" />
+            <SeriesList series={series} basePath={basePath} variant="mobile" t={labels} />
             <TagList
               tags={tags}
               selected={selected}
@@ -442,21 +486,25 @@ export function WritingsTagFilter({
               onToggle={toggleTag}
               onClear={clearTags}
               variant="mobile"
+              t={labels}
             />
           </div>
 
           {selectedTags.length > 0 && (
             <div className="text-sm text-[var(--text-muted)] flex flex-wrap items-center gap-2">
               <span>
-                Showing {visibleCount} of {totalCount} writings tagged{" "}
-                {selectedTags.map((t) => labelByValue.get(t) ?? t).join(" or ")}.
+                {labels.showingFiltered(
+                  visibleCount,
+                  totalCount,
+                  selectedTags.map((tag) => labelByValue.get(tag) ?? tag).join(lang === "ja" ? "・" : " or ")
+                )}
               </span>
               <button
                 type="button"
                 onClick={clearTags}
                 className="text-[var(--accent-text)] hover:underline font-medium transition-colors"
               >
-                Clear
+                {labels.clear}
               </button>
             </div>
           )}
