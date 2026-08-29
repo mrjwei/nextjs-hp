@@ -10,7 +10,7 @@ tags: ["design", "ai", "uiux"]
 - [Claude](#claude)
   - [G1: Make Clear What the System Can Do](#g1-make-clear-what-the-system-can-do)
   - [G2: Make Clear How Well the System Can Do What It Can Do](#g2-make-clear-how-well-the-system-can-do-what-it-can-do)
-  - [G13: Learn From User Behavior](#g13-learn-from-user-behavior)
+  - [G13: Learn From User Behaviour](#g13-learn-from-user-behaviour)
 - [ChatGPT and Google AI Mode](#chatgpt-and-google-ai-mode)
   - [G1 and G2: The Blank Box Problem](#g1-and-g2-the-blank-box-problem)
   - [The Security Cost of "Ask Anything"](#the-security-cost-of-ask-anything)
@@ -24,18 +24,18 @@ That durability matters right now because everything around the framework is mov
 
 ## The Guidelines for Human-AI Interaction
 
-Amershi et al. organize the 18 guidelines around four phases of a user's relationship with an AI system: what it should communicate **initially**, how it should behave **during interaction**, what it owes the user **when it's wrong**, and how it should evolve **over time**. That structure is itself a useful design tool, because it maps directly onto the questions a new user actually asks, in order: what is this, how much can I trust it, what do I do when it fails me, and does it get better the more I use it?
+Amershi et al. organise the 18 guidelines around four phases of a user's relationship with an AI system: what it should communicate **initially**, how it should behave **during interaction**, what it owes the user **when it's wrong**, and how it should evolve **over time**. That structure is itself a useful design tool, because it maps directly onto the questions a new user actually asks, in order: what is this, how much can I trust it, what do I do when it fails me, and does it get better the more I use it?
 
 <figure style={{ textAlign: "center" }}>
   <img
     src="/ai-design-guidelines/guidelines-table.png"
-    alt="Table listing the 18 Guidelines for Human-AI Interaction organized by initially, during interaction, when wrong, and over time, with example applications for each"
+    alt="Table listing the 18 Guidelines for Human-AI Interaction organised by initially, during interaction, when wrong, and over time, with example applications for each"
     style={{ marginBottom: "8px" }}
   />
-  <figcaption>The 18 Guidelines for Human-AI Interaction, organized across four phases of use. Source: Amershi et al., 2019.</figcaption>
+  <figcaption>The 18 Guidelines for Human-AI Interaction, organised across four phases of use. Source: Amershi et al., 2019.</figcaption>
 </figure>
 
-This piece focuses on three guidelines from the "initially" and "over time" ends of that spectrum, because that's where I found the sharpest contrast between the products: **G1** (make clear what the system can do), **G2** (make clear how well the system can do it), and **G13** (learn from user behavior).
+This piece focuses on three guidelines from the "initially" and "over time" ends of that spectrum, because that's where I found the sharpest contrast between the products: **G1** (make clear what the system can do), **G2** (make clear how well the system can do it), and **G13** (learn from user behaviour).
 
 ## Claude
 
@@ -56,9 +56,9 @@ Claude's home screen passes this guideline cleanly. Rather than presenting a sin
 
 Where Claude's home screen starts to strain is the guideline right after it. Category labels tell you *what kind* of task the system handles; they say nothing about *how well* it handles any particular instance of that task, and that gap is where trust calibration actually happens. "Write" covers everything from a two-line social caption to a nuanced client email, and the interface gives no signal about which end of that range Claude is reliably strong at versus merely capable of attempting.
 
-This isn't a Claude-specific shortcoming so much as a hard property of the underlying technology. In *Co-Intelligence*, Ethan Mollick describes AI capability as a "jagged frontier": from a distance, AI systems look like they're uniformly good or uniformly weak at a domain, but up close the frontier is jagged — a system can be excellent at a task that looks hard and surprisingly poor at a neighboring task that looks easy, with no intuitive way for a user to tell which side of that line they're on without just trying it. A single high-level category label can't communicate a jagged frontier; it flattens it into something that reads as uniform competence. What would actually satisfy G2 here is finer-grained signal at the point of use — example outputs, a stated confidence level, or a visible track record for a given task type — rather than a static label decided once, up front, for an entire category.
+This isn't a Claude-specific shortcoming so much as a hard property of the underlying technology. In *Co-Intelligence*, Ethan Mollick describes AI capability as a "jagged frontier": from a distance, AI systems look like they're uniformly good or uniformly weak at a domain, but up close the frontier is jagged — a system can be excellent at a task that looks hard and surprisingly poor at a neighbouring task that looks easy, with no intuitive way for a user to tell which side of that line they're on without just trying it. A single high-level category label can't communicate a jagged frontier; it flattens it into something that reads as uniform competence. What would actually satisfy G2 here is finer-grained signal at the point of use — example outputs, a stated confidence level, or a visible track record for a given task type — rather than a static label decided once, up front, for an entire category.
 
-### G13: Learn From User Behavior
+### G13: Learn From User Behaviour
 
 <figure style={{ textAlign: "center" }}>
   <img
@@ -78,11 +78,11 @@ This isn't a Claude-specific shortcoming so much as a hard property of the under
   <figcaption>The Learn category shows the same pattern: themed by topic, but not by anything Claude actually knows about the user.</figcaption>
 </figure>
 
-This is where the experience falls apart, and it's worth being precise about why. The home screen greets me by name and by day — "Happy Sunday, Jesse" — which reads, at a glance, as evidence of context-awareness. But click into any category and the quick actions underneath are generic prompt templates, identical regardless of who's logged in or what they've asked Claude for in the past. "Write compelling CTAs" and "Develop a learning framework based on my personal heroes" appear whether I'm a new user or someone who has spent months in this product. Nothing here has been shaped by my actual behavior; the personalization is confined entirely to the name in the greeting.
+This is where the experience falls apart, and it's worth being precise about why. The home screen greets me by name and by day — "Happy Sunday, Jesse" — which reads, at a glance, as evidence of context-awareness. But click into any category and the quick actions underneath are generic prompt templates, identical regardless of who's logged in or what they've asked Claude for in the past. "Write compelling CTAs" and "Develop a learning framework based on my personal heroes" appear whether I'm a new user or someone who has spent months in this product. Nothing here has been shaped by my actual behaviour; the personalisation is confined entirely to the name in the greeting.
 
-That gap between a personalized surface and impersonal substance is worth naming on its own terms, because it's a pattern that shows up across the current generation of AI products. A recent [UX Collective piece on Blade Runner's design predictions](https://uxdesign.cc/what-blade-runner-got-right-about-ai-99cc75c0f761) makes a related point about synthetic memory: when a system visibly remembers something about you, users tend to relax their scrutiny of what it says next, treating the appearance of memory as a proxy for the substance of understanding. A name and a day-of-week greeting are exactly that kind of visible-but-shallow memory — real enough to register as personalization, thin enough to do nothing underneath. G13 asks for the underneath part: the system should be personalizing the *experience*, via the actions on offer, by learning from what a user actually does, not just decorating a static menu with their name.
+That gap between a personalised surface and impersonal substance is worth naming on its own terms, because it's a pattern that shows up across the current generation of AI products. A recent [UX Collective piece on Blade Runner's design predictions](https://uxdesign.cc/what-blade-runner-got-right-about-ai-99cc75c0f761) makes a related point about synthetic memory: when a system visibly remembers something about you, users tend to relax their scrutiny of what it says next, treating the appearance of memory as a proxy for the substance of understanding. A name and a day-of-week greeting are exactly that kind of visible-but-shallow memory — real enough to register as personalisation, thin enough to do nothing underneath. G13 asks for the underneath part: the system should be personalising the *experience*, via the actions on offer, by learning from what a user actually does, not just decorating a static menu with their name.
 
-There's a second-order argument for taking this guideline seriously, beyond first impressions. A separate [UX Collective piece on AI and cognitive delegation](https://uxdesign.cc/ai-and-cognitive-delegation-the-hidden-cost-of-ai-that-works-too-well-18dac6a637f5) cites research finding that developers who fully delegated coding tasks to AI scored below 40% on comprehension tests of their own work, versus 65%+ for developers who used AI as a thinking partner rather than a replacement. The mechanism generalizes: a menu of generic, one-click quick actions nudges users toward delegation over partnership, because the path of least resistance is to click a pre-written prompt rather than articulate what they actually need. A genuinely learned set of suggestions — grounded in a user's real history rather than a static template library — would do the opposite: it would reflect the user's own goals back at them, which keeps them in the loop rather than routing around them.
+There's a second-order argument for taking this guideline seriously, beyond first impressions. A separate [UX Collective piece on AI and cognitive delegation](https://uxdesign.cc/ai-and-cognitive-delegation-the-hidden-cost-of-ai-that-works-too-well-18dac6a637f5) cites research finding that developers who fully delegated coding tasks to AI scored below 40% on comprehension tests of their own work, versus 65%+ for developers who used AI as a thinking partner rather than a replacement. The mechanism generalises: a menu of generic, one-click quick actions nudges users towards delegation over partnership, because the path of least resistance is to click a pre-written prompt rather than articulate what they actually need. A genuinely learned set of suggestions — grounded in a user's real history rather than a static template library — would do the opposite: it would reflect the user's own goals back at them, which keeps them in the loop rather than routing around them.
 
 ## ChatGPT and Google AI Mode
 
@@ -100,15 +100,15 @@ There's a second-order argument for taking this guideline seriously, beyond firs
 <figure style={{ textAlign: "center" }}>
   <img
     src="/ai-design-guidelines/ai-mode-greeting.png"
-    alt="An AI chat input personalized with the greeting Hi Jesse, what's on your mind, but no other guidance beneath it"
+    alt="An AI chat input personalised with the greeting Hi Jesse, what's on your mind, but no other guidance beneath it"
     style={{ marginBottom: "8px" }}
   />
-  <figcaption>A personalized greeting doesn't solve the blank-page problem if nothing follows it.</figcaption>
+  <figcaption>A personalised greeting doesn't solve the blank-page problem if nothing follows it.</figcaption>
 </figure>
 
 Where Claude's home screen gives a new user five concrete doors, ChatGPT and Google AI Mode give them one open field and the instruction to "ask anything." That instruction fails both G1 and G2 at once: it communicates neither a bounded set of capabilities nor any sense of where the system is strong, and it does so by design, since an unconstrained input is precisely a refusal to communicate scope. For an experienced user who already knows what they want, an empty box is efficient. For a new user, it's the interface equivalent of being handed a blank sheet of paper and told to write something — the freedom is real, but it's also exactly what produces the freeze.
 
-This is a well-documented failure mode outside AI products too: more unconstrained choice tends to increase cognitive load and decision paralysis rather than satisfaction, which is the core finding behind Barry Schwartz's paradox-of-choice research and, in interaction design terms, Hick's Law — the time it takes someone to make a decision grows with the number and complexity of the choices in front of them. A blank box with infinite possible inputs is choice complexity taken to its limit. Personalizing the greeting, as in "Hi Jesse, what's on your mind?", doesn't fix this; it makes the box feel warmer without making it any less blank. What the guideline actually calls for is closer to what Claude's chips attempt, or what a [recent survey of collapsing UI patterns](https://uxdesign.cc/10-ui-patterns-that-wont-survive-the-ai-shift-002cb9b853ae) describes as the direction the whole category is heading: replacing manual setup and configuration with the system inferring intent and offering a starting point, rather than outsourcing that inference entirely to the user's first keystroke.
+This is a well-documented failure mode outside AI products too: more unconstrained choice tends to increase cognitive load and decision paralysis rather than satisfaction, which is the core finding behind Barry Schwartz's paradox-of-choice research and, in interaction design terms, Hick's Law — the time it takes someone to make a decision grows with the number and complexity of the choices in front of them. A blank box with infinite possible inputs is choice complexity taken to its limit. Personalising the greeting, as in "Hi Jesse, what's on your mind?", doesn't fix this; it makes the box feel warmer without making it any less blank. What the guideline actually calls for is closer to what Claude's chips attempt, or what a [recent survey of collapsing UI patterns](https://uxdesign.cc/10-ui-patterns-that-wont-survive-the-ai-shift-002cb9b853ae) describes as the direction the whole category is heading: replacing manual setup and configuration with the system inferring intent and offering a starting point, rather than outsourcing that inference entirely to the user's first keystroke.
 
 ### The Security Cost of "Ask Anything"
 
@@ -116,7 +116,7 @@ There's a sharper cost to the blank box than lost engagement, and it's a securit
 
 ## Where This Leaves AI Interaction Design
 
-Line these products up against each other and a pattern falls out: today's leading AI products are strongest at the guidelines that are cheap to satisfy with a static layer of UI, and weakest at the ones that require actual plumbing back to user data and behavior. Category chips and a friendly greeting are a design decision made once, at ship time. Genuinely learning from behavior, or surfacing calibrated confidence per task, requires infrastructure that keeps working after launch — which is a much harder, much less visible thing to get credit for shipping.
+Line these products up against each other and a pattern falls out: today's leading AI products are strongest at the guidelines that are cheap to satisfy with a static layer of UI, and weakest at the ones that require actual plumbing back to user data and behaviour. Category chips and a friendly greeting are a design decision made once, at ship time. Genuinely learning from behaviour, or surfacing calibrated confidence per task, requires infrastructure that keeps working after launch — which is a much harder, much less visible thing to get credit for shipping.
 
 That's a real problem for products whose central pitch is that the model itself improves relentlessly, since it means the interaction layer improving on the same timeline can't be assumed. Notably, the same "10 UI patterns" piece cited above argues that AI is already reshaping onboarding and help documentation across the industry into support that's contextual to what a user is actually doing, replacing static wizards and generic tooltips. It's a real irony that the companies building the AI systems capable of that kind of inference haven't yet turned it on their own front door. The tools for solving G13 already exist inside these products; they just haven't been pointed at the onboarding experience itself.
 
