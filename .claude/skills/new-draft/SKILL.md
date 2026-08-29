@@ -11,6 +11,8 @@ Convert an Obsidian markdown file into a draft MDX post saved under `app/_drafts
 
 The argument `$ARGUMENTS` is the absolute path to the Obsidian `.md` file.
 
+You should use UK/AU English spelling and grammar conventions when editing the content.
+
 ## Steps
 
 ### 1. Read the source file
