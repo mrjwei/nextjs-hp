@@ -9,6 +9,7 @@ export type Lang = ContentLang
 export type TMetadata = {
   title: string
   publishedAt: string
+  updatedAt?: string
   summary: string
   image?: string
   tags: string[]
@@ -85,6 +86,7 @@ const dateSchema = z
 const baseFrontmatterSchema = z.object({
   title: z.string().min(1),
   publishedAt: dateSchema,
+  updatedAt: dateSchema.optional(),
   summary: z.string().min(1),
   image: z.string().optional(),
   shouldBreakWord: z.boolean().optional(),

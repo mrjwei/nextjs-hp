@@ -189,6 +189,9 @@ function buildIndexSectionForLang(sectionKey, config, lang, baseDir) {
 
     assertString(meta.title, "title", absFilePath);
     assertDateString(meta.publishedAt, "publishedAt", absFilePath);
+    if (meta.updatedAt != null) {
+      assertDateString(meta.updatedAt, "updatedAt", absFilePath);
+    }
     assertString(meta.summary, "summary", absFilePath);
 
     const tags = assertTags(meta.tags, absFilePath, config.requireTags);
@@ -222,6 +225,7 @@ function buildIndexSectionForLang(sectionKey, config, lang, baseDir) {
       metadata: {
         title: meta.title,
         publishedAt: meta.publishedAt,
+        updatedAt: typeof meta.updatedAt === "string" ? meta.updatedAt : undefined,
         summary: meta.summary,
         image: typeof meta.image === "string" ? meta.image : undefined,
         tags: tagsWithSeries,

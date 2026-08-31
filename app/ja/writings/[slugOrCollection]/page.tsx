@@ -170,7 +170,7 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
                 "@type": "BlogPosting",
                 headline: writing.metadata.title,
                 datePublished: writing.metadata.publishedAt,
-                dateModified: writing.metadata.publishedAt,
+                dateModified: writing.metadata.updatedAt ?? writing.metadata.publishedAt,
                 description: writing.metadata.summary,
                 image: writing.metadata.image
                   ? `${baseUrl}${writing.metadata.image}`
@@ -216,6 +216,9 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
           <div className="flex justify-between items-center mt-2 mb-12 text-sm border-b border-[var(--border-subtle)] pb-6">
             <p className="text-sm text-[var(--text-muted)]">
               公開日: {formatDate(writing.metadata.publishedAt)}
+              {writing.metadata.updatedAt && (
+                <> · 更新日: {formatDate(writing.metadata.updatedAt)}</>
+              )}
             </p>
           </div>
 

@@ -16,14 +16,14 @@ export default async function sitemap() {
     let url = collection ? `${baseUrl}/writings/${collection}/${writing.slug}` : `${baseUrl}/writings/${writing.slug}`
     return {
       url,
-      lastModified: writing.metadata.publishedAt,
+      lastModified: writing.metadata.updatedAt ?? writing.metadata.publishedAt,
     }
   })
 
   const portfolioList = getAllSortedPortfolio()
   let portfolio = portfolioList.map((item) => ({
     url: `${baseUrl}/portfolio/${item.slug}`,
-    lastModified: item.metadata.publishedAt,
+    lastModified: item.metadata.updatedAt ?? item.metadata.publishedAt,
   }))
 
   const today = new Date().toISOString().split("T")[0]
@@ -37,10 +37,10 @@ export default async function sitemap() {
   }
 
   const writingsLastMod = maxPublishedAt(
-    writingsList.map((w) => w.metadata.publishedAt)
+    writingsList.map((w) => w.metadata.updatedAt ?? w.metadata.publishedAt)
   )
   const portfolioLastMod = maxPublishedAt(
-    portfolioList.map((p) => p.metadata.publishedAt)
+    portfolioList.map((p) => p.metadata.updatedAt ?? p.metadata.publishedAt)
   )
 
   let routes = [
@@ -60,13 +60,13 @@ export default async function sitemap() {
     const url = collection
       ? `${baseUrl}/ja/writings/${collection}/${writing.slug}`
       : `${baseUrl}/ja/writings/${writing.slug}`
-    return { url, lastModified: writing.metadata.publishedAt }
+    return { url, lastModified: writing.metadata.updatedAt ?? writing.metadata.publishedAt }
   })
 
   const portfolioJaList = getAllSortedPortfolio("ja")
   const portfolioJa = portfolioJaList.map((item) => ({
     url: `${baseUrl}/ja/portfolio/${item.slug}`,
-    lastModified: item.metadata.publishedAt,
+    lastModified: item.metadata.updatedAt ?? item.metadata.publishedAt,
   }))
 
   return [...routes, ...writings, ...portfolio, ...writingsJa, ...portfolioJa]
