@@ -37,10 +37,11 @@ export async function generateStaticParams() {
 export function generateMetadata({ params }) {
   const slugOrCollection = params.slugOrCollection
 
-  const writing = getAllSortedWritings().find(w => w.slug === slugOrCollection && !w.metadata.series)
+  const candidate = getWritingBySlug(slugOrCollection)
+  const writing = candidate && !candidate.metadata.series ? candidate : undefined
 
   if (writing) {
-    const { title, publishedAt: publishedTime, summary: description, image } = writing.metadata
+    const { title, publishedAt: publishedTime, summary: description, image, archived } = writing.metadata
     return buildStandardMetadata({
       title,
       description,
@@ -48,6 +49,7 @@ export function generateMetadata({ params }) {
       type: "article",
       publishedTime,
       image,
+      noIndex: archived,
     })
   }
 
@@ -189,6 +191,11 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
               return `/writings${qs}`
             }}
           />
+          {writing.metadata.archived && (
+            <div className="mb-6 px-4 py-3 rounded-md border border-[var(--border-subtle)] bg-[var(--surface-sunken)] text-sm text-[var(--text-muted)]">
+              This article has been archived and is no longer listed on the site.
+            </div>
+          )}
           <div className="flex justify-between items-center mt-2 mb-12 text-sm border-b border-[var(--border-subtle)] pb-6">
             <p className="text-sm text-[var(--text-muted)]">
               Published: {formatDate(writing.metadata.publishedAt)}

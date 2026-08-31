@@ -13,6 +13,7 @@ export type TMetadata = {
   summary: string
   image?: string
   tags: string[]
+  archived?: boolean
   shouldBreakWord?: boolean
   series?: string
   seriesTitle?: string
@@ -89,6 +90,7 @@ const baseFrontmatterSchema = z.object({
   updatedAt: dateSchema.optional(),
   summary: z.string().min(1),
   image: z.string().optional(),
+  archived: z.boolean().optional(),
   shouldBreakWord: z.boolean().optional(),
   series: z.string().min(1).optional(),
   seriesTitle: z.string().min(1).optional(),
@@ -352,7 +354,7 @@ export const getAllSortedWritings = cache((lang: Lang = "en") => {
   const index = readContentIndex()
   if (process.env.NODE_ENV === "production" && index?.writings?.length) {
     return index.writings
-      .filter((item) => itemLang(item.metadata) === lang)
+      .filter((item) => itemLang(item.metadata) === lang && !item.metadata.archived)
       .map((item) => ({ slug: item.slug, metadata: item.metadata }))
       .sort((a, b) =>
         new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
@@ -361,10 +363,12 @@ export const getAllSortedWritings = cache((lang: Lang = "en") => {
       )
   }
 
-  let writings = getAllWritingsFilePaths(lang).map((absFilePath) => {
-    const { metadata } = readFrontmatterOnly(absFilePath, "writing", lang)
-    return { metadata, slug: fileSlug(absFilePath) }
-  })
+  let writings = getAllWritingsFilePaths(lang)
+    .map((absFilePath) => {
+      const { metadata } = readFrontmatterOnly(absFilePath, "writing", lang)
+      return { metadata, slug: fileSlug(absFilePath) }
+    })
+    .filter((writing) => !writing.metadata.archived)
   writings = writings.sort((a, b) =>
     new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
       ? -1
@@ -461,7 +465,9 @@ export const getAllSortedPortfolioCollections = cache((lang: Lang = "en") => {
   // In production (and often in CI/standalone output), the MDX files under
   // app/portfolio/posts may not be present at runtime due to output tracing.
   // Prefer the generated content index when available.
-  const indexItems = index?.portfolio?.filter((item) => itemLang(item.metadata) === lang)
+  const indexItems = index?.portfolio?.filter(
+    (item) => itemLang(item.metadata) === lang && !item.metadata.archived
+  )
 
   if (process.env.NODE_ENV === "production" && indexItems?.length) {
     const baseRel = path
@@ -530,10 +536,12 @@ export const getAllSortedPortfolioCollections = cache((lang: Lang = "en") => {
   const collections: { subdir: string; items: TContentMeta[] }[] = []
 
   // Include base-level posts (if any) under a conventional collection.
-  let rootItems = getPortfolioFilePaths(lang, "").map((absFilePath) => {
-    const { metadata } = readFrontmatterOnly(absFilePath, "portfolio", lang)
-    return { metadata: { ...metadata, series: metadata.series || "general" }, slug: fileSlug(absFilePath) }
-  })
+  let rootItems = getPortfolioFilePaths(lang, "")
+    .map((absFilePath) => {
+      const { metadata } = readFrontmatterOnly(absFilePath, "portfolio", lang)
+      return { metadata: { ...metadata, series: metadata.series || "general" }, slug: fileSlug(absFilePath) }
+    })
+    .filter((item) => !item.metadata.archived)
   rootItems = rootItems.sort((a, b) =>
     new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt) ? -1 : 1
   )
@@ -543,10 +551,12 @@ export const getAllSortedPortfolioCollections = cache((lang: Lang = "en") => {
 
   const subdirs = getPortfolioCollections(lang)
   subdirs.forEach((subdir) => {
-    let items = getPortfolioFilePaths(lang, subdir).map((absFilePath) => {
-      const { metadata } = readFrontmatterOnly(absFilePath, "portfolio", lang)
-      return { metadata: { ...metadata, series: metadata.series || subdir }, slug: fileSlug(absFilePath) }
-    })
+    let items = getPortfolioFilePaths(lang, subdir)
+      .map((absFilePath) => {
+        const { metadata } = readFrontmatterOnly(absFilePath, "portfolio", lang)
+        return { metadata: { ...metadata, series: metadata.series || subdir }, slug: fileSlug(absFilePath) }
+      })
+      .filter((item) => !item.metadata.archived)
     items = items.sort((a, b) =>
       new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
         ? -1
@@ -560,7 +570,9 @@ export const getAllSortedPortfolioCollections = cache((lang: Lang = "en") => {
 
 export const getAllSortedPortfolio = cache((lang: Lang = "en") => {
   const index = readContentIndex()
-  const indexItems = index?.portfolio?.filter((item) => itemLang(item.metadata) === lang)
+  const indexItems = index?.portfolio?.filter(
+    (item) => itemLang(item.metadata) === lang && !item.metadata.archived
+  )
 
   if (indexItems?.length) {
     const isProd = process.env.NODE_ENV === "production"
@@ -603,19 +615,21 @@ export const getAllSortedPortfolio = cache((lang: Lang = "en") => {
       )
   }
 
-  let items = getAllPortfolioFilePaths(lang).map((absFilePath) => {
-    const { metadata } = readFrontmatterOnly(absFilePath, "portfolio", lang)
-    const relUnderBase = path
-      .relative(portfolioBaseDirByLang[lang], absFilePath)
-      .replaceAll(path.sep, "/")
-    const derivedCollection = relUnderBase.includes("/")
-      ? relUnderBase.split("/")[0]
-      : "general"
-    return {
-      metadata: { ...metadata, series: metadata.series || derivedCollection },
-      slug: fileSlug(absFilePath),
-    }
-  })
+  let items = getAllPortfolioFilePaths(lang)
+    .map((absFilePath) => {
+      const { metadata } = readFrontmatterOnly(absFilePath, "portfolio", lang)
+      const relUnderBase = path
+        .relative(portfolioBaseDirByLang[lang], absFilePath)
+        .replaceAll(path.sep, "/")
+      const derivedCollection = relUnderBase.includes("/")
+        ? relUnderBase.split("/")[0]
+        : "general"
+      return {
+        metadata: { ...metadata, series: metadata.series || derivedCollection },
+        slug: fileSlug(absFilePath),
+      }
+    })
+    .filter((item) => !item.metadata.archived)
   items = items.sort((a, b) =>
     new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
       ? -1

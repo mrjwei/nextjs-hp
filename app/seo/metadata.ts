@@ -11,6 +11,7 @@ type StandardMetadataInput = {
   /** Pathname of the equivalent page in the other language, if one exists (e.g. "/ja/about" from "/about"). */
   alternatePathname?: string
   alternateLang?: "en" | "ja"
+  noIndex?: boolean
 }
 
 function toAbsoluteUrl(url: string) {
@@ -27,6 +28,7 @@ export function buildStandardMetadata({
   publishedTime,
   alternatePathname,
   alternateLang,
+  noIndex,
 }: StandardMetadataInput): Metadata {
   const canonical = `${baseUrl}${pathname}`
 
@@ -39,6 +41,7 @@ export function buildStandardMetadata({
   return {
     title,
     description,
+    ...(noIndex ? { robots: { index: false, follow: true } } : null),
     alternates: {
       canonical,
       ...(alternatePathname && alternateLang

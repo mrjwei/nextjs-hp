@@ -218,6 +218,12 @@ function buildIndexSectionForLang(sectionKey, config, lang, baseDir) {
       );
     }
 
+    if (meta.archived != null && typeof meta.archived !== "boolean") {
+      throw new Error(
+        `Invalid frontmatter in ${path.relative(CWD, absFilePath)}: archived must be a boolean`
+      );
+    }
+
     return {
       slug,
       filePath: path.relative(CWD, absFilePath),
@@ -228,6 +234,7 @@ function buildIndexSectionForLang(sectionKey, config, lang, baseDir) {
         updatedAt: typeof meta.updatedAt === "string" ? meta.updatedAt : undefined,
         summary: meta.summary,
         image: typeof meta.image === "string" ? meta.image : undefined,
+        archived: typeof meta.archived === "boolean" ? meta.archived : undefined,
         tags: tagsWithSeries,
         shouldBreakWord: typeof meta.shouldBreakWord === "boolean" ? meta.shouldBreakWord : undefined,
         series,

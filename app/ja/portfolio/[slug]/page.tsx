@@ -16,7 +16,7 @@ export async function generateStaticParams() {
 }
 
 export function generateMetadata({ params }) {
-  const item = getAllSortedPortfolio("ja").find((p) => p.slug === params.slug)
+  const item = getPortfolioItemBySlug(params.slug, "ja")
   if (!item) return
 
   return {
@@ -27,6 +27,7 @@ export function generateMetadata({ params }) {
       type: "article",
       publishedTime: item.metadata.publishedAt,
       image: item.metadata.image,
+      noIndex: item.metadata.archived,
     }),
   }
 }
@@ -93,6 +94,11 @@ export default async function PortfolioItemPage({ params, searchParams }) {
 
         <h1 className="display text-4xl mb-4">{item.metadata.title}</h1>
         <Tags tags={item.metadata.tags} className="mb-4" />
+        {item.metadata.archived && (
+          <div className="mb-6 px-4 py-3 rounded-md border border-[var(--border-subtle)] bg-[var(--surface-sunken)] text-sm text-[var(--text-muted)]">
+            この作品はアーカイブされており、サイト上には掲載されていません。
+          </div>
+        )}
         <div className="flex justify-between items-center mt-2 mb-12 text-sm border-b border-[var(--border-subtle)] pb-6">
           <p className="text-sm text-[var(--text-muted)]">
             公開日: {formatDate(item.metadata.publishedAt)}
