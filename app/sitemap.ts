@@ -47,10 +47,12 @@ export default async function sitemap() {
     { url: `${baseUrl}`, lastModified: today },
     { url: `${baseUrl}/about`, lastModified: today },
     { url: `${baseUrl}/writings`, lastModified: writingsLastMod },
+    { url: `${baseUrl}/writings/series`, lastModified: writingsLastMod },
     { url: `${baseUrl}/portfolio`, lastModified: portfolioLastMod },
     { url: `${baseUrl}/ja`, lastModified: today },
     { url: `${baseUrl}/ja/about`, lastModified: today },
     { url: `${baseUrl}/ja/writings`, lastModified: today },
+    { url: `${baseUrl}/ja/writings/series`, lastModified: today },
     { url: `${baseUrl}/ja/portfolio`, lastModified: today },
   ]
 

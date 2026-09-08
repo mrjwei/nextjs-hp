@@ -10,7 +10,6 @@ const copy: Record<
   Lang,
   {
     series: string
-    showLess: string
     showMore: (n: number) => string
     filterByTag: string
     all: string
@@ -20,7 +19,6 @@ const copy: Record<
 > = {
   en: {
     series: "Series",
-    showLess: "Show less",
     showMore: (n) => `Show ${n} more`,
     filterByTag: "Filter by tag",
     all: "All",
@@ -30,7 +28,6 @@ const copy: Record<
   },
   ja: {
     series: "シリーズ",
-    showLess: "閉じる",
     showMore: (n) => `他${n}件を表示`,
     filterByTag: "タグで絞り込む",
     all: "すべて",
@@ -131,20 +128,18 @@ function SeriesList({
   variant: "desktop" | "mobile"
   t: (typeof copy)[Lang]
 }) {
-  const [expanded, setExpanded] = useState(false)
-
   if (series.length === 0) return null
 
   const seriesBase = basePath.endsWith("/writings") ? basePath : basePath.replace(/\/writings\/.*/, "/writings")
   const currentSlug = basePath === seriesBase ? undefined : basePath.replace(`${seriesBase}/`, "")
-  const visible = expanded ? series : series.slice(0, SERIES_DEFAULT_VISIBLE)
+  const visible = series.slice(0, SERIES_DEFAULT_VISIBLE)
   const hiddenCount = series.length - SERIES_DEFAULT_VISIBLE
 
   if (variant === "mobile") {
     return (
       <div className="mb-4">
         <h2 className="eyebrow mb-2">{t.series}</h2>
-        <div className={clsx("flex flex-wrap gap-2", expanded && "max-h-40 overflow-y-auto")}>
+        <div className="flex flex-wrap gap-2">
           {visible.map((s) => (
             <Link
               key={s.slug}
@@ -162,13 +157,12 @@ function SeriesList({
           ))}
         </div>
         {hiddenCount > 0 && (
-          <button
-            type="button"
-            onClick={() => setExpanded((e) => !e)}
-            className="mt-2 text-sm text-[var(--accent-text)] hover:underline font-medium"
+          <Link
+            href={`${seriesBase}/series`}
+            className="mt-2 inline-block text-sm text-[var(--accent-text)] hover:underline font-medium"
           >
-            {expanded ? t.showLess : t.showMore(hiddenCount)}
-          </button>
+            {t.showMore(hiddenCount)}
+          </Link>
         )}
       </div>
     )
@@ -177,7 +171,7 @@ function SeriesList({
   return (
     <div className="mb-6">
       <h2 className="eyebrow mb-4">{t.series}</h2>
-      <ul className={clsx("space-y-2 pr-1", expanded && "max-h-56 overflow-y-auto")}>
+      <ul className="space-y-2 pr-1">
         {visible.map((s) => (
           <li key={s.slug}>
             <Link
@@ -196,13 +190,12 @@ function SeriesList({
         ))}
       </ul>
       {hiddenCount > 0 && (
-        <button
-          type="button"
-          onClick={() => setExpanded((e) => !e)}
-          className="mt-2 text-sm text-[var(--accent-text)] hover:underline font-medium"
+        <Link
+          href={`${seriesBase}/series`}
+          className="mt-2 inline-block text-sm text-[var(--accent-text)] hover:underline font-medium"
         >
-          {expanded ? t.showLess : t.showMore(hiddenCount)}
-        </button>
+          {t.showMore(hiddenCount)}
+        </Link>
       )}
     </div>
   )
