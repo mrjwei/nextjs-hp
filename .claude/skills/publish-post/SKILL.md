@@ -57,9 +57,21 @@ If no existing category fits well, publish at the root level. (Placing a post un
 ### 4. Update the frontmatter
 
 - **`publishedAt`**: overwrite with today's actual date only, no time (`YYYY-MM-DD`), regardless of what value the draft had (including any timestamp component). The stored value — timestamp or not — was a placeholder/target used only for step 2's selection; published posts elsewhere in the site use date-only values, so drop the time here.
-- **`tags`**: `app/writings/posts/` requires a non-empty `tags` array (the content-index build fails otherwise). If the draft has no `tags` field (some older drafts don't), infer tags from the content using the site's existing vocabulary — `dev`, `ai`, `design`, `security`, `tutorial`, `casestudy`, `process`, `reflection`, `devops`, `datascience`, `git`, `vibecoding`, `lingobun`, `react`, `javascript`, `css`, `ux`, `ml` — and add the field.
+- **`tags`**: `app/writings/posts/` requires a non-empty `tags` array (the content-index build fails otherwise). If the draft has no `tags` field (some older drafts don't), infer tags from the content — read `app/data/tags.json` for the site's current tag vocabulary and prefer reusing an existing tag when it fits, but a new tag is fine if nothing existing matches — and add the field.
 - **`slug`**: if the post is going into a subfolder and doesn't already have a `slug` field, add one matching the filename, for consistency with existing posts (this field isn't read by the build, it's just convention).
 - Leave everything else (`title`, `summary`, `seriesTitle`, `seriesSlug`, `order`, etc.) untouched.
+
+### 4a. Register any new tags
+
+`app/data/tags.json` is the site's single source of truth for known tags (`{ "<tag>": { "color": "#rrggbb" } }`) — it drives which tags render at all (`components/tags.tsx` silently drops any tag not present as a key) and is also read by `scripts/publish.js` for its separate AI-publish flow. A tag used in a post's frontmatter but missing from this file will be silently invisible on the site, so it must never be allowed to drift out of sync.
+
+After finalizing each post's `tags` array (whether it came with the draft or was inferred in step 4):
+
+1. Read `app/data/tags.json` and diff the post's tags against its keys.
+2. For each tag not already a key, add an entry with a generated color: derive a hue deterministically from the tag string (e.g. sum of char codes mod 360) and use `hsl(hue, 80%, 40%)` converted to hex — this keeps new colors visually consistent with the existing palette (all existing entries sit in roughly the same saturation/lightness range) without needing to hand-pick one.
+3. Write the updated JSON back, keeping existing entries and their colors untouched and preserving 2-space-indented formatting.
+
+This runs for every selected draft before the move in step 5, so the registry is updated in the same batch as the posts that introduce the new tags.
 
 ### 5. Move the file
 
@@ -84,6 +96,7 @@ For each published post, print:
 - The category it was placed in (and, if it differs from the draft's original `app/_drafts/` subfolder, a note why)
 - The `publishedAt` date it was stamped with
 - Any tags that were inferred/added because they were missing
+- Any tags newly registered in `app/data/tags.json` (tag name and assigned color)
 
 Also report:
 - How many drafts remain in `app/_drafts/` (and, if selection was automatic, which ones were passed over)

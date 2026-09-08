@@ -72,7 +72,7 @@ tags: ["tag1", "tag2"]      # infer from content; use existing tag vocabulary wh
 - **slug**: include this field only when the post lives in a subfolder (matches existing conventions).
 - **publishedAt**: use the current date **and time** (e.g. via `date +"%Y-%m-%dT%H:%M:%S"`), not just the date — this is a placeholder/target value, and the time component is what lets `/publish-post` tell apart multiple drafts created on the same day when picking which one is closest to now. `/publish-post` strips the time and overwrites this field with the actual publish date when the draft is published.
 - **summary**: write a concise 1–2 sentence summary that captures the main point.
-- **tags**: infer relevant tags from content. Common tags used on this site: `dev`, `ai`, `design`, `security`, `tutorial`, `casestudy`, `process`, `reflection`, `devops`, `datascience`, `git`, `vibecoding`, `lingobun`, `react`, `javascript`, `css`, `ux`, `ml`.
+- **tags**: infer relevant tags from content. The site's tag vocabulary is `app/data/tags.json` (read it to see current tags) — prefer reusing an existing tag when it fits, but don't force-fit content into the wrong tag; a new tag is fine if nothing existing matches. New tags don't need to be registered in `tags.json` at draft time — `/publish-post` registers any new tag when the post is actually published.
 
 ### 5. Assess and improve the content quality
 

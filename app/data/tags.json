@@ -6,5 +6,7 @@
   "self-study": { "color": "#0c6fa6" },
   "explanation": { "color": "#ab8326" },
   "security": { "color": "#70276d" },
-  "casestudy": { "color": "#9f24b5" }
+  "casestudy": { "color": "#9f24b5" },
+  "uiux": { "color": "#4eb814" },
+  "process": { "color": "#b89414" }
 }
