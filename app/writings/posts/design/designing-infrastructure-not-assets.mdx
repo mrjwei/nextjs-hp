@@ -1,0 +1,86 @@
+---
+title: "Designing the System, Not the Screen: A Shift from Assets to Infrastructure"
+slug: "designing-infrastructure-not-assets"
+publishedAt: "2026-09-03"
+summary: "AI has made producing design assets trivial. What it hasn't touched is the harder, more valuable half of design work: making the decisions behind those assets. This is an argument for redirecting design effort toward the infrastructure that captures those decisions, not the screens that result from them."
+tags: ["design", "ai", "uiux", "process"]
+---
+
+- [Two Kinds of Work Inside "Design"](#two-kinds-of-work-inside-design)
+- [Why Design Became Asset Production](#why-design-became-asset-production)
+- [What AI Actually Automates](#what-ai-actually-automates)
+- [The Part That Doesn't Automate: Intent](#the-part-that-doesnt-automate-intent)
+- [We've Known This for Thirty Years — We Just Never Had the Infrastructure](#weve-known-this-for-thirty-years--we-just-never-had-the-infrastructure)
+- [Two Layers of Infrastructure](#two-layers-of-infrastructure)
+- [Why This Is a Quality Argument, Not Just a Speed One](#why-this-is-a-quality-argument-not-just-a-speed-one)
+- [What This Looks Like in Practice](#what-this-looks-like-in-practice)
+- [Resources](#resources)
+
+Design work has always been two things wearing one job title: deciding what to build and why, and then producing the artefact that embodies that decision. For most of my career, the second half — the screens, the components, the polished Figma file — has been where the effort, the tooling, and the professional identity of "designer" have concentrated. That made sense when producing a good screen was itself hard and slow.
+
+It no longer is.
+
+AI has made decision *execution* trivial, which means the profession's centre of gravity needs to move to the half AI still can't touch: **decision-making**. This piece is an argument for what that move looks like in practice — not as a vague call to "focus on strategy," but as a concrete case for building infrastructure that captures design intent and turns it into structured, reusable context, with asset generation demoted to the easy, automatable step at the end of the pipeline.
+
+## Two Kinds of Work Inside "Design"
+
+Split any design task into two parts and the split holds up remarkably well across contexts:
+
+1. there's the **decision** — what should this screen do, for whom, and why this approach over the alternatives, and
+2. there's **the execution of that decision** into an artefact a user or developer can actually look at. Design education, portfolios, and tooling have historically rewarded the visible half. A polished Figma file photographs well; a well-reasoned trade-off does not. I made a version of this argument previously about the risk of over-indexing on visual fidelity at the expense of holistic thinking — that <a href="/writings/rethinking-ui-ux" target="_blank">a lot of what passes for UI/UX design is really "Figma operation,"</a> the fluent production of polished screens without the underlying reasoning that should have produced them. The point here is narrower and more mechanical: even where that reasoning is present, our tools, our deliverables, and our sense of where the effort should go have been calibrated for a world where making the artefact was the bottleneck. That world is ending, and the calibration needs to move with it.
+
+## Why Design Became Asset Production
+
+The asset-first default wasn't a mistake; it was a reasonable response to real constraints. Producing a credible screen used to take real time and real craft, so naturally most of a designer's visible output, and most of what got reviewed, critiqued, and shipped, was the screen itself.
+
+I've written before about how much this has already changed on the execution side: building LingoBun, I went from a napkin sketch to <a href="/writings/prototyping-made-easy-how-emerging-tooling-has-transformed-the-ui-design-workflow" target="_blank">a working, user-testable prototype in a single day</a>, something that would have taken weeks under the old Figma-then-handoff-then-build pipeline. Modern frameworks, mature component libraries, and AI-assisted development collapsed a sequential process into something closer to real time. That collapse is the whole reason this argument matters now and didn't ten years ago: when producing the artefact was expensive, spending your attention on the artefact was rational. When producing it is cheap, spending your attention there is a habit left over from a cost structure that no longer applies.
+
+## What AI Actually Automates
+
+It's worth being precise about what's actually gotten cheap, because "AI makes design faster" undersells it. What's collapsed specifically is *decision execution* — turning an already-made decision into pixels, components, and interaction states. Tools like Figma Make, Google Stitch, and Uizard can generate a full deck of screens from a prompt; frontier coding agents can turn a described interaction into working, styled UI in minutes. I've been building a small tool of my own, a spec-driven design surface that takes a YAML description of a screen — which components, what props, what layout — and renders it as a real, fully interactive React screen in a real browser, not a picture of one. What convinced me the generation problem is genuinely solved is how little of the work in that tool is about rendering quality; nearly all of the interesting effort has gone into the surrounding scaffolding — the schema, the canvas, the virtualisation — not into getting a button to look like a button. Generation, given a clear enough specification, is now close to a solved, commodity problem. That's not a knock on the tools; it's the whole point. The scarce resource was never the pixels. It was always the decision about what the pixels should be.
+
+## The Part That Doesn't Automate: Intent
+
+What AI still can't do — not as a temporary capability gap, but structurally — is decide *what you're trying to achieve and why*, because that requires context AI doesn't have access to unless a human supplies it: the business trade-offs a company is willing to make, the specific users' mental models, the technical constraints a given team is actually operating under, the judgement call about which of several defensible options to take.
+
+Tom Greever, whose *Articulating Design Decisions* I'd recommend to any designer who's ever lost an argument they were actually right about, puts it more bluntly than I would have: "communication, not designing stuff, is the job." Their point isn't that artefacts don't matter; it's that a designer who can't explain what problem a design solves, how it affects the user, and why it beats the alternatives will lose to a stakeholder who can articulate a worse decision more clearly. That's the skill AI cannot substitute for, because it's not a production skill at all — it's a judgement-and-justification skill, and judgement requires an intent to judge against.
+
+This is the same distinction I drew out in a more general form when writing about <a href="/writings/from-requirements-to-assumptions" target="_blank">why requirements are really just assumptions with more confidence attached</a>: the value was never in the document, it's in the reasoning that produced it, tested against reality.
+
+AI can produce the document, or the screen, at will. It cannot supply the reasoning, because it doesn't know what you actually want, or why you want it, unless you tell it — and telling it, faithfully and repeatedly, turns out to be the actual bottleneck now.
+
+## We've Known This for Thirty Years — We Just Never Had the Infrastructure
+
+None of this is a new observation, which is itself worth sitting with. In 1991, Allan MacLean, Richard Young, Victoria Bellotti, and Thomas Moran published a method called QOC — Questions, Options, Criteria — specifically to capture *design rationale*: the questions a design had to answer, the options considered, and the criteria used to choose between them, recorded as a structured artefact alongside the design itself. The idea was that a design's rationale is as valuable as the design, because it's what lets a team maintain, evolve, and defend the design later without re-litigating decisions from scratch.
+
+Three decades on, design rationale capture is still a niche practice, not because the idea was wrong, but because manually documenting every decision was expensive enough that teams under deadline pressure rationally skipped it. The rationale rotted the moment the meeting ended, and the design system quietly drifted from the intent that originally shaped it.
+
+What's changed isn't the value of capturing rationale — that case was made in 1991 and never seriously disputed. What's changed is the *cost* of capturing it. If a pipeline can pull structured rationale passively out of the standups, AI consulting sessions, and experiment write-ups a team is already generating, instead of requiring a dedicated documentation pass nobody has time for, the objection that killed QOC-style practice for thirty years simply stops applying.
+
+## Two Layers of Infrastructure
+
+Concretely, this points to a two-layer system, and it's worth naming both layers because they solve different problems and shouldn't be conflated.
+
+The first is a **static foundation**: a design system, a token inventory, a written set of principles — the relatively stable ground truth that changes slowly and deliberately. This layer already has real momentum behind it outside any one company's tooling choices. The [Design Tokens Community Group](https://www.designtokens.org/), a W3C community group, shipped the first stable version of a vendor-neutral design token format in late 2025, specifically so design decisions like colour, spacing, and typography can be exchanged as structured data between design tools and code rather than re-implemented by hand in each. That's the static layer, standardised.
+
+The second is a **moving, accumulating layer**: the specific decisions and their rationale, captured continuously as they're made, rather than documented once and left to go stale. This is the layer QOC was reaching for without the infrastructure to make it cheap. It's also, not coincidentally, the same shift already underway on the engineering side of the same teams: GitHub's [Spec Kit](https://github.com/github/spec-kit) reframes AI-assisted coding around a written spec that acts as "a contract for how your code should behave," feeding a structured spec → plan → tasks → implement pipeline instead of ad-hoc prompting. Design and engineering are converging on the identical realisation from opposite directions: when generation is cheap and fast, the thing worth protecting and making portable is the specification, not any particular output of it. A shared representation makes this concrete rather than aspirational — a design captured as structured data (a JSON description of a component tree, say) and a JSX implementation are two renderings of the same underlying structure, which means "design-to-code" and "code-to-design" stop being two separate, lossy handoffs and become the same object viewed from two directions. Generation — the actual pixel-and-component output — sits downstream of both layers as the cheap, automatable last step, exactly where the current generation of AI design tools already operates.
+
+## Why This Is a Quality Argument, Not Just a Speed One
+
+It's tempting to file all of this under "efficiency," but there's a real quality case here too, and it has two parts. First, cheap generation means cheap experimentation, and good design is disproportionately the product of iteration rather than of getting it right on the first attempt. I've made this argument before in the context of requirements versus assumptions: <a href="/writings/from-requirements-to-assumptions" target="_blank">teams that treat their best ideas as testable assumptions rather than locked specifications learn faster and build better products</a>, and that only works if testing an assumption is cheap enough to do often. When AI collapses the cost of producing a testable version of an idea, it doesn't just save time; it changes how many ideas actually get tested before one gets shipped, which is a direct lever on quality, not just on velocity. Second, and this is the part that's easier to miss: when a design decision exists only as a fading memory of a meeting, the artefact built from it has nothing to stay faithful to. It drifts. Someone tweaks a flow six months later without knowing why it was built that way, a stakeholder overrides a choice because the reasoning behind it was never written down anywhere they could find it, and the product slowly diverges from the intent that shaped it, one small, individually reasonable change at a time. A design decision captured as structured data, sitting next to the asset it produced, is a decision an asset can be checked against later. That's not a productivity feature. It's what keeps a product coherent as it ages.
+
+## What This Looks Like in Practice
+
+For designers, this means the job description shifts from "produces screens" to "owns and curates intent" — the person responsible for knowing, and being able to explain, why the product looks and behaves the way it does, with AI handling the mechanical translation of that intent into artefacts. That's a role upgrade, not a demotion, but it does mean the muscle worth building is articulation and judgement, not Figma fluency alone. For dev teams, it means design context that arrives as something closer to a specification than a picture: portable, structured, and checkable, which is exactly the property that makes a design-to-code handoff stop being a game of telephone. And for the other stakeholders in the room — PMs, executives, whoever eventually has to defend a product decision to someone else — it means an actual trail to point to. *Articulating Design Decisions* spends a full chapter on the reality that non-designers who lack the expertise nonetheless have the authority to override design calls, and that designers who can't produce a clear "here's what problem this solves, here's what we considered, here's why we didn't do that instead" lose those arguments by default, regardless of who was right. A captured decision trail is the practical answer to that problem: it turns "trust me" into something a stakeholder can actually inspect, which is also, not incidentally, a reasonable starting point for the AI governance conversation most companies with any design maturity are already having, since a system that can show its reasoning is a system that's easier to govern than one that can't.
+
+None of this argues against AI-generated assets — quite the opposite, generation should be as automated as it can possibly be, because every hour spent producing an artefact that AI could produce faithfully is an hour not spent on the decision that actually required a human. The argument is about where the effort and the infrastructure investment should go next: not into better asset-production tooling, which is close to a solved problem already, but into the plumbing that captures why we're building what we're building, so that the trivially cheap act of generating it stays anchored to intent instead of drifting away from it.
+
+## Resources
+
+- MacLean, A., Young, R. M., Bellotti, V. M. E., & Moran, T. P. (1991). Questions, Options, and Criteria: Elements of Design Space Analysis. *Human–Computer Interaction*, 6(3–4), 201–250.
+- [Design Tokens Community Group — Design Tokens Format Module](https://www.designtokens.org/) — the W3C community group standardising a shared, tool-agnostic format for design tokens; first stable release, 2025.10.
+- [GitHub Spec Kit](https://github.com/github/spec-kit) and its [spec-driven development writeup](https://github.blog/ai-and-ml/generative-ai/spec-driven-development-with-ai-get-started-with-a-new-open-source-toolkit/) — the same spec-as-source-of-truth shift, on the engineering side.
+- Greever, T. — *Articulating Design Decisions: Communicate with Stakeholders, Keep Your Sanity, and Deliver the Best User Experience* (2nd ed., O'Reilly, 2020).
+- <a href="/writings/rethinking-ui-ux" target="_blank">Rethinking UI/UX: The Hidden Gaps in Design and How to Bridge Them</a> — on the cost of treating design as artefact production.
+- <a href="/writings/prototyping-made-easy-how-emerging-tooling-has-transformed-the-ui-design-workflow" target="_blank">Prototyping Made Easy</a> — the LingoBun case study behind the "generation is now cheap" claim above.
+- <a href="/writings/from-requirements-to-assumptions" target="_blank">From Requirements to Assumptions</a> — the case for cheap experimentation as a quality lever, referenced above.
