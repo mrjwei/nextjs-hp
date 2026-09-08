@@ -4,6 +4,7 @@ import { MDXRemote } from "next-mdx-remote/rsc"
 import { highlight } from "sugar-high"
 import React from "react"
 import remarkMath from "remark-math";
+import remarkGfm from "remark-gfm";
 import rehypeKatex from "rehype-katex";
 
 function Table({ data }) {
@@ -121,7 +122,7 @@ export function CustomMDX(props) {
           blockJS: false,
           mdxOptions: {
             format: "mdx",
-            remarkPlugins: [remarkMath],
+            remarkPlugins: [remarkMath, remarkGfm],
             rehypePlugins: [rehypeKatex],
           },
         }}

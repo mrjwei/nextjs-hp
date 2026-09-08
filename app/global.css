@@ -487,11 +487,23 @@ input[type="email"] {
   appearance: none;
 }
 
-table {
-  display: block;
-  max-width: fit-content;
-  overflow-x: auto;
-  white-space: nowrap;
+.prose table {
+  @apply w-full my-6 text-base;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.prose th,
+.prose td {
+  @apply py-2 px-3 text-left align-top;
+  border: 1px solid var(--border-subtle);
+  overflow-wrap: break-word;
+}
+
+.prose thead th {
+  background: var(--surface-sunken);
+  color: var(--text-strong);
+  font-weight: 600;
 }
 
 @media (prefers-reduced-motion: reduce) {
