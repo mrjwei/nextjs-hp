@@ -5,9 +5,10 @@
   "ai": { "color": "#0ca691" },
   "machine-learning": { "color": "#0c6fa6" },
   "deep-learning": { "color": "#40a8ad" },
-  "explanation": { "color": "#ab8326" },
   "security": { "color": "#70276d" },
   "casestudy": { "color": "#9f24b5" },
   "uiux": { "color": "#4eb814" },
-  "process": { "color": "#b89414" }
+  "process": { "color": "#b89414" },
+  "web": { "color": "#14b894" },
+  "git": { "color": "#b8b814" }
 }
