@@ -1,7 +1,7 @@
 // Pure helpers for tag identity/formatting. Kept free of node-only imports
 // (fs/path) so client components can import this module directly.
 
-const ACRONYMS = new Set(["ai", "ui", "ux", "api", "seo", "css"])
+const ACRONYMS = new Set(["ai", "ui", "ux", "uiux", "api", "seo", "css"])
 
 export function normalizeTag(tag: string): string {
   return tag.trim().toLowerCase()
