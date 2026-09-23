@@ -3,7 +3,7 @@ import {
   getAllSortedWritings,
 } from "app/utils"
 
-export const baseUrl = "https://www.jessewei.net"
+export const baseUrl = "https://jessewei.net"
 
 export default async function sitemap() {
   const writingsList = getAllSortedWritings()

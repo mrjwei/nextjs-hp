@@ -7,10 +7,12 @@ This doc captures the **before/after** process so changes remain easy to reason 
 Use the same set of URLs every time:
 
 - Home: `/`
+- About: `/about`
 - Writings index: `/writings`
 - One writing: `/writings/<some-slug>`
-- Portfolio index: `/portfolio`
-- One portfolio item: `/portfolio/<some-slug>`
+- Gallery index: `/gallery`
+- One gallery item: `/gallery/<some-slug>`
+- JA home: `/ja`
 
 ## Lighthouse (manual)
 
