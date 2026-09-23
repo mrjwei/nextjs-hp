@@ -111,6 +111,9 @@ export default async function WorkCasePage({ params }: { params: { slug: string 
               datePublished: work.metadata.publishedAt,
               dateModified: work.metadata.updatedAt ?? work.metadata.publishedAt,
               description: work.metadata.summary,
+              about: work.metadata.industry
+                ? { "@type": "Thing", name: work.metadata.industry }
+                : undefined,
               image: work.metadata.image
                 ? `${baseUrl}${work.metadata.image}`
                 : `${baseUrl}/og?title=${encodeURIComponent(work.metadata.title)}`,

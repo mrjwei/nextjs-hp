@@ -8,6 +8,9 @@ import { AvailabilityChip } from "@/components/availability-chip"
 import { ProofStrip } from "@/components/proof-strip"
 import { HowIWork } from "@/components/how-i-work"
 import { NowBand } from "@/components/now-band"
+import { TrackedLink } from "@/components/tracked-link"
+import { JsonLd } from "@/components/json-ld"
+import { buildPersonJsonLd } from "app/seo/person"
 import {
   getAllSortedWritings,
   getFeaturedWritings,
@@ -31,6 +34,8 @@ export default function Page() {
 
   return (
     <section className="w-full">
+      <JsonLd data={buildPersonJsonLd("ja")} />
+
       {/* Hero */}
       <div className="mx-auto w-full max-w-[1120px] px-8 pt-28 pb-20 md:pt-36 md:pb-24">
         <span className="eyebrow">{p.eyebrow}</span>
@@ -42,7 +47,9 @@ export default function Page() {
         </p>
         <div className="mt-9 flex flex-wrap gap-3">
           <Button asChild variant="primary" size="lg">
-            <Link href="/ja/work">代表的な実績を見る</Link>
+            <TrackedLink href="/ja/work" eventName="cta_selected_work">
+              代表的な実績を見る
+            </TrackedLink>
           </Button>
           <Button asChild variant="ghost" size="lg">
             <Link href="/ja/about">プロフィール</Link>

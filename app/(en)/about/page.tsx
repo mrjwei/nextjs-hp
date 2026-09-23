@@ -1,8 +1,9 @@
 import Image from "next/image"
-import Link from "next/link"
-import { ArrowIcon } from "@/components/footer"
 import { CustomMDX } from "@/components/mdx"
+import { ExtLink } from "@/components/ext-link"
+import { JsonLd } from "@/components/json-ld"
 import { buildStandardMetadata } from "app/seo/metadata"
+import { personSchema } from "app/seo/person"
 import { getPageContent } from "app/pages-content"
 import { profile } from "app/content/profile"
 
@@ -19,16 +20,11 @@ export const metadata = buildStandardMetadata({
 const strong = "text-[var(--text-strong)]"
 const h2 =
   "mt-10 mb-4 text-2xl font-semibold tracking-tight text-[var(--text-strong)]"
-const extLink =
-  "inline-flex items-center gap-1.5 transition-colors text-[var(--accent-text)] hover:underline mx-1"
 
-function ExtLink({ href, children }: { href: string; children: React.ReactNode }) {
-  return (
-    <Link className={extLink} rel="noopener noreferrer" target="_blank" href={href}>
-      <ArrowIcon />
-      <span>{children}</span>
-    </Link>
-  )
+const profilePageJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ProfilePage",
+  mainEntity: personSchema("en"),
 }
 
 const aboutComponents = {
@@ -47,6 +43,7 @@ const aboutComponents = {
 export default function Page() {
   return (
     <section className="py-24 w-full px-8 md:px-16 max-w-[1024px] mx-auto">
+      <JsonLd data={profilePageJsonLd} />
       <span className="eyebrow">About</span>
       <h1 className="mt-3 mb-10 text-4xl md:text-5xl font-semibold tracking-tight text-[var(--text-strong)]">About me</h1>
       <div className="grid grid-cols-12 gap-8 md:gap-16">
