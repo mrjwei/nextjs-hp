@@ -3,7 +3,7 @@ import "../global.css"
 import type { Metadata } from "next"
 import Script from "next/script"
 import { RootShell } from "@/components/root-shell"
-import { geistSans, geistMono, newsreader } from "app/data/fonts"
+import { geistSans, geistMono, newsreader, notoSansJP } from "app/data/fonts"
 import { baseUrl } from "../sitemap"
 import { profile } from "app/content/profile"
 
@@ -57,7 +57,8 @@ export default function JaRootLayout({
         "text-base",
         geistSans.variable,
         geistMono.variable,
-        newsreader.variable
+        newsreader.variable,
+        notoSansJP.variable
       )}
     >
       <head>

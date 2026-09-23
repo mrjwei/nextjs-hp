@@ -1,0 +1,139 @@
+---
+title: "相関IDによる決定的な攻撃-アラート対応づけ"
+slug: "deterministic-attack-to-alert-mapping"
+publishedAt: "2026-08-25"
+summary: "攻撃の正解データとWazuhアラートとのタイムスタンプ近接マッチングでは評価に十分な信頼性が得られなかったため、HTTPのRefererヘッダーを使ってパイプライン全体に相関IDを通し、決定的な突き合わせができるようにした。"
+tags: ["security", "dev", "evals"]
+partOf: "ai-assisted-siem-workflow"
+partOfTitle: "AI支援SIEMワークフロー"
+partNumber: 2
+track: "security"
+featured: 3
+result: "信頼性の低いタイムスタンプ近接マッチングを、HTTPのRefererヘッダー経由でパイプライン全体に通した相関IDに置き換え、攻撃とアラートの対応づけを「推測」から「決定的な一致」に変えた。"
+status: "research"
+---
+
+- [問題:曖昧なアラートと曖昧なタイムスタンプ](#問題曖昧なアラートと曖昧なタイムスタンプ)
+- [解決策:相関ID](#解決策相関id)
+- [結果](#結果)
+
+IFN738の研究キャップストーンのパイプラインでは、WP1(攻撃シミュレーション)が、対象アプリに対して実行されたすべての攻撃の正解ログを生成し、WP2(Wazuh)が、そのアプリのHTTPトラフィックを監視してアラートを生成します。パイプラインの採点は、この両者を正しく対応づけられるかどうか——どの攻撃が、もしあれば、どのアラートを生んだのかを正確に把握できるかどうか——にかかっています。つい最近まで、この対応づけは推測に頼っていました。最も近いタイムスタンプ同士をマッチングする方式です。本稿では、これをどのように決定的な突き合わせに置き換えたかを説明します。
+
+## 問題:曖昧なアラートと曖昧なタイムスタンプ
+
+異なる種類の攻撃が、同じURLを狙うことがあります。以下は、`/rest/user/login`に対する2件の攻撃記録で、数秒しか離れていません:
+
+```bash
+# attack_log.jsonl
+{"session":"20260505_070841","timestamp":"2026-05-05T07:09:42Z","category":"A07","label":"brute_force","description":"Automated credential stuffing against login endpoint"}
+
+{"session":"20260505_070841","timestamp":"2026-05-05T07:09:50Z","category":"A07","label":"weak_credentials","description":"Login with default weak admin password admin123"}
+```
+
+しかし、Wazuhが実際に読んでいるアクセスログは、この2つを区別するには汎用的すぎます——見えるのはHTTPメソッド、URL、ステータスコードだけです:
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/deterministic-attack-to-alert-mapping/access-log-url-status-code.png"
+    alt="URLとステータスコードのフィールドをハイライトしたaccess.logの1行"
+    style={{ marginBottom: "8px" }}
+  />
+</figure>
+
+Wazuhのルールが照合するのは2つの要素だけです。ステータスコード(主に4xx系のエラーコード)と、URL内の既知の不正な文字列です。そのどちらにも該当せずに成功する攻撃は、何もトリガーしません。この非対称性のせいで、タイムスタンプによるマッチングはどちら方向にも信頼できないものになっていました——近くに対応する攻撃が一つもないアラートがある一方で、アラートを一つも生まない攻撃もあり、そもそも突き合わせる相手がいない場合もありました。
+
+具体的には、この攻撃記録には、手がかりとなる`attack_seq`フィールドも`url`フィールドもありません:
+
+```bash
+{
+  "session":"20260505_070841",
+  "timestamp":"2026-05-05T07:09:50Z",
+  "category":"A07",
+  "label":"weak_credentials",
+  "description":"Login with default weak admin password admin123"
+}
+```
+
+対応するアクセスログの行にも、相関IDに相当するものは一切含まれていませんでした:
+
+```bash
+::ffff:172.19.0.1 - - [05/Aug/2026:11:37:30 +0000] "POST /rest/user/login HTTP/1.1" 200 799 - "curl/8.5.0"
+::ffff:172.19.0.1 - - [05/Aug/2026:11:37:30 +0000] "POST /rest/user/login HTTP/1.1" 200 799 - "curl/8.5.0"
+```
+
+できることといえば、タイムスタンプが最も近いWazuhアラートを探すことくらいでした——ここでは、攻撃が`2026-05-05T07:09:50Z`に発生し、最も近いアラートはその5秒後、`2026-05-05T07:09:55.129Z`に記録されています:
+
+```bash
+{
+  "agent": {"ip": "127.0.0.1", "name": "jesse", "id": "001"},
+  "manager": {"name": "wazuh.manager"},
+  "data": {"protocol": "POST", "srcip": "::ffff:172.17.0.1", "id": "401", "url": "/rest/user/login"},
+  "rule": {"firedtimes": 27, "level": 5, "description": "Web server 400 error code.", "groups": ["web", "accesslog", "attack"], "id": "31101"},
+  "decoder": {"name": "web-accesslog"},
+  "full_log": "::ffff:172.17.0.1 - - [05/May/2026:07:09:55 +0000] \"POST /rest/user/login HTTP/1.1\" 401 26 \"-\" \"curl/8.5.0\"",
+  "@timestamp": "2026-05-05T07:09:55.129Z",
+  "location": "/home/jesse/juice-shop/logs/access.log.2026-05-05",
+  "id": "1777964995.24311",
+  "timestamp": "2026-05-05T07:09:55.129+0000"
+}
+```
+
+このアラートは、5秒前のその攻撃によって引き起こされた可能性が高いといえます。しかし、パイプラインを採点する根拠として「可能性が高い」では不十分です。決定的な何かが必要でした。
+
+## 解決策:相関ID
+
+この修正は、3種類のログすべてに関わります。まず、攻撃の正解データに、相関ID、明示的な攻撃連番、そして対象URLを追加しました:
+
+```bash
+# Before
+{
+  "session":"20260505_070841",
+  "timestamp":"2026-05-05T07:09:50Z",
+  "category":"A07",
+  "label":"weak_credentials",
+  "description":"Login with default weak admin password admin123"
+}
+
+# After
+{"kind":"attack",
+ "session":"20260805_115430",
+ "timestamp":"2026-08-05T11:55:40Z",
+ "attack_seq":9,
+ "category":"A07",
+ "label":"weak_credentials",
+ "description":"Login with default weak admin password admin123",
+ "url":"/rest/user/login"
+}
+```
+
+次に、攻撃スクリプトが各リクエストを発行する際に、その相関IDをHTTPの`Referer`ヘッダーとして設定するようにしました。Juice Shopのアクセスロガーである Morgan は、もともとこのrefererフィールドをアクセスログの各行に書き出していたため、Wazuh側のロギング設定には一切変更が不要でした——IDは、それまで未使用だった`-`のフィールドに、そのまま乗って運ばれるだけです:
+
+```bash
+# Before (no correlation ID)
+::ffff:172.19.0.1 - - [05/Aug/2026:11:37:30 +0000] "POST /rest/user/login HTTP/1.1" 200 799 - "curl/8.5.0"
+
+# After (with correlation ID)
+::ffff:172.19.0.1 - - [05/Aug/2026:11:37:30 +0000] "POST /rest/user/login HTTP/1.1" 200 799 "wp1-20260805_113707-4-1" "curl/8.5.0"
+```
+
+Wazuhはアクセスログの行全体を`full_log`としてデコードするため、相関IDはアラート側にもそのまま渡ってきます。Wazuhの検知ルールへの変更は一切不要でした:
+
+```bash
+# Before (no correlation ID)
+{
+  "data": {"protocol": "POST", "srcip": "::ffff:172.17.0.1", "id": "401", "url": "/rest/user/login"},
+  "full_log": "::ffff:172.17.0.1 - - [05/May/2026:07:09:55 +0000] \"POST /rest/user/login HTTP/1.1\" 401 26 \"-\" \"curl/8.5.0\"",
+  "@timestamp": "2026-05-05T07:09:55.129Z"
+}
+
+# After (with correlation ID)
+{
+  "data": {"protocol": "POST", "srcip": "::ffff:172.19.0.1", "id": "401", "url": "/rest/user/login"},
+  "full_log": "::ffff:172.19.0.1 - - [05/Aug/2026:11:54:56 +0000] \"POST /rest/user/login HTTP/1.1\" 401 26 \"wp1-20260805_115430-4-7\" \"curl/8.5.0\"",
+  "@timestamp": "2026-08-05T11:54:57.528Z"
+}
+```
+
+## 結果
+
+両方のログに相関IDが存在するようになったことで、`wp1-20260805_115430-4-7`というIDを持つWazuhアラートは、一致するセッション`20260805_115430`と`attack_seq`7を持つ攻撃記録へと、タイムスタンプの推測なしにきれいに対応づけられるようになりました。同じくらい重要なのは、逆方向も機能するようになったことです。アラートを*何も*生まなかった攻撃も、近くにアラートがないことから存在を推測するのではなく、相関IDそのものの有無を直接確認できるため、同じように特定できます。これは以前、意味のあるWP4(定量)評価を妨げていた要因でした——あいまいな突き合わせから混同行列を作ることはできません。決定的な突き合わせが手に入ったことで、Wazuhの検知率を攻撃の正解データと比較する作業は、判断を要する作業ではなく、単純な参照作業になりました。

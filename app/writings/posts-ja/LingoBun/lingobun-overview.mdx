@@ -1,0 +1,53 @@
+---
+title: "LingoBun:AI語学学習プロダクトを本番品質に鍛え上げる"
+publishedAt: "2026-02-15"
+summary: "デモの域を超えたLLM搭載の語彙学習アプリ:すべてのAI呼び出しにRedisによるレート制限とコスト上限を設け、Zodで環境設定を検証し、180件のVitestテストでパイプラインを守っています。"
+image: "/lingobun-portfolio/logo.png"
+tags: ["design", "casestudy", "uiux", "ai", "llm"]
+track: "ai-engineering"
+featured: 1
+result: "LLM搭載の語学学習アプリを、AIエンジニアリングの地味だが欠かせない半分——すべてのAI呼び出しに対するRedisベースのレート制限とコスト上限、Zodによる設定検証、パイプラインの回帰を防ぐ180件のVitestテスト——を備えた状態でリリースしました。"
+stack: ["Next.js", "Redis", "Zod", "Vitest"]
+status: "shipped"
+---
+
+## 背景
+
+語学学習にツールが不足していたことは一度もありません。これまで、より速く、より簡単に、あるいはより楽しく学べると謳うアプリをいくつも試してきました。美しくデザインされたものもあれば、非常に夢中になれるものもありました。それでも、タップしたりスワイプしたり、仮想的な報酬を集めたりする時間を費やした割に、実際の上達は限定的なことがほとんどでした。
+
+LingoBunは、このもどかしさから——そして、地に足のついた学習は今も有効であり、思慮深いデザインに支えられれば、さらにうまく機能するはずだという確信から生まれました。
+
+本稿は、LingoBunのデザインと開発について書いた複数の記事のうちの一つです——他の記事は[全体のコレクション](/ja/writings/LingoBun)からご覧いただけます。本稿はまた、LLMプロダクトを出荷する際の地味だが欠かせない半分——すべてのAI呼び出しに対するレート制限とコスト上限、Zodで検証される環境設定、パイプラインの回帰を防ぐ180件のVitestテスト——についての、私自身の実験の場にもなりました。
+
+## ギャラリー
+
+LingoBunベータ版の主要画面:
+
+<div class="bg-zinc-200 p-4 rounded-lg">
+  <figure style={{ textAlign: "center" }}>
+    <img
+      src="/lingobun-portfolio/screens-1.png"
+      alt="LingoBunの画面:その1"
+      style={{ marginBottom: "8px", width: "100%" }}
+    />
+    <figcaption>LingoBunの画面:その1</figcaption>
+  </figure>
+  <br/>
+  <figure style={{ textAlign: "center" }}>
+    <img
+      src="/lingobun-portfolio/screens-2.png"
+      alt="LingoBunの画面:その2"
+      style={{ marginBottom: "8px", width: "100%" }}
+    />
+    <figcaption>LingoBunの画面:その2</figcaption>
+  </figure>
+  <br/>
+  <figure style={{ textAlign: "center" }}>
+    <img
+      src="/lingobun-portfolio/screens-3.png"
+      alt="LingoBunの画面:その3"
+      style={{ marginBottom: "8px", width: "100%" }}
+    />
+    <figcaption>LingoBunの画面:その3</figcaption>
+  </figure>
+</div>
