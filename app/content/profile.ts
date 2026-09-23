@@ -18,8 +18,6 @@ export type Profile = {
   headline: string
   subhead: string
   meta: { title: string; description: string }
-  /** ISO date in `updated`. */
-  availability: { open: boolean; text: string; updated: string }
   proof: ProofItem[]
   howIWork: HowIWorkItem[]
   focusTags: string[]
@@ -29,7 +27,6 @@ export type Profile = {
   features: {
     advisory: boolean
     newsletter: boolean
-    now: boolean
     cv: boolean
   }
 }
@@ -56,7 +53,6 @@ const social: Social[] = [
 const features = {
   advisory: false,
   newsletter: true,
-  now: true,
   // Files not supplied yet — set to true once the CV PDFs land under /cv.
   cv: false,
 }
@@ -75,11 +71,6 @@ export const profile: Record<Lang, Profile> = {
         "Jesse Wei — Applied AI engineer shipping LLM systems into real workflows",
       description:
         "Applied AI engineer who ships LLM systems into real business workflows — document pipelines, evaluation and delivery — backed by ten years of product design and engineering. Based in Japan, working in English, Japanese and Chinese.",
-    },
-    availability: {
-      open: true,
-      text: "Open to applied AI / FDE roles · Tokyo & Australia · from early 2027",
-      updated: "2026-09-23",
     },
     proof: [
       { label: "LLM pipelines shipped for 2 client businesses", href: "/work" },
@@ -127,11 +118,6 @@ export const profile: Record<Lang, Profile> = {
       title: "Jesse Wei — 業務に実装されるAIをつくるアプライドAIエンジニア",
       description:
         "生成AI／LLMシステムを実際の業務に実装するアプライドAIエンジニア。文書処理パイプライン、評価設計、顧客との要件整理から本番運用までを担当し、10年のプロダクトデザイン・開発経験で「使われるAI」をつくります。拠点は日本、英語・日本語・中国語で対応可能です。",
-    },
-    availability: {
-      open: true,
-      text: "求職中 · 東京／オーストラリア · 2027年初頭から",
-      updated: "2026-09-23",
     },
     proof: [
       { label: "クライアント企業2社にLLMパイプラインを実装", href: "/ja/work" },

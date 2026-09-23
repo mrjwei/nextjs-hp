@@ -13,7 +13,7 @@ export function ProofStrip({ items }: { items: ProofItem[] }) {
           </p>
         )
         return (
-          <div key={i} className="border-t border-[var(--border-subtle)] pt-3">
+          <div key={i}>
             {item.href ? (
               <Link href={item.href} className="block hover:underline">
                 {fact}

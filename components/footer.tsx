@@ -30,12 +30,10 @@ type SiteLink = { key: string; href: string; label: string }
 
 const siteLinksByLang: Record<Lang, SiteLink[]> = {
   en: [
-    { key: "now", href: "/now", label: "Now" },
     { key: "gallery", href: "/gallery", label: "Gallery" },
     { key: "rss", href: "/rss", label: "RSS" },
   ],
   ja: [
-    { key: "now", href: "/ja/now", label: "Now" },
     { key: "gallery", href: "/ja/gallery", label: "ギャラリー" },
     { key: "rss", href: "/rss", label: "RSS" },
   ],
@@ -62,9 +60,7 @@ export default function Footer({ lang = "en" }: { lang?: Lang }) {
   const t = copy[lang]
   const p = profile[lang]
   const social = p.social
-  const siteLinks = siteLinksByLang[lang].filter(
-    (link) => link.key !== "now" || p.features.now
-  )
+  const siteLinks = siteLinksByLang[lang]
 
   return (
     <footer className="w-full border-t border-[var(--border-subtle)] bg-[var(--surface-sunken)]">

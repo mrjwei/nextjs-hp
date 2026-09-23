@@ -4,10 +4,8 @@ import { Button } from "@/components/ui/button"
 import { Grid } from "@/components/grid"
 import { WorkCard } from "@/components/work-card"
 import { JaEmptyNotice } from "@/components/ja-empty-notice"
-import { AvailabilityChip } from "@/components/availability-chip"
 import { ProofStrip } from "@/components/proof-strip"
 import { HowIWork } from "@/components/how-i-work"
-import { NowBand } from "@/components/now-band"
 import { TrackedLink } from "@/components/tracked-link"
 import { JsonLd } from "@/components/json-ld"
 import { buildPersonJsonLd } from "app/seo/person"
@@ -55,18 +53,17 @@ export default function Page() {
             <Link href="/ja/about">プロフィール</Link>
           </Button>
         </div>
-        <AvailabilityChip availability={p.availability} lang="ja" />
       </div>
 
       {/* Proof strip */}
-      <div className="w-full border-t border-[var(--border-subtle)]">
+      <div className="w-full bg-[var(--surface-sunken)]">
         <div className="mx-auto w-full max-w-[1120px] px-8 py-14">
           <ProofStrip items={p.proof} />
         </div>
       </div>
 
       {/* Selected work */}
-      <div className="w-full bg-[var(--surface-sunken)] border-t border-[var(--border-subtle)]">
+      <div className="w-full border-t border-[var(--border-subtle)]">
         <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
           <div className="mb-10 flex items-end justify-between">
             <div>
@@ -96,7 +93,7 @@ export default function Page() {
       </div>
 
       {/* How I work */}
-      <div className="w-full border-t border-[var(--border-subtle)]">
+      <div className="w-full bg-[var(--surface-sunken)] border-t border-[var(--border-subtle)]">
         <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
           <div className="mb-10">
             <span className="eyebrow">Process</span>
@@ -109,7 +106,7 @@ export default function Page() {
       </div>
 
       {/* Featured writing */}
-      <div className="w-full bg-[var(--surface-sunken)] border-t border-[var(--border-subtle)]">
+      <div className="w-full border-t border-[var(--border-subtle)]">
         <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
           <div className="mb-10 flex items-end justify-between">
             <div>
@@ -133,15 +130,6 @@ export default function Page() {
           )}
         </div>
       </div>
-
-      {/* Now band */}
-      {p.features.now && (
-        <div className="w-full border-t border-[var(--border-subtle)]">
-          <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
-            <NowBand lang="ja" />
-          </div>
-        </div>
-      )}
     </section>
   )
 }

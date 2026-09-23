@@ -3,10 +3,8 @@ import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Grid } from "@/components/grid"
 import { WorkCard } from "@/components/work-card"
-import { AvailabilityChip } from "@/components/availability-chip"
 import { ProofStrip } from "@/components/proof-strip"
 import { HowIWork } from "@/components/how-i-work"
-import { NowBand } from "@/components/now-band"
 import { TrackedLink } from "@/components/tracked-link"
 import { JsonLd } from "@/components/json-ld"
 import { buildPersonJsonLd } from "app/seo/person"
@@ -54,18 +52,17 @@ export default function Page() {
             <Link href="/about">About me</Link>
           </Button>
         </div>
-        <AvailabilityChip availability={p.availability} />
       </div>
 
       {/* Proof strip */}
-      <div className="w-full border-t border-[var(--border-subtle)]">
+      <div className="w-full bg-[var(--surface-sunken)] border-t border-[var(--border-subtle)]">
         <div className="mx-auto w-full max-w-[1120px] px-8 py-14">
           <ProofStrip items={p.proof} />
         </div>
       </div>
 
       {/* Selected work */}
-      <div className="w-full bg-[var(--surface-sunken)] border-t border-[var(--border-subtle)]">
+      <div className="w-full border-t border-[var(--border-subtle)]">
         <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
           <div className="mb-10 flex items-end justify-between">
             <div>
@@ -91,7 +88,7 @@ export default function Page() {
       </div>
 
       {/* How I work */}
-      <div className="w-full border-t border-[var(--border-subtle)]">
+      <div className="w-full bg-[var(--surface-sunken)] border-t border-[var(--border-subtle)]">
         <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
           <div className="mb-10">
             <span className="eyebrow">Process</span>
@@ -104,7 +101,7 @@ export default function Page() {
       </div>
 
       {/* Featured writing */}
-      <div className="w-full bg-[var(--surface-sunken)] border-t border-[var(--border-subtle)]">
+      <div className="w-full border-t border-[var(--border-subtle)]">
         <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
           <div className="mb-10 flex items-end justify-between">
             <div>
@@ -124,15 +121,6 @@ export default function Page() {
           <Grid writings={featuredWriting} path="writings" />
         </div>
       </div>
-
-      {/* Now band */}
-      {p.features.now && (
-        <div className="w-full border-t border-[var(--border-subtle)]">
-          <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
-            <NowBand lang="en" />
-          </div>
-        </div>
-      )}
     </section>
   )
 }

@@ -74,14 +74,12 @@ export default async function sitemap() {
     { url: `${baseUrl}/writings`, lastModified: writingsLastMod },
     { url: `${baseUrl}/writings/series`, lastModified: writingsLastMod },
     { url: `${baseUrl}/gallery`, lastModified: galleryLastMod },
-    { url: `${baseUrl}/now`, lastModified: today },
     { url: `${baseUrl}/ja`, lastModified: today },
     { url: `${baseUrl}/ja/about`, lastModified: today },
     { url: `${baseUrl}/ja/work`, lastModified: today },
     { url: `${baseUrl}/ja/writings`, lastModified: today },
     { url: `${baseUrl}/ja/writings/series`, lastModified: today },
     { url: `${baseUrl}/ja/gallery`, lastModified: today },
-    { url: `${baseUrl}/ja/now`, lastModified: today },
   ]
 
   const writingsJaList = getAllSortedWritings("ja")
