@@ -1,0 +1,121 @@
+---
+title: "Wazuh + Claudeセキュリティパイプラインにおけるログ種別の整理"
+slug: "understanding-log-types"
+publishedAt: "2026-08-23"
+summary: "IFN737の研究パイプラインを流れる5種類のログ——生の攻撃実行ログからWazuhのアラート、Claudeによる構造化分類まで——をまとめたフィールドガイドと、それらがどうつながっているかの整理。"
+tags: ["security", "ai", "dev", "evals"]
+partOf: "ai-assisted-siem-workflow"
+partOfTitle: "AI支援SIEMワークフロー"
+partNumber: 1
+track: "security"
+featured: 2
+result: "LLM対SIEMのセキュリティパイプラインを流れる5種類のログ——攻撃の正解データ、アプリケーションログ、HTTPアクセスログ、Wazuhアラート、Claudeの分類結果——を整理し、評価の土台となる構造を明らかにした。"
+status: "research"
+---
+
+- [ログ種別1:攻撃シミュレーションの正解データ](#ログ種別1攻撃シミュレーションの正解データ)
+- [ログ種別2:アプリケーションログ](#ログ種別2アプリケーションログ)
+- [ログ種別3:HTTPアクセスログ](#ログ種別3httpアクセスログ)
+- [ログ種別4:Wazuhアラート](#ログ種別4wazuhアラート)
+- [ログ種別5:VMシステムログ](#ログ種別5vmシステムログ)
+- [ログ種別同士のつながり](#ログ種別同士のつながり)
+
+IFN738の研究キャップストーンでは、従来のSIEMと比較して、LLMがどれだけうまくセキュリティアラートをトリアージできるかを評価しています。この構成では、意図的に脆弱性を残したアプリ([OWASP Juice Shop](https://owasp.org/www-project-juice-shop/))に対してシミュレートした攻撃を実行し、生成されたトラフィックから[Wazuh](https://wazuh.com/)が検知できるものを検知させ、そのWazuhのアラートをClaudeに渡して、LLMによる二次分類を行わせます。実際に何が実行されたか、Wazuhが何を検知したか、Claudeが何をどう分類したか——この3つを比較することが、研究デザインの核心です。
+
+この比較が成立するのは、どのログがどこから来たものかを正確に把握できている場合に限られます。パイプラインには5種類の異なるログが流れており、それらを取り違える(あるいは誤ったログを誤った段階に渡す)と、結果が静かに無効化されてしまいます。本稿は、それぞれのログが何であり、どこにあり、どんな役割を果たすかについての、私自身のための整理です。
+
+## ログ種別1:攻撃シミュレーションの正解データ
+
+**場所:** UbuntuのVM上で、各攻撃ステップがJuice Shopに対して実行されるたびに、`attacks.py`(WP1)によって書き出される。
+
+**内容:** 攻撃アクション1件につき1つの構造化レコードで、OWASPのカテゴリーと人間が読める説明が付与されている——これはパイプライン全体にとっての「解答キー」に当たる:
+
+```json
+{
+  "session": "20260501_081327",
+  "timestamp": "2026-05-01T08:13:27Z",
+  "category": "A03",
+  "label": "sql_injection",
+  "description": "Login bypass via SQL injection"
+}
+```
+
+**プロジェクトにおける役割:** これは、Wazuhの検知結果(WP2)とClaudeの分類結果(WP3)の両方を採点する際の基準となる正解データであり、RQ1とRQ2のための三者比較の土台です。Wazuhのアラートオブジェクトとは共有するフィールドが一つもないため、このログをWazuhアラート(ログ種別4)に対応づける作業は、タイムスタンプの近接性とURLパターンによるヒューリスティックに頼っており、HTTPステータスコードで曖昧さを解消しています。これは、まだ完全には解決できていない、方法論上の既知の限界です。
+
+## ログ種別2:アプリケーションログ
+
+**場所:** Dockerコンテナ内。`docker logs juice-shop`で参照可能。
+
+**内容:** アプリケーションレベルのイベント——サーバー起動、チャレンジの完了、エラー、進捗の復元など:
+
+```
+info: Server listening on port 3000
+info: Solved 2-star loginAdminChallenge (Login Admin)
+info: Port 3000 is available (OK)
+```
+
+**プロジェクトにおける役割:** 直接的な価値はほぼありません。あるチャレンジが発火したことの確認には使えますが、セキュリティイベントの分析には使えないため、WazuhにもClaudeにも渡していません。
+
+## ログ種別3:HTTPアクセスログ
+
+**場所:** VMホスト上の`~/juice-shop/logs/access.log.YYYY-MM-DD`。ボリュームマウント経由で書き出される。
+
+**内容:** Juice Shopが受け取るすべてのHTTPリクエストを、Apache combined形式で記録したもの:
+
+```
+::ffff:172.17.0.1 - - [24/Apr/2026:00:28:22 +0000] "POST /rest/user/login HTTP/1.1" 401 26 "-" "curl/8.5.0"
+```
+
+**プロジェクトにおける役割:** これが検知のための生データの出所です。Wazuhエージェントがこのファイルを監視し、各行をパースして、ルールに一致した際にアラートを生成します——WP1とWP2をつなぐ橋渡し役です。このファイルがなければ、WazuhはJuice Shopから何も見えません。
+
+## ログ種別4:Wazuhアラート
+
+**場所:** Wazuhマネージャーコンテナ内の`/var/ossec/logs/alerts/alerts.json`。ポート55000経由のAPIからも参照可能で、OpenSearch(`wazuh-alerts-4.x-*`)にもインデックスされる。
+
+**内容:** アクセスログの行に対してWazuhの検知ルールが発火した際に生成される、構造化されたJSONオブジェクト。各アラートには、ルールのメタデータ、MITRE ATT&CKへのマッピング、深刻度、元のログ行、デコード済みフィールドが含まれる:
+
+```json
+{
+  "timestamp": "2026-04-24T00:28:22.647+0000",
+  "rule": {"level": 6, "description": "A web attack returned code 200 (success)", "id": "31106"},
+  "data": {"protocol": "POST", "srcip": "::ffff:172.17.0.1", "url": "/rest/user/login"},
+  "full_log": "::ffff:172.17.0.1 - - [24/Apr/2026:00:28:22 +0000] ...",
+  "location": "/home/jesse/juice-shop/logs/access.log.2026-04-24"
+}
+```
+
+**プロジェクトにおける役割:** これがLLM層(WP3)への入力です。`wp2_collector.py`がOpenSearchのインデクサー経由でこれらのアラートを取得し、Claudeに渡すと、アナリストのトリアージ用に7フィールドの構造化JSON出力が返されます。これらのアラートは、三者比較のもう一方の脚でもあります——Wazuhが検知したものと、実際に実行されたもの(ログ種別1)、そしてClaudeが分類したものとの比較です。
+
+## ログ種別5:VMシステムログ
+
+**場所:** UbuntuのVM上のシステムジャーナル(`journald`)。Wazuhによっても監視されている。
+
+**内容:** OSレベルのイベント——SSHセッション、sudoコマンド、PAM認証、パッケージのインストール、エージェントの起動・停止など。Juice Shopのロギングが正しく機能する前は、これらが初期の`alerts.json`の出力を埋め尽くしていました。
+
+**プロジェクトにおける役割:** 研究上はノイズです。アラートがClaudeに渡る前にフィルタリングされて除外されます——`wp2_collector.py`はすでに、収集対象を`location=/home/jesse/juice-shop/logs/access.log*`に限定しています。
+
+## ログ種別同士のつながり
+
+```
+Attack script (attacks.py) executes
+    ├──> attack_log.jsonl (Log Type 1) ── ground truth
+    │
+    ↓
+Juice Shop receives HTTP requests
+    ↓
+Morgan writes to access.log (Log Type 3) ── primary raw data
+    ↓
+Wazuh agent reads access.log
+    ↓
+Wazuh manager fires rules → alerts.json / OpenSearch (Log Type 4)
+    ↓
+wp2_collector.py retrieves alerts (filtered to Juice Shop access log only)
+    ↓
+Claude API (Sonnet, via Anthropic API) analyses alerts
+    ↓
+Structured 7-field JSON output ── WP3 output, scored against Log Type 1
+```
+
+_(ログ種別5——VMのjournald——はこの連鎖の外側にあり、WP3に届く前にフィルタリングされて除外されます。ログ種別2——アプリケーションの標準出力——も同様に連鎖の外側にあり、どのパイプライン段階からも参照されず、手動で確認するのみです。)_
+
+この5種類を正確に区別しておくことが、最終的な比較を信頼できるものにする鍵です。ログ種別1が「正解」の定義であり、ログ種別4は従来型のSIEMが実際に検知できた範囲であり、その両者に対して採点されたClaudeの出力こそが、私の研究課題に実際に答えるものです。ログ種別2と5はデバッグ用の可視性のために存在しており、評価には使いません——パイプラインの様子がおかしいときに手元にあると役立つものですが、結果には反映されません。

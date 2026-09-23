@@ -517,3 +517,39 @@ input[type="email"] {
     scroll-behavior: auto !important;
   }
 }
+
+/* ============================================================
+   Japanese typography — :lang(ja) matches <html lang="ja"> (see
+   app/ja/layout.tsx) and cascades to every descendant. Latin tracking
+   (negative letter-spacing, tight line-height) reads as cramped in
+   CJK, and Newsreader has no Japanese glyphs, so JA swaps its whole
+   sans stack to Noto Sans JP and relaxes measure-driven values that
+   were tuned for Latin type.
+   ============================================================ */
+:lang(ja) {
+  --font-sans: var(--font-ja), var(--font-geist-sans), ui-sans-serif,
+    system-ui, "Hiragino Sans", "Yu Gothic", sans-serif;
+  --font-family-sans: var(--font-sans);
+}
+
+:lang(ja) h1,
+:lang(ja) h2,
+:lang(ja) h3,
+:lang(ja) h4,
+:lang(ja) h5,
+:lang(ja) h6 {
+  letter-spacing: 0;
+  font-feature-settings: "palt";
+}
+
+:lang(ja) p {
+  line-height: 1.8;
+}
+
+:lang(ja) .display {
+  font-family: var(--font-ja), var(--font-sans);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.4;
+  font-feature-settings: "palt";
+}
