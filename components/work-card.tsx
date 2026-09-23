@@ -1,6 +1,8 @@
+"use client"
+
 import clsx from "clsx"
-import Link from "next/link"
 import Image from "next/image"
+import { TrackedLink } from "@/components/tracked-link"
 import type { TContentMeta, WorkStatus } from "app/utils"
 import type { Lang } from "app/i18n/config"
 
@@ -51,7 +53,12 @@ export function WorkCard({
         wrapperProps?.className
       )}
     >
-      <Link href={href} className="flex flex-1 flex-col">
+      <TrackedLink
+        href={href}
+        className="flex flex-1 flex-col"
+        eventName="work_card_click"
+        eventParams={{ slug: work.slug, title }}
+      >
         {image && (
           <div className="relative aspect-[16/9] w-full overflow-hidden bg-[var(--surface-sunken)]">
             <Image
@@ -91,7 +98,7 @@ export function WorkCard({
             </div>
           )}
         </div>
-      </Link>
+      </TrackedLink>
     </div>
   )
 }

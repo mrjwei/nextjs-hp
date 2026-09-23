@@ -1,5 +1,8 @@
+"use client"
+
 import Link from "next/link"
 import { NewsletterForm } from "@/components/newsletter-form"
+import { TrackedLink } from "@/components/tracked-link"
 import type { Lang } from "app/i18n/config"
 import { profile, type SocialId } from "app/content/profile"
 
@@ -88,19 +91,34 @@ export default function Footer({ lang = "en" }: { lang?: Lang }) {
               </Link>
             </li>
           ))}
-          {social.map((s) => (
-            <li key={s.id}>
-              <Link
-                className="flex items-center gap-2 transition-colors hover:text-[var(--text-strong)]"
-                rel="noopener noreferrer"
-                target="_blank"
-                href={s.href}
-              >
-                <ArrowIcon />
-                {socialLabels[s.id]}
-              </Link>
-            </li>
-          ))}
+          {social.map((s) =>
+            s.id === "email" ? (
+              <li key={s.id}>
+                <TrackedLink
+                  className="flex items-center gap-2 transition-colors hover:text-[var(--text-strong)]"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  href={s.href}
+                  eventName="contact_click"
+                >
+                  <ArrowIcon />
+                  {socialLabels[s.id]}
+                </TrackedLink>
+              </li>
+            ) : (
+              <li key={s.id}>
+                <Link
+                  className="flex items-center gap-2 transition-colors hover:text-[var(--text-strong)]"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  href={s.href}
+                >
+                  <ArrowIcon />
+                  {socialLabels[s.id]}
+                </Link>
+              </li>
+            )
+          )}
         </ul>
         <p className="mt-8 text-xs text-[var(--text-subtle)]">
           © {new Date().getFullYear()} Jesse Wei
