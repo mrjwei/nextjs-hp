@@ -8,6 +8,7 @@ import { Menu } from "lucide-react"
 import { icons } from "app/data/icons"
 import { SearchPalette } from "./SearchPalette"
 import { getLangFromPathname, toggleLangPath } from "app/i18n/config"
+import { profile } from "app/content/profile"
 import {
   Sheet,
   SheetContent,
@@ -30,11 +31,24 @@ const navItemsByLang = {
   },
 }
 
+const socialLabels: Record<string, string> = {
+  linkedin: "LinkedIn profile",
+  github: "GitHub profile",
+  instagram: "Instagram profile",
+  email: "Email",
+}
+
 export function Header() {
   const pathName = usePathname()
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
   const lang = getLangFromPathname(pathName)
-  const navItems = navItemsByLang[lang]
+  const p = profile[lang]
+  const navItems = Object.fromEntries(
+    Object.entries(navItemsByLang[lang]).filter(
+      ([path]) => p.features.galleryInNav || !path.endsWith("/gallery")
+    )
+  )
+  const headerSocial = p.social.filter((s) => s.inHeader)
 
   React.useEffect(() => {
     setIsMenuOpen(false)
@@ -170,30 +184,17 @@ export function Header() {
             </Link>
           </div>
           <SearchPalette isLight />
-          <Link
-            target="_blank"
-            href="https://www.linkedin.com/in/jesse-wei-profile/"
-            className="px-2 py-1.5 rounded-md text-[var(--text-muted)] hover:text-[var(--text-strong)] hover:bg-[var(--surface-active)] transition-colors duration-150 ease-[var(--ease-out)]"
-            aria-label="LinkedIn profile"
-          >
-            {icons.linkedin}
-          </Link>
-          <Link
-            target="_blank"
-            href="https://github.com/mrjwei"
-            className="px-2 py-1.5 rounded-md text-[var(--text-muted)] hover:text-[var(--text-strong)] hover:bg-[var(--surface-active)] transition-colors duration-150 ease-[var(--ease-out)]"
-            aria-label="GitHub profile"
-          >
-            {icons.github}
-          </Link>
-          <Link
-            target="_blank"
-            href="https://www.instagram.com/mrjwei/"
-            className="px-2 py-1.5 rounded-md text-[var(--text-muted)] hover:text-[var(--text-strong)] hover:bg-[var(--surface-active)] transition-colors duration-150 ease-[var(--ease-out)]"
-            aria-label="Instagram profile"
-          >
-            {icons.instagram}
-          </Link>
+          {headerSocial.map((s) => (
+            <Link
+              key={s.id}
+              target="_blank"
+              href={s.href}
+              className="px-2 py-1.5 rounded-md text-[var(--text-muted)] hover:text-[var(--text-strong)] hover:bg-[var(--surface-active)] transition-colors duration-150 ease-[var(--ease-out)]"
+              aria-label={socialLabels[s.id]}
+            >
+              {icons[s.id]}
+            </Link>
+          ))}
         </div>
       </div>
     </header>

@@ -3,21 +3,23 @@ import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Grid } from "@/components/grid"
 import { getAllSortedWritings } from "app/utils"
+import { profile } from "app/content/profile"
 
 export default function Page() {
   const writings = getAllSortedWritings()
   const caseStudies = writings.filter((w) => w.metadata.tags.includes("casestudy"))
+  const p = profile.en
 
   return (
     <section className="w-full">
       {/* Hero */}
       <div className="mx-auto w-full max-w-[1120px] px-8 pt-28 pb-20 md:pt-36 md:pb-24">
-        <span className="eyebrow">Applied AI engineer &middot; Japan &amp; Australia</span>
+        <span className="eyebrow">{p.eyebrow}</span>
         <h1 className="display mt-6 text-5xl leading-[1.04] md:text-6xl">
-          AI that gets used, not just demoed.
+          {p.headline}
         </h1>
         <p className="mt-6 max-w-[54ch] text-lg leading-relaxed text-[var(--text-muted)] md:text-xl">
-          I ship LLM systems into real business workflows — from messy Japanese documents to evaluated, production-ready pipelines. A decade of product design and engineering is why people actually adopt them.
+          {p.subhead}
         </p>
         <div className="mt-9 flex flex-wrap gap-3">
           <Button asChild variant="primary" size="lg">

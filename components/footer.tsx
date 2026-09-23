@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { NewsletterForm } from "@/components/newsletter-form"
 import type { Lang } from "app/i18n/config"
+import { profile, type SocialId } from "app/content/profile"
 
 const copy: Record<Lang, { heading: string; subtext: string }> = {
   en: {
@@ -13,6 +14,13 @@ const copy: Record<Lang, { heading: string; subtext: string }> = {
     subtext:
       "アプライドAI、評価設計、プロダクト開発。時々セキュリティの深掘りも。スパムはありません。",
   },
+}
+
+const socialLabels: Record<SocialId, string> = {
+  linkedin: "LinkedIn",
+  github: "GitHub",
+  instagram: "Instagram",
+  email: "Email",
 }
 
 export function ArrowIcon() {
@@ -34,6 +42,7 @@ export function ArrowIcon() {
 
 export default function Footer({ lang = "en" }: { lang?: Lang }) {
   const t = copy[lang]
+  const social = profile[lang].social
 
   return (
     <footer className="w-full border-t border-[var(--border-subtle)] bg-[var(--surface-sunken)]">
@@ -49,39 +58,19 @@ export default function Footer({ lang = "en" }: { lang?: Lang }) {
         </div>
 
         <ul className="mt-9 flex gap-4 text-sm text-[var(--text-muted)] lg:gap-8">
-          <li>
-            <Link
-              className="flex items-center gap-2 transition-colors hover:text-[var(--text-strong)]"
-              rel="noopener noreferrer"
-              target="_blank"
-              href="https://www.linkedin.com/in/jesse-wei-profile/"
-            >
-              <ArrowIcon />
-              LinkedIn
-            </Link>
-          </li>
-          <li>
-            <Link
-              className="flex items-center gap-2 transition-colors hover:text-[var(--text-strong)]"
-              rel="noopener noreferrer"
-              target="_blank"
-              href="https://github.com/mrjwei"
-            >
-              <ArrowIcon />
-              GitHub
-            </Link>
-          </li>
-          <li>
-            <Link
-              className="flex items-center gap-2 transition-colors hover:text-[var(--text-strong)]"
-              rel="noopener noreferrer"
-              target="_blank"
-              href="https://www.instagram.com/mrjwei/"
-            >
-              <ArrowIcon />
-              Instagram
-            </Link>
-          </li>
+          {social.map((s) => (
+            <li key={s.id}>
+              <Link
+                className="flex items-center gap-2 transition-colors hover:text-[var(--text-strong)]"
+                rel="noopener noreferrer"
+                target="_blank"
+                href={s.href}
+              >
+                <ArrowIcon />
+                {socialLabels[s.id]}
+              </Link>
+            </li>
+          ))}
         </ul>
         <p className="mt-8 text-xs text-[var(--text-subtle)]">
           © {new Date().getFullYear()} Jesse Wei

@@ -5,15 +5,17 @@ import Script from "next/script"
 import { RootShell } from "@/components/root-shell"
 import { geistSans, geistMono, newsreader } from "app/data/fonts"
 import { baseUrl } from "../sitemap"
+import { profile } from "app/content/profile"
+
+const { title: metaTitle, description: metaDescription } = profile.ja.meta
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: "Jesse Wei — 業務に実装されるAIをつくるアプライドAIエンジニア",
+    default: metaTitle,
     template: "%s | Jesse Wei",
   },
-  description:
-    "生成AI／LLMシステムを実際の業務に実装するアプライドAIエンジニア。文書処理パイプライン、評価設計、顧客との要件整理から本番運用までを担当し、10年のプロダクトデザイン・開発経験で「使われるAI」をつくります。拠点は日本、英語・日本語・中国語で対応可能です。",
+  description: metaDescription,
   alternates: {
     languages: {
       en: baseUrl,
@@ -21,9 +23,8 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Jesse Wei — 業務に実装されるAIをつくるアプライドAIエンジニア",
-    description:
-      "生成AI／LLMシステムを実際の業務に実装するアプライドAIエンジニア。文書処理パイプライン、評価設計、顧客との要件整理から本番運用までを担当し、10年のプロダクトデザイン・開発経験で「使われるAI」をつくります。拠点は日本、英語・日本語・中国語で対応可能です。",
+    title: metaTitle,
+    description: metaDescription,
     url: `${baseUrl}/ja`,
     siteName: "Jesse Wei",
     locale: "ja_JP",

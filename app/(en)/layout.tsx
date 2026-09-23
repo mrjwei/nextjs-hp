@@ -5,15 +5,17 @@ import Script from "next/script"
 import { RootShell } from "@/components/root-shell"
 import { geistSans, geistMono, newsreader } from "app/data/fonts"
 import { baseUrl } from "../sitemap"
+import { profile } from "app/content/profile"
+
+const { title: metaTitle, description: metaDescription } = profile.en.meta
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: "Jesse Wei — Applied AI engineer shipping LLM systems into real workflows",
+    default: metaTitle,
     template: "%s | Jesse Wei",
   },
-  description:
-    "Applied AI engineer who ships LLM systems into real business workflows — document pipelines, evaluation and delivery — backed by ten years of product design and engineering. Based in Japan, working in English, Japanese and Chinese.",
+  description: metaDescription,
   alternates: {
     languages: {
       en: baseUrl,
@@ -21,9 +23,8 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Jesse Wei — Applied AI engineer shipping LLM systems into real workflows",
-    description:
-      "Applied AI engineer who ships LLM systems into real business workflows — document pipelines, evaluation and delivery — backed by ten years of product design and engineering. Based in Japan, working in English, Japanese and Chinese.",
+    title: metaTitle,
+    description: metaDescription,
     url: baseUrl,
     siteName: "Jesse Wei",
     locale: "en_US",
