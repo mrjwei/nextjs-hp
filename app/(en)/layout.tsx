@@ -9,11 +9,11 @@ import { baseUrl } from "../sitemap"
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: "Jesse Wei — Design engineer building AI-native products",
+    default: "Jesse Wei — Applied AI engineer shipping LLM systems into real workflows",
     template: "%s | Jesse Wei",
   },
   description:
-    "Design engineer with 10+ years across product design and software. I design and ship full products — interface, system, and the AI underneath. Based in Japan, working in English and Japanese.",
+    "Applied AI engineer who ships LLM systems into real business workflows — document pipelines, evaluation and delivery — backed by ten years of product design and engineering. Based in Japan, working in English, Japanese and Chinese.",
   alternates: {
     languages: {
       en: baseUrl,
@@ -21,9 +21,9 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Jesse Wei — Design engineer building AI-native products",
+    title: "Jesse Wei — Applied AI engineer shipping LLM systems into real workflows",
     description:
-      "Design engineer with 10+ years across product design and software. I design and ship full products — interface, system, and the AI underneath. Based in Japan, working in English and Japanese.",
+      "Applied AI engineer who ships LLM systems into real business workflows — document pipelines, evaluation and delivery — backed by ten years of product design and engineering. Based in Japan, working in English, Japanese and Chinese.",
     url: baseUrl,
     siteName: "Jesse Wei",
     locale: "en_US",

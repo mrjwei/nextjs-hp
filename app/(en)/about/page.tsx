@@ -6,11 +6,17 @@ import { buildStandardMetadata } from "app/seo/metadata"
 export const metadata = buildStandardMetadata({
   title: "About",
   description:
-    "Jesse Wei is a product designer and engineer based in Japan — ten years building design culture, design-driven development workflows, and maintainable design systems.",
+    "Jesse Wei is an applied AI engineer based in Japan who ships LLM systems into real business workflows — document pipelines, evaluation and delivery — backed by ten years of product design and engineering.",
   pathname: "/about",
   alternatePathname: "/ja/about",
   alternateLang: "ja",
 })
+
+const strong = "text-[var(--text-strong)]"
+const h2 =
+  "mt-10 mb-4 text-2xl font-semibold tracking-tight text-[var(--text-strong)]"
+const extLink =
+  "inline-flex items-center gap-1.5 transition-colors text-[var(--accent-text)] hover:underline mx-1"
 
 export default function Page() {
   return (
@@ -20,46 +26,78 @@ export default function Page() {
       <div className="grid grid-cols-12 gap-8 md:gap-16">
         <div className="text-[var(--text-body)] col-span-12 order-2 md:col-span-8 md:order-1">
           <p className="mb-4">
-            I&apos;m Jesse, a{" "}
-            <strong className="text-[var(--text-strong)]">
-              product designer and engineer
+            I&apos;m Jesse, an{" "}
+            <strong className={strong}>applied AI engineer</strong> based in
+            Japan, currently finishing a Master of IT in Brisbane. I build LLM
+            systems that go into real business workflows — checking
+            400-page technical manuals, drafting regulated records, triaging
+            security alerts — and I spend as much time on{" "}
+            <strong className={strong}>
+              evaluation, guardrails, and the people who will use the system
             </strong>{" "}
-            based in Japan. Over ten years I&apos;ve helped businesses build
-            products people can actually use, but the work that lasted was
-            rarely the interface. It was the surrounding things:{" "}
-            <strong className="text-[var(--text-strong)]">
-              design culture where there was none, design-driven development
-              workflows, and design systems that stay maintainable
-            </strong>{" "}
-            after the people who built them move on.
+            as on the model calls.
           </p>
           <p className="mb-4">
-            That comes from an unusual mix. My career began in product design;
-            curiosity about what happens beneath the interface pulled me into
-            engineering, and I formalised the move with a Master&apos;s in IT
-            in Australia. Today I design and I write production code, so
-            usability, business goals, and engineering constraints stay in{" "}
-            <strong className="text-[var(--text-strong)]">
-              one decision instead of getting traded across a handoff
+            I came to this from the other side of the product. Ten years of
+            B2B product design, then more than three years leading frontend
+            engineering, taught me that most software fails at adoption, not
+            at the demo. That is the half of AI engineering I&apos;m best at:
+            turning an ambiguous request into requirements, deciding{" "}
+            <strong className={strong}>
+              where the model is and isn&apos;t allowed to decide
             </strong>
-            . I&apos;ve spent most of my career inside constrained
-            environments — legacy systems, small teams, industries where
-            digital transformation is still an unfamiliar idea — where the job
-            is making sensible trade-offs rather than ideal ones. I work in{" "}
-            <strong className="text-[var(--text-strong)]">
+            , and shipping something a team trusts enough to use every day. I
+            work in{" "}
+            <strong className={strong}>
               Chinese (native), English, Japanese, and Korean
             </strong>
-            , and bring a global perspective to Japanese business practice,
-            which matters more than it sounds: most of what I do is
+            , which matters more than it sounds: most deployment work is
             translation of one kind or another.
           </p>
 
-          <h2 className="mt-10 mb-4 text-2xl font-semibold tracking-tight text-[var(--text-strong)]">
-            What I&apos;ve done
-          </h2>
+          <h2 className={h2}>What I&apos;m building now</h2>
           <p className="mb-4">
-            <strong className="text-[var(--text-strong)]">
-              DEN Inc. — social welfare, seven years.
+            <strong className={strong}>
+              LLM document checking for a Japanese manufacturer — client work.
+            </strong>{" "}
+            A pipeline that reviews long industrial manuals: text and
+            vector-drawn warning-symbol extraction from PDF, a rule engine the
+            client can maintain themselves, and agent orchestration with
+            LangGraph. Requirements were scoped and negotiated in Japanese,
+            directly with the client.
+          </p>
+          <p className="mb-4">
+            <strong className={strong}>
+              AI-drafted compliance records for a multi-site welfare operator.
+            </strong>{" "}
+            A production system that replaces spreadsheet workflows across
+            multiple sites. An LLM drafts regulatory activity records under a
+            three-tier model — deterministic checks in code, LLM
+            self-assessment, and mandatory human sign-off — so nothing is
+            issued that a person hasn&apos;t confirmed.
+          </p>
+          <p className="mb-4">
+            <strong className={strong}>
+              Evaluating LLM security triage — QUT capstone.
+            </strong>{" "}
+            An evaluation harness over 146 labelled attacks across 14
+            techniques on a Wazuh SIEM. The most useful findings weren&apos;t
+            about the model: logging design explained most detection gaps,
+            and a lenient scoring rule had been inflating accuracy by more
+            than 20 points.
+          </p>
+          <p className="mb-4">
+            <strong className={strong}>LingoBun — my own AI product.</strong>{" "}
+            A vocabulary app built and hardened like production software:
+            rate limits and cost caps on AI and text-to-speech calls,
+            validated configuration, and 180 automated tests, shaped by
+            rounds of user testing.
+          </p>
+
+          <h2 className={h2}>Where I come from</h2>
+          <p className="mb-4">
+            <strong className={strong}>
+              DEN Inc. — social welfare, eight years.
             </strong>{" "}
             I helped a 20-person facility running on paper become a
             multi-facility business of nearly 100 employees on AI-assisted
@@ -69,64 +107,44 @@ export default function Page() {
             sectors in Japan — none of this was the default outcome.
           </p>
           <p className="mb-4">
-            <strong className="text-[var(--text-strong)]">
-              Zerospec Inc. — energy, first designer on the team.
-            </strong>{" "}
-            The main product, a web app for fuel-delivery efficiency, had
-            shipped with no deliberate UI/UX design behind it. Balancing
-            usability, business goals, and real resource limits, I introduced
-            a progressive, prototype-driven, implementation-aligned process
-            that shortened feedback loops and made design-to-development
-            handoff close to seamless, then built the design system to hold it
-            together. The harder half was cultural: moving a company where no
-            one took design seriously into one that plans around it.
-          </p>
-          <p className="mb-4">
-            <strong className="text-[var(--text-strong)]">
-              WAmazing Inc. — ski-pass booking, design and delivery.
-            </strong>{" "}
-            Legacy code, a complex architecture, and a business whose peak
-            season leaves no room for downtime. Every proposed change had to
-            be priced in engineering risk before it was worth making. As the
-            only product designer on the team with real development
-            experience, I did that pricing — coordinating design and build so
-            that improvements and new features shipped consistently, without
-            destabilising the service.
-          </p>
-          <p className="mb-4">
-            <strong className="text-[var(--text-strong)]">
+            <strong className={strong}>
               Money Forward Inc. — HR Cloud, frontend lead.
             </strong>{" "}
-            I led frontend development on an enterprise HR SaaS product, and
+            I led frontend development on an enterprise HR SaaS product and
             held the team to one rule: a change to the code had to be
             justified by a better experience for the user, never the other way
-            around. Engineering convenience is a quiet, constant pressure on
-            interface quality. Being the person who could argue both sides of
-            it — in code and in design — is what made the rule hold.
+            around.
+          </p>
+          <p className="mb-4">
+            <strong className={strong}>
+              WAmazing Inc. — ski-pass booking, design and delivery.
+            </strong>{" "}
+            Legacy code and a peak season with no room for downtime meant
+            every change had to be priced in engineering risk first. I did
+            that pricing, and a redesigned booking flow cut peak-season
+            customer inquiries from over 200 a week to around four.
+          </p>
+          <p className="mb-4">
+            <strong className={strong}>
+              Zerospec Inc. — energy, first designer on the team.
+            </strong>{" "}
+            I introduced a prototype-driven, implementation-aligned process
+            and the design system to hold it together, and moved a company
+            where no one took design seriously into one that plans around it.
           </p>
 
-          <h2 className="mt-10 mb-4 text-2xl font-semibold tracking-tight text-[var(--text-strong)]">
-            What I&apos;m working toward
-          </h2>
+          <h2 className={h2}>What I&apos;m looking for</h2>
           <p className="mb-4">
-            I&apos;m most interested in{" "}
-            <strong className="text-[var(--text-strong)]">
-              AI-native design workflows built responsibly
-            </strong>{" "}
-            — tooling that changes how designers work rather than removing the
-            need for them. In practice that means treating design rationale,
-            documentation, and reproducible process as the real deliverable
-            rather than the artefact; bringing software engineering concepts
-            into design practice so that what gets designed can be built and
-            holds up against business objectives; and working directly with
-            business owners to rethink how operations run, using design, AI,
-            and whatever else proves genuinely useful.
+            Applied AI, forward-deployed and AI product engineering roles —
+            work where the job is getting AI to hold up inside a real
+            business — in Tokyo or Australia, from early 2027. I&apos;m also
+            always glad to talk with teams bringing AI into Japanese
+            businesses.
           </p>
           <p>
-            I&apos;m open to roles and collaborations at that intersection.
             Find me on
             <Link
-              className="inline-flex items-center gap-1.5 transition-colors text-[var(--accent-text)] hover:underline mx-1"
+              className={extLink}
               rel="noopener noreferrer"
               target="_blank"
               href="https://www.linkedin.com/in/jesse-wei-profile/"
@@ -134,25 +152,15 @@ export default function Page() {
               <ArrowIcon />
               <span>LinkedIn</span>
             </Link>
-            <span>,&nbsp;</span>
+            <span>or</span>
             <Link
-              className="inline-flex items-center gap-1.5 transition-colors text-[var(--accent-text)] hover:underline mx-1"
+              className={extLink}
               rel="noopener noreferrer"
               target="_blank"
               href="https://github.com/mrjwei"
             >
               <ArrowIcon />
               <span>GitHub</span>
-            </Link>
-            <span>,&nbsp;</span>
-            <Link
-              className="inline-flex items-center gap-1.5 transition-colors text-[var(--accent-text)] hover:underline mx-1"
-              rel="noopener noreferrer"
-              target="_blank"
-              href="https://www.instagram.com/mrjwei/"
-            >
-              <ArrowIcon />
-              <span>Instagram</span>
             </Link>
             <span>.</span>
           </p>

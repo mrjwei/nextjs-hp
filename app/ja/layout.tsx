@@ -9,11 +9,11 @@ import { baseUrl } from "../sitemap"
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: "Jesse Wei — AIネイティブなプロダクトを作るデザインエンジニア",
+    default: "Jesse Wei — 業務に実装されるAIをつくるアプライドAIエンジニア",
     template: "%s | Jesse Wei",
   },
   description:
-    "プロダクトデザインとソフトウェア開発に10年以上携わるデザインエンジニア。インターフェース、システム、そしてその裏側のAIまで、プロダクト全体を設計・実装します。拠点は日本、英語・日本語で対応可能です。",
+    "生成AI／LLMシステムを実際の業務に実装するアプライドAIエンジニア。文書処理パイプライン、評価設計、顧客との要件整理から本番運用までを担当し、10年のプロダクトデザイン・開発経験で「使われるAI」をつくります。拠点は日本、英語・日本語・中国語で対応可能です。",
   alternates: {
     languages: {
       en: baseUrl,
@@ -21,9 +21,9 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Jesse Wei — AIネイティブなプロダクトを作るデザインエンジニア",
+    title: "Jesse Wei — 業務に実装されるAIをつくるアプライドAIエンジニア",
     description:
-      "プロダクトデザインとソフトウェア開発に10年以上携わるデザインエンジニア。インターフェース、システム、そしてその裏側のAIまで、プロダクト全体を設計・実装します。拠点は日本、英語・日本語で対応可能です。",
+      "生成AI／LLMシステムを実際の業務に実装するアプライドAIエンジニア。文書処理パイプライン、評価設計、顧客との要件整理から本番運用までを担当し、10年のプロダクトデザイン・開発経験で「使われるAI」をつくります。拠点は日本、英語・日本語・中国語で対応可能です。",
     url: `${baseUrl}/ja`,
     siteName: "Jesse Wei",
     locale: "ja_JP",

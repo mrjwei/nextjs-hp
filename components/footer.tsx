@@ -6,12 +6,12 @@ const copy: Record<Lang, { heading: string; subtext: string }> = {
   en: {
     heading: "New writing, occasionally",
     subtext:
-      "Design systems, AI agents, and the odd cryptography deep-dive. No spam.",
+      "Applied AI, evaluation, and product engineering — plus the odd security deep-dive. No spam.",
   },
   ja: {
     heading: "たまに、新しい記事を",
     subtext:
-      "デザインシステム、AIエージェント、時々暗号技術の深掘りも。スパムはありません。",
+      "アプライドAI、評価設計、プロダクト開発。時々セキュリティの深掘りも。スパムはありません。",
   },
 }
 
