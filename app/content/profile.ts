@@ -27,10 +27,10 @@ export type Profile = {
   languages: string[]
   social: Social[]
   features: {
-    galleryInNav: boolean
     advisory: boolean
     newsletter: boolean
     now: boolean
+    cv: boolean
   }
 }
 
@@ -44,15 +44,21 @@ const social: Social[] = [
   {
     id: "instagram",
     href: "https://www.instagram.com/mrjwei/",
-    inHeader: true,
+    inHeader: false,
+  },
+  {
+    id: "email",
+    href: "mailto:jesseweijapan@gmail.com",
+    inHeader: false,
   },
 ]
 
 const features = {
-  galleryInNav: true,
   advisory: false,
   newsletter: true,
-  now: false,
+  now: true,
+  // Files not supplied yet — set to true once the CV PDFs land under /cv.
+  cv: false,
 }
 
 const focusTags = ["ai", "machine-learning", "deep-learning", "security"]

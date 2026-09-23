@@ -10,6 +10,14 @@ Collections (previously called “series” in the UI) are driven by frontmatter
 
 For convenience/back-compat, if a writing is inside a subfolder (e.g. `app/writings/posts/ml/...`), that folder name is treated as its `series` slug unless `series` is explicitly set.
 
+## Work vs Writings — canonical URL
+
+`/work` is a *view* over writings, not a separate content directory: any writing tagged `casestudy` (via frontmatter `tags: ["casestudy", ...]`) is listed at `/work` (and `/ja/work`) as well as under `/writings`.
+
+The same file is therefore reachable at two URLs — `/writings/[slug]` (or `/writings/[collection]/[slug]`) and `/work/[slug]`. **`/work/[slug]` is canonical**: its `<link rel="canonical">`, OG URL, and sitemap entry all point there, even though the page is still served (and readable) at the `/writings` URL for anyone browsing by tag or collection. No redirect is used — `/writings/[slug]` keeps rendering the same content, just with its canonical tag pointing at `/work/[slug]`.
+
+To add a new case study: tag it `casestudy` and it picks up the canonical `/work/[slug]` URL automatically — no separate routing or content-index change needed.
+
 ## Quick start
 
 ### Publish from a specific file

@@ -23,6 +23,21 @@ const socialLabels: Record<SocialId, string> = {
   email: "Email",
 }
 
+type SiteLink = { key: string; href: string; label: string }
+
+const siteLinksByLang: Record<Lang, SiteLink[]> = {
+  en: [
+    { key: "now", href: "/now", label: "Now" },
+    { key: "gallery", href: "/gallery", label: "Gallery" },
+    { key: "rss", href: "/rss", label: "RSS" },
+  ],
+  ja: [
+    { key: "now", href: "/ja/now", label: "Now" },
+    { key: "gallery", href: "/ja/gallery", label: "ギャラリー" },
+    { key: "rss", href: "/rss", label: "RSS" },
+  ],
+}
+
 export function ArrowIcon() {
   return (
     <svg
@@ -42,7 +57,11 @@ export function ArrowIcon() {
 
 export default function Footer({ lang = "en" }: { lang?: Lang }) {
   const t = copy[lang]
-  const social = profile[lang].social
+  const p = profile[lang]
+  const social = p.social
+  const siteLinks = siteLinksByLang[lang].filter(
+    (link) => link.key !== "now" || p.features.now
+  )
 
   return (
     <footer className="w-full border-t border-[var(--border-subtle)] bg-[var(--surface-sunken)]">
@@ -57,7 +76,18 @@ export default function Footer({ lang = "en" }: { lang?: Lang }) {
           </div>
         </div>
 
-        <ul className="mt-9 flex gap-4 text-sm text-[var(--text-muted)] lg:gap-8">
+        <ul className="mt-9 flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm text-[var(--text-muted)] lg:gap-x-8">
+          {siteLinks.map((link) => (
+            <li key={link.key}>
+              <Link
+                className="flex items-center gap-2 transition-colors hover:text-[var(--text-strong)]"
+                href={link.href}
+              >
+                <ArrowIcon />
+                {link.label}
+              </Link>
+            </li>
+          ))}
           {social.map((s) => (
             <li key={s.id}>
               <Link

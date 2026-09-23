@@ -54,6 +54,7 @@
   --text-link: var(--blue-600);
 
   --surface-page: #ffffff;
+  --surface-header: rgba(255, 255, 255, 0.82);
   --surface-sunken: var(--gray-50);
   --surface-card: #ffffff;
   --surface-inset: var(--gray-100);

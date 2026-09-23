@@ -4,7 +4,7 @@ import { cache } from "react"
 import type { Lang } from "app/i18n/config"
 
 export type TPageContent = {
-  metadata: { description: string }
+  metadata: { description: string; updatedAt?: string }
   content: string
 }
 
@@ -60,7 +60,7 @@ export const getPageContent = cache(
     }
 
     return {
-      metadata: { description: metadata.description },
+      metadata: { description: metadata.description, updatedAt: metadata.updatedAt },
       content: rawContent.replace(frontmatterRegex, "").trim(),
     }
   }

@@ -4,6 +4,7 @@ import { ArrowIcon } from "@/components/footer"
 import { CustomMDX } from "@/components/mdx"
 import { buildStandardMetadata } from "app/seo/metadata"
 import { getPageContent } from "app/pages-content"
+import { profile } from "app/content/profile"
 
 const about = getPageContent("about", "en")
 
@@ -51,6 +52,14 @@ export default function Page() {
       <div className="grid grid-cols-12 gap-8 md:gap-16">
         <div className="text-[var(--text-body)] col-span-12 order-2 md:col-span-8 md:order-1">
           <CustomMDX source={about.content} components={aboutComponents} />
+          {profile.en.features.cv && (
+            <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+              <ExtLink href="/cv/jesse-wei-cv-en.pdf">Download CV (EN)</ExtLink>
+              <ExtLink href="/cv/jesse-wei-shokumukeirekisho-ja.pdf">
+                Download CV (JA)
+              </ExtLink>
+            </p>
+          )}
         </div>
         <div className="col-12 order-1 md:col-span-4 md:order-2">
           <Image

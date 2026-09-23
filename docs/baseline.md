@@ -8,10 +8,13 @@ Use the same set of URLs every time:
 
 - Home: `/`
 - About: `/about`
+- Work index: `/work`
+- One case study: `/work/<some-slug>`
 - Writings index: `/writings`
 - One writing: `/writings/<some-slug>`
 - Gallery index: `/gallery`
 - One gallery item: `/gallery/<some-slug>`
+- Now: `/now`
 - JA home: `/ja`
 
 ## Lighthouse (manual)

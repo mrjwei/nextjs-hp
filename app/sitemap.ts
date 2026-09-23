@@ -11,14 +11,23 @@ export default async function sitemap() {
   const primaryCollectionSlug = (metadata: { series?: string }) =>
     metadata.series
 
-  let writings = writingsList.map((writing) => {
-    const collection = primaryCollectionSlug(writing.metadata)
-    let url = collection ? `${baseUrl}/writings/${collection}/${writing.slug}` : `${baseUrl}/writings/${writing.slug}`
-    return {
-      url,
-      lastModified: writing.metadata.updatedAt ?? writing.metadata.publishedAt,
+  // Case studies (tags includes "casestudy") are canonical at /work/[slug]
+  // (see docs/publish.md) — list that URL instead of /writings/[slug].
+  const writingUrl = (writing: (typeof writingsList)[number], lang: "en" | "ja") => {
+    const prefix = lang === "ja" ? "/ja" : ""
+    if (writing.metadata.tags.includes("casestudy")) {
+      return `${baseUrl}${prefix}/work/${writing.slug}`
     }
-  })
+    const collection = primaryCollectionSlug(writing.metadata)
+    return collection
+      ? `${baseUrl}${prefix}/writings/${collection}/${writing.slug}`
+      : `${baseUrl}${prefix}/writings/${writing.slug}`
+  }
+
+  let writings = writingsList.map((writing) => ({
+    url: writingUrl(writing, "en"),
+    lastModified: writing.metadata.updatedAt ?? writing.metadata.publishedAt,
+  }))
 
   const galleryList = getAllSortedGallery()
   let gallery = galleryList.map((item) => ({
@@ -61,24 +70,25 @@ export default async function sitemap() {
   let routes = [
     { url: `${baseUrl}`, lastModified: today },
     { url: `${baseUrl}/about`, lastModified: today },
+    { url: `${baseUrl}/work`, lastModified: writingsLastMod },
     { url: `${baseUrl}/writings`, lastModified: writingsLastMod },
     { url: `${baseUrl}/writings/series`, lastModified: writingsLastMod },
     { url: `${baseUrl}/gallery`, lastModified: galleryLastMod },
+    { url: `${baseUrl}/now`, lastModified: today },
     { url: `${baseUrl}/ja`, lastModified: today },
     { url: `${baseUrl}/ja/about`, lastModified: today },
+    { url: `${baseUrl}/ja/work`, lastModified: today },
     { url: `${baseUrl}/ja/writings`, lastModified: today },
     { url: `${baseUrl}/ja/writings/series`, lastModified: today },
     { url: `${baseUrl}/ja/gallery`, lastModified: today },
+    { url: `${baseUrl}/ja/now`, lastModified: today },
   ]
 
   const writingsJaList = getAllSortedWritings("ja")
-  const writingsJa = writingsJaList.map((writing) => {
-    const collection = primaryCollectionSlug(writing.metadata)
-    const url = collection
-      ? `${baseUrl}/ja/writings/${collection}/${writing.slug}`
-      : `${baseUrl}/ja/writings/${writing.slug}`
-    return { url, lastModified: writing.metadata.updatedAt ?? writing.metadata.publishedAt }
-  })
+  const writingsJa = writingsJaList.map((writing) => ({
+    url: writingUrl(writing, "ja"),
+    lastModified: writing.metadata.updatedAt ?? writing.metadata.publishedAt,
+  }))
 
   const galleryJaList = getAllSortedGallery("ja")
   const galleryJa = galleryJaList.map((item) => ({

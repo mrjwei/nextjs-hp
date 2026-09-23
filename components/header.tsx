@@ -18,17 +18,19 @@ import {
 
 const navItemsByLang = {
   en: {
-    "/": { name: "Home" },
-    "/writings": { name: "Writings" },
-    "/gallery": { name: "Gallery" },
+    "/work": { name: "Work" },
+    "/writings": { name: "Writing" },
     "/about": { name: "About" },
   },
   ja: {
-    "/ja": { name: "ホーム" },
+    "/ja/work": { name: "実績" },
     "/ja/writings": { name: "記事" },
-    "/ja/gallery": { name: "ギャラリー" },
     "/ja/about": { name: "プロフィール" },
   },
+}
+
+function isActivePath(path: string, pathName: string) {
+  return pathName === path || pathName.startsWith(`${path}/`)
 }
 
 const socialLabels: Record<string, string> = {
@@ -43,11 +45,7 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
   const lang = getLangFromPathname(pathName)
   const p = profile[lang]
-  const navItems = Object.fromEntries(
-    Object.entries(navItemsByLang[lang]).filter(
-      ([path]) => p.features.galleryInNav || !path.endsWith("/gallery")
-    )
-  )
+  const navItems = navItemsByLang[lang]
   const headerSocial = p.social.filter((s) => s.inHeader)
 
   React.useEffect(() => {
@@ -55,7 +53,7 @@ export function Header() {
   }, [pathName])
 
   return (
-    <header className="w-full fixed top-0 left-0 z-50 flex flex-col items-center bg-[rgba(255,255,255,0.82)] backdrop-blur-md border-b border-[var(--border-subtle)]">
+    <header className="w-full fixed top-0 left-0 z-50 flex flex-col items-center bg-[var(--surface-header)] backdrop-blur-md border-b border-[var(--border-subtle)]">
       <div className="w-full h-[var(--header-height)] px-6 md:px-10 flex justify-between items-center max-w-[1280px]">
         <div className="flex items-center gap-6">
           <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
@@ -72,7 +70,7 @@ export function Header() {
               <SheetTitle className="font-serif text-lg">Jesse Wei</SheetTitle>
               <nav className="flex flex-col gap-1" aria-label="Mobile">
                 {Object.entries(navItems).map(([path, { name }]) => {
-                  return path == pathName ? (
+                  return isActivePath(path, pathName) ? (
                     <Link
                       key={path}
                       href={path}
@@ -134,7 +132,7 @@ export function Header() {
 
           <nav className="hidden md:flex md:items-center md:gap-1" id="nav">
             {Object.entries(navItems).map(([path, { name }]) => {
-              return path == pathName ? (
+              return isActivePath(path, pathName) ? (
                 <Link
                   key={path}
                   href={path}

@@ -50,11 +50,16 @@ export function generateMetadata({ params }) {
   const writing = candidate && !candidate.metadata.series ? candidate : undefined
 
   if (writing) {
-    const { title, publishedAt: publishedTime, summary: description, image, archived } = writing.metadata
+    const { title, publishedAt: publishedTime, summary: description, image, archived, tags } = writing.metadata
+    // Case studies are also listed at /ja/work/[slug], which is the
+    // canonical URL for that content (see docs/publish.md).
+    const pathname = tags.includes("casestudy")
+      ? `/ja/work/${writing.slug}`
+      : `/ja/writings/${writing.slug}`
     return buildStandardMetadata({
       title,
       description,
-      pathname: `/ja/writings/${writing.slug}`,
+      pathname,
       type: "article",
       publishedTime,
       image,

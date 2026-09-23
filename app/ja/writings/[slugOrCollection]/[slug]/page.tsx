@@ -38,13 +38,19 @@ export function generateMetadata({ params }) {
     return
   }
 
-  const { title, publishedAt: publishedTime, summary: description, image, archived } =
+  const { title, publishedAt: publishedTime, summary: description, image, archived, tags } =
     writing.metadata
+
+  // Case studies are also listed at /ja/work/[slug], which is the
+  // canonical URL for that content (see docs/publish.md).
+  const pathname = tags.includes("casestudy")
+    ? `/ja/work/${writing.slug}`
+    : `/ja/writings/${params.slugOrCollection}/${writing.slug}`
 
   return buildStandardMetadata({
     title,
     description,
-    pathname: `/ja/writings/${params.slugOrCollection}/${writing.slug}`,
+    pathname,
     type: "article",
     publishedTime,
     image,
