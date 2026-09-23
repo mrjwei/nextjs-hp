@@ -81,8 +81,32 @@ export const profile: Record<Lang, Profile> = {
       text: "Open to applied AI / FDE roles · Tokyo & Australia · from early 2027",
       updated: "2026-09-23",
     },
-    proof: [],
-    howIWork: [],
+    proof: [
+      { label: "LLM pipelines shipped for 2 client businesses", href: "/work" },
+      {
+        label: "Eval harness · 146 labelled attacks scored",
+        href: "/writings/security/understanding-log-types",
+      },
+      { label: "10 yrs product · 3+ yrs frontend leadership", href: "/about" },
+      { label: "EN · 日本語 · 中文", href: "/about" },
+    ],
+    howIWork: [
+      {
+        title: "Scope it with the customer",
+        body: "Start from the workflow, not the model — where AI can be trusted, where it can't, and what a human has to sign off on.",
+        href: "/about",
+      },
+      {
+        title: "Build the pipeline",
+        body: "Retrieval, orchestration, guardrails, cost and latency budgets — production code, not a notebook demo.",
+        href: "/work/lingobun-overview",
+      },
+      {
+        title: "Prove it with evals",
+        body: "Ground truth, a scoring rubric, and a re-run before every change — so \"it works\" is a number, not a feeling.",
+        href: "/writings/security/understanding-log-types",
+      },
+    ],
     focusTags,
     rolesSought: [
       "Forward Deployed Engineer",
@@ -109,8 +133,32 @@ export const profile: Record<Lang, Profile> = {
       text: "求職中 · 東京／オーストラリア · 2027年初頭から",
       updated: "2026-09-23",
     },
-    proof: [],
-    howIWork: [],
+    proof: [
+      { label: "クライアント企業2社にLLMパイプラインを実装", href: "/ja/work" },
+      {
+        label: "評価ハーネス · 146件のラベル付き攻撃を採点",
+        href: "/ja/writings/security/understanding-log-types",
+      },
+      { label: "プロダクト経験10年・フロントエンドリード3年以上", href: "/ja/about" },
+      { label: "英語 · 日本語 · 中国語", href: "/ja/about" },
+    ],
+    howIWork: [
+      {
+        title: "顧客と一緒に要件を定める",
+        body: "起点はモデルではなく業務フロー。AIを信頼できる範囲はどこか、どこで人間の承認が必須かを最初に決めます。",
+        href: "/ja/about",
+      },
+      {
+        title: "パイプラインを構築する",
+        body: "検索、オーケストレーション、ガードレール、コストとレイテンシの予算設計まで——ノートブックのデモではなく本番コードとして。",
+        href: "/ja/work/lingobun-overview",
+      },
+      {
+        title: "評価で証明する",
+        body: "正解データ、採点基準、変更のたびの再評価。「動いている」を感覚ではなく数値で示します。",
+        href: "/ja/writings/security/understanding-log-types",
+      },
+    ],
     focusTags,
     rolesSought: [
       "アプライドAIエンジニア",

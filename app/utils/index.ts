@@ -444,6 +444,33 @@ export function sortWorkItems<T extends TContentMeta>(items: T[]): T[] {
   })
 }
 
+// Home "Featured writing" (see docs/roadmap/2026-09-ai-repositioning-brushup.md
+// §3): featured items first (lower `featured` wins), then the most recent
+// remaining posts whose tags intersect the profile's `focusTags`. Items
+// already surfaced elsewhere on Home (e.g. Selected work) are passed in
+// `excludeSlugs` so the two sections don't repeat the same piece.
+export function getFeaturedWritings<T extends TContentMeta>(
+  items: T[],
+  { focusTags, limit, excludeSlugs = [] }: { focusTags: string[]; limit: number; excludeSlugs?: string[] }
+): T[] {
+  const excluded = new Set(excludeSlugs)
+  const pool = items.filter((item) => !excluded.has(item.slug))
+
+  const featured = pool
+    .filter((item) => item.metadata.featured != null)
+    .sort((a, b) => a.metadata.featured! - b.metadata.featured!)
+
+  const featuredSlugs = new Set(featured.map((item) => item.slug))
+  const rest = pool
+    .filter((item) => !featuredSlugs.has(item.slug))
+    .filter((item) => item.metadata.tags.some((tag) => focusTags.includes(tag)))
+    .sort((a, b) =>
+      new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt) ? -1 : 1
+    )
+
+  return [...featured, ...rest].slice(0, limit)
+}
+
 const WORK_TRACK_ORDER: WorkTrack[] = [
   "ai-engineering",
   "product-design",

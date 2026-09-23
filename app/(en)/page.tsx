@@ -3,12 +3,29 @@ import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Grid } from "@/components/grid"
 import { WorkCard } from "@/components/work-card"
-import { getAllSortedWritings, isWorkItem, sortWorkItems } from "app/utils"
+import { AvailabilityChip } from "@/components/availability-chip"
+import { ProofStrip } from "@/components/proof-strip"
+import { HowIWork } from "@/components/how-i-work"
+import { NowBand } from "@/components/now-band"
+import {
+  getAllSortedWritings,
+  getFeaturedWritings,
+  isWorkItem,
+  sortWorkItems,
+} from "app/utils"
 import { profile } from "app/content/profile"
 
 export default function Page() {
   const writings = getAllSortedWritings()
-  const caseStudies = sortWorkItems(writings.filter((w) => isWorkItem(w.metadata)))
+  const caseStudies = sortWorkItems(writings.filter((w) => isWorkItem(w.metadata))).slice(
+    0,
+    3
+  )
+  const featuredWriting = getFeaturedWritings(writings, {
+    focusTags: profile.en.focusTags,
+    limit: 4,
+    excludeSlugs: caseStudies.map((w) => w.slug),
+  })
   const p = profile.en
 
   return (
@@ -30,32 +47,18 @@ export default function Page() {
             <Link href="/about">About me</Link>
           </Button>
         </div>
+        <AvailabilityChip availability={p.availability} />
       </div>
 
-      {/* Writing — prioritized, as cards */}
-      <div className="w-full bg-[var(--surface-sunken)] border-t border-[var(--border-subtle)]">
-          <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
-            <div className="mb-10 flex items-end justify-between">
-              <div>
-                <span className="eyebrow">Latest</span>
-                <h2 className="mt-2.5 text-3xl font-semibold tracking-tight text-[var(--text-strong)]">
-                  Writing
-                </h2>
-              </div>
-              <Link
-                href="/writings"
-                className="inline-flex items-center gap-1 text-sm font-medium text-[var(--accent-text)] hover:underline"
-              >
-                See all
-                <ArrowRight className="size-4" />
-              </Link>
-            </div>
-            <Grid writings={writings} numWritings={6} path="writings" />
-          </div>
+      {/* Proof strip */}
+      <div className="w-full border-t border-[var(--border-subtle)]">
+        <div className="mx-auto w-full max-w-[1120px] px-8 py-14">
+          <ProofStrip items={p.proof} />
+        </div>
       </div>
 
       {/* Selected work */}
-      <div className="w-full border-t border-[var(--border-subtle)]">
+      <div className="w-full bg-[var(--surface-sunken)] border-t border-[var(--border-subtle)]">
         <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
           <div className="mb-10 flex items-end justify-between">
             <div>
@@ -73,56 +76,56 @@ export default function Page() {
             </Link>
           </div>
           <div className="grid grid-cols-12 gap-y-8 md:gap-8">
-            {caseStudies.slice(0, 4).map((work) => (
+            {caseStudies.map((work) => (
               <WorkCard key={work.slug} work={work} />
             ))}
           </div>
         </div>
       </div>
 
-      {/* About — inverted band */}
-      {/* <div className="w-full bg-[var(--surface-inverse)]">
-        <div className="mx-auto w-full max-w-[1120px] px-8 py-20 md:py-24">
-          <div className="grid grid-cols-12 gap-10 md:gap-16 items-center">
-            <div className="col-span-12 md:col-span-4 order-1">
-              <Image
-                src="/avatar.png"
-                alt="Jesse Wei's avatar"
-                width={563}
-                height={517}
-                className="w-full max-w-[220px] h-auto rounded-lg"
-                sizes="220px"
-              />
+      {/* How I work */}
+      <div className="w-full border-t border-[var(--border-subtle)]">
+        <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
+          <div className="mb-10">
+            <span className="eyebrow">Process</span>
+            <h2 className="mt-2.5 text-3xl font-semibold tracking-tight text-[var(--text-strong)]">
+              How I work
+            </h2>
+          </div>
+          <HowIWork items={p.howIWork} />
+        </div>
+      </div>
+
+      {/* Featured writing */}
+      <div className="w-full bg-[var(--surface-sunken)] border-t border-[var(--border-subtle)]">
+        <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
+          <div className="mb-10 flex items-end justify-between">
+            <div>
+              <span className="eyebrow">Featured</span>
+              <h2 className="mt-2.5 text-3xl font-semibold tracking-tight text-[var(--text-strong)]">
+                Writing
+              </h2>
             </div>
-            <div className="col-span-12 md:col-span-8 order-2">
-              <span className="eyebrow text-[var(--text-subtle)]">About</span>
-              <p className="display mt-4 text-2xl leading-snug text-[var(--text-ondark)] md:text-3xl">
-                I work at the intersection of design, engineering, and
-                emerging technologies — turning complex ideas into practical,
-                considered products.
-              </p>
-              <div className="mt-8 flex flex-wrap gap-4">
-                <Link
-                  href="/about"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-[var(--text-ondark)] hover:underline"
-                >
-                  More about me
-                  <ArrowRight className="size-4" />
-                </Link>
-                <Link
-                  href="https://www.linkedin.com/in/jesse-wei-profile/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-white/70 hover:text-white transition-colors"
-                >
-                  <ArrowIcon />
-                  LinkedIn
-                </Link>
-              </div>
-            </div>
+            <Link
+              href="/writings"
+              className="inline-flex items-center gap-1 text-sm font-medium text-[var(--accent-text)] hover:underline"
+            >
+              All writing
+              <ArrowRight className="size-4" />
+            </Link>
+          </div>
+          <Grid writings={featuredWriting} path="writings" />
+        </div>
+      </div>
+
+      {/* Now band */}
+      {p.features.now && (
+        <div className="w-full border-t border-[var(--border-subtle)]">
+          <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
+            <NowBand lang="en" />
           </div>
         </div>
-      </div> */}
+      )}
     </section>
   )
 }
