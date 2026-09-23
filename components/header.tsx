@@ -19,13 +19,13 @@ const navItemsByLang = {
   en: {
     "/": { name: "Home" },
     "/writings": { name: "Writings" },
-    "/portfolio": { name: "Portfolio" },
+    "/gallery": { name: "Gallery" },
     "/about": { name: "About" },
   },
   ja: {
     "/ja": { name: "ホーム" },
     "/ja/writings": { name: "記事" },
-    "/ja/portfolio": { name: "作品" },
+    "/ja/gallery": { name: "ギャラリー" },
     "/ja/about": { name: "プロフィール" },
   },
 }

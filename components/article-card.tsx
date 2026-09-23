@@ -5,9 +5,9 @@ import { Tags } from "@/components/tags"
 import { formatDate } from "app/utils"
 import type { Lang } from "app/i18n/config"
 
-const copy: Record<Lang, { published: string; portfolioThumbnail: string }> = {
-  en: { published: "Published:", portfolioThumbnail: "Portfolio thumbnail" },
-  ja: { published: "公開日:", portfolioThumbnail: "ポートフォリオのサムネイル" },
+const copy: Record<Lang, { published: string; galleryThumbnail: string }> = {
+  en: { published: "Published:", galleryThumbnail: "Gallery thumbnail" },
+  ja: { published: "公開日:", galleryThumbnail: "ギャラリーのサムネイル" },
 }
 
 export function WritingCard({
@@ -32,7 +32,7 @@ export function WritingCard({
   lang?: Lang
 }) {
   const t = copy[lang]
-  const isPortfolio = path === "portfolio"
+  const isGallery = path === "gallery"
   const thumbnailSrc = article?.metadata?.image
 
   const writingCollection = path === "writings" ? article?.metadata?.series : null
@@ -57,7 +57,7 @@ export function WritingCard({
         href={`${href}${from ? `?from=${from}` : ""}`}
         className="flex-1 flex flex-col"
       >
-        {isPortfolio ? (
+        {isGallery ? (
           <div className="relative w-full aspect-[16/9] overflow-hidden bg-[var(--surface-sunken)]">
             {thumbnailSrc ? (
               <Image
@@ -65,7 +65,7 @@ export function WritingCard({
                 alt={
                   article?.metadata?.title
                     ? `${article.metadata.title} thumbnail`
-                    : t.portfolioThumbnail
+                    : t.galleryThumbnail
                 }
                 fill
                 sizes="(min-width: 768px) 50vw, 100vw"

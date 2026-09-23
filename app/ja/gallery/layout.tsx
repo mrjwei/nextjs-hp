@@ -1,6 +1,6 @@
 import "katex/dist/katex.min.css"
 
-export default function PortfolioLayout({
+export default function GalleryLayout({
   children,
 }: {
   children: React.ReactNode

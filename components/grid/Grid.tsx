@@ -37,10 +37,6 @@ export function Grid({
             wrapperProps={{
               "data-writing-tags":
                 path === "writings" ? (article.metadata.tags ?? []).join(",") : undefined,
-              "data-portfolio-collection":
-                path === "portfolio"
-                  ? String(article.metadata.series || "general")
-                  : undefined,
             }}
           />
         ))}

@@ -4,26 +4,26 @@ import { CustomMDX } from "@/components/mdx"
 import { BackToTop } from "@/components/back-to-top"
 import { WritingCard } from "@/components/article-card"
 import { Tags } from "@/components/tags"
-import { formatDate, getAllSortedPortfolio, getPortfolioItemBySlug } from "app/utils"
+import { formatDate, getAllSortedGallery, getGalleryItemBySlug } from "app/utils"
 import { buildStandardMetadata } from "app/seo/metadata"
 
 export const dynamic = "force-static"
 export const dynamicParams = true
 
 export async function generateStaticParams() {
-  const items = getAllSortedPortfolio("ja")
+  const items = getAllSortedGallery("ja")
   return items.map((item) => ({ slug: item.slug }))
 }
 
 export function generateMetadata({ params }) {
-  const item = getPortfolioItemBySlug(params.slug, "ja")
+  const item = getGalleryItemBySlug(params.slug, "ja")
   if (!item) return
 
   return {
     ...buildStandardMetadata({
       title: item.metadata.title,
       description: item.metadata.summary,
-      pathname: `/ja/portfolio/${item.slug}`,
+      pathname: `/ja/gallery/${item.slug}`,
       type: "article",
       publishedTime: item.metadata.publishedAt,
       image: item.metadata.image,
@@ -37,7 +37,7 @@ function NotTranslatedYet({ englishHref }: { englishHref: string }) {
     <div className="w-full max-w-[1024px] mx-auto px-8 md:px-16 py-24">
       <div className="bg-[var(--surface-card)] rounded-lg shadow-xs border border-[var(--border-subtle)] p-8 md:p-12 text-center">
         <p className="mb-3 font-medium text-[var(--text-strong)]">
-          このポートフォリオ項目はまだ日本語訳がありません。
+          この作品はまだ日本語訳がありません。
         </p>
         <p className="mb-6 text-[var(--text-muted)]">
           現在は英語でのみ公開しています。
@@ -53,14 +53,14 @@ function NotTranslatedYet({ englishHref }: { englishHref: string }) {
   )
 }
 
-export default async function PortfolioItemPage({ params, searchParams }) {
-  const allItems = getAllSortedPortfolio("ja")
-  const item = getPortfolioItemBySlug(params.slug, "ja")
+export default async function GalleryItemPage({ params, searchParams }) {
+  const allItems = getAllSortedGallery("ja")
+  const item = getGalleryItemBySlug(params.slug, "ja")
 
   if (!item) {
-    const englishItem = getPortfolioItemBySlug(params.slug, "en")
+    const englishItem = getGalleryItemBySlug(params.slug, "en")
     if (englishItem) {
-      return <NotTranslatedYet englishHref={`/portfolio/${params.slug}`} />
+      return <NotTranslatedYet englishHref={`/gallery/${params.slug}`} />
     }
     notFound()
   }
@@ -78,18 +78,18 @@ export default async function PortfolioItemPage({ params, searchParams }) {
           </Link>
           <span className="mx-2 text-[var(--text-subtle)]">/</span>
           <Link
-            href="/ja/portfolio"
+            href="/ja/gallery"
             className="hover:underline hover:text-[var(--text-strong)] transition-colors"
           >
-            ポートフォリオ
+            ギャラリー
           </Link>
         </nav>
 
         <Link
-          href={from ? `/ja/${from}`.replace(/\/\/+/, "/") : "/ja/portfolio"}
+          href={from ? `/ja/${from}`.replace(/\/\/+/, "/") : "/ja/gallery"}
           className="inline-flex items-center gap-2 text-[var(--accent-text)] hover:underline transition-colors font-medium block mb-6"
         >
-          ← ポートフォリオに戻る
+          ← ギャラリーに戻る
         </Link>
 
         <h1 className="display text-4xl mb-4">{item.metadata.title}</h1>
@@ -120,7 +120,7 @@ export default async function PortfolioItemPage({ params, searchParams }) {
           </h2>
           <div className="grid grid-cols-12 gap-y-8 md:gap-8">
             {moreWorks.map((work) => (
-              <WritingCard key={work.slug} article={work} path="portfolio" lang="ja" />
+              <WritingCard key={work.slug} article={work} path="gallery" lang="ja" />
             ))}
           </div>
         </section>

@@ -29,7 +29,15 @@ export async function generateStaticParams() {
 
   const seriesSlugs = getAllSortedWritingSeries().map((s) => s.slug)
 
-  return [...writingSlugsWithoutCollection, ...seriesSlugs].map((val) => ({
+  const folderCollectionSlugs = Array.from(
+    new Set(writings.map((w) => w.metadata.series).filter(Boolean) as string[])
+  )
+
+  const allSlugs = Array.from(
+    new Set([...writingSlugsWithoutCollection, ...seriesSlugs, ...folderCollectionSlugs])
+  )
+
+  return allSlugs.map((val) => ({
     slugOrCollection: val,
   }))
 }
@@ -58,6 +66,18 @@ export function generateMetadata({ params }) {
     return buildStandardMetadata({
       title: `Writings — ${series.title}`,
       description: `${series.items.length} posts in the "${series.title}" series.`,
+      pathname: `/writings/${slugOrCollection}`,
+    })
+  }
+
+  const collectionItems = getAllSortedWritings().filter(
+    (w) => w.metadata.series === slugOrCollection
+  )
+  if (collectionItems.length) {
+    const title = collectionItems[0].metadata.seriesTitle ?? slugOrCollection
+    return buildStandardMetadata({
+      title: `Writings — ${title}`,
+      description: `${collectionItems.length} posts in the "${title}" collection.`,
       pathname: `/writings/${slugOrCollection}`,
     })
   }
@@ -243,15 +263,36 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
   const allSeries = getAllSortedWritingSeries()
   const activeSeries = allSeries.find((s) => s.slug === slugOrCollection)
 
-  if (!activeSeries) {
+  if (activeSeries) {
+    return (
+      <SeriesView
+        seriesSlug={activeSeries.slug}
+        seriesTitle={activeSeries.title}
+        items={activeSeries.items}
+        allSeries={allSeries.map((s) => ({
+          slug: s.slug,
+          title: s.title,
+          count: s.items.length,
+        }))}
+      />
+    )
+  }
+
+  // Otherwise, it may be a folder-based collection (posts sharing `series`,
+  // e.g. a case study like "LingoBun").
+  const collectionItems = writings.filter((w) => w.metadata.series === slugOrCollection)
+
+  if (!collectionItems.length) {
     notFound()
   }
 
+  const collectionTitle = collectionItems[0].metadata.seriesTitle ?? slugOrCollection
+
   return (
     <SeriesView
-      seriesSlug={activeSeries.slug}
-      seriesTitle={activeSeries.title}
-      items={activeSeries.items}
+      seriesSlug={slugOrCollection}
+      seriesTitle={collectionTitle}
+      items={collectionItems}
       allSeries={allSeries.map((s) => ({
         slug: s.slug,
         title: s.title,

@@ -33,7 +33,7 @@ export type TContentItem = TContentMeta & {
   content: string
 }
 
-type ContentKind = "writing" | "portfolio"
+type ContentKind = "writing" | "gallery"
 
 type ContentIndexFile = {
   version: 1
@@ -45,7 +45,7 @@ type ContentIndexFile = {
     metadata: TMetadata
     content?: string
   }>
-  portfolio?: Array<{
+  gallery?: Array<{
     slug: string
     filePath: string
     collection?: string
@@ -65,9 +65,9 @@ const writingsBaseDirByLang: Record<Lang, string> = {
   en: getContentBaseDir("writings", "en"),
   ja: getContentBaseDir("writings", "ja"),
 }
-const portfolioBaseDirByLang: Record<Lang, string> = {
-  en: getContentBaseDir("portfolio", "en"),
-  ja: getContentBaseDir("portfolio", "ja"),
+const galleryBaseDirByLang: Record<Lang, string> = {
+  en: getContentBaseDir("gallery", "en"),
+  ja: getContentBaseDir("gallery", "ja"),
 }
 
 const tagSchema = z
@@ -104,13 +104,13 @@ const writingFrontmatterSchema = baseFrontmatterSchema.extend({
   tags: z.array(tagSchema).min(1),
 })
 
-const portfolioFrontmatterSchema = baseFrontmatterSchema.extend({
+const galleryFrontmatterSchema = baseFrontmatterSchema.extend({
   tags: z.array(tagSchema).default([]),
 })
 
 const frontmatterSchemaByKind: Record<ContentKind, z.ZodType<TMetadata>> = {
   writing: writingFrontmatterSchema,
-  portfolio: portfolioFrontmatterSchema,
+  gallery: galleryFrontmatterSchema,
 }
 
 function parseFrontmatter(
@@ -297,10 +297,6 @@ const getWritingsCollections = cache((lang: Lang) => {
   return getChildDirs(writingsBaseDirByLang[lang])
 })
 
-const getPortfolioCollectionsCached = cache((lang: Lang) => {
-  return getChildDirs(portfolioBaseDirByLang[lang])
-})
-
 const getWritingsFilePaths = cache((lang: Lang, collection: string = "") => {
   const dirPath = collection
     ? path.join(writingsBaseDirByLang[lang], collection)
@@ -316,24 +312,15 @@ const getAllWritingsFilePaths = cache((lang: Lang) => {
   return result
 })
 
-const getPortfolioFilePaths = cache((lang: Lang, collection: string = "") => {
-  const dirPath = collection
-    ? path.join(portfolioBaseDirByLang[lang], collection)
-    : portfolioBaseDirByLang[lang]
+// Gallery content is a flat directory (no sub-collections).
+const getAllGalleryFilePaths = cache((lang: Lang) => {
+  const dirPath = galleryBaseDirByLang[lang]
   return getMdxFilesInDir(dirPath).map((file) => path.join(dirPath, file))
-})
-
-const getAllPortfolioFilePaths = cache((lang: Lang) => {
-  const result = [...getPortfolioFilePaths(lang, "")]
-  for (const collection of getPortfolioCollectionsCached(lang)) {
-    result.push(...getPortfolioFilePaths(lang, collection))
-  }
-  return result
 })
 
 const getSlugToPathMap = cache((kind: ContentKind, lang: Lang) => {
   const map = new Map<string, string>()
-  const files = kind === "writing" ? getAllWritingsFilePaths(lang) : getAllPortfolioFilePaths(lang)
+  const files = kind === "writing" ? getAllWritingsFilePaths(lang) : getAllGalleryFilePaths(lang)
 
   for (const absFilePath of files) {
     const slug = fileSlug(absFilePath)
@@ -455,156 +442,20 @@ export function getWritingBySlug(slug: string, lang: Lang = "en"): TContentItem 
   return { slug, metadata, content }
 }
 
-export function getPortfolioCollections(lang: Lang = "en") {
-  return getPortfolioCollectionsCached(lang)
-}
-
-export const getAllSortedPortfolioCollections = cache((lang: Lang = "en") => {
+// Gallery content is a flat list (illustrations, no sub-collections).
+export const getAllSortedGallery = cache((lang: Lang = "en") => {
   const index = readContentIndex()
-
-  // In production (and often in CI/standalone output), the MDX files under
-  // app/portfolio/posts may not be present at runtime due to output tracing.
-  // Prefer the generated content index when available.
-  const indexItems = index?.portfolio?.filter(
-    (item) => itemLang(item.metadata) === lang && !item.metadata.archived
-  )
-
-  if (process.env.NODE_ENV === "production" && indexItems?.length) {
-    const baseRel = path
-      .relative(process.cwd(), portfolioBaseDirByLang[lang])
-      .replaceAll(path.sep, "/")
-
-    const isProd = process.env.NODE_ENV === "production"
-
-    const byCollection = new Map<string, TContentMeta[]>()
-
-    for (const item of indexItems) {
-      if (!isProd) {
-        const absFilePath = path.join(process.cwd(), item.filePath)
-        if (!fs.existsSync(absFilePath)) {
-          continue
-        }
-      }
-
-      const normalized = String(item.filePath).replaceAll("\\\\", "/")
-
-      let collection =
-        typeof item.collection === "string" && item.collection.trim().length
-          ? item.collection.trim()
-          : undefined
-
-      if (!collection) {
-        if (normalized.startsWith(baseRel + "/")) {
-          const relUnderBase = normalized.slice(baseRel.length + 1)
-          const parts = relUnderBase.split("/").filter(Boolean)
-          collection = parts.length > 1 ? parts[0] : "general"
-        } else {
-          collection = "general"
-        }
-      }
-
-      if (!byCollection.has(collection)) byCollection.set(collection, [])
-      byCollection.get(collection)!.push({
-        slug: item.slug,
-        metadata: {
-          ...item.metadata,
-          series:
-            typeof item.metadata.series === "string" && item.metadata.series.trim().length
-              ? item.metadata.series
-              : collection,
-        },
-      })
-    }
-
-    const result = Array.from(byCollection.entries()).map(([subdir, items]) => {
-      const sorted = [...items].sort((a, b) =>
-        new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
-          ? -1
-          : 1
-      )
-      return { subdir, items: sorted }
-    })
-
-    result.sort((a, b) =>
-      ParseSeriesDirName(a.subdir).localeCompare(ParseSeriesDirName(b.subdir))
-    )
-
-    return result
-  }
-
-  // Dev fallback: read directly from the filesystem.
-  const collections: { subdir: string; items: TContentMeta[] }[] = []
-
-  // Include base-level posts (if any) under a conventional collection.
-  let rootItems = getPortfolioFilePaths(lang, "")
-    .map((absFilePath) => {
-      const { metadata } = readFrontmatterOnly(absFilePath, "portfolio", lang)
-      return { metadata: { ...metadata, series: metadata.series || "general" }, slug: fileSlug(absFilePath) }
-    })
-    .filter((item) => !item.metadata.archived)
-  rootItems = rootItems.sort((a, b) =>
-    new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt) ? -1 : 1
-  )
-  if (rootItems.length) {
-    collections.push({ subdir: "general", items: rootItems })
-  }
-
-  const subdirs = getPortfolioCollections(lang)
-  subdirs.forEach((subdir) => {
-    let items = getPortfolioFilePaths(lang, subdir)
-      .map((absFilePath) => {
-        const { metadata } = readFrontmatterOnly(absFilePath, "portfolio", lang)
-        return { metadata: { ...metadata, series: metadata.series || subdir }, slug: fileSlug(absFilePath) }
-      })
-      .filter((item) => !item.metadata.archived)
-    items = items.sort((a, b) =>
-      new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
-        ? -1
-        : 1
-    )
-    collections.push({ subdir, items })
-  })
-
-  return collections
-})
-
-export const getAllSortedPortfolio = cache((lang: Lang = "en") => {
-  const index = readContentIndex()
-  const indexItems = index?.portfolio?.filter(
+  const indexItems = index?.gallery?.filter(
     (item) => itemLang(item.metadata) === lang && !item.metadata.archived
   )
 
   if (indexItems?.length) {
     const isProd = process.env.NODE_ENV === "production"
-    const baseRel = path
-      .relative(process.cwd(), portfolioBaseDirByLang[lang])
-      .replaceAll(path.sep, "/")
-
-    const items = (isProd
+    const items = isProd
       ? indexItems
       : indexItems.filter((item) =>
           fs.existsSync(path.join(process.cwd(), item.filePath))
         )
-    ).map((item) => {
-      const normalized = String(item.filePath).replaceAll("\\\\", "/")
-      const derivedCollection =
-        typeof item.collection === "string" && item.collection.trim().length
-          ? item.collection.trim()
-          : normalized.startsWith(baseRel + "/")
-            ? (normalized.slice(baseRel.length + 1).split("/").filter(Boolean)[0] || "general")
-            : "general"
-
-      return {
-        ...item,
-        metadata: {
-          ...item.metadata,
-          series:
-            typeof item.metadata.series === "string" && item.metadata.series.trim().length
-              ? item.metadata.series
-              : derivedCollection,
-        },
-      }
-    })
 
     return items
       .map((item) => ({ slug: item.slug, metadata: item.metadata }))
@@ -615,19 +466,10 @@ export const getAllSortedPortfolio = cache((lang: Lang = "en") => {
       )
   }
 
-  let items = getAllPortfolioFilePaths(lang)
+  let items = getAllGalleryFilePaths(lang)
     .map((absFilePath) => {
-      const { metadata } = readFrontmatterOnly(absFilePath, "portfolio", lang)
-      const relUnderBase = path
-        .relative(portfolioBaseDirByLang[lang], absFilePath)
-        .replaceAll(path.sep, "/")
-      const derivedCollection = relUnderBase.includes("/")
-        ? relUnderBase.split("/")[0]
-        : "general"
-      return {
-        metadata: { ...metadata, series: metadata.series || derivedCollection },
-        slug: fileSlug(absFilePath),
-      }
+      const { metadata } = readFrontmatterOnly(absFilePath, "gallery", lang)
+      return { metadata, slug: fileSlug(absFilePath) }
     })
     .filter((item) => !item.metadata.archived)
   items = items.sort((a, b) =>
@@ -638,30 +480,19 @@ export const getAllSortedPortfolio = cache((lang: Lang = "en") => {
   return items
 })
 
-export function getPortfolioItemBySlug(slug: string, lang: Lang = "en"): TContentItem | null {
+export function getGalleryItemBySlug(slug: string, lang: Lang = "en"): TContentItem | null {
   const index = readContentIndex()
-  const indexed = index?.portfolio?.find(
+  const indexed = index?.gallery?.find(
     (item) => item.slug === slug && itemLang(item.metadata) === lang
   )
   if (indexed) {
     if (process.env.NODE_ENV === "production") {
       if (typeof indexed.content !== "string") {
         throw new Error(
-          `Content index entry for portfolio "${slug}" is missing embedded content. Re-run the content index generator.`
+          `Content index entry for gallery "${slug}" is missing embedded content. Re-run the content index generator.`
         )
       }
-      const series =
-        typeof indexed.metadata.series === "string" && indexed.metadata.series.trim().length
-          ? indexed.metadata.series
-          : typeof indexed.collection === "string" && indexed.collection.trim().length
-            ? indexed.collection.trim()
-            : "general"
-
-      return {
-        slug,
-        metadata: { ...indexed.metadata, series },
-        content: indexed.content,
-      }
+      return { slug, metadata: indexed.metadata, content: indexed.content }
     }
 
     const absFilePath = path.join(process.cwd(), indexed.filePath)
@@ -670,47 +501,19 @@ export function getPortfolioItemBySlug(slug: string, lang: Lang = "en"): TConten
     }
     const { metadata, content } = readMdxWithContent(
       absFilePath,
-      "portfolio",
+      "gallery",
       lang
     ) as { metadata: TMetadata; content: string }
-    const series =
-      typeof metadata.series === "string" && metadata.series.trim().length
-        ? metadata.series
-        : typeof indexed.collection === "string" && indexed.collection.trim().length
-          ? indexed.collection.trim()
-          : path
-              .relative(portfolioBaseDirByLang[lang], absFilePath)
-              .replaceAll(path.sep, "/")
-              .includes("/")
-            ? path
-                .relative(portfolioBaseDirByLang[lang], absFilePath)
-                .replaceAll(path.sep, "/")
-                .split("/")[0]
-            : "general"
-
-    return { slug, metadata: { ...metadata, series }, content }
+    return { slug, metadata, content }
   }
 
-  const absFilePath = getSlugToPathMap("portfolio", lang).get(slug)
+  const absFilePath = getSlugToPathMap("gallery", lang).get(slug)
   if (!absFilePath) return null
-  const { metadata, content } = readMdxWithContent(absFilePath, "portfolio", lang) as {
+  const { metadata, content } = readMdxWithContent(absFilePath, "gallery", lang) as {
     metadata: TMetadata
     content: string
   }
-  const series =
-    typeof metadata.series === "string" && metadata.series.trim().length
-      ? metadata.series
-      : path
-          .relative(portfolioBaseDirByLang[lang], absFilePath)
-          .replaceAll(path.sep, "/")
-          .includes("/")
-        ? path
-            .relative(portfolioBaseDirByLang[lang], absFilePath)
-            .replaceAll(path.sep, "/")
-            .split("/")[0]
-        : "general"
-
-  return { slug, metadata: { ...metadata, series }, content }
+  return { slug, metadata, content }
 }
 
 export function formatDate(date: string, includeRelative = false) {

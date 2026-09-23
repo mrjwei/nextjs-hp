@@ -30,7 +30,15 @@ export async function generateStaticParams() {
 
   const seriesSlugs = getAllSortedWritingSeries("ja").map((s) => s.slug)
 
-  return [...writingSlugsWithoutCollection, ...seriesSlugs].map((val) => ({
+  const folderCollectionSlugs = Array.from(
+    new Set(writings.map((w) => w.metadata.series).filter(Boolean) as string[])
+  )
+
+  const allSlugs = Array.from(
+    new Set([...writingSlugsWithoutCollection, ...seriesSlugs, ...folderCollectionSlugs])
+  )
+
+  return allSlugs.map((val) => ({
     slugOrCollection: val,
   }))
 }
@@ -59,6 +67,18 @@ export function generateMetadata({ params }) {
     return buildStandardMetadata({
       title: `記事 — ${series.title}`,
       description: `「${series.title}」シリーズの記事 ${series.items.length}件。`,
+      pathname: `/ja/writings/${slugOrCollection}`,
+    })
+  }
+
+  const collectionItems = getAllSortedWritings("ja").filter(
+    (w) => w.metadata.series === slugOrCollection
+  )
+  if (collectionItems.length) {
+    const title = collectionItems[0].metadata.seriesTitle ?? slugOrCollection
+    return buildStandardMetadata({
+      title: `記事 — ${title}`,
+      description: `「${title}」の記事 ${collectionItems.length}件。`,
       pathname: `/ja/writings/${slugOrCollection}`,
     })
   }
@@ -284,6 +304,27 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
     )
   }
 
+  // Otherwise, it may be a folder-based collection (posts sharing `series`,
+  // e.g. a case study like "LingoBun").
+  const collectionItems = writings.filter((w) => w.metadata.series === slugOrCollection)
+
+  if (collectionItems.length) {
+    const collectionTitle = collectionItems[0].metadata.seriesTitle ?? slugOrCollection
+    return (
+      <SeriesView
+        seriesSlug={slugOrCollection}
+        seriesTitle={collectionTitle}
+        items={collectionItems}
+        allSeries={allSeries.map((s) => ({
+          slug: s.slug,
+          title: s.title,
+          count: s.items.length,
+        }))}
+        lang="ja"
+      />
+    )
+  }
+
   // No Japanese version — if the English original exists, say so instead of
   // a bare 404.
   const englishWriting = getWritingBySlug(slugOrCollection, "en")
@@ -293,6 +334,13 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
 
   const englishSeries = getAllSortedWritingSeries("en").find((s) => s.slug === slugOrCollection)
   if (englishSeries) {
+    return <NotTranslatedYet englishHref={`/writings/${slugOrCollection}`} />
+  }
+
+  const englishCollectionItems = getAllSortedWritings("en").filter(
+    (w) => w.metadata.series === slugOrCollection
+  )
+  if (englishCollectionItems.length) {
     return <NotTranslatedYet englishHref={`/writings/${slugOrCollection}`} />
   }
 

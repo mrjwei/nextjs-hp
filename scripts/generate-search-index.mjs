@@ -18,7 +18,7 @@ async function generateSearchIndex() {
 
   const allPosts = [
     ...(contentIndex.writings || []).map(p => ({ ...p, type: 'writing' })),
-    ...(contentIndex.portfolio || []).map(p => ({ ...p, type: 'portfolio' }))
+    ...(contentIndex.gallery || []).map(p => ({ ...p, type: 'gallery' }))
   ];
 
   console.log(`Found ${allPosts.length} total posts.`);

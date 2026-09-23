@@ -110,6 +110,17 @@ export default async function WritingInCollection({ params, searchParams }) {
             <Link href="/writings" className="hover:underline hover:text-[var(--text-strong)] transition-colors">
               Writings
             </Link>
+            {writingCollection && (
+              <>
+                <span className="mx-2 text-[var(--text-subtle)]">/</span>
+                <Link
+                  href={`/writings/${writingCollection}`}
+                  className="hover:underline hover:text-[var(--text-strong)] transition-colors"
+                >
+                  {writing.metadata.seriesTitle ?? writingCollection}
+                </Link>
+              </>
+            )}
             {writing.metadata.partOf && (
               <>
                 <span className="mx-2 text-[var(--text-subtle)]">/</span>

@@ -1,5 +1,5 @@
 import {
-  getAllSortedPortfolio,
+  getAllSortedGallery,
   getAllSortedWritings,
 } from "app/utils"
 
@@ -20,9 +20,9 @@ export default async function sitemap() {
     }
   })
 
-  const portfolioList = getAllSortedPortfolio()
-  let portfolio = portfolioList.map((item) => ({
-    url: `${baseUrl}/portfolio/${item.slug}`,
+  const galleryList = getAllSortedGallery()
+  let gallery = galleryList.map((item) => ({
+    url: `${baseUrl}/gallery/${item.slug}`,
     lastModified: item.metadata.updatedAt ?? item.metadata.publishedAt,
   }))
 
@@ -39,21 +39,36 @@ export default async function sitemap() {
   const writingsLastMod = maxPublishedAt(
     writingsList.map((w) => w.metadata.updatedAt ?? w.metadata.publishedAt)
   )
-  const portfolioLastMod = maxPublishedAt(
-    portfolioList.map((p) => p.metadata.updatedAt ?? p.metadata.publishedAt)
+  const galleryLastMod = maxPublishedAt(
+    galleryList.map((p) => p.metadata.updatedAt ?? p.metadata.publishedAt)
   )
+
+  const collectionRoutes = (list: typeof writingsList, lang: "en" | "ja") => {
+    const byCollection = new Map<string, string[]>()
+    for (const w of list) {
+      if (!w.metadata.series) continue
+      const dates = byCollection.get(w.metadata.series) ?? []
+      dates.push(w.metadata.updatedAt ?? w.metadata.publishedAt)
+      byCollection.set(w.metadata.series, dates)
+    }
+    const prefix = lang === "ja" ? "/ja" : ""
+    return Array.from(byCollection.entries()).map(([slug, dates]) => ({
+      url: `${baseUrl}${prefix}/writings/${slug}`,
+      lastModified: maxPublishedAt(dates),
+    }))
+  }
 
   let routes = [
     { url: `${baseUrl}`, lastModified: today },
     { url: `${baseUrl}/about`, lastModified: today },
     { url: `${baseUrl}/writings`, lastModified: writingsLastMod },
     { url: `${baseUrl}/writings/series`, lastModified: writingsLastMod },
-    { url: `${baseUrl}/portfolio`, lastModified: portfolioLastMod },
+    { url: `${baseUrl}/gallery`, lastModified: galleryLastMod },
     { url: `${baseUrl}/ja`, lastModified: today },
     { url: `${baseUrl}/ja/about`, lastModified: today },
     { url: `${baseUrl}/ja/writings`, lastModified: today },
     { url: `${baseUrl}/ja/writings/series`, lastModified: today },
-    { url: `${baseUrl}/ja/portfolio`, lastModified: today },
+    { url: `${baseUrl}/ja/gallery`, lastModified: today },
   ]
 
   const writingsJaList = getAllSortedWritings("ja")
@@ -65,11 +80,22 @@ export default async function sitemap() {
     return { url, lastModified: writing.metadata.updatedAt ?? writing.metadata.publishedAt }
   })
 
-  const portfolioJaList = getAllSortedPortfolio("ja")
-  const portfolioJa = portfolioJaList.map((item) => ({
-    url: `${baseUrl}/ja/portfolio/${item.slug}`,
+  const galleryJaList = getAllSortedGallery("ja")
+  const galleryJa = galleryJaList.map((item) => ({
+    url: `${baseUrl}/ja/gallery/${item.slug}`,
     lastModified: item.metadata.updatedAt ?? item.metadata.publishedAt,
   }))
 
-  return [...routes, ...writings, ...portfolio, ...writingsJa, ...portfolioJa]
+  const writingsCollections = collectionRoutes(writingsList, "en")
+  const writingsCollectionsJa = collectionRoutes(writingsJaList, "ja")
+
+  return [
+    ...routes,
+    ...writings,
+    ...gallery,
+    ...writingsJa,
+    ...galleryJa,
+    ...writingsCollections,
+    ...writingsCollectionsJa,
+  ]
 }

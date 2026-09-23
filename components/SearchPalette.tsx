@@ -98,7 +98,7 @@ export function SearchPalette({ isLight }: { isLight: boolean }) {
 
   const getPath = (type: string, slug: string, collection?: string) => {
     const prefix = lang === "ja" ? "/ja" : "";
-    if (type === "portfolio") return `${prefix}/portfolio/${slug}`;
+    if (type === "gallery") return `${prefix}/gallery/${slug}`;
     if (collection) return `${prefix}/writings/${collection}/${slug}`;
     return `${prefix}/writings/${slug}`; // Assume writing by default
   };

@@ -2,29 +2,29 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Grid } from "@/components/grid"
-import { getAllSortedPortfolio, getAllSortedWritings } from "app/utils"
+import { getAllSortedWritings } from "app/utils"
 
 export default function Page() {
   const writings = getAllSortedWritings()
-  const portfolio = getAllSortedPortfolio()
+  const caseStudies = writings.filter((w) => w.metadata.tags.includes("casestudy"))
 
   return (
     <section className="w-full">
       {/* Hero */}
       <div className="mx-auto w-full max-w-[1120px] px-8 pt-28 pb-20 md:pt-36 md:pb-24">
-        <span className="eyebrow">Design engineer &middot; Japan</span>
+        <span className="eyebrow">Applied AI engineer &middot; Japan &amp; Australia</span>
         <h1 className="display mt-6 text-5xl leading-[1.04] md:text-6xl">
-          Design as a business decision, not a deliverable.
+          AI that gets used, not just demoed.
         </h1>
         <p className="mt-6 max-w-[54ch] text-lg leading-relaxed text-[var(--text-muted)] md:text-xl">
-          Ten years turning design into how companies operate. I lead the strategy and ship the production code, so decisions survive the build.
+          I ship LLM systems into real business workflows — from messy Japanese documents to evaluated, production-ready pipelines. A decade of product design and engineering is why people actually adopt them.
         </p>
         <div className="mt-9 flex flex-wrap gap-3">
           <Button asChild variant="primary" size="lg">
-            <Link href="/writings">Read the writing</Link>
+            <Link href="/writings?tags=casestudy">See selected work</Link>
           </Button>
           <Button asChild variant="ghost" size="lg">
-            <Link href="/portfolio">See selected work</Link>
+            <Link href="/about">About me</Link>
           </Button>
         </div>
       </div>
@@ -56,20 +56,20 @@ export default function Page() {
         <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
           <div className="mb-10 flex items-end justify-between">
             <div>
-              <span className="eyebrow">Portfolio</span>
+              <span className="eyebrow">Case Studies</span>
               <h2 className="mt-2.5 text-3xl font-semibold tracking-tight text-[var(--text-strong)]">
                 Selected work
               </h2>
             </div>
             <Link
-              href="/portfolio"
+              href="/writings?tags=casestudy"
               className="inline-flex items-center gap-1 text-sm font-medium text-[var(--accent-text)] hover:underline"
             >
               See all
               <ArrowRight className="size-4" />
             </Link>
           </div>
-          <Grid writings={portfolio} numWritings={4} path="portfolio" />
+          <Grid writings={caseStudies} numWritings={4} path="writings" />
         </div>
       </div>
 

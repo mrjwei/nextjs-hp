@@ -4,23 +4,23 @@ import { CustomMDX } from "@/components/mdx"
 import { BackToTop } from "@/components/back-to-top"
 import { WritingCard } from "@/components/article-card"
 import { Tags } from "@/components/tags"
-import { formatDate, getAllSortedPortfolio, getPortfolioItemBySlug } from "app/utils"
+import { formatDate, getAllSortedGallery, getGalleryItemBySlug } from "app/utils"
 import { buildStandardMetadata } from "app/seo/metadata"
 
 export async function generateStaticParams() {
-  const items = getAllSortedPortfolio()
+  const items = getAllSortedGallery()
   return items.map((item) => ({ slug: item.slug }))
 }
 
 export function generateMetadata({ params }) {
-  const item = getPortfolioItemBySlug(params.slug)
+  const item = getGalleryItemBySlug(params.slug)
   if (!item) return
 
   return {
     ...buildStandardMetadata({
       title: item.metadata.title,
       description: item.metadata.summary,
-      pathname: `/portfolio/${item.slug}`,
+      pathname: `/gallery/${item.slug}`,
       type: "article",
       publishedTime: item.metadata.publishedAt,
       image: item.metadata.image,
@@ -29,9 +29,9 @@ export function generateMetadata({ params }) {
   }
 }
 
-export default async function PortfolioItemPage({ params, searchParams }) {
-  const allItems = getAllSortedPortfolio()
-  const item = getPortfolioItemBySlug(params.slug)
+export default async function GalleryItemPage({ params, searchParams }) {
+  const allItems = getAllSortedGallery()
+  const item = getGalleryItemBySlug(params.slug)
   if (!item) {
     notFound()
   }
@@ -51,18 +51,18 @@ export default async function PortfolioItemPage({ params, searchParams }) {
           </Link>
           <span className="mx-2 text-[var(--text-subtle)]">/</span>
           <Link
-            href="/portfolio"
+            href="/gallery"
             className="hover:underline hover:text-[var(--text-strong)] transition-colors"
           >
-            Portfolio
+            Gallery
           </Link>
         </nav>
 
         <Link
-          href={from ? `/${from}`.replace(/\/\/+/, "/") : "/portfolio"}
+          href={from ? `/${from}`.replace(/\/\/+/, "/") : "/gallery"}
           className="inline-flex items-center gap-2 text-[var(--accent-text)] hover:underline transition-colors font-medium block mb-6"
         >
-          ← Back to Portfolio
+          ← Back to Gallery
         </Link>
 
         <h1 className="display text-4xl mb-4">
@@ -93,7 +93,7 @@ export default async function PortfolioItemPage({ params, searchParams }) {
           <h2 className="text-2xl font-semibold tracking-tight text-[var(--text-strong)] mb-8">More Works</h2>
           <div className="grid grid-cols-12 gap-y-8 md:gap-8">
             {moreWorks.map((work) => (
-              <WritingCard key={work.slug} article={work} path="portfolio" />
+              <WritingCard key={work.slug} article={work} path="gallery" />
             ))}
           </div>
         </section>

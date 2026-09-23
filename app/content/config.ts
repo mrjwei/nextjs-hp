@@ -1,7 +1,7 @@
 import path from "path"
 
-export type ContentKind = "writing" | "portfolio"
-export type ContentSectionKey = "writings" | "portfolio"
+export type ContentKind = "writing" | "gallery"
+export type ContentSectionKey = "writings" | "gallery"
 export type ContentLang = "en" | "ja"
 
 export const contentConfig: Record<
@@ -22,13 +22,13 @@ export const contentConfig: Record<
     },
     supportsCollections: true,
   },
-  portfolio: {
-    kind: "portfolio",
+  gallery: {
+    kind: "gallery",
     baseDirPartsByLang: {
-      en: ["app", "portfolio", "posts"],
-      ja: ["app", "portfolio", "posts-ja"],
+      en: ["app", "gallery", "posts"],
+      ja: ["app", "gallery", "posts-ja"],
     },
-    supportsCollections: true,
+    supportsCollections: false,
   },
 }
 
