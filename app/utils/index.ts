@@ -6,6 +6,9 @@ import { getContentBaseDir, type ContentLang } from "app/content/config"
 
 export type Lang = ContentLang
 
+export type WorkTrack = "ai-engineering" | "product-design" | "security" | "research"
+export type WorkStatus = "production" | "pilot" | "research" | "shipped" | "archived"
+
 export type TMetadata = {
   title: string
   publishedAt: string
@@ -22,6 +25,19 @@ export type TMetadata = {
   partOfTitle?: string
   partNumber?: number
   lang?: Lang
+  // Positioning-as-data content knobs (see docs/roadmap/2026-09-ai-repositioning-brushup.md §4).
+  featured?: number
+  track?: WorkTrack
+  draft?: boolean
+  // Case-study fields (all optional).
+  result?: string
+  role?: string
+  client?: string
+  industry?: string
+  duration?: string
+  stack?: string[]
+  status?: WorkStatus
+  confidential?: boolean
 }
 
 export type TContentMeta = {
@@ -84,6 +100,21 @@ const dateSchema = z
     message: "Invalid date string",
   })
 
+const workTrackSchema = z.enum([
+  "ai-engineering",
+  "product-design",
+  "security",
+  "research",
+])
+
+const workStatusSchema = z.enum([
+  "production",
+  "pilot",
+  "research",
+  "shipped",
+  "archived",
+])
+
 const baseFrontmatterSchema = z.object({
   title: z.string().min(1),
   publishedAt: dateSchema,
@@ -98,6 +129,17 @@ const baseFrontmatterSchema = z.object({
   partOf: z.string().min(1).optional(),
   partOfTitle: z.string().min(1).optional(),
   partNumber: z.number().int().positive().optional(),
+  featured: z.number().int().positive().optional(),
+  track: workTrackSchema.optional(),
+  draft: z.boolean().optional(),
+  result: z.string().min(1).optional(),
+  role: z.string().min(1).optional(),
+  client: z.string().min(1).optional(),
+  industry: z.string().min(1).optional(),
+  duration: z.string().min(1).optional(),
+  stack: z.array(z.string().min(1)).optional(),
+  status: workStatusSchema.optional(),
+  confidential: z.boolean().optional(),
 })
 
 const writingFrontmatterSchema = baseFrontmatterSchema.extend({
@@ -147,11 +189,11 @@ function parseFrontmatter(
     const key = line.slice(0, colonIndex).trim()
     let value = line.slice(colonIndex + 1).trim()
 
-    if (key === "tags") {
+    if (key === "tags" || value.startsWith("[")) {
       const bracketMatch = value.match(/\[.*\]/)
       if (!bracketMatch) {
         throw new Error(
-          `Invalid format for "tags" in ${path.relative(
+          `Invalid format for "${key}" in ${path.relative(
             process.cwd(),
             absFilePath
           )}: ${value}`
@@ -341,7 +383,12 @@ export const getAllSortedWritings = cache((lang: Lang = "en") => {
   const index = readContentIndex()
   if (process.env.NODE_ENV === "production" && index?.writings?.length) {
     return index.writings
-      .filter((item) => itemLang(item.metadata) === lang && !item.metadata.archived)
+      .filter(
+        (item) =>
+          itemLang(item.metadata) === lang &&
+          !item.metadata.archived &&
+          !item.metadata.draft
+      )
       .map((item) => ({ slug: item.slug, metadata: item.metadata }))
       .sort((a, b) =>
         new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
@@ -369,6 +416,54 @@ export function getWritingHref(writing: TContentMeta, lang: Lang = "en") {
   return writing.metadata.series
     ? `${prefix}/writings/${writing.metadata.series}/${writing.slug}`
     : `${prefix}/writings/${writing.slug}`
+}
+
+// Work (`/work`) is a *view* over writings content, not a separate content
+// directory (see docs/publish.md). A writing appears there if it's tagged
+// `casestudy` (a full case study) or carries a `track` (a lighter-weight
+// proof piece re-tagged into the AI-engineering story). Only `casestudy`
+// items get the canonical `/work/[slug]` URL — see `isCaseStudy`.
+export function isWorkItem(metadata: Pick<TMetadata, "tags" | "track">) {
+  return metadata.tags.includes("casestudy") || !!metadata.track
+}
+
+export function isCaseStudy(metadata: Pick<TMetadata, "tags">) {
+  return metadata.tags.includes("casestudy")
+}
+
+// Home/Work order: lower `featured` first, then most recent; unfeatured
+// items sort after all featured ones (see profile.ts §4).
+export function sortWorkItems<T extends TContentMeta>(items: T[]): T[] {
+  return [...items].sort((a, b) => {
+    const featuredA = a.metadata.featured ?? Number.POSITIVE_INFINITY
+    const featuredB = b.metadata.featured ?? Number.POSITIVE_INFINITY
+    if (featuredA !== featuredB) return featuredA - featuredB
+    return new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
+      ? -1
+      : 1
+  })
+}
+
+const WORK_TRACK_ORDER: WorkTrack[] = [
+  "ai-engineering",
+  "product-design",
+  "security",
+  "research",
+]
+
+export function getWorkTrackFacets(
+  items: TContentMeta[]
+): Array<{ value: WorkTrack; count: number }> {
+  const counts = new Map<WorkTrack, number>()
+  for (const item of items) {
+    const track = item.metadata.track
+    if (!track) continue
+    counts.set(track, (counts.get(track) ?? 0) + 1)
+  }
+  return WORK_TRACK_ORDER.filter((track) => counts.has(track)).map((value) => ({
+    value,
+    count: counts.get(value)!,
+  }))
 }
 
 export const getSeriesParts = cache((partOf: string, lang: Lang = "en") => {
@@ -410,12 +505,21 @@ export const getAllSortedWritingSeries = cache((lang: Lang = "en"): TWritingSeri
   return result
 })
 
+// Drafts are excluded from all production reads of a single item (not just
+// listings), so a draft URL 404s outright rather than being reachable by
+// anyone who guesses or bookmarks the slug. They stay fully readable in dev.
+function isHiddenInProduction(metadata: Pick<TMetadata, "draft">) {
+  return process.env.NODE_ENV === "production" && !!metadata.draft
+}
+
 export function getWritingBySlug(slug: string, lang: Lang = "en"): TContentItem | null {
   const index = readContentIndex()
   const indexed = index?.writings?.find(
     (item) => item.slug === slug && itemLang(item.metadata) === lang
   )
   if (indexed) {
+    if (isHiddenInProduction(indexed.metadata)) return null
+
     if (process.env.NODE_ENV === "production") {
       if (typeof indexed.content !== "string") {
         throw new Error(
@@ -439,18 +543,22 @@ export function getWritingBySlug(slug: string, lang: Lang = "en"): TContentItem 
     metadata: TMetadata
     content: string
   }
+  if (isHiddenInProduction(metadata)) return null
   return { slug, metadata, content }
 }
 
 // Gallery content is a flat list (illustrations, no sub-collections).
 export const getAllSortedGallery = cache((lang: Lang = "en") => {
   const index = readContentIndex()
+  const isProd = process.env.NODE_ENV === "production"
   const indexItems = index?.gallery?.filter(
-    (item) => itemLang(item.metadata) === lang && !item.metadata.archived
+    (item) =>
+      itemLang(item.metadata) === lang &&
+      !item.metadata.archived &&
+      !(isProd && item.metadata.draft)
   )
 
   if (indexItems?.length) {
-    const isProd = process.env.NODE_ENV === "production"
     const items = isProd
       ? indexItems
       : indexItems.filter((item) =>
@@ -486,6 +594,8 @@ export function getGalleryItemBySlug(slug: string, lang: Lang = "en"): TContentI
     (item) => item.slug === slug && itemLang(item.metadata) === lang
   )
   if (indexed) {
+    if (isHiddenInProduction(indexed.metadata)) return null
+
     if (process.env.NODE_ENV === "production") {
       if (typeof indexed.content !== "string") {
         throw new Error(
@@ -513,6 +623,7 @@ export function getGalleryItemBySlug(slug: string, lang: Lang = "en"): TContentI
     metadata: TMetadata
     content: string
   }
+  if (isHiddenInProduction(metadata)) return null
   return { slug, metadata, content }
 }
 

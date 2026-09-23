@@ -2,12 +2,13 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Grid } from "@/components/grid"
-import { getAllSortedWritings } from "app/utils"
+import { WorkCard } from "@/components/work-card"
+import { getAllSortedWritings, isWorkItem, sortWorkItems } from "app/utils"
 import { profile } from "app/content/profile"
 
 export default function Page() {
   const writings = getAllSortedWritings()
-  const caseStudies = writings.filter((w) => w.metadata.tags.includes("casestudy"))
+  const caseStudies = sortWorkItems(writings.filter((w) => isWorkItem(w.metadata)))
   const p = profile.en
 
   return (
@@ -23,7 +24,7 @@ export default function Page() {
         </p>
         <div className="mt-9 flex flex-wrap gap-3">
           <Button asChild variant="primary" size="lg">
-            <Link href="/writings?tags=casestudy">See selected work</Link>
+            <Link href="/work">See selected work</Link>
           </Button>
           <Button asChild variant="ghost" size="lg">
             <Link href="/about">About me</Link>
@@ -64,14 +65,18 @@ export default function Page() {
               </h2>
             </div>
             <Link
-              href="/writings?tags=casestudy"
+              href="/work"
               className="inline-flex items-center gap-1 text-sm font-medium text-[var(--accent-text)] hover:underline"
             >
               See all
               <ArrowRight className="size-4" />
             </Link>
           </div>
-          <Grid writings={caseStudies} numWritings={4} path="writings" />
+          <div className="grid grid-cols-12 gap-y-8 md:gap-8">
+            {caseStudies.slice(0, 4).map((work) => (
+              <WorkCard key={work.slug} work={work} />
+            ))}
+          </div>
         </div>
       </div>
 

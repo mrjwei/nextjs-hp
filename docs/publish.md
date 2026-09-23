@@ -18,6 +18,19 @@ The same file is therefore reachable at two URLs — `/writings/[slug]` (or `/wr
 
 To add a new case study: tag it `casestudy` and it picks up the canonical `/work/[slug]` URL automatically — no separate routing or content-index change needed.
 
+`/work` also lists any writing that carries a `track` (`"ai-engineering" | "product-design" | "security" | "research"`), even without the `casestudy` tag — this is how a research post or series entry (e.g. a security-pipeline write-up) can double as interim proof on Work while it's the best evidence available. **Only `casestudy`-tagged items get the `/work/[slug]` canonical treatment**: a `track`-only item keeps its natural `/writings` URL as canonical (via `isCaseStudy`/`isWorkItem` in `app/utils/index.ts`), so the two views never fight over which one is canonical. Add `track` once a case study candidate exists to fill the slot properly.
+
+## Case-study frontmatter (Work)
+
+All optional; see `app/_drafts/_case-study-template.mdx` for the full skeleton and `ResultBlock`/`WorkCard` (`components/`) for how they render:
+
+- `featured?: number` — lower sorts earlier on Home/Work; absent = not featured. See `sortWorkItems` in `app/utils/index.ts`.
+- `track?: "ai-engineering" | "product-design" | "security" | "research"` — see above.
+- `draft?: boolean` — excluded from all grids, sitemap, RSS, and direct URL access in production (`npm run build`/deploy); still fully visible in `npm run dev`. Use this for "coming soon" placeholders instead of publishing them tagged `casestudy` with no real content.
+- `result`, `role`, `client`, `industry`, `duration`, `stack: string[]`, `status: "production" | "pilot" | "research" | "shipped" | "archived"`, `confidential?: boolean` — rendered by `ResultBlock` above the MDX body on `/work/[slug]`. `client` should be a type, not a name, unless the client has agreed otherwise; set `confidential: true` instead of vague wording when a detail can't be named.
+
+Array-valued frontmatter (like `stack`) uses the same `[...]` JSON syntax as `tags`, e.g. `stack: ["Next.js", "Redis"]`.
+
 ## Quick start
 
 ### Publish from a specific file

@@ -27,7 +27,7 @@ module.exports = {
       },
       {
         source: "/portfolio/projects",
-        destination: "/writings?tags=casestudy",
+        destination: "/work",
         permanent: true,
       },
       {
@@ -52,49 +52,52 @@ module.exports = {
       },
       {
         source: "/portfolio/austride",
-        destination: "/writings/AuStride/austride-overview",
+        destination: "/work/austride-overview",
         permanent: true,
       },
       {
         source: "/portfolio/lingobun",
-        destination: "/writings/LingoBun/lingobun-overview",
+        destination: "/work/lingobun-overview",
         permanent: true,
       },
+      // These three were "coming soon" placeholders and are now draft (see
+      // Phase 3 of the AI-repositioning roadmap) — their specific slugs no
+      // longer resolve, so send visitors to the Work index instead.
       {
         source: "/portfolio/case-study-3",
-        destination: "/writings/case-study-3",
+        destination: "/work",
         permanent: true,
       },
       {
         source: "/portfolio/gonow-design-ops",
-        destination: "/writings/gonow-design-ops",
+        destination: "/work",
         permanent: true,
       },
       {
         source: "/portfolio/wamazing",
-        destination: "/writings/wamazing",
+        destination: "/work",
         permanent: true,
       },
       {
         source: "/portfolio/:slug",
-        destination: "/writings?tags=casestudy",
+        destination: "/work",
         permanent: true,
       },
       {
         source: "/portfolio",
-        destination: "/writings?tags=casestudy",
+        destination: "/work",
         permanent: true,
       },
       // JA mirror has no translated portfolio content, so send everything
-      // to the JA case-study filter.
+      // to the JA Work index.
       {
         source: "/ja/portfolio/:path*",
-        destination: "/ja/writings?tags=casestudy",
+        destination: "/ja/work",
         permanent: true,
       },
       {
         source: "/ja/portfolio",
-        destination: "/ja/writings?tags=casestudy",
+        destination: "/ja/work",
         permanent: true,
       },
     ]

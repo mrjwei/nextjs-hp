@@ -1,5 +1,11 @@
-import { Grid } from "@/components/grid"
-import { getAllSortedWritings } from "app/utils"
+import { WorkCard } from "@/components/work-card"
+import { WorkTrackFilter } from "@/components/work-track-filter.client"
+import {
+  getAllSortedWritings,
+  getWorkTrackFacets,
+  isWorkItem,
+  sortWorkItems,
+} from "app/utils"
 import { buildStandardMetadata } from "app/seo/metadata"
 
 export const metadata = buildStandardMetadata({
@@ -14,9 +20,10 @@ export const metadata = buildStandardMetadata({
 export const dynamic = "force-static"
 
 export default async function WorkPage() {
-  const work = getAllSortedWritings().filter((w) =>
-    w.metadata.tags.includes("casestudy")
+  const work = sortWorkItems(
+    getAllSortedWritings().filter((w) => isWorkItem(w.metadata))
   )
+  const tracks = getWorkTrackFacets(work)
 
   return (
     <div className="w-full max-w-[1120px] mx-auto px-6 md:px-8 py-24">
@@ -37,11 +44,23 @@ export default async function WorkPage() {
             No case studies yet
           </h2>
           <p className="text-[var(--text-muted)]">
-            Tag a writing <code>casestudy</code> to have it appear here.
+            Tag a writing <code>casestudy</code> or set a <code>track</code>{" "}
+            to have it appear here.
           </p>
         </div>
       ) : (
-        <Grid writings={work} path="work" />
+        <>
+          <WorkTrackFilter tracks={tracks} />
+          <div className="grid grid-cols-12 gap-y-8 md:gap-8">
+            {work.map((item) => (
+              <WorkCard
+                key={item.slug}
+                work={item}
+                wrapperProps={{ "data-work-track": item.metadata.track }}
+              />
+            ))}
+          </div>
+        </>
       )}
     </div>
   )

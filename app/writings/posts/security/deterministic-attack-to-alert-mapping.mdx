@@ -3,10 +3,14 @@ title: "Deterministic Attack-to-Alert Mapping with Correlation IDs"
 slug: "deterministic-attack-to-alert-mapping"
 publishedAt: "2026-08-25"
 summary: "Timestamp-proximity matching between attack ground truth and Wazuh alerts wasn't reliable enough for evaluation, so I threaded a correlation ID through the whole pipeline via the HTTP Referer header to get a deterministic join instead."
-tags: ["security", "dev"]
+tags: ["security", "dev", "evals"]
 partOf: "ai-assisted-siem-workflow"
 partOfTitle: "AI-Assisted SIEM Workflow"
 partNumber: 2
+track: "security"
+featured: 3
+result: "Replaced unreliable timestamp-proximity matching with a correlation ID threaded through the pipeline via the HTTP Referer header, turning attack-to-alert joins from a guess into a deterministic match."
+status: "research"
 ---
 
 - [The Problem: Generic Alerts, Ambiguous Timestamps](#the-problem-generic-alerts-ambiguous-timestamps)

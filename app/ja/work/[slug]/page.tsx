@@ -1,10 +1,18 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { getAllSortedWritings, getWritingBySlug, formatDate } from "app/utils"
+import {
+  getAllSortedWritings,
+  getWritingBySlug,
+  getWritingHref,
+  formatDate,
+  isCaseStudy,
+  isWorkItem,
+} from "app/utils"
 import { buildStandardMetadata } from "app/seo/metadata"
 import { CustomMDX } from "@/components/mdx"
 import { BackToTop } from "@/components/back-to-top"
 import { Tags } from "@/components/tags"
+import { ResultBlock } from "@/components/result-block"
 import { baseUrl } from "app/sitemap"
 
 export const dynamic = "force-static"
@@ -12,14 +20,12 @@ export const dynamicParams = true
 
 function getWork(slug: string) {
   const writing = getWritingBySlug(slug, "ja")
-  return writing && writing.metadata.tags.includes("casestudy")
-    ? writing
-    : null
+  return writing && isWorkItem(writing.metadata) ? writing : null
 }
 
 export async function generateStaticParams() {
   return getAllSortedWritings("ja")
-    .filter((w) => w.metadata.tags.includes("casestudy"))
+    .filter((w) => isWorkItem(w.metadata))
     .map((w) => ({ slug: w.slug }))
 }
 
@@ -30,10 +36,14 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
   const { title, publishedAt: publishedTime, summary: description, image, archived } =
     work.metadata
 
+  const pathname = isCaseStudy(work.metadata)
+    ? `/ja/work/${work.slug}`
+    : getWritingHref(work, "ja")
+
   return buildStandardMetadata({
     title,
     description,
-    pathname: `/ja/work/${work.slug}`,
+    pathname,
     type: "article",
     publishedTime,
     image,
@@ -66,8 +76,11 @@ export default async function WorkCasePage({ params }: { params: { slug: string 
   const work = getWork(params.slug)
   if (!work) {
     const englishWriting = getWritingBySlug(params.slug, "en")
-    if (englishWriting?.metadata.tags.includes("casestudy")) {
-      return <NotTranslatedYet englishHref={`/work/${englishWriting.slug}`} />
+    if (englishWriting && isWorkItem(englishWriting.metadata)) {
+      const englishHref = isCaseStudy(englishWriting.metadata)
+        ? `/work/${englishWriting.slug}`
+        : getWritingHref(englishWriting)
+      return <NotTranslatedYet englishHref={englishHref} />
     }
     notFound()
   }
@@ -101,7 +114,11 @@ export default async function WorkCasePage({ params }: { params: { slug: string 
               image: work.metadata.image
                 ? `${baseUrl}${work.metadata.image}`
                 : `${baseUrl}/og?title=${encodeURIComponent(work.metadata.title)}`,
-              url: `${baseUrl}/ja/work/${work.slug}`,
+              url: `${baseUrl}${
+                isCaseStudy(work.metadata)
+                  ? `/ja/work/${work.slug}`
+                  : getWritingHref(work, "ja")
+              }`,
               inLanguage: "ja",
               author: {
                 "@type": "Person",
@@ -126,6 +143,8 @@ export default async function WorkCasePage({ params }: { params: { slug: string 
             )}
           </p>
         </div>
+
+        <ResultBlock metadata={work.metadata} lang="ja" />
 
         <article className="prose">
           <CustomMDX source={work.content} />

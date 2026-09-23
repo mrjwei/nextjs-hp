@@ -76,14 +76,14 @@ function parseFrontmatter(fileContent, absFilePath) {
     const key = line.slice(0, colonIndex).trim();
     let value = line.slice(colonIndex + 1).trim();
 
-    if (key === "tags") {
+    if (key === "tags" || value.startsWith("[")) {
       const bracketMatch = value.match(/\[.*\]/);
       if (!bracketMatch) {
         throw new Error(
-          `Invalid format for "tags" in ${path.relative(CWD, absFilePath)}: ${value}`
+          `Invalid format for "${key}" in ${path.relative(CWD, absFilePath)}: ${value}`
         );
       }
-      meta.tags = JSON.parse(bracketMatch[0]);
+      meta[key] = JSON.parse(bracketMatch[0]);
       continue;
     }
 
@@ -166,6 +166,42 @@ function assertTags(value, absFilePath, requireTags) {
   return value;
 }
 
+const WORK_TRACKS = ["ai-engineering", "product-design", "security", "research"];
+const WORK_STATUSES = ["production", "pilot", "research", "shipped", "archived"];
+
+function assertOptionalBoolean(value, field, absFilePath) {
+  if (value != null && typeof value !== "boolean") {
+    throw new Error(
+      `Invalid frontmatter in ${path.relative(CWD, absFilePath)}: ${field} must be a boolean`
+    );
+  }
+}
+
+function assertOptionalPositiveInt(value, field, absFilePath) {
+  if (value != null && !(Number.isInteger(value) && value > 0)) {
+    throw new Error(
+      `Invalid frontmatter in ${path.relative(CWD, absFilePath)}: ${field} must be a positive integer`
+    );
+  }
+}
+
+function assertOptionalEnum(value, field, allowed, absFilePath) {
+  if (value != null && !allowed.includes(value)) {
+    throw new Error(
+      `Invalid frontmatter in ${path.relative(CWD, absFilePath)}: ${field} must be one of ${allowed.join(", ")}`
+    );
+  }
+}
+
+function assertOptionalStringArray(value, field, absFilePath) {
+  if (value == null) return;
+  if (!Array.isArray(value) || value.some((v) => typeof v !== "string" || v.length === 0)) {
+    throw new Error(
+      `Invalid frontmatter in ${path.relative(CWD, absFilePath)}: ${field} must be an array of non-empty strings`
+    );
+  }
+}
+
 function buildIndexSectionForLang(sectionKey, config, lang, baseDir) {
   if (!isDirectory(baseDir)) {
     return [];
@@ -224,6 +260,16 @@ function buildIndexSectionForLang(sectionKey, config, lang, baseDir) {
       );
     }
 
+    assertOptionalBoolean(meta.draft, "draft", absFilePath);
+    assertOptionalPositiveInt(meta.featured, "featured", absFilePath);
+    assertOptionalEnum(meta.track, "track", WORK_TRACKS, absFilePath);
+    assertOptionalEnum(meta.status, "status", WORK_STATUSES, absFilePath);
+    assertOptionalStringArray(meta.stack, "stack", absFilePath);
+    assertOptionalBoolean(meta.confidential, "confidential", absFilePath);
+    for (const field of ["result", "role", "client", "industry", "duration"]) {
+      if (meta[field] != null) assertString(meta[field], field, absFilePath);
+    }
+
     return {
       slug,
       filePath: path.relative(CWD, absFilePath),
@@ -244,6 +290,17 @@ function buildIndexSectionForLang(sectionKey, config, lang, baseDir) {
         partOfTitle,
         partNumber,
         lang,
+        featured: typeof meta.featured === "number" ? meta.featured : undefined,
+        track: typeof meta.track === "string" ? meta.track : undefined,
+        draft: typeof meta.draft === "boolean" ? meta.draft : undefined,
+        result: typeof meta.result === "string" ? meta.result : undefined,
+        role: typeof meta.role === "string" ? meta.role : undefined,
+        client: typeof meta.client === "string" ? meta.client : undefined,
+        industry: typeof meta.industry === "string" ? meta.industry : undefined,
+        duration: typeof meta.duration === "string" ? meta.duration : undefined,
+        stack: Array.isArray(meta.stack) ? meta.stack : undefined,
+        status: typeof meta.status === "string" ? meta.status : undefined,
+        confidential: typeof meta.confidential === "boolean" ? meta.confidential : undefined,
       },
       content,
     };

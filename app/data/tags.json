@@ -10,5 +10,10 @@
   "uiux": { "color": "#4eb814" },
   "process": { "color": "#b89414" },
   "web": { "color": "#14b894" },
-  "git": { "color": "#b8b814" }
+  "git": { "color": "#b8b814" },
+  "llm": { "color": "#1d4ed8" },
+  "evals": { "color": "#ea580c" },
+  "rag": { "color": "#a16207" },
+  "agents": { "color": "#4338ca" },
+  "mlops": { "color": "#15803d" }
 }

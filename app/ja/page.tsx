@@ -2,13 +2,14 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Grid } from "@/components/grid"
+import { WorkCard } from "@/components/work-card"
 import { JaEmptyNotice } from "@/components/ja-empty-notice"
-import { getAllSortedWritings } from "app/utils"
+import { getAllSortedWritings, isWorkItem, sortWorkItems } from "app/utils"
 import { profile } from "app/content/profile"
 
 export default function Page() {
   const writings = getAllSortedWritings("ja")
-  const caseStudies = writings.filter((w) => w.metadata.tags.includes("casestudy"))
+  const caseStudies = sortWorkItems(writings.filter((w) => isWorkItem(w.metadata)))
   const p = profile.ja
 
   return (
@@ -24,7 +25,7 @@ export default function Page() {
         </p>
         <div className="mt-9 flex flex-wrap gap-3">
           <Button asChild variant="primary" size="lg">
-            <Link href="/ja/writings?tags=casestudy">代表的な実績を見る</Link>
+            <Link href="/ja/work">代表的な実績を見る</Link>
           </Button>
           <Button asChild variant="ghost" size="lg">
             <Link href="/ja/about">プロフィール</Link>
@@ -69,7 +70,7 @@ export default function Page() {
               </h2>
             </div>
             <Link
-              href="/ja/writings?tags=casestudy"
+              href="/ja/work"
               className="inline-flex items-center gap-1 text-sm font-medium text-[var(--accent-text)] hover:underline"
             >
               すべて見る
@@ -77,9 +78,13 @@ export default function Page() {
             </Link>
           </div>
           {caseStudies.length === 0 ? (
-            <JaEmptyNotice englishHref="/writings?tags=casestudy" englishLabel="英語版のケーススタディを見る" />
+            <JaEmptyNotice englishHref="/work" englishLabel="英語版の実績を見る" />
           ) : (
-            <Grid writings={caseStudies} numWritings={4} path="writings" lang="ja" />
+            <div className="grid grid-cols-12 gap-y-8 md:gap-8">
+              {caseStudies.slice(0, 4).map((work) => (
+                <WorkCard key={work.slug} work={work} lang="ja" />
+              ))}
+            </div>
           )}
         </div>
       </div>
