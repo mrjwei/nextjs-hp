@@ -1,0 +1,3 @@
+- Make a new branch for any block of work you are doing. This helps keep your changes organized and makes it easier to collaborate with others.
+- Commit your changes frequently with clear and descriptive commit messages. This allows you to track your progress and makes it easier to understand the history of your project.
+- If you are implementing based on a plan, implement one phase or task at a time rather than trying to do everything at once. Make a new branch for each phase or task, and merge it back into the main branch when it is complete. This helps keep your work organized and makes it easier to review and test your changes.
