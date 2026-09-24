@@ -1,4 +1,3 @@
-import Link from "next/link"
 import { MessagesSquare, Workflow, FlaskConical } from "lucide-react"
 import type { HowIWorkItem } from "app/content/profile"
 
@@ -11,8 +10,8 @@ export function HowIWork({ items }: { items: HowIWorkItem[] }) {
     <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-10">
       {items.map((item, i) => {
         const Icon = icons[i % icons.length]
-        const body = (
-          <>
+        return (
+          <div key={item.title}>
             <Icon className="size-5 text-[var(--accent-text)]" strokeWidth={1.75} />
             <h3 className="mt-4 text-base font-semibold text-[var(--text-strong)]">
               {item.title}
@@ -20,14 +19,7 @@ export function HowIWork({ items }: { items: HowIWorkItem[] }) {
             <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">
               {item.body}
             </p>
-          </>
-        )
-        return item.href ? (
-          <Link key={item.title} href={item.href} className="group block">
-            {body}
-          </Link>
-        ) : (
-          <div key={item.title}>{body}</div>
+          </div>
         )
       })}
     </div>
