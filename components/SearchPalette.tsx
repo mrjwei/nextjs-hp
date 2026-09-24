@@ -15,12 +15,25 @@ type SearchResultItem = {
   title: string;
   summary: string;
   type: string;
+  project?: string;
   lang?: "en" | "ja";
 };
 
 const copy = {
-  en: { placeholder: "Search posts...", noResults: "No results found." },
-  ja: { placeholder: "記事を検索...", noResults: "見つかりませんでした。" },
+  en: {
+    placeholder: "Search posts...",
+    noResults: "No results found.",
+    post: "Post",
+    project: "Project",
+    gallery: "Gallery",
+  },
+  ja: {
+    placeholder: "記事を検索...",
+    noResults: "見つかりませんでした。",
+    post: "記事",
+    project: "プロジェクト",
+    gallery: "ギャラリー",
+  },
 };
 
 export function SearchPalette({ isLight }: { isLight: boolean }) {
@@ -62,7 +75,7 @@ export function SearchPalette({ isLight }: { isLight: boolean }) {
   const miniSearch = useMemo(() => {
     const searcher = new MiniSearch({
       fields: ["title", "summary", "content"], // fields to index for full-text search
-      storeFields: ["slug", "title", "type", "collection", "lang"],   // fields to return with search results
+      storeFields: ["slug", "title", "type", "collection", "project", "lang"],   // fields to return with search results
       searchOptions: {
         fuzzy: 0.2, // Allow some typos
         prefix: true // Enable prefix matching (match partial words typed)
@@ -99,8 +112,14 @@ export function SearchPalette({ isLight }: { isLight: boolean }) {
   const getPath = (type: string, slug: string, collection?: string) => {
     const prefix = lang === "ja" ? "/ja" : "";
     if (type === "gallery") return `${prefix}/gallery/${slug}`;
-    if (collection) return `${prefix}/writings/${collection}/${slug}`;
-    return `${prefix}/writings/${slug}`; // Assume writing by default
+    if (collection) return `${prefix}/posts/${collection}/${slug}`;
+    return `${prefix}/posts/${slug}`; // Assume writing by default
+  };
+
+  const getLabel = (result: SearchResultItem) => {
+    if (result.type === "gallery") return t.gallery;
+    if (result.project) return `${t.project} · ${result.project}`;
+    return t.post;
   };
 
   return (
@@ -162,7 +181,7 @@ export function SearchPalette({ isLight }: { isLight: boolean }) {
                 className="px-4 py-3 cursor-pointer rounded-md hover:bg-[var(--surface-active)] aria-selected:bg-[var(--surface-active)] flex flex-col gap-1 text-left"
               >
                 <span className="font-semibold text-[var(--text-strong)]">{result.title}</span>
-                <span className="text-xs text-[var(--text-muted)] capitalize">{result.type}</span>
+                <span className="text-xs text-[var(--text-muted)]">{getLabel(result)}</span>
               </Command.Item>
             ))}
           </Command.List>

@@ -29,6 +29,9 @@ export type TMetadata = {
   featured?: number
   track?: WorkTrack
   draft?: boolean
+  // Short one-word project ID (e.g. "LingoBun"). Its presence makes the post a
+  // project: listed on /projects and badged on every card.
+  project?: string
   // Case-study fields (all optional).
   result?: string
   role?: string
@@ -132,6 +135,10 @@ const baseFrontmatterSchema = z.object({
   featured: z.number().int().positive().optional(),
   track: workTrackSchema.optional(),
   draft: z.boolean().optional(),
+  project: z
+    .string()
+    .regex(/^\S{1,12}$/, "project must be one word of at most 12 characters")
+    .optional(),
   result: z.string().min(1).optional(),
   role: z.string().min(1).optional(),
   client: z.string().min(1).optional(),
@@ -414,26 +421,20 @@ export const getAllSortedWritings = cache((lang: Lang = "en") => {
 export function getWritingHref(writing: TContentMeta, lang: Lang = "en") {
   const prefix = lang === "ja" ? "/ja" : ""
   return writing.metadata.series
-    ? `${prefix}/writings/${writing.metadata.series}/${writing.slug}`
-    : `${prefix}/writings/${writing.slug}`
+    ? `${prefix}/posts/${writing.metadata.series}/${writing.slug}`
+    : `${prefix}/posts/${writing.slug}`
 }
 
-// Work (`/work`) is a *view* over writings content, not a separate content
-// directory (see docs/publish.md). A writing appears there if it's tagged
-// `casestudy` (a full case study) or carries a `track` (a lighter-weight
-// proof piece re-tagged into the AI-engineering story). Only `casestudy`
-// items get the canonical `/work/[slug]` URL — see `isCaseStudy`.
-export function isWorkItem(metadata: Pick<TMetadata, "tags" | "track">) {
-  return metadata.tags.includes("casestudy") || !!metadata.track
+// Projects (`/projects`) are a *view* over posts, not a separate content
+// directory (see docs/publish.md): any post with a `project` ID is a project.
+// Its canonical URL stays under /posts.
+export function isProject(metadata: Pick<TMetadata, "project">) {
+  return !!metadata.project
 }
 
-export function isCaseStudy(metadata: Pick<TMetadata, "tags">) {
-  return metadata.tags.includes("casestudy")
-}
-
-// Home/Work order: lower `featured` first, then most recent; unfeatured
+// Home/Projects order: lower `featured` first, then most recent; unfeatured
 // items sort after all featured ones (see profile.ts §4).
-export function sortWorkItems<T extends TContentMeta>(items: T[]): T[] {
+export function sortProjects<T extends TContentMeta>(items: T[]): T[] {
   return [...items].sort((a, b) => {
     const featuredA = a.metadata.featured ?? Number.POSITIVE_INFINITY
     const featuredB = b.metadata.featured ?? Number.POSITIVE_INFINITY

@@ -3,59 +3,52 @@ import { WorkTrackFilter } from "@/components/work-track-filter.client"
 import {
   getAllSortedWritings,
   getWorkTrackFacets,
-  isWorkItem,
-  sortWorkItems,
+  isProject,
+  sortProjects,
 } from "app/utils"
 import { buildStandardMetadata } from "app/seo/metadata"
+import { JaEmptyNotice } from "@/components/ja-empty-notice"
 
 export const metadata = buildStandardMetadata({
-  title: "Work",
+  title: "プロジェクト",
   description:
-    "Selected case studies — applied AI systems and product work shipped for real businesses.",
-  pathname: "/work",
-  alternatePathname: "/ja/work",
-  alternateLang: "ja",
+    "選定したプロジェクト——実際の事業のために構築したアプライドAIシステムとプロダクトの仕事。",
+  pathname: "/ja/projects",
+  alternatePathname: "/projects",
+  alternateLang: "en",
 })
 
 export const dynamic = "force-static"
 
-export default async function WorkPage() {
-  const work = sortWorkItems(
-    getAllSortedWritings().filter((w) => isWorkItem(w.metadata))
+export default async function ProjectsPage() {
+  const work = sortProjects(
+    getAllSortedWritings("ja").filter((w) => isProject(w.metadata))
   )
   const tracks = getWorkTrackFacets(work)
 
   return (
     <div className="w-full max-w-[1120px] mx-auto px-6 md:px-8 py-24">
       <div className="mb-8">
-        <span className="eyebrow">Work</span>
+        <span className="eyebrow">プロジェクト</span>
         <h1 className="mt-3 mb-2 text-3xl md:text-4xl font-semibold tracking-tight text-[var(--text-strong)]">
-          Work
+          プロジェクト
         </h1>
         <p className="text-lg text-[var(--text-muted)] mb-4">
-          Case studies — applied AI systems and product work shipped for real
-          businesses.
+          選定したプロジェクト——実際の事業のために構築したアプライドAIシステムとプロダクトの仕事。
         </p>
       </div>
 
       {work.length === 0 ? (
-        <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] shadow-xs rounded-lg p-6">
-          <h2 className="text-lg font-semibold mb-2 text-[var(--text-strong)]">
-            No case studies yet
-          </h2>
-          <p className="text-[var(--text-muted)]">
-            Tag a writing <code>casestudy</code> or set a <code>track</code>{" "}
-            to have it appear here.
-          </p>
-        </div>
+        <JaEmptyNotice englishHref="/projects" englishLabel="英語版のプロジェクトを見る" />
       ) : (
         <>
-          <WorkTrackFilter tracks={tracks} />
+          <WorkTrackFilter tracks={tracks} lang="ja" />
           <div className="grid grid-cols-12 gap-y-8 md:gap-8">
             {work.map((item) => (
               <WorkCard
                 key={item.slug}
                 work={item}
+                lang="ja"
                 wrapperProps={{ "data-work-track": item.metadata.track }}
               />
             ))}

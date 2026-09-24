@@ -10,24 +10,28 @@ Collections (previously called “series” in the UI) are driven by frontmatter
 
 For convenience/back-compat, if a writing is inside a subfolder (e.g. `app/writings/posts/ml/...`), that folder name is treated as its `series` slug unless `series` is explicitly set.
 
-## Work vs Writings — canonical URL
+## Posts vs Projects — canonical URL
 
-`/work` is a *view* over writings, not a separate content directory: any writing tagged `casestudy` (via frontmatter `tags: ["casestudy", ...]`) is listed at `/work` (and `/ja/work`) as well as under `/writings`.
+Every entry lives under `/posts` (`/posts/[slug]`, or `/posts/[collection]/[slug]` for posts in a collection) and that URL is always canonical. `/posts/[slug]` for a post inside a collection permanently redirects to its collection URL.
 
-The same file is therefore reachable at two URLs — `/writings/[slug]` (or `/writings/[collection]/[slug]`) and `/work/[slug]`. **`/work/[slug]` is canonical**: its `<link rel="canonical">`, OG URL, and sitemap entry all point there, even though the page is still served (and readable) at the `/writings` URL for anyone browsing by tag or collection. No redirect is used — `/writings/[slug]` keeps rendering the same content, just with its canonical tag pointing at `/work/[slug]`.
+`/projects` is a *view* over posts, not a separate content directory: any post with a `project` ID in its frontmatter is a project. It is listed at `/projects` (and `/ja/projects`) as well as under `/posts`, and every card for it — on either page, on Home, and in "You May Also Like" — shows the ID as a badge in the top-right corner. The detail page is the normal `/posts` page, with the badge above the title and `ResultBlock` above the body.
 
-To add a new case study: tag it `casestudy` and it picks up the canonical `/work/[slug]` URL automatically — no separate routing or content-index change needed.
+To add a new project: set `project: "<ID>"` (one word, at most 12 characters, e.g. `"LingoBun"`, `"AI+Sec"`) — no routing or content-index change needed. Use the same ID on every post that belongs to that project, and on the JA translation.
 
-`/work` also lists any writing that carries a `track` (`"ai-engineering" | "product-design" | "security" | "research"`), even without the `casestudy` tag — this is how a research post or series entry (e.g. a security-pipeline write-up) can double as interim proof on Work while it's the best evidence available. **Only `casestudy`-tagged items get the `/work/[slug]` canonical treatment**: a `track`-only item keeps its natural `/writings` URL as canonical (via `isCaseStudy`/`isWorkItem` in `app/utils/index.ts`), so the two views never fight over which one is canonical. Add `track` once a case study candidate exists to fill the slot properly.
+The `casestudy` tag is an ordinary tag; it has no effect on routing or on `/projects`.
 
-## Case-study frontmatter (Work)
+Old URLs (`/writings/*`, `/work`, `/work/[slug]`, and the `/ja` equivalents) permanently redirect to their `/posts` / `/projects` counterparts (`next.config.js`).
+
+## Project frontmatter
 
 All optional; see `app/_drafts/_case-study-template.mdx` for the full skeleton and `ResultBlock`/`WorkCard` (`components/`) for how they render:
 
-- `featured?: number` — lower sorts earlier on Home/Work; absent = not featured. See `sortWorkItems` in `app/utils/index.ts`.
-- `track?: "ai-engineering" | "product-design" | "security" | "research"` — see above.
-- `draft?: boolean` — excluded from all grids, sitemap, RSS, and direct URL access in production (`npm run build`/deploy); still fully visible in `npm run dev`. Use this for "coming soon" placeholders instead of publishing them tagged `casestudy` with no real content.
-- `result`, `role`, `client`, `industry`, `duration`, `stack: string[]`, `status: "production" | "pilot" | "research" | "shipped" | "archived"`, `confidential?: boolean` — rendered by `ResultBlock` above the MDX body on `/work/[slug]`. `client` should be a type, not a name, unless the client has agreed otherwise; set `confidential: true` instead of vague wording when a detail can't be named.
+- `project?: string` — see above.
+- `featured?: number` — lower sorts earlier on Home/Projects; absent = not featured. See `sortProjects` in `app/utils/index.ts`.
+- `track?: "ai-engineering" | "product-design" | "security" | "research"` — powers the track filter on `/projects`.
+- `draft?: boolean` — excluded from all grids, search, sitemap, RSS, and direct URL access in production (`npm run build`/deploy); still fully visible in `npm run dev`. Use this for "coming soon" placeholders instead of publishing them with no real content.
+- `archived?: boolean` — excluded from all grids, search, sitemap and RSS, and its URL returns 404 (in dev too).
+- `result`, `role`, `client`, `industry`, `duration`, `stack: string[]`, `status: "production" | "pilot" | "research" | "shipped" | "archived"`, `confidential?: boolean` — rendered by `ResultBlock` above the MDX body on the post page (only when `result` is set). `client` should be a type, not a name, unless the client has agreed otherwise; set `confidential: true` instead of vague wording when a detail can't be named.
 
 Array-valued frontmatter (like `stack`) uses the same `[...]` JSON syntax as `tags`, e.g. `stack: ["Next.js", "Redis"]`.
 

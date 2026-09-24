@@ -60,6 +60,7 @@ async function generateSearchIndex() {
       title: title,
       summary: summary,
       type: post.type,
+      project: post.metadata?.project,
       lang: lang,
       content: mainContent
     });

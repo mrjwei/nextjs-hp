@@ -17,7 +17,7 @@ partNumber: 1
   - [Some Distinctions](#some-distinctions)
 - [Resources](#resources)
 
-Convolutional neural networks are the standard architecture for finding spatial patterns in images, but the vocabulary around them, such as kernels, filters, channels, and feature maps, gets thrown around fairly loosely. This post works through what each term precisely means and how a convolutional layer actually turns an input image into an output, with a fully hand-checked numeric example. [Receptive Fields in CNNs: Why Depth Beats Big Kernels](/writings/cnn-receptive-fields) of this series builds on the ideas here to explain receptive fields — why stacking small filters lets a CNN "see" a large area of the image without ever using a large kernel.
+Convolutional neural networks are the standard architecture for finding spatial patterns in images, but the vocabulary around them, such as kernels, filters, channels, and feature maps, gets thrown around fairly loosely. This post works through what each term precisely means and how a convolutional layer actually turns an input image into an output, with a fully hand-checked numeric example. [Receptive Fields in CNNs: Why Depth Beats Big Kernels](/posts/AI/cnn-receptive-fields) of this series builds on the ideas here to explain receptive fields — why stacking small filters lets a CNN "see" a large area of the image without ever using a large kernel.
 
 ## Kernels and Filters
 
@@ -102,7 +102,7 @@ The analogy is useful, but it breaks down in one important way: **word embedding
 
 A word embedding table is a giant matrix with one fixed row per vocabulary entry — "cat" is always row 4592, "dog" is always row 891, and so on. When the model sees the token "cat", it just retrieves row 4592; there is no computation involved in producing the vector itself, only in what happens afterward.
 
-A CNN has no equivalent table. Every feature vector at every spatial location is *computed on the fly* by running the filters over the input, and that computation only has access to a small local neighbourhood, i.e. its **receptive field**. That neighbourhood only grows as you stack more convolutional layers, each of which widens it a bit further (this growth is the subject of [Receptive Fields in CNNs: Why Depth Beats Big Kernels](/writings/cnn-receptive-fields)). There's no equivalent of "pixel-pattern #4592" that the network could look up directly, and every image, and every location within it, has to be freshly interpreted through the same shared filters.
+A CNN has no equivalent table. Every feature vector at every spatial location is *computed on the fly* by running the filters over the input, and that computation only has access to a small local neighbourhood, i.e. its **receptive field**. That neighbourhood only grows as you stack more convolutional layers, each of which widens it a bit further (this growth is the subject of [Receptive Fields in CNNs: Why Depth Beats Big Kernels](/posts/AI/cnn-receptive-fields)). There's no equivalent of "pixel-pattern #4592" that the network could look up directly, and every image, and every location within it, has to be freshly interpreted through the same shared filters.
 
 ## Resources
 

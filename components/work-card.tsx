@@ -3,6 +3,7 @@
 import clsx from "clsx"
 import Image from "next/image"
 import { TrackedLink } from "@/components/tracked-link"
+import { ProjectBadge } from "@/components/project-badge"
 import type { TContentMeta, WorkStatus } from "app/utils"
 import type { Lang } from "app/i18n/config"
 
@@ -37,9 +38,13 @@ export function WorkCard({
   }
 }) {
   const prefix = lang === "ja" ? "/ja" : ""
-  const href = `${prefix}/work/${work.slug}`
-  const { title, summary, result, industry, publishedAt, image, stack, status } =
+  const { title, summary, result, industry, publishedAt, image, stack, status, series, project } =
     work.metadata
+  // Projects are canonical under /posts (mirrors getWritingHref, which can't
+  // be imported into this client component because app/utils reads the fs).
+  const href = series
+    ? `${prefix}/posts/${series}/${work.slug}`
+    : `${prefix}/posts/${work.slug}`
   const year = new Date(publishedAt).getFullYear()
   const eyebrow = industry ? `${industry} · ${year}` : `${year}`
   const resultLine = result || summary
@@ -48,11 +53,14 @@ export function WorkCard({
     <div
       {...wrapperProps}
       className={clsx(
-        "col-span-12 md:col-span-6 h-full flex flex-col bg-[var(--surface-card)] transition-[box-shadow,border-color,transform] duration-200 ease-[var(--ease-out)] shadow-xs hover:shadow-lg hover:-translate-y-0.5 border border-[var(--border-subtle)] hover:border-[var(--border-default)] rounded-lg overflow-hidden group",
+        "relative col-span-12 md:col-span-6 h-full flex flex-col bg-[var(--surface-card)] transition-[box-shadow,border-color,transform] duration-200 ease-[var(--ease-out)] shadow-xs hover:shadow-lg hover:-translate-y-0.5 border border-[var(--border-subtle)] hover:border-[var(--border-default)] rounded-lg overflow-hidden group",
         className,
         wrapperProps?.className
       )}
     >
+      {project && (
+        <ProjectBadge project={project} className="pointer-events-none absolute top-3 right-3 z-10" />
+      )}
       <TrackedLink
         href={href}
         className="flex flex-1 flex-col"
@@ -71,7 +79,7 @@ export function WorkCard({
           </div>
         )}
         <div className="flex flex-1 flex-col justify-between p-6">
-          <div>
+          <div className={clsx({ "pr-20": project && !image })}>
             <span className="eyebrow">{eyebrow}</span>
             <h3 className="mt-2 mb-2 text-lg font-semibold leading-normal text-[var(--text-strong)] transition-colors group-hover:text-[var(--accent-text)]">
               {title}

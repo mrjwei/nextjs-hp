@@ -265,6 +265,11 @@ function buildIndexSectionForLang(sectionKey, config, lang, baseDir) {
     assertOptionalEnum(meta.track, "track", WORK_TRACKS, absFilePath);
     assertOptionalEnum(meta.status, "status", WORK_STATUSES, absFilePath);
     assertOptionalStringArray(meta.stack, "stack", absFilePath);
+    if (meta.project != null && !(typeof meta.project === "string" && /^\S{1,12}$/.test(meta.project))) {
+      throw new Error(
+        `Invalid frontmatter in ${path.relative(CWD, absFilePath)}: project must be one word of at most 12 characters`
+      );
+    }
     assertOptionalBoolean(meta.confidential, "confidential", absFilePath);
     for (const field of ["result", "role", "client", "industry", "duration"]) {
       if (meta[field] != null) assertString(meta[field], field, absFilePath);
@@ -293,6 +298,7 @@ function buildIndexSectionForLang(sectionKey, config, lang, baseDir) {
         featured: typeof meta.featured === "number" ? meta.featured : undefined,
         track: typeof meta.track === "string" ? meta.track : undefined,
         draft: typeof meta.draft === "boolean" ? meta.draft : undefined,
+        project: typeof meta.project === "string" ? meta.project : undefined,
         result: typeof meta.result === "string" ? meta.result : undefined,
         role: typeof meta.role === "string" ? meta.role : undefined,
         client: typeof meta.client === "string" ? meta.client : undefined,
