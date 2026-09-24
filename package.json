@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "next dev",
     "lint": "next lint",
-    "prebuild": "node scripts/generate-content-index.mjs",
+    "prebuild": "node scripts/generate-content-index.mjs && node scripts/generate-search-index.mjs",
     "build": "npm run prebuild && next build",
     "start": "next start",
     "typecheck": "rm -rf .next/types && tsc --noEmit",

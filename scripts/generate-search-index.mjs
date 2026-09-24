@@ -16,10 +16,12 @@ async function generateSearchIndex() {
   const contentIndexStr = await fs.readFile(CONTENT_INDEX_PATH, "utf-8");
   const contentIndex = JSON.parse(contentIndexStr);
 
+  // Archived and draft entries 404 on the site, so they must not be searchable.
+  const isListed = (p) => !p.metadata?.archived && !p.metadata?.draft;
   const allPosts = [
     ...(contentIndex.writings || []).map(p => ({ ...p, type: 'writing' })),
     ...(contentIndex.gallery || []).map(p => ({ ...p, type: 'gallery' }))
-  ];
+  ].filter(isListed);
 
   console.log(`Found ${allPosts.length} total posts.`);
 

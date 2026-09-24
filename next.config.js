@@ -30,6 +30,8 @@ module.exports = {
         destination: "/work",
         permanent: true,
       },
+      // content-creator and gold-hunt are archived (their pages 404), so
+      // they land on the Gallery index instead.
       {
         source: "/portfolio/artisanship",
         destination: "/gallery/artisanship",
@@ -37,12 +39,12 @@ module.exports = {
       },
       {
         source: "/portfolio/content-creator",
-        destination: "/gallery/content-creator",
+        destination: "/gallery",
         permanent: true,
       },
       {
         source: "/portfolio/gold-hunt",
-        destination: "/gallery/gold-hunt",
+        destination: "/gallery",
         permanent: true,
       },
       {

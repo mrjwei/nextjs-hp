@@ -532,10 +532,12 @@ export const getAllSortedWritingSeries = cache((lang: Lang = "en"): TWritingSeri
   return result
 })
 
-// Drafts are excluded from all production reads of a single item (not just
-// listings), so a draft URL 404s outright rather than being reachable by
-// anyone who guesses or bookmarks the slug. They stay fully readable in dev.
-function isHiddenInProduction(metadata: Pick<TMetadata, "draft">) {
+// Archived items and (in production) drafts are excluded from all reads of a
+// single item, not just listings, so their URLs 404 outright rather than being
+// reachable by anyone who guesses or bookmarks the slug. Drafts stay fully
+// readable in dev.
+function isHidden(metadata: Pick<TMetadata, "archived" | "draft">) {
+  if (metadata.archived) return true
   return process.env.NODE_ENV === "production" && !!metadata.draft
 }
 
@@ -545,7 +547,7 @@ export function getWritingBySlug(slug: string, lang: Lang = "en"): TContentItem 
     (item) => item.slug === slug && itemLang(item.metadata) === lang
   )
   if (indexed) {
-    if (isHiddenInProduction(indexed.metadata)) return null
+    if (isHidden(indexed.metadata)) return null
 
     if (process.env.NODE_ENV === "production") {
       if (typeof indexed.content !== "string") {
@@ -561,6 +563,7 @@ export function getWritingBySlug(slug: string, lang: Lang = "en"): TContentItem 
       metadata: TMetadata
       content: string
     }
+    if (isHidden(metadata)) return null
     return { slug, metadata, content }
   }
 
@@ -570,7 +573,7 @@ export function getWritingBySlug(slug: string, lang: Lang = "en"): TContentItem 
     metadata: TMetadata
     content: string
   }
-  if (isHiddenInProduction(metadata)) return null
+  if (isHidden(metadata)) return null
   return { slug, metadata, content }
 }
 
@@ -621,7 +624,7 @@ export function getGalleryItemBySlug(slug: string, lang: Lang = "en"): TContentI
     (item) => item.slug === slug && itemLang(item.metadata) === lang
   )
   if (indexed) {
-    if (isHiddenInProduction(indexed.metadata)) return null
+    if (isHidden(indexed.metadata)) return null
 
     if (process.env.NODE_ENV === "production") {
       if (typeof indexed.content !== "string") {
@@ -641,6 +644,7 @@ export function getGalleryItemBySlug(slug: string, lang: Lang = "en"): TContentI
       "gallery",
       lang
     ) as { metadata: TMetadata; content: string }
+    if (isHidden(metadata)) return null
     return { slug, metadata, content }
   }
 
@@ -650,7 +654,7 @@ export function getGalleryItemBySlug(slug: string, lang: Lang = "en"): TContentI
     metadata: TMetadata
     content: string
   }
-  if (isHiddenInProduction(metadata)) return null
+  if (isHidden(metadata)) return null
   return { slug, metadata, content }
 }
 
