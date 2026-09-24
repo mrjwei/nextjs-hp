@@ -7,11 +7,11 @@ import { WritingsTagFilter } from "app/writings/writings-tag-filter.client"
 import tagsData from "app/data/tags.json"
 
 export const metadata = buildStandardMetadata({
-  title: "Writings",
+  title: "Posts",
   description:
     "Technical and design writing — cryptography, AI agents, design systems, and the reasoning behind them.",
-  pathname: "/writings",
-  alternatePathname: "/ja/writings",
+  pathname: "/posts",
+  alternatePathname: "/ja/posts",
   alternateLang: "ja",
 })
 
@@ -57,9 +57,9 @@ export default async function Page() {
       series={series}
       heading={
         <>
-          <span className="eyebrow">Writings</span>
+          <span className="eyebrow">Posts</span>
           <h1 className="mt-3 mb-3 text-3xl md:text-4xl font-semibold tracking-tight text-[var(--text-strong)]">
-            Writings
+            Posts
           </h1>
           <p className="text-lg text-[var(--text-muted)] mb-6">
             Technical and design writing — cryptography, AI agents, design
@@ -70,7 +70,7 @@ export default async function Page() {
     >
       {writings.length === 0 ? (
         <div className="text-[var(--text-body)] bg-[var(--surface-card)] rounded-lg border border-[var(--border-subtle)] p-8 shadow-xs">
-          <p className="mb-3 font-medium text-[var(--text-strong)]">No writings found.</p>
+          <p className="mb-3 font-medium text-[var(--text-strong)]">No posts found.</p>
         </div>
       ) : (
         <>
@@ -80,13 +80,13 @@ export default async function Page() {
             className="hidden text-[var(--text-body)] bg-[var(--surface-card)] rounded-lg border border-[var(--border-subtle)] p-8 shadow-xs"
           >
             <p className="mb-3 font-medium text-[var(--text-strong)]">
-              No writings found for those tags.
+              No posts found for those tags.
             </p>
             <Link
-              href="/writings"
+              href="/posts"
               className="text-[var(--accent-text)] hover:underline font-medium transition-colors"
             >
-              View all writings
+              View all posts
             </Link>
           </div>
         </>

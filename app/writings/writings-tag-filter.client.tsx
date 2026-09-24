@@ -23,7 +23,7 @@ const copy: Record<
     filterByTag: "Filter by tag",
     all: "All",
     showingFiltered: (visible, total, tags) =>
-      `Showing ${visible} of ${total} writings tagged ${tags}.`,
+      `Showing ${visible} of ${total} posts tagged ${tags}.`,
     clear: "Clear",
   },
   ja: {
@@ -130,7 +130,7 @@ function SeriesList({
 }) {
   if (series.length === 0) return null
 
-  const seriesBase = basePath.endsWith("/writings") ? basePath : basePath.replace(/\/writings\/.*/, "/writings")
+  const seriesBase = basePath.endsWith("/posts") ? basePath : basePath.replace(/\/posts\/.*/, "/posts")
   const currentSlug = basePath === seriesBase ? undefined : basePath.replace(`${seriesBase}/`, "")
   const visible = series.slice(0, SERIES_DEFAULT_VISIBLE)
   const hiddenCount = series.length - SERIES_DEFAULT_VISIBLE
@@ -325,7 +325,7 @@ function TagList({
 }
 
 export function WritingsTagFilter({
-  basePath = "/writings",
+  basePath = "/posts",
   tags,
   totalCount,
   series = [],

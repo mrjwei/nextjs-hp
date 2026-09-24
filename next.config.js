@@ -17,8 +17,41 @@ module.exports = {
         destination: "/",
         permanent: true,
       },
+      // /writings became /posts and /work became /projects (2026-09). Project
+      // detail pages live under /posts; /posts/<slug> redirects to
+      // /posts/<collection>/<slug> for posts inside a collection.
+      {
+        source: "/writings/:path*",
+        destination: "/posts/:path*",
+        permanent: true,
+      },
+      {
+        source: "/work",
+        destination: "/projects",
+        permanent: true,
+      },
+      {
+        source: "/work/:slug",
+        destination: "/posts/:slug",
+        permanent: true,
+      },
+      {
+        source: "/ja/writings/:path*",
+        destination: "/ja/posts/:path*",
+        permanent: true,
+      },
+      {
+        source: "/ja/work",
+        destination: "/ja/projects",
+        permanent: true,
+      },
+      {
+        source: "/ja/work/:slug",
+        destination: "/ja/posts/:slug",
+        permanent: true,
+      },
       // Old /portfolio section (retired 2026-09 in favour of /gallery +
-      // case studies folded into /writings). Specific slugs first, then a
+      // case studies folded into /posts). Specific slugs first, then a
       // catch-all so any stray link still lands somewhere useful.
       {
         source: "/portfolio/artworks",
@@ -27,7 +60,7 @@ module.exports = {
       },
       {
         source: "/portfolio/projects",
-        destination: "/work",
+        destination: "/projects",
         permanent: true,
       },
       // content-creator and gold-hunt are archived (their pages 404), so
@@ -54,52 +87,52 @@ module.exports = {
       },
       {
         source: "/portfolio/austride",
-        destination: "/work/austride-overview",
+        destination: "/posts/AuStride/austride-overview",
         permanent: true,
       },
       {
         source: "/portfolio/lingobun",
-        destination: "/work/lingobun-overview",
+        destination: "/posts/LingoBun/lingobun-overview",
         permanent: true,
       },
       // These three were "coming soon" placeholders and are now draft (see
       // Phase 3 of the AI-repositioning roadmap) — their specific slugs no
-      // longer resolve, so send visitors to the Work index instead.
+      // longer resolve, so send visitors to the Projects index instead.
       {
         source: "/portfolio/case-study-3",
-        destination: "/work",
+        destination: "/projects",
         permanent: true,
       },
       {
         source: "/portfolio/gonow-design-ops",
-        destination: "/work",
+        destination: "/projects",
         permanent: true,
       },
       {
         source: "/portfolio/wamazing",
-        destination: "/work",
+        destination: "/projects",
         permanent: true,
       },
       {
         source: "/portfolio/:slug",
-        destination: "/work",
+        destination: "/projects",
         permanent: true,
       },
       {
         source: "/portfolio",
-        destination: "/work",
+        destination: "/projects",
         permanent: true,
       },
       // JA mirror has no translated portfolio content, so send everything
-      // to the JA Work index.
+      // to the JA Projects index.
       {
         source: "/ja/portfolio/:path*",
-        destination: "/ja/work",
+        destination: "/ja/projects",
         permanent: true,
       },
       {
         source: "/ja/portfolio",
-        destination: "/ja/work",
+        destination: "/ja/projects",
         permanent: true,
       },
     ]

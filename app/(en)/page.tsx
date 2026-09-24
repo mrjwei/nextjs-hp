@@ -11,14 +11,14 @@ import { buildPersonJsonLd } from "app/seo/person"
 import {
   getAllSortedWritings,
   getFeaturedWritings,
-  isWorkItem,
-  sortWorkItems,
+  isProject,
+  sortProjects,
 } from "app/utils"
 import { profile } from "app/content/profile"
 
 export default function Page() {
   const writings = getAllSortedWritings()
-  const caseStudies = sortWorkItems(writings.filter((w) => isWorkItem(w.metadata))).slice(
+  const caseStudies = sortProjects(writings.filter((w) => isProject(w.metadata))).slice(
     0,
     3
   )
@@ -44,8 +44,8 @@ export default function Page() {
         </p>
         <div className="mt-9 flex flex-wrap gap-3">
           <Button asChild variant="primary" size="lg">
-            <TrackedLink href="/work" eventName="cta_selected_work">
-              See selected work
+            <TrackedLink href="/projects" eventName="cta_selected_work">
+              See selected projects
             </TrackedLink>
           </Button>
           <Button asChild variant="ghost" size="lg">
@@ -61,18 +61,18 @@ export default function Page() {
         </div>
       </div>
 
-      {/* Selected work */}
+      {/* Selected projects */}
       <div className="w-full border-t border-[var(--border-subtle)]">
         <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
           <div className="mb-10 flex items-end justify-between">
             <div>
-              <span className="eyebrow">Case Studies</span>
+              <span className="eyebrow">Projects</span>
               <h2 className="mt-2.5 text-3xl font-semibold tracking-tight text-[var(--text-strong)]">
-                Selected work
+                Selected projects
               </h2>
             </div>
             <Link
-              href="/work"
+              href="/projects"
               className="inline-flex items-center gap-1 text-sm font-medium text-[var(--accent-text)] hover:underline"
             >
               See all
@@ -100,21 +100,21 @@ export default function Page() {
         </div>
       </div>
 
-      {/* Featured writing */}
+      {/* Featured posts */}
       <div className="w-full border-t border-[var(--border-subtle)]">
         <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
           <div className="mb-10 flex items-end justify-between">
             <div>
               <span className="eyebrow">Featured</span>
               <h2 className="mt-2.5 text-3xl font-semibold tracking-tight text-[var(--text-strong)]">
-                Writing
+                Posts
               </h2>
             </div>
             <Link
-              href="/writings"
+              href="/posts"
               className="inline-flex items-center gap-1 text-sm font-medium text-[var(--accent-text)] hover:underline"
             >
-              All writing
+              All posts
               <ArrowRight className="size-4" />
             </Link>
           </div>

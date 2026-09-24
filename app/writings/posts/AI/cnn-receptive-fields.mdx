@@ -17,7 +17,7 @@ partNumber: 1
 - [Conclusion](#conclusion)
 - [Resources](#resources)
 
-The first part, [CNN Fundamentals: Kernels, Convolution, and Feature Maps](/writings/cnn-kernels-and-convolution), of this series covered how a single convolutional layer turns an input into a feature map, and noted that a CNN's feature vector at any given location only has access to a small local neighbourhood — its **receptive field** — rather than the whole image. This post is about that neighbourhood: how it's defined, how it grows as a network gets deeper, and why that growth is the real reason CNN architectures favour many small filters over a few large ones.
+The first part, [CNN Fundamentals: Kernels, Convolution, and Feature Maps](/posts/AI/cnn-kernels-and-convolution), of this series covered how a single convolutional layer turns an input into a feature map, and noted that a CNN's feature vector at any given location only has access to a small local neighbourhood — its **receptive field** — rather than the whole image. This post is about that neighbourhood: how it's defined, how it grows as a network gets deeper, and why that growth is the real reason CNN architectures favour many small filters over a few large ones.
 
 ## What Is a Receptive Field?
 
@@ -69,7 +69,7 @@ The formulas above describe the **theoretical** receptive field — the full reg
 
 ## Conclusion
 
-The receptive field is what makes CNNs work at all despite each filter only ever looking at a tiny local patch: stacking layers grows a neuron's effective view of the input geometrically cheap in parameters, geometrically rich in nonlinearity, and — per the effective receptive field result — still concentrated where it matters most, near the centre. Combined with [CNN Fundamentals: Kernels, Convolution, and Feature Maps](/writings/cnn-kernels-and-convolution)'s account of how a single convolutional layer computes its output, this is most of the intuition needed to read a CNN architecture diagram and understand why it's shaped the way it is.
+The receptive field is what makes CNNs work at all despite each filter only ever looking at a tiny local patch: stacking layers grows a neuron's effective view of the input geometrically cheap in parameters, geometrically rich in nonlinearity, and — per the effective receptive field result — still concentrated where it matters most, near the centre. Combined with [CNN Fundamentals: Kernels, Convolution, and Feature Maps](/posts/AI/cnn-kernels-and-convolution)'s account of how a single convolutional layer computes its output, this is most of the intuition needed to read a CNN architecture diagram and understand why it's shaped the way it is.
 
 ## Resources
 

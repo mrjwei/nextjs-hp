@@ -5,6 +5,8 @@ import { PrevNext } from "@/components/prev-next"
 import { BackToTop } from "@/components/back-to-top"
 import { WritingCard } from "@/components/article-card"
 import { Tags } from "@/components/tags"
+import { ResultBlock } from "@/components/result-block"
+import { ProjectBadge } from "@/components/project-badge"
 import { ReadingSeriesBadge } from "@/components/reading-series"
 import { BackLink } from "@/components/back-link"
 import {
@@ -38,14 +40,10 @@ export function generateMetadata({ params }) {
     return
   }
 
-  const { title, publishedAt: publishedTime, summary: description, image, tags } =
+  const { title, publishedAt: publishedTime, summary: description, image } =
     writing.metadata
 
-  // Case studies are also listed at /ja/work/[slug], which is the
-  // canonical URL for that content (see docs/publish.md).
-  const pathname = tags.includes("casestudy")
-    ? `/ja/work/${writing.slug}`
-    : `/ja/writings/${params.slugOrCollection}/${writing.slug}`
+  const pathname = `/ja/posts/${params.slugOrCollection}/${writing.slug}`
 
   return buildStandardMetadata({
     title,
@@ -102,7 +100,7 @@ export default async function WritingInCollection({ params, searchParams }) {
     : []
   const partIndex = seriesParts.findIndex((w) => w.slug === writing.slug)
 
-  const backHref = writing.metadata.partOf ? `/ja/writings/${writing.metadata.partOf}` : "/ja/writings"
+  const backHref = writing.metadata.partOf ? `/ja/posts/${writing.metadata.partOf}` : "/ja/posts"
   const backLabel = writing.metadata.partOf ? "シリーズトップに戻る" : "記事一覧に戻る"
 
   const writingTagSet = new Set(writing.metadata.tags)
@@ -133,14 +131,14 @@ export default async function WritingInCollection({ params, searchParams }) {
               ホーム
             </Link>
             <span className="mx-2 text-[var(--text-subtle)]">/</span>
-            <Link href="/ja/writings" className="hover:underline hover:text-[var(--text-strong)] transition-colors">
+            <Link href="/ja/posts" className="hover:underline hover:text-[var(--text-strong)] transition-colors">
               記事
             </Link>
             {collection && (
               <>
                 <span className="mx-2 text-[var(--text-subtle)]">/</span>
                 <Link
-                  href={`/ja/writings/${collection}`}
+                  href={`/ja/posts/${collection}`}
                   className="hover:underline hover:text-[var(--text-strong)] transition-colors"
                 >
                   {writing.metadata.seriesTitle ?? collection}
@@ -151,7 +149,7 @@ export default async function WritingInCollection({ params, searchParams }) {
               <>
                 <span className="mx-2 text-[var(--text-subtle)]">/</span>
                 <Link
-                  href={`/ja/writings/${writing.metadata.partOf}`}
+                  href={`/ja/posts/${writing.metadata.partOf}`}
                   className="hover:underline hover:text-[var(--text-strong)] transition-colors"
                 >
                   {writing.metadata.partOfTitle ?? writing.metadata.partOf}
@@ -178,7 +176,7 @@ export default async function WritingInCollection({ params, searchParams }) {
               image: writing.metadata.image
                 ? `${baseUrl}${writing.metadata.image}`
                 : `${baseUrl}/og?title=${encodeURIComponent(writing.metadata.title)}`,
-              url: `${baseUrl}/ja/writings/${collection}/${writing.slug}`,
+              url: `${baseUrl}/ja/posts/${collection}/${writing.slug}`,
               inLanguage: "ja",
               author: {
                 "@type": "Person",
@@ -188,6 +186,9 @@ export default async function WritingInCollection({ params, searchParams }) {
           }}
         />
 
+        {writing.metadata.project && (
+          <ProjectBadge project={writing.metadata.project} className="mb-4" />
+        )}
         <h1 className="display text-4xl mb-4">{writing.metadata.title}</h1>
         {seriesParts.length > 1 && partIndex !== -1 && (
           <ReadingSeriesBadge
@@ -213,7 +214,7 @@ export default async function WritingInCollection({ params, searchParams }) {
 
             const qs = next.length ? `?tags=${encodeURIComponent(next.join(","))}` : ""
 
-            return `/ja/writings${qs}`
+            return `/ja/posts${qs}`
           }}
         />
         <div className="flex justify-between items-center mt-2 mb-12 text-sm border-b border-[var(--border-subtle)] pb-6">
@@ -224,6 +225,8 @@ export default async function WritingInCollection({ params, searchParams }) {
             )}
           </p>
         </div>
+
+        <ResultBlock metadata={writing.metadata} lang="ja" />
 
         <article className="prose">
           <CustomMDX source={writing.content} />
@@ -240,7 +243,7 @@ export default async function WritingInCollection({ params, searchParams }) {
             items={collectionItems}
             itemIndex={writingIndex}
             path="writings"
-            linkFor={(item) => `/ja/writings/${collection}/${item.slug}`}
+            linkFor={(item) => `/ja/posts/${collection}/${item.slug}`}
             lang="ja"
           />
         </div>

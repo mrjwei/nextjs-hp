@@ -12,14 +12,14 @@ import { buildPersonJsonLd } from "app/seo/person"
 import {
   getAllSortedWritings,
   getFeaturedWritings,
-  isWorkItem,
-  sortWorkItems,
+  isProject,
+  sortProjects,
 } from "app/utils"
 import { profile } from "app/content/profile"
 
 export default function Page() {
   const writings = getAllSortedWritings("ja")
-  const caseStudies = sortWorkItems(writings.filter((w) => isWorkItem(w.metadata))).slice(
+  const caseStudies = sortProjects(writings.filter((w) => isProject(w.metadata))).slice(
     0,
     3
   )
@@ -45,8 +45,8 @@ export default function Page() {
         </p>
         <div className="mt-9 flex flex-wrap gap-3">
           <Button asChild variant="primary" size="lg">
-            <TrackedLink href="/ja/work" eventName="cta_selected_work">
-              代表的な実績を見る
+            <TrackedLink href="/ja/projects" eventName="cta_selected_work">
+              代表的なプロジェクトを見る
             </TrackedLink>
           </Button>
           <Button asChild variant="ghost" size="lg">
@@ -62,18 +62,18 @@ export default function Page() {
         </div>
       </div>
 
-      {/* Selected work */}
+      {/* Selected projects */}
       <div className="w-full border-t border-[var(--border-subtle)]">
         <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
           <div className="mb-10 flex items-end justify-between">
             <div>
-              <span className="eyebrow">ケーススタディ</span>
+              <span className="eyebrow">プロジェクト</span>
               <h2 className="mt-2.5 text-3xl font-semibold tracking-tight text-[var(--text-strong)]">
-                代表的な実績
+                代表的なプロジェクト
               </h2>
             </div>
             <Link
-              href="/ja/work"
+              href="/ja/projects"
               className="inline-flex items-center gap-1 text-sm font-medium text-[var(--accent-text)] hover:underline"
             >
               すべて見る
@@ -81,7 +81,7 @@ export default function Page() {
             </Link>
           </div>
           {caseStudies.length === 0 ? (
-            <JaEmptyNotice englishHref="/work" englishLabel="英語版の実績を見る" />
+            <JaEmptyNotice englishHref="/projects" englishLabel="英語版のプロジェクトを見る" />
           ) : (
             <div className="grid grid-cols-12 gap-y-8 md:gap-8">
               {caseStudies.map((work) => (
@@ -105,7 +105,7 @@ export default function Page() {
         </div>
       </div>
 
-      {/* Featured writing */}
+      {/* Featured posts */}
       <div className="w-full border-t border-[var(--border-subtle)]">
         <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
           <div className="mb-10 flex items-end justify-between">
@@ -116,7 +116,7 @@ export default function Page() {
               </h2>
             </div>
             <Link
-              href="/ja/writings"
+              href="/ja/posts"
               className="inline-flex items-center gap-1 text-sm font-medium text-[var(--accent-text)] hover:underline"
             >
               すべて見る
@@ -124,7 +124,7 @@ export default function Page() {
             </Link>
           </div>
           {featuredWriting.length === 0 ? (
-            <JaEmptyNotice englishHref="/writings" englishLabel="英語版の記事を見る" />
+            <JaEmptyNotice englishHref="/posts" englishLabel="英語版の記事を見る" />
           ) : (
             <Grid writings={featuredWriting} path="writings" lang="ja" />
           )}

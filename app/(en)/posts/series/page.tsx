@@ -5,17 +5,17 @@ import { BackLink } from "@/components/back-link"
 import { SeriesIndexView } from "app/writings/series-index.client"
 
 export const metadata = buildStandardMetadata({
-  title: "シリーズ",
-  description: "すべてのシリーズを見る。",
-  pathname: "/ja/writings/series",
-  alternatePathname: "/writings/series",
-  alternateLang: "en",
+  title: "Series",
+  description: "Browse all post series.",
+  pathname: "/posts/series",
+  alternatePathname: "/ja/posts/series",
+  alternateLang: "ja",
 })
 
 export const dynamic = "force-static"
 
 export default async function Page() {
-  const series = getAllSortedWritingSeries("ja").map((s) => ({
+  const series = getAllSortedWritingSeries().map((s) => ({
     slug: s.slug,
     title: s.title,
     count: s.items.length,
@@ -24,29 +24,29 @@ export default async function Page() {
   return (
     <div className="w-full max-w-[1024px] mx-auto px-6 md:px-8 py-24">
       <nav aria-label="Breadcrumb" className="text-sm text-[var(--text-muted)] mb-4">
-        <Link href="/ja" className="hover:underline hover:text-[var(--text-strong)] transition-colors">
-          ホーム
+        <Link href="/" className="hover:underline hover:text-[var(--text-strong)] transition-colors">
+          Home
         </Link>
         <span className="mx-2 text-[var(--text-subtle)]">/</span>
-        <Link href="/ja/writings" className="hover:underline hover:text-[var(--text-strong)] transition-colors">
-          記事
+        <Link href="/posts" className="hover:underline hover:text-[var(--text-strong)] transition-colors">
+          Posts
         </Link>
         <span className="mx-2 text-[var(--text-subtle)]">/</span>
-        <span className="text-[var(--text-strong)]">シリーズ</span>
+        <span className="text-[var(--text-strong)]">Series</span>
       </nav>
 
       <div className="flex items-center justify-between mb-3">
-        <span className="eyebrow">シリーズ</span>
-        <BackLink href="/ja/writings" label="記事一覧に戻る" />
+        <span className="eyebrow">Series</span>
+        <BackLink href="/posts" label="Back to All Posts" />
       </div>
       <h1 className="mb-3 text-3xl md:text-4xl font-semibold tracking-tight text-[var(--text-strong)]">
-        シリーズ
+        Series
       </h1>
       <p className="text-lg text-[var(--text-muted)] mb-8">
-        関連記事のシリーズ {series.length}件。
+        {series.length} series of related writings.
       </p>
 
-      <SeriesIndexView series={series} writingsRoot="/ja/writings" lang="ja" />
+      <SeriesIndexView series={series} writingsRoot="/posts" />
     </div>
   )
 }

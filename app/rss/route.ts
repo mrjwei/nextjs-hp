@@ -23,7 +23,7 @@ export async function GET() {
     .map(
       (post) => {
         const collection = primaryCollectionSlug(post.metadata)
-        const url = collection ? `${baseUrl}/writings/${collection}/${post.slug}` : `${baseUrl}/writings/${post.slug}`
+        const url = collection ? `${baseUrl}/posts/${collection}/${post.slug}` : `${baseUrl}/posts/${post.slug}`
         const title = escapeXml(post.metadata.title)
         const description = escapeXml(post.metadata.summary || "")
         const pubDate = new Date(post.metadata.publishedAt).toUTCString()
@@ -44,10 +44,10 @@ export async function GET() {
   const rssFeed = `<?xml version="1.0" encoding="UTF-8" ?>
   <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
-        <title>Jesse Wei | Writings and Works</title>
+        <title>Jesse Wei | Posts and Projects</title>
         <link>${baseUrl}</link>
         <atom:link href="${baseUrl}/rss" rel="self" type="application/rss+xml" />
-        <description>This is my writings and works RSS feed</description>
+        <description>This is my posts and projects RSS feed</description>
         <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
         ${itemsXml}
     </channel>

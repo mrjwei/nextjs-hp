@@ -2,6 +2,7 @@ import clsx from "clsx"
 import Link from "next/link"
 import Image from "next/image"
 import { Tags } from "@/components/tags"
+import { ProjectBadge } from "@/components/project-badge"
 import { formatDate } from "app/utils"
 import type { Lang } from "app/i18n/config"
 
@@ -34,24 +35,28 @@ export function WritingCard({
   const t = copy[lang]
   const isGallery = path === "gallery"
   const thumbnailSrc = article?.metadata?.image
+  const project: string | undefined = article?.metadata?.project
 
   const writingCollection = path === "writings" ? article?.metadata?.series : null
   const prefix = lang === "ja" ? "/ja" : ""
 
   const href =
     path === "writings" && writingCollection
-      ? `${prefix}/writings/${writingCollection}/${article.slug}`
+      ? `${prefix}/posts/${writingCollection}/${article.slug}`
       : `${prefix}/${path}/${article.slug}`
 
   return (
     <div
       {...wrapperProps}
       className={clsx(
-        "col-span-12 md:col-span-6 h-full flex flex-col bg-[var(--surface-card)] transition-[box-shadow,border-color,transform] duration-200 ease-[var(--ease-out)] shadow-xs hover:shadow-lg hover:-translate-y-0.5 border border-[var(--border-subtle)] hover:border-[var(--border-default)] rounded-lg overflow-hidden group",
+        "relative col-span-12 md:col-span-6 h-full flex flex-col bg-[var(--surface-card)] transition-[box-shadow,border-color,transform] duration-200 ease-[var(--ease-out)] shadow-xs hover:shadow-lg hover:-translate-y-0.5 border border-[var(--border-subtle)] hover:border-[var(--border-default)] rounded-lg overflow-hidden group",
         className,
         wrapperProps?.className
       )}
     >
+      {project && (
+        <ProjectBadge project={project} className="pointer-events-none absolute top-3 right-3 z-10" />
+      )}
       <Link
         key={article.slug}
         href={`${href}${from ? `?from=${from}` : ""}`}
@@ -86,6 +91,7 @@ export function WritingCard({
                   "text-lg leading-normal font-semibold mb-2 text-[var(--text-strong)] transition-colors group-hover:text-[var(--accent-text)]",
                   {
                     "break-all": article.metadata.shouldBreakWord,
+                    "pr-20": project && !isGallery,
                   }
                 )}
               >
@@ -122,7 +128,7 @@ export function WritingCard({
                     ? `?tags=${encodeURIComponent(next.join(","))}`
                     : ""
 
-                  return `${prefix}/writings${qs}`
+                  return `${prefix}/posts${qs}`
                 }
               : undefined
           }

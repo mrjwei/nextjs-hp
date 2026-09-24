@@ -21,12 +21,12 @@ const copy: Record<
 > = {
   en: {
     home: "Home",
-    writings: "Writings",
+    writings: "Posts",
     series: "Series",
-    backToAll: "Back to All Writings",
+    backToAll: "Back to All Posts",
     postCount: (n) => `${n} ${n === 1 ? "post" : "posts"} in this series.`,
-    noneForTags: "No writings found for those tags.",
-    viewAllInSeries: "View all writings in this series",
+    noneForTags: "No posts found for those tags.",
+    viewAllInSeries: "View all posts in this series",
   },
   ja: {
     home: "ホーム",
@@ -77,7 +77,7 @@ export function SeriesView({
     }))
     .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label))
 
-  const writingsRoot = lang === "ja" ? "/ja/writings" : "/writings"
+  const writingsRoot = lang === "ja" ? "/ja/posts" : "/posts"
   const basePath = `${writingsRoot}/${seriesSlug}`
   const homeHref = lang === "ja" ? "/ja" : "/"
 

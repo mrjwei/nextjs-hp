@@ -11,17 +11,13 @@ export default async function sitemap() {
   const primaryCollectionSlug = (metadata: { series?: string }) =>
     metadata.series
 
-  // Case studies (tags includes "casestudy") are canonical at /work/[slug]
-  // (see docs/publish.md) — list that URL instead of /writings/[slug].
+  // Every post, including projects, is canonical under /posts.
   const writingUrl = (writing: (typeof writingsList)[number], lang: "en" | "ja") => {
     const prefix = lang === "ja" ? "/ja" : ""
-    if (writing.metadata.tags.includes("casestudy")) {
-      return `${baseUrl}${prefix}/work/${writing.slug}`
-    }
     const collection = primaryCollectionSlug(writing.metadata)
     return collection
-      ? `${baseUrl}${prefix}/writings/${collection}/${writing.slug}`
-      : `${baseUrl}${prefix}/writings/${writing.slug}`
+      ? `${baseUrl}${prefix}/posts/${collection}/${writing.slug}`
+      : `${baseUrl}${prefix}/posts/${writing.slug}`
   }
 
   let writings = writingsList.map((writing) => ({
@@ -62,7 +58,7 @@ export default async function sitemap() {
     }
     const prefix = lang === "ja" ? "/ja" : ""
     return Array.from(byCollection.entries()).map(([slug, dates]) => ({
-      url: `${baseUrl}${prefix}/writings/${slug}`,
+      url: `${baseUrl}${prefix}/posts/${slug}`,
       lastModified: maxPublishedAt(dates),
     }))
   }
@@ -70,15 +66,15 @@ export default async function sitemap() {
   let routes = [
     { url: `${baseUrl}`, lastModified: today },
     { url: `${baseUrl}/about`, lastModified: today },
-    { url: `${baseUrl}/work`, lastModified: writingsLastMod },
-    { url: `${baseUrl}/writings`, lastModified: writingsLastMod },
-    { url: `${baseUrl}/writings/series`, lastModified: writingsLastMod },
+    { url: `${baseUrl}/projects`, lastModified: writingsLastMod },
+    { url: `${baseUrl}/posts`, lastModified: writingsLastMod },
+    { url: `${baseUrl}/posts/series`, lastModified: writingsLastMod },
     { url: `${baseUrl}/gallery`, lastModified: galleryLastMod },
     { url: `${baseUrl}/ja`, lastModified: today },
     { url: `${baseUrl}/ja/about`, lastModified: today },
-    { url: `${baseUrl}/ja/work`, lastModified: today },
-    { url: `${baseUrl}/ja/writings`, lastModified: today },
-    { url: `${baseUrl}/ja/writings/series`, lastModified: today },
+    { url: `${baseUrl}/ja/projects`, lastModified: today },
+    { url: `${baseUrl}/ja/posts`, lastModified: today },
+    { url: `${baseUrl}/ja/posts/series`, lastModified: today },
     { url: `${baseUrl}/ja/gallery`, lastModified: today },
   ]
 

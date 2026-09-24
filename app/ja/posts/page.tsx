@@ -11,8 +11,8 @@ export const metadata = buildStandardMetadata({
   title: "記事",
   description:
     "デザイン・技術に関する記事——暗号技術、AIエージェント、デザインシステム、そしてその背後にある考え方について。",
-  pathname: "/ja/writings",
-  alternatePathname: "/writings",
+  pathname: "/ja/posts",
+  alternatePathname: "/posts",
   alternateLang: "en",
 })
 
@@ -53,7 +53,7 @@ export default async function Page() {
 
   return (
     <WritingsTagFilter
-      basePath="/ja/writings"
+      basePath="/ja/posts"
       tags={tags}
       totalCount={writings.length}
       series={series}
@@ -71,7 +71,7 @@ export default async function Page() {
       }
     >
       {writings.length === 0 ? (
-        <JaEmptyNotice englishHref="/writings" englishLabel="英語版の記事を見る" />
+        <JaEmptyNotice englishHref="/posts" englishLabel="英語版の記事を見る" />
       ) : (
         <>
           <Grid writings={writings} selectedTags={[]} lang="ja" />
@@ -83,7 +83,7 @@ export default async function Page() {
               該当するタグの記事が見つかりませんでした。
             </p>
             <Link
-              href="/ja/writings"
+              href="/ja/posts"
               className="text-[var(--accent-text)] hover:underline font-medium transition-colors"
             >
               すべての記事を見る

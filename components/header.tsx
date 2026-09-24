@@ -18,13 +18,13 @@ import {
 
 const navItemsByLang = {
   en: {
-    "/work": { name: "Work" },
-    "/writings": { name: "Writing" },
+    "/posts": { name: "Posts" },
+    "/projects": { name: "Projects" },
     "/about": { name: "About" },
   },
   ja: {
-    "/ja/work": { name: "実績" },
-    "/ja/writings": { name: "記事" },
+    "/ja/posts": { name: "記事" },
+    "/ja/projects": { name: "プロジェクト" },
     "/ja/about": { name: "プロフィール" },
   },
 }
