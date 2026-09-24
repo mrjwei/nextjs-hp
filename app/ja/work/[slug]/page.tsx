@@ -33,7 +33,7 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
   const work = getWork(params.slug)
   if (!work) return
 
-  const { title, publishedAt: publishedTime, summary: description, image, archived } =
+  const { title, publishedAt: publishedTime, summary: description, image } =
     work.metadata
 
   const pathname = isCaseStudy(work.metadata)
@@ -47,7 +47,6 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
     type: "article",
     publishedTime,
     image,
-    noIndex: archived,
   })
 }
 
@@ -133,11 +132,6 @@ export default async function WorkCasePage({ params }: { params: { slug: string 
 
         <h1 className="display text-4xl mb-4">{work.metadata.title}</h1>
         <Tags tags={work.metadata.tags} className="mb-4" />
-        {work.metadata.archived && (
-          <div className="mb-6 px-4 py-3 rounded-md border border-[var(--border-subtle)] bg-[var(--surface-sunken)] text-sm text-[var(--text-muted)]">
-            この実績はアーカイブされており、サイト上には掲載されていません。
-          </div>
-        )}
         <div className="flex justify-between items-center mt-2 mb-12 text-sm border-b border-[var(--border-subtle)] pb-6">
           <p className="text-sm text-[var(--text-muted)]">
             公開日: {formatDate(work.metadata.publishedAt)}

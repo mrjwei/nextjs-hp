@@ -33,7 +33,7 @@ export function generateMetadata({ params }) {
     return
   }
 
-  const { title, publishedAt: publishedTime, summary: description, image, archived, tags } =
+  const { title, publishedAt: publishedTime, summary: description, image, tags } =
     writing.metadata
 
   // Case studies are also listed at /work/[slug], which is the canonical
@@ -49,7 +49,6 @@ export function generateMetadata({ params }) {
     type: "article",
     publishedTime,
     image,
-    noIndex: archived,
   })
 }
 
@@ -198,11 +197,6 @@ export default async function WritingInCollection({ params, searchParams }) {
             return `/writings${qs}`
           }}
         />
-        {writing.metadata.archived && (
-          <div className="mb-6 px-4 py-3 rounded-md border border-[var(--border-subtle)] bg-[var(--surface-sunken)] text-sm text-[var(--text-muted)]">
-            This article has been archived and is no longer listed on the site.
-          </div>
-        )}
         <div className="flex justify-between items-center mt-2 mb-12 text-sm border-b border-[var(--border-subtle)] pb-6">
           <p className="text-sm text-[var(--text-muted)]">
             Published: {formatDate(writing.metadata.publishedAt)}

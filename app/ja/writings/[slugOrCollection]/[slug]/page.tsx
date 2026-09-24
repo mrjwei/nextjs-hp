@@ -38,7 +38,7 @@ export function generateMetadata({ params }) {
     return
   }
 
-  const { title, publishedAt: publishedTime, summary: description, image, archived, tags } =
+  const { title, publishedAt: publishedTime, summary: description, image, tags } =
     writing.metadata
 
   // Case studies are also listed at /ja/work/[slug], which is the
@@ -54,7 +54,6 @@ export function generateMetadata({ params }) {
     type: "article",
     publishedTime,
     image,
-    noIndex: archived,
   })
 }
 
@@ -217,11 +216,6 @@ export default async function WritingInCollection({ params, searchParams }) {
             return `/ja/writings${qs}`
           }}
         />
-        {writing.metadata.archived && (
-          <div className="mb-6 px-4 py-3 rounded-md border border-[var(--border-subtle)] bg-[var(--surface-sunken)] text-sm text-[var(--text-muted)]">
-            この記事はアーカイブされており、サイト上には掲載されていません。
-          </div>
-        )}
         <div className="flex justify-between items-center mt-2 mb-12 text-sm border-b border-[var(--border-subtle)] pb-6">
           <p className="text-sm text-[var(--text-muted)]">
             公開日: {formatDate(writing.metadata.publishedAt)}
