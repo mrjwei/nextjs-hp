@@ -41,7 +41,7 @@ export function WorkCard({
       )}
     >
       {project && (
-        <ProjectBadge project={project} className="pointer-events-none absolute -top-3 right-4 z-10" />
+        <ProjectBadge project={project} className="pointer-events-none absolute top-3 -right-1 z-10 shadow-sm" />
       )}
       <TrackedLink
         href={href}
