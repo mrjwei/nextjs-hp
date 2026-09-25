@@ -2,7 +2,7 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Grid } from "@/components/grid"
-import { WorkCard } from "@/components/work-card"
+import { ProjectCard } from "@/components/project-card"
 import { JaEmptyNotice } from "@/components/ja-empty-notice"
 import { ProofStrip } from "@/components/proof-strip"
 import { HowIWork } from "@/components/how-i-work"
@@ -12,21 +12,17 @@ import { buildPersonJsonLd } from "app/seo/person"
 import {
   getAllSortedWritings,
   getFeaturedWritings,
-  isProject,
-  sortProjects,
+  groupProjects,
 } from "app/utils"
 import { profile } from "app/content/profile"
 
 export default function Page() {
   const writings = getAllSortedWritings("ja")
-  const caseStudies = sortProjects(writings.filter((w) => isProject(w.metadata))).slice(
-    0,
-    3
-  )
+  const projects = groupProjects(writings).slice(0, 3)
   const featuredWriting = getFeaturedWritings(writings, {
     focusTags: profile.ja.focusTags,
     limit: 4,
-    excludeSlugs: caseStudies.map((w) => w.slug),
+    excludeSlugs: projects.map((p) => p.lead.slug),
   })
   const p = profile.ja
 
@@ -80,12 +76,12 @@ export default function Page() {
               <ArrowRight className="size-4" />
             </Link>
           </div>
-          {caseStudies.length === 0 ? (
+          {projects.length === 0 ? (
             <JaEmptyNotice englishHref="/projects" englishLabel="英語版のプロジェクトを見る" />
           ) : (
             <div className="grid grid-cols-12 gap-y-8 md:gap-8">
-              {caseStudies.map((work) => (
-                <WorkCard key={work.slug} work={work} lang="ja" />
+              {projects.map((project) => (
+                <ProjectCard key={project.id} project={project} lang="ja" />
               ))}
             </div>
           )}

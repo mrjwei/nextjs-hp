@@ -19,6 +19,7 @@ export function WritingCard({
   selectedTags,
   wrapperProps,
   lang = "en",
+  showProjectBadge = true,
 }: {
   article: any
   className?: string
@@ -31,11 +32,15 @@ export function WritingCard({
       })
     | undefined
   lang?: Lang
+  // Off on a project's own page, where every card would carry the same badge.
+  showProjectBadge?: boolean
 }) {
   const t = copy[lang]
   const isGallery = path === "gallery"
   const thumbnailSrc = article?.metadata?.image
-  const project: string | undefined = article?.metadata?.project
+  const project: string | undefined = showProjectBadge
+    ? article?.metadata?.project
+    : undefined
 
   const writingCollection = path === "writings" ? article?.metadata?.series : null
   const prefix = lang === "ja" ? "/ja" : ""
