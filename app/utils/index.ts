@@ -3,6 +3,7 @@ import path from "path"
 import { cache } from "react"
 import { z } from "zod"
 import { getContentBaseDir, type ContentLang } from "app/content/config"
+import seriesTitles from "app/data/series.json"
 
 export type Lang = ContentLang
 
@@ -244,7 +245,7 @@ function parseFrontmatter(
     }
 
     if (parsed.data.series && !parsed.data.seriesTitle) {
-      parsed.data.seriesTitle = ParseSeriesDirName(parsed.data.series)
+      parsed.data.seriesTitle = getSeriesTitle(parsed.data.series, lang)
     }
 
     // Use tags to power collection browsing/routes.
@@ -721,4 +722,11 @@ export const ParseSeriesDirName = (dirName: string) => {
     .split("-")
     .map((word) => capitalize(word))
     .join(" ")
+}
+
+// Display title for a folder-based series: app/data/series.json (shared with
+// scripts/generate-content-index.mjs) first, then the title-cased folder name.
+export function getSeriesTitle(slug: string, lang: Lang = "en") {
+  const entry = (seriesTitles as Record<string, Partial<Record<Lang, string>>>)[slug]
+  return entry?.[lang] ?? entry?.en ?? ParseSeriesDirName(slug)
 }
