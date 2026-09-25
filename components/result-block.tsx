@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import type { TMetadata, WorkStatus } from "app/utils"
+import type { TMetadata } from "app/utils"
 import type { Lang } from "app/i18n/config"
 
 const copy: Record<
@@ -10,8 +10,6 @@ const copy: Record<
     industry: string
     duration: string
     stack: string
-    status: string
-    statusLabel: Record<WorkStatus, string>
     confidential: string
   }
 > = {
@@ -21,14 +19,6 @@ const copy: Record<
     industry: "Industry",
     duration: "Duration",
     stack: "Stack",
-    status: "Status",
-    statusLabel: {
-      production: "In production",
-      pilot: "Pilot",
-      research: "Research",
-      shipped: "Shipped",
-      archived: "Archived",
-    },
     confidential: "Details anonymised at the client's request.",
   },
   ja: {
@@ -37,14 +27,6 @@ const copy: Record<
     industry: "業界",
     duration: "期間",
     stack: "スタック",
-    status: "ステータス",
-    statusLabel: {
-      production: "本番運用中",
-      pilot: "パイロット",
-      research: "研究",
-      shipped: "リリース済み",
-      archived: "アーカイブ",
-    },
     confidential: "クライアントの意向により詳細は匿名化しています。",
   },
 }
@@ -57,7 +39,7 @@ export function ResultBlock({
   lang?: Lang
 }) {
   const t = copy[lang]
-  const { result, role, client, industry, duration, stack, status, confidential } =
+  const { result, role, client, industry, duration, stack, confidential } =
     metadata
 
   if (!result) return null
@@ -84,7 +66,6 @@ export function ResultBlock({
       ),
     })
   }
-  if (status) fields.push({ label: t.status, value: t.statusLabel[status] })
 
   return (
     <div className="mb-10 rounded-md border border-[var(--border-subtle)] bg-[var(--surface-sunken)] p-6 md:p-8">
