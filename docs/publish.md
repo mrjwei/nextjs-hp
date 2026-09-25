@@ -35,7 +35,7 @@ All optional; see `app/_drafts/_case-study-template.mdx` for the full skeleton a
 - `project?: string` — see above.
 - `featured?: number` — lower sorts earlier on Home/Projects; absent = not featured. See `sortProjects` in `app/utils/index.ts`.
 - `track?: "ai-engineering" | "product-design" | "security" | "research"` — powers the track filter on `/projects`.
-- `draft?: boolean` — excluded from all grids, search, sitemap, RSS, and direct URL access in production (`npm run build`/deploy); still fully visible in `npm run dev`. Use this for "coming soon" placeholders instead of publishing them with no real content.
+- `draft?: boolean` — excluded from all grids, search, sitemap, RSS, and direct URL access in production (`npm run build`/deploy); still fully visible in `npm run dev`. Placeholders that aren't ready to ship belong in `app/_drafts/` (gitignored, never deployed; publish with `/publish-post`) — e.g. the WAmazing, GoNOW and third case-study stubs live in `app/_drafts/case-studies/`.
 - `archived?: boolean` — excluded from all grids, search, sitemap and RSS, and its URL returns 404 (in dev too).
 - `result`, `role`, `client`, `industry`, `duration`, `stack: string[]`, `status: "production" | "pilot" | "research" | "shipped" | "archived"`, `confidential?: boolean` — rendered by `ResultBlock` above the MDX body on the post page (only when `result` is set). `client` should be a type, not a name, unless the client has agreed otherwise; set `confidential: true` instead of vague wording when a detail can't be named.
 
