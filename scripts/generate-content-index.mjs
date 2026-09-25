@@ -167,7 +167,6 @@ function assertTags(value, absFilePath, requireTags) {
 }
 
 const WORK_TRACKS = ["ai-engineering", "product-design", "security", "research"];
-const WORK_STATUSES = ["production", "pilot", "research", "shipped", "archived"];
 
 function assertOptionalBoolean(value, field, absFilePath) {
   if (value != null && typeof value !== "boolean") {
@@ -263,7 +262,6 @@ function buildIndexSectionForLang(sectionKey, config, lang, baseDir) {
     assertOptionalBoolean(meta.draft, "draft", absFilePath);
     assertOptionalPositiveInt(meta.featured, "featured", absFilePath);
     assertOptionalEnum(meta.track, "track", WORK_TRACKS, absFilePath);
-    assertOptionalEnum(meta.status, "status", WORK_STATUSES, absFilePath);
     assertOptionalStringArray(meta.stack, "stack", absFilePath);
     if (meta.project != null && !(typeof meta.project === "string" && /^\S{1,12}$/.test(meta.project))) {
       throw new Error(
@@ -305,7 +303,6 @@ function buildIndexSectionForLang(sectionKey, config, lang, baseDir) {
         industry: typeof meta.industry === "string" ? meta.industry : undefined,
         duration: typeof meta.duration === "string" ? meta.duration : undefined,
         stack: Array.isArray(meta.stack) ? meta.stack : undefined,
-        status: typeof meta.status === "string" ? meta.status : undefined,
         confidential: typeof meta.confidential === "boolean" ? meta.confidential : undefined,
       },
       content,

@@ -7,7 +7,6 @@ import { getContentBaseDir, type ContentLang } from "app/content/config"
 export type Lang = ContentLang
 
 export type WorkTrack = "ai-engineering" | "product-design" | "security" | "research"
-export type WorkStatus = "production" | "pilot" | "research" | "shipped" | "archived"
 
 export type TMetadata = {
   title: string
@@ -39,7 +38,6 @@ export type TMetadata = {
   industry?: string
   duration?: string
   stack?: string[]
-  status?: WorkStatus
   confidential?: boolean
 }
 
@@ -110,14 +108,6 @@ const workTrackSchema = z.enum([
   "research",
 ])
 
-const workStatusSchema = z.enum([
-  "production",
-  "pilot",
-  "research",
-  "shipped",
-  "archived",
-])
-
 const baseFrontmatterSchema = z.object({
   title: z.string().min(1),
   publishedAt: dateSchema,
@@ -145,7 +135,6 @@ const baseFrontmatterSchema = z.object({
   industry: z.string().min(1).optional(),
   duration: z.string().min(1).optional(),
   stack: z.array(z.string().min(1)).optional(),
-  status: workStatusSchema.optional(),
   confidential: z.boolean().optional(),
 })
 
