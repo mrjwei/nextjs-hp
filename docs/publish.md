@@ -22,6 +22,8 @@ Every entry lives under `/posts` (`/posts/[slug]`, or `/posts/[collection]/[slug
 
 To add a new project: set `project: "<ID>"` (one word, at most 12 characters, e.g. `"LingoBun"`, `"AI+Sec"`) — no routing or content-index change needed. Use the same ID on every post that belongs to that project, and on the JA translation.
 
+`/projects` (and Home's "Selected projects") show **one card per project** (`groupProjects` in `app/utils/index.ts`). The card shows the project's lead post, which is the first by `sortProjects` (lowest `featured`, else most recent), so give the overview post the lowest `featured`. When a project spans several posts, the card shows an "N articles" badge and links to `/projects/<project-slug>`, a page listing every post in the project. The slug is the lowercased ID with non-alphanumerics as hyphens, e.g. `AI+Sec` → `/projects/ai-sec`. A single-post project's card links straight to the post. The project badge on post pages links to the project page.
+
 The `casestudy` tag is an ordinary tag; it has no effect on routing or on `/projects`.
 
 Old URLs (`/writings/*`, `/work`, `/work/[slug]`, and the `/ja` equivalents) permanently redirect to their `/posts` / `/projects` counterparts (`next.config.js`).

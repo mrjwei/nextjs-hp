@@ -1,6 +1,8 @@
 import {
   getAllSortedGallery,
   getAllSortedWritings,
+  getProjectHref,
+  groupProjects,
 } from "app/utils"
 
 export const baseUrl = "https://jessewei.net"
@@ -90,6 +92,14 @@ export default async function sitemap() {
     lastModified: item.metadata.updatedAt ?? item.metadata.publishedAt,
   }))
 
+  const projectRoutes = (list: typeof writingsList, lang: "en" | "ja") =>
+    groupProjects(list).map((project) => ({
+      url: `${baseUrl}${getProjectHref(project.id, lang)}`,
+      lastModified: maxPublishedAt(
+        project.items.map((w) => w.metadata.updatedAt ?? w.metadata.publishedAt)
+      ),
+    }))
+
   const writingsCollections = collectionRoutes(writingsList, "en")
   const writingsCollectionsJa = collectionRoutes(writingsJaList, "ja")
 
@@ -101,5 +111,7 @@ export default async function sitemap() {
     ...galleryJa,
     ...writingsCollections,
     ...writingsCollectionsJa,
+    ...projectRoutes(writingsList, "en"),
+    ...projectRoutes(writingsJaList, "ja"),
   ]
 }

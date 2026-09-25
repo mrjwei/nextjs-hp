@@ -435,6 +435,48 @@ export function sortProjects<T extends TContentMeta>(items: T[]): T[] {
   })
 }
 
+// URL segment for a project ID: "LingoBun" -> "lingobun", "AI+Sec" -> "ai-sec".
+export function getProjectSlug(project: string) {
+  return project
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+}
+
+export function getProjectHref(project: string, lang: Lang = "en") {
+  const prefix = lang === "ja" ? "/ja" : ""
+  return `${prefix}/projects/${getProjectSlug(project)}`
+}
+
+export type TProject = {
+  id: string
+  slug: string
+  // The post that represents the project on cards: the first by sortProjects
+  // (lowest `featured`, else most recent), typically its overview.
+  lead: TContentMeta
+  // Every post sharing the project ID, in sortProjects order (lead first).
+  items: TContentMeta[]
+  track?: WorkTrack
+}
+
+// Groups project posts by their `project` ID, one entry per project, ordered
+// by each project's lead post (so the same order as sortProjects).
+export function groupProjects(items: TContentMeta[]): TProject[] {
+  const byId = new Map<string, TContentMeta[]>()
+  for (const item of sortProjects(items.filter((i) => isProject(i.metadata)))) {
+    const id = item.metadata.project!
+    if (!byId.has(id)) byId.set(id, [])
+    byId.get(id)!.push(item)
+  }
+  return Array.from(byId.entries()).map(([id, posts]) => ({
+    id,
+    slug: getProjectSlug(id),
+    lead: posts[0],
+    items: posts,
+    track: posts.find((p) => p.metadata.track)?.metadata.track,
+  }))
+}
+
 // Home "Featured writing" (see docs/roadmap/2026-09-ai-repositioning-brushup.md
 // §3): featured items first (lower `featured` wins), then the most recent
 // remaining posts whose tags intersect the profile's `focusTags`. Items
@@ -470,11 +512,11 @@ const WORK_TRACK_ORDER: WorkTrack[] = [
 ]
 
 export function getWorkTrackFacets(
-  items: TContentMeta[]
+  items: Array<{ track?: WorkTrack }>
 ): Array<{ value: WorkTrack; count: number }> {
   const counts = new Map<WorkTrack, number>()
   for (const item of items) {
-    const track = item.metadata.track
+    const track = item.track
     if (!track) continue
     counts.set(track, (counts.get(track) ?? 0) + 1)
   }

@@ -1,19 +1,32 @@
 "use client"
 
 import clsx from "clsx"
+import { Files } from "lucide-react"
 import { TrackedLink } from "@/components/tracked-link"
 import { ProjectBadge } from "@/components/project-badge"
+import { Badge } from "@/components/ui/badge"
 import type { TContentMeta } from "app/utils"
 import type { Lang } from "app/i18n/config"
+
+const articleCountLabel: Record<Lang, (n: number) => string> = {
+  en: (n) => `${n} articles`,
+  ja: (n) => `記事${n}件`,
+}
 
 export function WorkCard({
   work,
   lang = "en",
+  href: hrefOverride,
+  articleCount,
   className,
   wrapperProps,
 }: {
   work: TContentMeta
   lang?: Lang
+  // Set when the card stands for a whole project (see ProjectCard): links to
+  // the project page and shows how many posts it covers.
+  href?: string
+  articleCount?: number
   className?: string
   wrapperProps?: React.HTMLAttributes<HTMLDivElement> & {
     [key: `data-${string}`]: string | undefined
@@ -24,9 +37,10 @@ export function WorkCard({
     work.metadata
   // Projects are canonical under /posts (mirrors getWritingHref, which can't
   // be imported into this client component because app/utils reads the fs).
-  const href = series
-    ? `${prefix}/posts/${series}/${work.slug}`
-    : `${prefix}/posts/${work.slug}`
+  const href =
+    hrefOverride ??
+    (series ? `${prefix}/posts/${series}/${work.slug}` : `${prefix}/posts/${work.slug}`)
+  const showArticleCount = !!articleCount && articleCount > 1
   const year = new Date(publishedAt).getFullYear()
   const eyebrow = industry ? `${industry} · ${year}` : `${year}`
   const resultLine = result || summary
@@ -59,16 +73,24 @@ export function WorkCard({
               {resultLine}
             </p>
           </div>
-          {stack?.length ? (
-            <div className="flex flex-wrap items-center gap-2">
-              {stack.slice(0, 4).map((item) => (
-                <span
-                  key={item}
-                  className="rounded-full border border-[var(--border-subtle)] px-2 py-0.5 text-xs font-medium text-[var(--text-muted)]"
-                >
-                  {item}
-                </span>
-              ))}
+          {stack?.length || showArticleCount ? (
+            <div className="flex items-end justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-2">
+                {stack?.slice(0, 4).map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-full border border-[var(--border-subtle)] px-2 py-0.5 text-xs font-medium text-[var(--text-muted)]"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+              {showArticleCount && (
+                <Badge tone="accent" className="ml-auto shrink-0 whitespace-nowrap">
+                  <Files aria-hidden className="size-3.5" />
+                  {articleCountLabel[lang](articleCount)}
+                </Badge>
+              )}
             </div>
           ) : null}
         </div>

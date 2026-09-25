@@ -1,10 +1,9 @@
-import { WorkCard } from "@/components/work-card"
+import { ProjectCard } from "@/components/project-card"
 import { WorkTrackFilter } from "@/components/work-track-filter.client"
 import {
   getAllSortedWritings,
   getWorkTrackFacets,
-  isProject,
-  sortProjects,
+  groupProjects,
 } from "app/utils"
 import { buildStandardMetadata } from "app/seo/metadata"
 import { JaEmptyNotice } from "@/components/ja-empty-notice"
@@ -21,10 +20,10 @@ export const metadata = buildStandardMetadata({
 export const dynamic = "force-static"
 
 export default async function ProjectsPage() {
-  const work = sortProjects(
-    getAllSortedWritings("ja").filter((w) => isProject(w.metadata))
-  )
-  const tracks = getWorkTrackFacets(work)
+  // One card per project; projects spanning several posts link to their
+  // own page (/projects/[project]).
+  const projects = groupProjects(getAllSortedWritings("ja"))
+  const tracks = getWorkTrackFacets(projects)
 
   return (
     <div className="w-full max-w-[1120px] mx-auto px-6 md:px-8 py-24">
@@ -38,19 +37,14 @@ export default async function ProjectsPage() {
         </p>
       </div>
 
-      {work.length === 0 ? (
+      {projects.length === 0 ? (
         <JaEmptyNotice englishHref="/projects" englishLabel="英語版のプロジェクトを見る" />
       ) : (
         <>
           <WorkTrackFilter tracks={tracks} lang="ja" />
           <div className="grid grid-cols-12 gap-y-8 md:gap-8">
-            {work.map((item) => (
-              <WorkCard
-                key={item.slug}
-                work={item}
-                lang="ja"
-                wrapperProps={{ "data-work-track": item.metadata.track }}
-              />
+            {projects.map((project) => (
+              <ProjectCard key={project.id} project={project} lang="ja" />
             ))}
           </div>
         </>

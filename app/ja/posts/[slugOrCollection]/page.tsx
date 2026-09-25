@@ -6,6 +6,7 @@ import {
   getAllSortedWritingCollections,
   getWritingBySlug,
   getWritingHref,
+  getProjectHref,
   formatDate,
 } from "app/utils"
 import { buildStandardMetadata } from "app/seo/metadata"
@@ -215,7 +216,11 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
           />
 
           {writing.metadata.project && (
-            <ProjectBadge project={writing.metadata.project} className="mb-4" />
+            <ProjectBadge
+              project={writing.metadata.project}
+              href={getProjectHref(writing.metadata.project, "ja")}
+              className="mb-4"
+            />
           )}
           <h1 className="display text-4xl mb-4">{writing.metadata.title}</h1>
           {seriesParts.length > 1 && partIndex !== -1 && (
