@@ -50,6 +50,40 @@ module.exports = {
         destination: "/ja/posts/:slug",
         permanent: true,
       },
+      // The generic AI/design/security/devops collection folders were split
+      // into topic series (2026-09). /posts/<slug> redirects a post to its
+      // current collection (or serves it, if it's now standalone), so old
+      // post URLs go there; old collection index pages go to the series list.
+      {
+        source: "/posts/:collection(AI|design|security|devops)/:slug",
+        destination: "/posts/:slug",
+        permanent: true,
+      },
+      {
+        source: "/posts/:collection(AI|design|security|devops|ml-techniques)",
+        destination: "/posts/series",
+        permanent: true,
+      },
+      {
+        source: "/posts/ux-case-studies",
+        destination: "/posts/radio-buttons",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/:collection(AI|design|security|devops)/:slug",
+        destination: "/ja/posts/:slug",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/:collection(AI|design|security|devops|ml-techniques)",
+        destination: "/ja/posts/series",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/ux-case-studies",
+        destination: "/ja/posts/radio-buttons",
+        permanent: true,
+      },
       // Old /portfolio section (retired 2026-09 in favour of /gallery +
       // case studies folded into /posts). Specific slugs first, then a
       // catch-all so any stray link still lands somewhere useful.

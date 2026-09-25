@@ -3,6 +3,11 @@ import path from "node:path";
 
 const CWD = process.cwd();
 const OUTPUT_PATH = path.join(CWD, "app", "data", "content-index.json");
+// Series display titles, keyed by folder slug then lang (see getSeriesTitle
+// in app/utils/index.ts).
+const SERIES_TITLES = JSON.parse(
+  fs.readFileSync(path.join(CWD, "app", "data", "series.json"), "utf-8")
+);
 
 const CONTENT = {
   writings: {
@@ -287,7 +292,9 @@ function buildIndexSectionForLang(sectionKey, config, lang, baseDir) {
         tags: tagsWithSeries,
         shouldBreakWord: typeof meta.shouldBreakWord === "boolean" ? meta.shouldBreakWord : undefined,
         series,
-        seriesTitle: series ? (seriesTitle || titleCaseFromSlug(series)) : undefined,
+        seriesTitle: series
+          ? seriesTitle || SERIES_TITLES[series]?.[lang] || SERIES_TITLES[series]?.en || titleCaseFromSlug(series)
+          : undefined,
         seriesOrder: series ? seriesOrder : undefined,
         partOf,
         partOfTitle,

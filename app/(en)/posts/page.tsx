@@ -1,5 +1,5 @@
 import { Grid } from "@/components/grid"
-import { getAllSortedWritings, getAllSortedWritingSeries } from "app/utils"
+import { getAllSortedWritings, getAllSortedWritingCollections } from "app/utils"
 import { normalizeTag, formatTagLabel } from "app/utils/tags"
 import { buildStandardMetadata } from "app/seo/metadata"
 import Link from "next/link"
@@ -44,7 +44,7 @@ export default async function Page() {
     }))
     .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label))
 
-  const series = getAllSortedWritingSeries().map((s) => ({
+  const series = getAllSortedWritingCollections().map((s) => ({
     slug: s.slug,
     title: s.title,
     count: s.items.length,

@@ -1,0 +1,14 @@
+{
+  "ai-and-design": { "en": "AI + Design", "ja": "AIとデザイン" },
+  "autoencoders": { "en": "Autoencoders", "ja": "オートエンコーダ" },
+  "cnn": { "en": "CNN Fundamentals", "ja": "CNNの基礎" },
+  "ml-metrics": { "en": "ML Metrics", "ja": "機械学習の評価指標" },
+  "cryptography": { "en": "Cryptography", "ja": "暗号技術" },
+  "authentication": { "en": "Authentication", "ja": "認証" },
+  "ai-assisted-siem-workflow": { "en": "AI-Assisted SIEM Workflow", "ja": "AI支援SIEMワークフロー" },
+  "number-systems": { "en": "Number Systems", "ja": "記数法" },
+  "multifunctional-ai-assistant": { "en": "Multifunctional AI Assistant", "ja": "多機能AIアシスタント" },
+  "radio-buttons": { "en": "UX Insight: Radio Buttons", "ja": "UXインサイト:ラジオボタン" },
+  "LingoBun": { "en": "LingoBun", "ja": "LingoBun" },
+  "AuStride": { "en": "AuStride", "ja": "AuStride" }
+}

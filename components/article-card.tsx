@@ -49,13 +49,13 @@ export function WritingCard({
     <div
       {...wrapperProps}
       className={clsx(
-        "relative col-span-12 md:col-span-6 h-full flex flex-col bg-[var(--surface-card)] transition-[box-shadow,border-color,transform] duration-200 ease-[var(--ease-out)] shadow-xs hover:shadow-lg hover:-translate-y-0.5 border border-[var(--border-subtle)] hover:border-[var(--border-default)] rounded-lg overflow-hidden group",
+        "relative col-span-12 md:col-span-6 h-full flex flex-col bg-[var(--surface-card)] transition-[box-shadow,border-color,transform] duration-200 ease-[var(--ease-out)] shadow-xs hover:shadow-lg hover:-translate-y-0.5 border border-[var(--border-subtle)] hover:border-[var(--border-default)] rounded-lg group",
         className,
         wrapperProps?.className
       )}
     >
       {project && (
-        <ProjectBadge project={project} className="pointer-events-none absolute top-3 right-3 z-10" />
+        <ProjectBadge project={project} className="pointer-events-none absolute top-3 -right-1 z-10 shadow-sm" />
       )}
       <Link
         key={article.slug}
@@ -63,7 +63,7 @@ export function WritingCard({
         className="flex-1 flex flex-col"
       >
         {isGallery ? (
-          <div className="relative w-full aspect-[16/9] overflow-hidden bg-[var(--surface-sunken)]">
+          <div className="relative w-full aspect-[16/9] overflow-hidden rounded-t-lg bg-[var(--surface-sunken)]">
             {thumbnailSrc ? (
               <Image
                 src={thumbnailSrc}

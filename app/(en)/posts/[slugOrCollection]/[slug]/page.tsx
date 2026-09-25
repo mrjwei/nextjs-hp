@@ -77,8 +77,10 @@ export default async function WritingInCollection({ params, searchParams }) {
     : []
   const partIndex = seriesParts.findIndex((w) => w.slug === writing.slug)
 
-  const backHref = writing.metadata.partOf ? `/posts/${writing.metadata.partOf}` : "/posts"
-  const backLabel = writing.metadata.partOf ? "Back to Series Top" : "Back to All Posts"
+  // Back to the multi-part sequence if there is one, else the folder series.
+  const seriesTop = writing.metadata.partOf ?? writingCollection
+  const backHref = seriesTop ? `/posts/${seriesTop}` : "/posts"
+  const backLabel = seriesTop ? "Back to Series Top" : "Back to All Posts"
 
   const writingTagSet = new Set(writing.metadata.tags)
 
@@ -124,7 +126,7 @@ export default async function WritingInCollection({ params, searchParams }) {
                 </Link>
               </>
             )}
-            {writing.metadata.partOf && (
+            {writing.metadata.partOf && writing.metadata.partOf !== writingCollection && (
               <>
                 <span className="mx-2 text-[var(--text-subtle)]">/</span>
                 <Link

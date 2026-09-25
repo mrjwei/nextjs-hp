@@ -10,6 +10,10 @@ Collections (previously called “series” in the UI) are driven by frontmatter
 
 For convenience/back-compat, if a writing is inside a subfolder (e.g. `app/writings/posts/ml/...`), that folder name is treated as its `series` slug unless `series` is explicitly set.
 
+Folders are topic series at the level a reader would browse (e.g. `cnn`, `ml-metrics`, `cryptography`, `ai-and-design`), not broad categories like "AI" or "design" — tags cover those. Standalone posts live at the root of `app/writings/posts/`. Each folder's display title (EN and JA) lives in `app/data/series.json`; add an entry when creating a folder, otherwise the title falls back to the title-cased folder name. Moving a post to another folder changes its URL, so add a redirect in `next.config.js`.
+
+`partOf` / `partOfTitle` / `partNumber` mark an ordered multi-part sequence (shown as "Part N of M" with prev/next links). It can match the folder (e.g. `cnn`) or be a narrower sequence inside it (e.g. `understanding-jwts` inside `authentication`).
+
 ## Posts vs Projects — canonical URL
 
 Every entry lives under `/posts` (`/posts/[slug]`, or `/posts/[collection]/[slug]` for posts in a collection) and that URL is always canonical. `/posts/[slug]` for a post inside a collection permanently redirects to its collection URL.

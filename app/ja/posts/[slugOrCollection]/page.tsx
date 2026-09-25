@@ -3,6 +3,7 @@ import { notFound, permanentRedirect } from "next/navigation"
 import {
   getAllSortedWritings,
   getAllSortedWritingSeries,
+  getAllSortedWritingCollections,
   getWritingBySlug,
   getWritingHref,
   formatDate,
@@ -292,9 +293,17 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
     )
   }
 
+  // The sidebar always shows folder-based collections (the canonical
+  // series, per the directory structure under app/writings/posts), regardless
+  // of which kind of collection page is being rendered below.
+  const sidebarSeries = getAllSortedWritingCollections("ja").map((s) => ({
+    slug: s.slug,
+    title: s.title,
+    count: s.items.length,
+  }))
+
   // Otherwise, it may be a reading series (posts sharing `partOf`).
-  const allSeries = getAllSortedWritingSeries("ja")
-  const activeSeries = allSeries.find((s) => s.slug === slugOrCollection)
+  const activeSeries = getAllSortedWritingSeries("ja").find((s) => s.slug === slugOrCollection)
 
   if (activeSeries) {
     return (
@@ -302,11 +311,7 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
         seriesSlug={activeSeries.slug}
         seriesTitle={activeSeries.title}
         items={activeSeries.items}
-        allSeries={allSeries.map((s) => ({
-          slug: s.slug,
-          title: s.title,
-          count: s.items.length,
-        }))}
+        allSeries={sidebarSeries}
         lang="ja"
       />
     )
@@ -323,11 +328,7 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
         seriesSlug={slugOrCollection}
         seriesTitle={collectionTitle}
         items={collectionItems}
-        allSeries={allSeries.map((s) => ({
-          slug: s.slug,
-          title: s.title,
-          count: s.items.length,
-        }))}
+        allSeries={sidebarSeries}
         lang="ja"
       />
     )

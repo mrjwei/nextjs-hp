@@ -100,8 +100,10 @@ export default async function WritingInCollection({ params, searchParams }) {
     : []
   const partIndex = seriesParts.findIndex((w) => w.slug === writing.slug)
 
-  const backHref = writing.metadata.partOf ? `/ja/posts/${writing.metadata.partOf}` : "/ja/posts"
-  const backLabel = writing.metadata.partOf ? "シリーズトップに戻る" : "記事一覧に戻る"
+  // Back to the multi-part sequence if there is one, else the folder series.
+  const seriesTop = writing.metadata.partOf ?? collection
+  const backHref = seriesTop ? `/ja/posts/${seriesTop}` : "/ja/posts"
+  const backLabel = seriesTop ? "シリーズトップに戻る" : "記事一覧に戻る"
 
   const writingTagSet = new Set(writing.metadata.tags)
 
@@ -145,7 +147,7 @@ export default async function WritingInCollection({ params, searchParams }) {
                 </Link>
               </>
             )}
-            {writing.metadata.partOf && (
+            {writing.metadata.partOf && writing.metadata.partOf !== collection && (
               <>
                 <span className="mx-2 text-[var(--text-subtle)]">/</span>
                 <Link
