@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { getAllSortedWritingSeries } from "app/utils"
+import { getAllSortedWritingCollections } from "app/utils"
 import { buildStandardMetadata } from "app/seo/metadata"
 import { BackLink } from "@/components/back-link"
 import { SeriesIndexView } from "app/writings/series-index.client"
@@ -15,7 +15,7 @@ export const metadata = buildStandardMetadata({
 export const dynamic = "force-static"
 
 export default async function Page() {
-  const series = getAllSortedWritingSeries().map((s) => ({
+  const series = getAllSortedWritingCollections().map((s) => ({
     slug: s.slug,
     title: s.title,
     count: s.items.length,

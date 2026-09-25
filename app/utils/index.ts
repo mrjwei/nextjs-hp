@@ -495,6 +495,34 @@ export type TWritingSeries = {
   items: TContentMeta[]
 }
 
+// Folder-based collections (Option C's canonical `series`, inferred from the
+// immediate subdirectory under app/writings/posts — see parseFrontmatter
+// above). Distinct from getAllSortedWritingSeries, which groups by the
+// explicit `partOf` field for narrower, multi-part reading sequences within
+// a collection (e.g. "cnn"). This is what the /posts sidebar and /posts/series
+// index show, since the directory tree is the canonical source of series.
+export const getAllSortedWritingCollections = cache((lang: Lang = "en"): TWritingSeries[] => {
+  const bySlug = new Map<string, TContentMeta[]>()
+
+  for (const writing of getAllSortedWritings(lang)) {
+    const slug = writing.metadata.series
+    if (!slug) continue
+    if (!bySlug.has(slug)) bySlug.set(slug, [])
+    bySlug.get(slug)!.push(writing)
+  }
+
+  const result = Array.from(bySlug.entries()).map(([slug, items]) => {
+    const title = items.find((i) => i.metadata.seriesTitle)?.metadata.seriesTitle ?? slug
+    return { slug, title, items }
+  })
+
+  result.sort(
+    (a, b) => b.items.length - a.items.length || a.title.localeCompare(b.title)
+  )
+
+  return result
+})
+
 export const getAllSortedWritingSeries = cache((lang: Lang = "en"): TWritingSeries[] => {
   const bySlug = new Map<string, TContentMeta[]>()
 
