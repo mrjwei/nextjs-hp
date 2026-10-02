@@ -8,13 +8,12 @@ Use the same set of URLs every time:
 
 - Home: `/`
 - About: `/about`
-- Work index: `/work`
-- One case study: `/work/<some-slug>`
-- Writings index: `/writings`
-- One writing: `/writings/<some-slug>`
+- Projects index: `/projects`
+- One project page: `/projects/<project-slug>`
+- Posts index: `/posts`
+- One post with a ResultBlock: `/posts/<collection>/<slug>`
 - Gallery index: `/gallery`
 - One gallery item: `/gallery/<some-slug>`
-- Now: `/now`
 - JA home: `/ja`
 
 ## Lighthouse (manual)
