@@ -1,103 +1,115 @@
 ---
 name: publish-post
-description: Publish one or more drafts from the drafts directory.
+description: Publish one or more drafts, given by path, into the site's posts.
 ---
 
 # Publish Post
 
-Publish one or more drafts from `app/_drafts/` by moving them into `app/writings/posts/`, where the site's content index (`scripts/generate-content-index.mjs`) picks them up.
+Publish one or more drafts into `app/writings/posts/`, where the site's content index (`scripts/generate-content-index.mjs`) picks them up. Drafts live **outside this repo** (e.g. an Obsidian vault) — the user gives the path every time. This repo has no drafts folder.
 
-**Usage:** `/publish-post [draft ...]`
+**Usage:** `/publish-post <draft-path> [<draft-path> ...]`
 
-`$ARGUMENTS` is zero or more drafts to publish, given as a slug (filename without `.mdx`, e.g. `zod`), or a path relative to `app/_drafts/` or the repo root (e.g. `design-reflections/disrupt-or-conform` or `app/_drafts/design-reflections/disrupt-or-conform.mdx`).
+`$ARGUMENTS` is one or more paths to draft files (`.md` or `.mdx`), absolute or relative to the current directory. Paths may contain spaces; if the split is ambiguous, ask.
 
-- **No arguments**: publish exactly one draft — whichever unpublished draft in `app/_drafts/` has a `publishedAt` closest to the current moment (smallest absolute time difference; ties broken by path, alphabetically first).
-- **One or more arguments**: publish each named draft.
+- **No arguments**: ask the user for the draft path(s). Don't search for drafts or guess.
+- A path that doesn't exist or isn't a `.md`/`.mdx` file: stop and tell the user.
+
+Use UK/AU English spelling and grammar in anything you write or edit.
 
 ## Steps
 
-### 1. Inventory the drafts
+### 1. Read each draft
 
-Recursively list all `.mdx` files under `app/_drafts/`. Every file here is unpublished by construction — once a post is published it's moved out of this directory, so there's no separate "already published" check to do.
+Read the file in full, including frontmatter (if any) and every image reference (Obsidian `![[image.png]]` or standard `![alt](path)`).
 
-### 2. Resolve which draft(s) to publish
+Check the draft is actually finished. If it has placeholder text ("TODO", "add example here"), sections that are only headings, or a bullet-point skeleton where prose should be, **stop and report what's unfinished** instead of publishing. Publishing doesn't write the missing content for the user.
 
-**If `$ARGUMENTS` is empty:**
+The source file is the user's. **Never move, edit or delete it.** Write a new file in the repo.
 
-- Parse the frontmatter of every `.mdx` file under `app/_drafts/` and read `publishedAt`. `/new-draft` stamps it with a full timestamp (`YYYY-MM-DDTHH:MM:SS`) so same-day drafts can be told apart; some older drafts predate that and are date-only (`YYYY-MM-DD`) — treat those as midnight on that date.
-- Get the current actual date and time (e.g. via `date +"%Y-%m-%dT%H:%M:%S"`).
-- Compute `abs(now - publishedAt)` for each draft and pick the smallest. Break ties by full path, alphabetically.
-- Skip any candidate whose filename starts with `WIP` (case-insensitive) — that's an explicit work-in-progress marker used in this repo (e.g. `WIP-austride-user-research.mdx`). Move to the next-closest candidate instead. If literally every draft is `WIP`-prefixed, stop and tell the user instead of guessing.
-- Selected exactly one draft.
+### 2. Determine slug and category
 
-**If `$ARGUMENTS` has one or more tokens:**
+- **Slug**: use the frontmatter `slug` if present, otherwise derive it from the filename: lowercase, spaces become hyphens, special characters removed (`"My Article On React.md"` → `my-article-on-react`).
+- **Category**: match the post's topic and tags against the existing subfolders in `app/writings/posts/` (list them; don't rely on memory). Folders are topic series at the level a reader would browse (e.g. `cnn`, `ml-metrics`, `cryptography`, `ai-and-design`), not broad categories. Standalone posts go at the root. See `docs/publish.md` for the series conventions.
+  - Placing a post in a subfolder auto-assigns that folder as its `series`, so the category affects the post's collection as well as its path.
+  - Creating a new subfolder: add its EN/JA display title to `app/data/series.json`.
+- If a post with the same slug already exists anywhere under `app/writings/posts/`, stop and ask. Don't overwrite it.
 
-- For each token, resolve it to a file under `app/_drafts/`:
-  1. Try it as a path relative to the repo root.
-  2. Try it as a path relative to `app/_drafts/`.
-  3. Try it as a bare slug — search recursively under `app/_drafts/` for `<slug>.mdx`.
-- If a token doesn't resolve to exactly one file (not found, or the same slug exists in more than one subfolder), stop and ask the user to disambiguate rather than guessing.
-- A `WIP`-prefixed file named explicitly by the user is still published — the WIP skip only applies to auto-selection.
+### 3. Handle images
 
-### 3. For each selected draft, determine its destination category
+- Resolve each referenced image on disk. Look in the draft's own directory, then the vault's usual attachment folders (`attachments/`, `assets/`, `_attachments/`) up to 2–3 levels above the draft.
+- Copy each one into `public/<slug>/`, creating that folder if needed.
+- Replace the reference in the body with:
 
-Do **not** assume the draft's current subfolder under `app/_drafts/` is the right final category — some existing drafts predate this convention and use folder names (e.g. `design-reflections`, `ml-journey`, `system-design`, `student-life`) that don't match the site's actual taxonomy. Instead, infer the category the same way `/new-draft` does: match the post's topic/tags against the existing subfolders in `app/writings/posts/`:
+```mdx
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/<slug>/filename.ext"
+    alt="alt text or caption"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Caption if available</figcaption>
+</figure>
+```
 
-- `security/` — cryptography, auth, MCP, security topics
-- `design/` — UX/UI design, process, case studies
-- `devops/` — deployment, CI/CD, infrastructure
-- `ml/` — machine learning, data science, numpy/pandas
-- `number-systems/` — binary, number theory
-- `LingoBun/` — LingoBun product posts
-- `AI/` — broad AI topics (not dev-specific)
-- *(root)* — general dev, React, JavaScript, CSS, tools, tutorials that don't fit a specific category
+Leave out `<figcaption>` when there's no caption. Record any image you can't find so you can report it.
 
-If no existing category fits well, publish at the root level. (Placing a post under a subfolder auto-tags it with that folder name via the content index's series inference — so getting the category right matters for the post's tags, not just its file location.)
+### 4. Convert the body to MDX
 
-### 4. Update the frontmatter
+Skip any of these that the draft already satisfies (for example, an `.mdx` draft that is already in site format):
 
-- **`publishedAt`**: overwrite with today's actual date only, no time (`YYYY-MM-DD`), regardless of what value the draft had (including any timestamp component). The stored value — timestamp or not — was a placeholder/target used only for step 2's selection; published posts elsewhere in the site use date-only values, so drop the time here.
-- **`tags`**: `app/writings/posts/` requires a non-empty `tags` array (the content-index build fails otherwise). If the draft has no `tags` field (some older drafts don't), infer tags from the content — read `app/data/tags.json` for the site's current tag vocabulary and prefer reusing an existing tag when it fits, but a new tag is fine if nothing existing matches — and add the field.
-- **`slug`**: if the post is going into a subfolder and doesn't already have a `slug` field, add one matching the filename, for consistency with existing posts (this field isn't read by the build, it's just convention).
-- Leave everything else (`title`, `summary`, `seriesTitle`, `seriesSlug`, `order`, etc.) untouched.
+- **H1**: remove an H1 that only repeats the title. Keep `##` and lower headings.
+- **Table of contents**: if there are several H2 sections and no TOC, add a bulleted TOC of anchor links right after the frontmatter, using the format of existing posts: `- [Section Title](#section-title)` (lowercased, spaces → hyphens).
+- **Wikilinks**: turn `[[Page]]` / `[[Page|Label]]` into plain text, or into a relative link when the target is clearly another post on this site.
+- **Callouts** (`> [!NOTE]`): convert to a plain blockquote or a bold lead-in sentence.
+- Keep standard markdown (bold, italics, code, fenced code blocks with language tags, external links, `---` rules) unchanged.
+- Escape anything MDX would parse as JSX or expressions (bare `<`, `{`) outside code.
 
-### 4a. Register any new tags
+Light editorial pass only: fix clear typos and UK/AU spelling. If you notice factual errors you're confident about, fix them and list each change in the report. If you're unsure, flag it and leave the text alone. Don't change the author's argument, opinions or voice.
 
-`app/data/tags.json` is the site's single source of truth for known tags (`{ "<tag>": { "color": "#rrggbb" } }`) — it drives which tags render at all (`components/tags.tsx` silently drops any tag not present as a key) and is also read by `scripts/publish.js` for its separate AI-publish flow. A tag used in a post's frontmatter but missing from this file will be silently invisible on the site, so it must never be allowed to drift out of sync.
+### 5. Write the frontmatter
 
-After finalizing each post's `tags` array (whether it came with the draft or was inferred in step 4):
+```mdx
+---
+title: "..."
+slug: "..."          # only when the post is in a subfolder
+publishedAt: "YYYY-MM-DD"
+summary: "..."
+tags: ["tag1", "tag2"]
+---
+```
 
-1. Read `app/data/tags.json` and diff the post's tags against its keys.
-2. For each tag not already a key, add an entry with a generated color: derive a hue deterministically from the tag string (e.g. sum of char codes mod 360) and use `hsl(hue, 80%, 40%)` converted to hex — this keeps new colors visually consistent with the existing palette (all existing entries sit in roughly the same saturation/lightness range) without needing to hand-pick one.
-3. Write the updated JSON back, keeping existing entries and their colors untouched and preserving 2-space-indented formatting.
+- **`title`**: keep it if the draft has one; otherwise use the H1, otherwise the filename.
+- **`publishedAt`**: today's date with no time (`date +%F`), whatever value the draft had.
+- **`summary`**: keep it if present; otherwise write one or two sentences.
+- **`tags`**: must be a non-empty array (the content-index build fails otherwise). Keep the draft's tags, or infer them from the content. Read `app/data/tags.json` and reuse existing tags where they fit. Use a new tag only when no existing one fits.
+- Keep any other frontmatter the draft has (`project`, `featured`, `track`, `result`, `series*`, `partOf*`, etc.). For project and case-study fields, see `docs/publish.md` and `docs/templates/case-study.mdx`.
+- Drop Obsidian-only frontmatter the site doesn't use (`aliases`, `cssclasses`, `created`, `updated`, etc.).
 
-This runs for every selected draft before the move in step 5, so the registry is updated in the same batch as the posts that introduce the new tags.
+### 5a. Register new tags
 
-### 5. Move the file
+`app/data/tags.json` (`{ "<tag>": { "color": "#rrggbb" } }`) is the site's source of truth for tags. `components/tags.tsx` silently drops any tag that isn't a key in it. For each tag in the post that isn't a key yet:
 
-`app/_drafts/` is gitignored (the `_*` rule in `.gitignore`), so every draft is untracked — `git mv` will fail on it. Use a plain `mv` to move the draft to its destination:
-- `app/writings/posts/<category>/<slug>.mdx` if a category was chosen
-- `app/writings/posts/<slug>.mdx` if placed at root
+1. Add an entry for it, keeping the existing entries and their colours unchanged.
+2. Generate its colour deterministically: hue = (sum of the tag's char codes) mod 360, then convert `hsl(hue, 80%, 40%)` to hex.
+3. Keep the file's 2-space indentation.
 
-`app/writings/posts/` *is* tracked, so the moved file will show up as untracked (`git status`) at its new path until it's added — leave staging/committing to the user's normal workflow; don't `git add` or commit it yourself unless asked.
+### 6. Write the post
 
-Do not move or touch anything under `public/<slug>/` — image paths are keyed by slug at the public root, independent of which category folder the post lives in, so no asset migration is needed.
+Write it to `app/writings/posts/<category>/<slug>.mdx`, or to `app/writings/posts/<slug>.mdx` for a root-level post. Don't stage or commit it unless the user asks.
 
-If `app/_drafts/<original-subfolder>/` is now empty after the move, remove the empty directory. Leave it alone if other drafts remain in it.
+### 7. Validate
 
-### 6. Validate
+Run `node scripts/generate-content-index.mjs`. This is the check `npm run build` runs in its `prebuild` step: valid dates, non-empty tags, no duplicate slugs. If it fails, fix the frontmatter and run it again before reporting success.
 
-Run `node scripts/generate-content-index.mjs` to confirm the newly published post(s) pass frontmatter validation (valid dates, non-empty tags, no duplicate slugs, etc.). This is the same check `npm run build` runs via its `prebuild` step. If it fails, fix the offending frontmatter and re-run before reporting success.
+### 8. Report back
 
-### 7. Report back
+For each post, report:
+- Slug, title and final path under `app/writings/posts/`
+- Its category, and why you chose it if that wasn't obvious
+- The `publishedAt` date
+- Tags you inferred, and tags newly added to `app/data/tags.json` with their colours
+- The `public/<slug>/` folder, if you copied images, plus any images you couldn't find
+- Content changes (corrections, conversions) and any uncertainties you flagged
+- Any Obsidian syntax you couldn't convert
 
-For each published post, print:
-- Its slug, title, and final path under `app/writings/posts/`
-- The category it was placed in (and, if it differs from the draft's original `app/_drafts/` subfolder, a note why)
-- The `publishedAt` date it was stamped with
-- Any tags that were inferred/added because they were missing
-- Any tags newly registered in `app/data/tags.json` (tag name and assigned color)
-
-Also report:
-- How many drafts remain in `app/_drafts/` (and, if selection was automatic, which ones were passed over)
-- Any `WIP`-prefixed drafts skipped during auto-selection
+Also say that the source draft was left untouched, so the user can archive or delete it.

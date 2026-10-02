@@ -30,16 +30,22 @@ Old URLs (`/writings/*`, `/work`, `/work/[slug]`, and the `/ja` equivalents) per
 
 ## Project frontmatter
 
-All optional; see `app/_drafts/_case-study-template.mdx` for the full skeleton and `ResultBlock`/`WorkCard` (`components/`) for how they render:
+All optional; see `docs/templates/case-study.mdx` for the full skeleton and `ResultBlock`/`WorkCard` (`components/`) for how they render:
 
 - `project?: string` — see above.
 - `featured?: number` — lower sorts earlier on Home/Projects; absent = not featured. See `sortProjects` in `app/utils/index.ts`.
 - `track?: "ai-engineering" | "product-design" | "security" | "research"` — powers the track filter on `/projects`.
-- `draft?: boolean` — excluded from all grids, search, sitemap, RSS, and direct URL access in production (`npm run build`/deploy); still fully visible in `npm run dev`. Placeholders that aren't ready to ship belong in `app/_drafts/` (gitignored, never deployed; publish with `/publish-post`) — e.g. the WAmazing, GoNOW and third case-study stubs live in `app/_drafts/case-studies/`.
+- `draft?: boolean` — excluded from all grids, search, sitemap, RSS, and direct URL access in production (`npm run build`/deploy); still fully visible in `npm run dev`. Unfinished drafts don't live in this repo: they stay outside it (e.g. in the Obsidian vault) until published with `/publish-post <path>`.
 - `archived?: boolean` — excluded from all grids, search, sitemap and RSS, and its URL returns 404 (in dev too).
 - `result`, `role`, `client`, `industry`, `duration`, `stack: string[]`, `status: "production" | "pilot" | "research" | "shipped" | "archived"`, `confidential?: boolean` — rendered by `ResultBlock` above the MDX body on the post page (only when `result` is set). `client` should be a type, not a name, unless the client has agreed otherwise; set `confidential: true` instead of vague wording when a detail can't be named.
 
 Array-valued frontmatter (like `stack`) uses the same `[...]` JSON syntax as `tags`, e.g. `stack: ["Next.js", "Redis"]`.
+
+## Publishing with Claude Code
+
+Drafts live outside this repo. To publish one, run `/publish-post <path-to-draft>` (`.md` or `.mdx`, several paths allowed). The skill copies the draft into `app/writings/posts/`, converts Obsidian syntax, copies images to `public/<slug>/`, stamps `publishedAt`, registers new tags and validates the content index. It never modifies the source file. See `.claude/skills/publish-post/SKILL.md`.
+
+The `npm run publish` script below is the older alternative and works without Claude Code.
 
 ## Quick start
 

@@ -129,9 +129,9 @@ module.exports = {
         destination: "/posts/LingoBun/lingobun-overview",
         permanent: true,
       },
-      // These three were "coming soon" placeholders and now live in
-      // app/_drafts/case-studies until written up — their specific slugs no
-      // longer resolve, so send visitors to the Projects index instead.
+      // These three were "coming soon" placeholders, unpublished until written
+      // up — their specific slugs no longer resolve, so send visitors to the
+      // Projects index instead.
       {
         source: "/portfolio/case-study-3",
         destination: "/projects",
