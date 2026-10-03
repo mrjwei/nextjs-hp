@@ -219,7 +219,7 @@ Putting the components together produced a serverless architecture that covers e
 
 ### Four things called "username"
 
-After login moved to Cognito, a wave of 401 errors appeared across the later user stories. The root cause was naming: a single user had four different things called "username". There was the JSON field the client sends, the app's own `username` attribute, Cognito's immutable internal `Username` (a UUID, because this user pool rejects email-format usernames), and the `USERNAME` parameter of `InitiateAuth`, which accepts that UUID or a verified email alias. The bug sat in the first one: the login handler read `email` from the request body, but the client sent `username`. I wrote up the full investigation in [Four Things Called "Username": An Email-vs-Username Login Bug in Amazon Cognito](/posts/Strobe/four-things-called-username-an-email-vs-username-login-bug-in-amazon-cognito).
+After login moved to Cognito, a wave of 401 errors appeared across the later user stories. The root cause was naming: a single user had four different things called "username". There was the JSON field the client sends, the app's own `username` attribute, Cognito's immutable internal `Username` (a UUID, because this user pool rejects email-format usernames), and the `USERNAME` parameter of `InitiateAuth`, which accepts that UUID or a verified email alias. The bug sat in the first one: the login handler read `email` from the request body, but the client sent `username`. I wrote up the full investigation in [Four Things Called "Username": An Email-vs-Username Login Bug in Amazon Cognito](/posts/AWS/four-things-called-username-an-email-vs-username-login-bug-in-amazon-cognito).
 
 ### In-memory habits don't survive the move to DynamoDB
 
