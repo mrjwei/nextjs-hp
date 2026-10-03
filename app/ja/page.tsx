@@ -11,14 +11,24 @@ import { JsonLd } from "@/components/json-ld"
 import { buildPersonJsonLd } from "app/seo/person"
 import {
   getAllSortedWritings,
-  getLatestProjects,
+  groupProjects,
+  pickHighlights,
 } from "app/utils"
-import { profile } from "app/content/profile"
+import { highlights, profile } from "app/content/profile"
 
 export default function Page() {
   const writings = getAllSortedWritings("ja")
-  const projects = getLatestProjects(writings, 4)
-  const latestPosts = writings.slice(0, 4)
+  const projects = pickHighlights(groupProjects(writings), {
+    pinned: highlights.projects,
+    keyOf: (project) => project.id,
+    limit: 4,
+  })
+  // Skip posts already shown as a project card above.
+  const projectLeads = new Set(projects.map((project) => project.lead.slug))
+  const latestPosts = pickHighlights(
+    writings.filter((writing) => !projectLeads.has(writing.slug)),
+    { pinned: highlights.posts, keyOf: (writing) => writing.slug, limit: 4 }
+  )
   const p = profile.ja
 
   return (
@@ -96,7 +106,7 @@ export default function Page() {
         </div>
       </div>
 
-      {/* Featured posts */}
+      {/* Posts */}
       <div className="w-full border-t border-[var(--border-subtle)]">
         <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
           <div className="mb-10 flex items-end justify-between">

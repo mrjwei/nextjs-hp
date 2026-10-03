@@ -22,7 +22,9 @@ Every entry lives under `/posts` (`/posts/[slug]`, or `/posts/[collection]/[slug
 
 To add a new project: set `project: "<ID>"` (one word, at most 12 characters, e.g. `"LingoBun"`, `"AI+Sec"`) — no routing or content-index change needed. Use the same ID on every post that belongs to that project, and on the JA translation.
 
-`/projects` (and Home's "Selected projects") show **one card per project** (`groupProjects` in `app/utils/index.ts`). Projects are ordered newest first by each project's most recent post, the same as `/posts`. The card shows the project's lead post (lowest `featured`, else most recent), so give the overview post the lowest `featured`. When a project spans several posts, the card shows an "N articles" badge and links to `/projects/<project-slug>`, a page listing every post in the project. The slug is the lowercased ID with non-alphanumerics as hyphens, e.g. `AI+Sec` → `/projects/ai-sec`. A single-post project's card links straight to the post. The project badge on post pages links to the project page.
+`/projects` (and Home's "Selected projects") show **one card per project** (`groupProjects` in `app/utils/index.ts`). Projects are ordered newest first by each project's most recent post, the same as `/posts`. The card shows the project's lead post (the one with `lead: true`, else the most recent), so mark the overview post `lead: true`. When a project spans several posts, the card shows an "N articles" badge and links to `/projects/<project-slug>`, a page listing every post in the project. The slug is the lowercased ID with non-alphanumerics as hyphens, e.g. `AI+Sec` → `/projects/ai-sec`. A single-post project's card links straight to the post. The project badge on post pages links to the project page.
+
+Home shows 4 projects and 4 posts, newest first, skipping posts already shown as a project card. To pin something there regardless of date, add its project ID or post slug to `highlights` in `app/content/profile.ts`. Pins come first in the listed order and the remaining slots fill with the latest. One list covers EN and JA.
 
 The `casestudy` tag is an ordinary tag; it has no effect on routing or on `/projects`.
 
@@ -33,7 +35,7 @@ Old URLs (`/writings/*`, `/work`, `/work/[slug]`, and the `/ja` equivalents) per
 All optional; see `docs/templates/case-study.mdx` for the full skeleton and `ResultBlock`/`WorkCard` (`components/`) for how they render:
 
 - `project?: string` — see above.
-- `featured?: number` — picks the project's lead post (lowest wins); it doesn't affect list order. See `groupProjects` in `app/utils/index.ts`.
+- `lead?: boolean` — marks the post that represents its project on cards (one per project). It doesn't affect list order. See `groupProjects` in `app/utils/index.ts`.
 - `track?: "ai-engineering" | "product-design" | "security" | "research"` — powers the track filter on `/projects`.
 - `draft?: boolean` — excluded from all grids, search, sitemap, RSS, and direct URL access in production (`npm run build`/deploy); still fully visible in `npm run dev`. Unfinished drafts don't live in this repo: they stay outside it (e.g. in the Obsidian vault) until published with `/publish-post <path>`.
 - `archived?: boolean` — excluded from all grids, search, sitemap and RSS, and its URL returns 404 (in dev too).

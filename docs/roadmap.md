@@ -31,7 +31,7 @@ Related docs: `docs/publish.md` (content model, frontmatter, publishing), `docs/
 
 1. **Proof before prose.** Every section answers "how do I know?" with a number, a diagram, a repo or an eval result. No adjectives without evidence.
 2. **Outcome-first case studies.** Put the result on the first screen, then: constraint → system → evaluation → what I chose not to do → craft.
-3. **Positioning is data, not markup.** Role, headline, proof, focus tags, socials and feature flags live in `app/content/profile.ts`. To change direction, edit that file and re-rank `featured` content; don't rewrite pages.
+3. **Positioning is data, not markup.** Role, headline, proof, socials, feature flags and Home `highlights` live in `app/content/profile.ts`. To change direction, edit that file (including what's pinned in `highlights`); don't rewrite pages.
 4. **Restraint.** Keep the existing tokens, type (Newsreader + Geist, Noto Sans JP on `/ja`) and the single accent. No dark mode, animation library, gradients, stock imagery, emoji, animated counters or employer logo walls.
 5. **Bilingual parity by construction.** Long prose lives in per-language MDX so the `translate` skill can keep EN and JA in sync.
 
@@ -53,9 +53,9 @@ EN                                   JA
 ```
 
 - **Header**: Posts · Projects · About (logo = Home), search, LinkedIn, GitHub. Active state uses prefix matching. Instagram, Gallery and email are in the footer.
-- **Home**: hero (from `profile.ts`) → proof strip (static) → selected projects (one card per project, ordered by `featured`) → How I work (static) → featured posts.
+- **Home**: hero (from `profile.ts`) → proof strip (static) → selected projects (one card per project) → How I work (static) → posts. Both lists show `highlights` pins first, then the latest.
 - **Projects** are a *view* over posts: any post with a `project` ID. `/posts` URLs are always canonical. `/writings/*`, `/work/*` and `/portfolio/*` 301 to the new paths. Full rules are in `docs/publish.md`.
-- **Content knobs**: `project`, `featured`, `track`, `draft`, `archived`, plus the case-study fields (`role`, `client`, `industry`, `duration`, `stack`, `status`, `confidential`). They're validated in both `app/utils/index.ts` (zod) and `scripts/generate-content-index.mjs`.
+- **Content knobs**: `project`, `lead`, `track`, `draft`, `archived`, plus the case-study fields (`role`, `client`, `industry`, `duration`, `stack`, `status`, `confidential`). They're validated in both `app/utils/index.ts` (zod) and `scripts/generate-content-index.mjs`.
 - **Drafts** live outside the repo. Publish with `/publish-post <path>`.
 
 ### Where the 23 Sep plan landed
@@ -83,7 +83,7 @@ EN                                   JA
 - [ ] **JSON-LD after graduation**: switch QUT from `affiliation` to `alumniOf` in `app/seo/person.ts`.
 - [ ] **Phase 7 advisory module** (optional, ships dark; see §5).
 
-### Content (each becomes a `featured` project)
+### Content (each becomes a project)
 
 Until items 1–3 are live, Home's "Selected projects" shows LingoBun, AI+Sec (the two security-pipeline posts) and the AI-guidelines audit. That is the current state.
 
@@ -93,7 +93,7 @@ Until items 1–3 are live, Home's "Selected projects" shows LingoBun, AI+Sec (t
 4. [x] **LingoBun** reframed as AI product hardening (`featured: 1`).
 5. [ ] **WAmazing** (design track): its outcome number is the strongest (200+/week → ~4), but it shouldn't be featured above the AI work. Placeholder now lives outside the repo.
 6. [ ] **GoNOW design-ops**: "Eleven versions of one yellow badge" post and the case study. Both carried over from the Month-1 plan. Lower priority than 1–3 under the AI positioning.
-7. [ ] Use the `translate` skill on every case study that becomes `featured`.
+7. [ ] Use the `translate` skill on every case study pinned in `highlights`.
 
 ### Tracked elsewhere (no work in this repo)
 
