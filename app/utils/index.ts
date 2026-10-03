@@ -422,17 +422,10 @@ export function isProject(metadata: Pick<TMetadata, "project">) {
   return !!metadata.project
 }
 
-// Home/Projects order: lower `featured` first, then most recent; unfeatured
-// items sort after all featured ones (see profile.ts §4).
-export function sortProjects<T extends TContentMeta>(items: T[]): T[] {
-  return [...items].sort((a, b) => {
-    const featuredA = a.metadata.featured ?? Number.POSITIVE_INFINITY
-    const featuredB = b.metadata.featured ?? Number.POSITIVE_INFINITY
-    if (featuredA !== featuredB) return featuredA - featuredB
-    return new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
-      ? -1
-      : 1
-  })
+function byNewest(a: TContentMeta, b: TContentMeta) {
+  return new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
+    ? -1
+    : 1
 }
 
 // URL segment for a project ID: "LingoBun" -> "lingobun", "AI+Sec" -> "ai-sec".
@@ -451,40 +444,42 @@ export function getProjectHref(project: string, lang: Lang = "en") {
 export type TProject = {
   id: string
   slug: string
-  // The post that represents the project on cards: the first by sortProjects
-  // (lowest `featured`, else most recent), typically its overview.
+  // The post that represents the project on cards: the one with the lowest
+  // `featured`, else the most recent. Typically its overview.
   lead: TContentMeta
-  // Every post sharing the project ID, in sortProjects order (lead first).
+  // Every post sharing the project ID: the lead first, then newest first.
   items: TContentMeta[]
   track?: WorkTrack
 }
 
-// Groups project posts by their `project` ID, one entry per project, ordered
-// by each project's lead post (so the same order as sortProjects).
+// Groups project posts by their `project` ID, one entry per project, newest
+// first by each project's most recent post (same order as /posts).
 export function groupProjects(items: TContentMeta[]): TProject[] {
   const byId = new Map<string, TContentMeta[]>()
-  for (const item of sortProjects(items.filter((i) => isProject(i.metadata)))) {
+  for (const item of items.filter((i) => isProject(i.metadata)).sort(byNewest)) {
     const id = item.metadata.project!
     if (!byId.has(id)) byId.set(id, [])
     byId.get(id)!.push(item)
   }
-  return Array.from(byId.entries()).map(([id, posts]) => ({
-    id,
-    slug: getProjectSlug(id),
-    lead: posts[0],
-    items: posts,
-    track: posts.find((p) => p.metadata.track)?.metadata.track,
-  }))
+  return Array.from(byId.entries()).map(([id, posts]) => {
+    const lead = posts.reduce((best, post) =>
+      (post.metadata.featured ?? Infinity) < (best.metadata.featured ?? Infinity)
+        ? post
+        : best
+    )
+    return {
+      id,
+      slug: getProjectSlug(id),
+      lead,
+      items: [lead, ...posts.filter((p) => p !== lead)],
+      track: posts.find((p) => p.metadata.track)?.metadata.track,
+    }
+  })
 }
 
-// Home "Selected projects": the `limit` projects whose lead post is most
-// recent, ignoring `featured` ordering.
+// Home "Selected projects": the `limit` most recent projects.
 export function getLatestProjects(items: TContentMeta[], limit: number): TProject[] {
-  return groupProjects(items)
-    .sort((a, b) =>
-      new Date(a.lead.metadata.publishedAt) > new Date(b.lead.metadata.publishedAt) ? -1 : 1
-    )
-    .slice(0, limit)
+  return groupProjects(items).slice(0, limit)
 }
 
 // Home "Featured writing" (see docs/roadmap/2026-09-ai-repositioning-brushup.md
