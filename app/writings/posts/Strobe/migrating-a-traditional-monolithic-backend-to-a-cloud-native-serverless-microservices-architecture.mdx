@@ -1,0 +1,253 @@
+---
+title: "Migrating a Traditional Monolithic Backend to a Cloud-Native Serverless Microservices Architecture"
+slug: "migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture"
+publishedAt: "2026-10-03"
+summary: "How I moved Strobe, a photo-sharing app, from a single FastAPI monolith to API Gateway, Lambda, Cognito, DynamoDB and S3 without changing its API contract, and the in-memory assumptions that didn't survive the move."
+tags: ["casestudy", "dev", "security", "aws", "qut"]
+project: "Strobe"
+result: "Replaced a single FastAPI process with 27 API Gateway routes, six Lambda functions and six DynamoDB tables, moved credentials to Cognito and media to a private S3 bucket, and kept the API contract unchanged: the deployed API passed all 10 autograded user stories."
+stack: ["AWS Lambda", "API Gateway", "Cognito", "DynamoDB", "S3", "Python"]
+---
+
+- [The context](#the-context)
+  - [The monolith](#the-monolith)
+- [The cloud-native architecture design](#the-cloud-native-architecture-design)
+  - [Mapping monolithic components to AWS services](#mapping-monolithic-components-to-aws-services)
+    - [Routes to Lambdas](#routes-to-lambdas)
+    - [Authentication](#authentication)
+    - [Media](#media)
+    - [Data](#data)
+  - [The new cloud-native, serverless architecture](#the-new-cloud-native-serverless-architecture)
+- [Challenges and limitations](#challenges-and-limitations)
+  - [Four things called "username"](#four-things-called-username)
+  - [In-memory habits don't survive the move to DynamoDB](#in-memory-habits-dont-survive-the-move-to-dynamodb)
+  - [Upload validation was lost](#upload-validation-was-lost)
+  - [Built by hand in the console](#built-by-hand-in-the-console)
+- [Takeaways](#takeaways)
+
+## The context
+
+*Strobe* is a photo-sharing social app similar to Instagram: users share photos with family and friends, post short-lived moments, follow other users, and like and comment on posts. Migrating its backend to AWS was the first assessment in the Cloud Computing unit (CAB432) of my Master of IT at QUT.
+
+The brief came with constraints that shaped every decision. The React frontend could not be changed, so the API contract had to stay exactly the same. The work ran in a shared course AWS account with a fixed set of services and a pre-scoped IAM execution role I couldn't modify. And an autograder tested the deployed API against 10 user stories.
+
+**At a glance:** 27 API routes · 6 Lambda functions · 6 DynamoDB tables · 0 API contract changes · all 10 user stories passed
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture/strobe-feed.png"
+    alt="Strobe's feed screen"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Strobe: feed</figcaption>
+</figure>
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture/strobe-profile.png"
+    alt="Strobe's profile screen"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Strobe: profile</figcaption>
+</figure>
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture/strobe-moment.png"
+    alt="Strobe's moment screen"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Strobe: moment</figcaption>
+</figure>
+
+### The monolith
+
+The app came with all of these features already implemented, but the backend was a single FastAPI monolith run by Uvicorn on one machine.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture/4-original-monolith.png"
+    alt="The original monolith: one FastAPI process handling routing, auth, business logic, JSON storage and file uploads"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>The original monolithic backend</figcaption>
+</figure>
+
+One Python process handled everything:
+
+- CORS
+- Routing (8 routers, 29 routes)
+- Authentication
+- Business logic
+- Data storage in a JSON file
+- File uploads and serving
+
+Authentication was hand-rolled: tokens were signed with a single static `JWT_SECRET` (HS256), and `bcrypt` password hashes sat in the same JSON file as everything else. This was a real security risk. Because one secret both signs and verifies tokens, anyone who obtained it could forge a valid token with any `sub` or `role`, including a moderator's. And anyone who obtained `db.json` would get the full credential dataset and could tamper with application data.
+
+```python
+def generate_token(user: dict) -> str:
+	"""Generate a signed JWT for the authenticated user."""
+	payload = {
+		"sub": user["id"],
+		"role": user["role"],
+		"username": user["username"],
+		"exp": datetime.now(timezone.utc) + timedelta(hours=TOKEN_EXPIRY_HOURS),
+	}
+	return jwt.encode(payload, settings.jwt_secret, algorithm="HS256")
+```
+
+```json
+// db.json
+"users": [
+	{
+		"id": "d819f8dbxxxxxx",
+		"username": "xxx@example.org",
+		"email": "xxx@example.org",
+		"password": "$2b$10xxxxxx",
+		"role": "moderator",
+		"createdAt": "2024-11-22T22:07:49.851764Z",
+		"updatedAt": "2026-08-01T23:26:43.281541Z"
+	},
+	...
+]
+```
+
+The whole database was loaded into an in-memory dictionary at startup, and the entire `db.json` was rewritten on every change. That was inefficient, had no locking for concurrent writes, and left no restore point if the file was lost.
+
+Photos were uploaded through the API to a local `uploads/` directory and served from a public path that required no login, so every image link stayed valid forever.
+
+This worked fine for a single developer, but the only way to scale was to run another copy of the whole process, and every feature shared the same failure modes.
+
+## The cloud-native architecture design
+
+### Mapping monolithic components to AWS services
+
+I started by mapping each key component of the original backend to an AWS service:
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture/5-migration-map.png"
+    alt="Migration map from each monolith component to its AWS service"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Mapping monolith components to AWS services</figcaption>
+</figure>
+
+One rule held throughout: the API contract stayed the same, so the unmodified React client kept working.
+
+The front door became an API Gateway HTTP API on a custom domain, with an ACM certificate and a Route 53 alias record. I chose HTTP API over REST API because it costs less, adds less latency, and has a built-in JWT authoriser.
+
+The single process became six Lambda functions, so each domain scales per request, costs nothing when idle, and fails independently. The handlers are plain Python functions with no bundled dependencies (boto3 ships with the runtime) rather than FastAPI behind an ASGI adapter. Each deployment package is a single file, so deploys take seconds and cold starts stay short.
+
+Identity, data, media, and logs each moved to a service built for that job.
+
+#### Routes to Lambdas
+
+The HTTP API has 27 routes served by six Lambdas; the monolith's upload `PUT` route was retired because image bytes now go straight to S3. The split follows URL ownership: comment routes sit under `/v1/posts/...` and live in `post`, and follow routes sit under `/v1/users/...` and live in `user`. This avoids both one giant Lambda and 27 tiny ones. Authorisation is set per route: 9 routes are public, 17 require a Cognito token, and 2 moderator actions also check the `cognito:groups` claim inside the Lambda.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture/6-routes-to-lambdas.png"
+    alt="The 27 API routes grouped by the six Lambda functions that serve them"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Routes to Lambdas</figcaption>
+</figure>
+
+#### Authentication
+
+Before, one secret both signed and verified every token, so anyone holding `JWT_SECRET` could mint a token for any identity, moderator included. Every protected request also had to look the user up in `db.json`.
+
+After, Cognito owns passwords and signs tokens with its own keys, and API Gateway checks each token's signature, issuer, audience, and expiry before any Lambda runs. A bad token gets a 401 at the edge without invoking, or paying for, any compute. Moderator rights come from the signed `cognito:groups` claim rather than a `role` field the app itself could edit.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture/7-auth-before-after.png"
+    alt="Authentication before (static JWT secret and db.json lookup) and after (Cognito tokens verified by API Gateway)"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Authentication: before and after</figcaption>
+</figure>
+
+#### Media
+
+Before, every photo byte passed through the API process, and stored links stayed public forever. After, the Lambda only signs URLs: an upload URL is valid for 240 seconds and bound to the object key `userId/postId/fileId`, and a read URL is valid for one hour. Signing is a local calculation, so the Lambda never calls S3 or handles image bytes; the client uploads to and downloads from a private S3 bucket directly, with Block Public Access fully on. This sidesteps API Gateway and Lambda payload limits, keeps file transfer off the compute bill, and means no link stays valid forever.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture/8-media-before-after-v2.png"
+    alt="Media handling before (uploads through the API to local disk) and after (presigned URLs to a private S3 bucket)"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Media: before and after</figcaption>
+</figure>
+
+#### Data
+
+One file became six DynamoDB tables, one per entity, all on on-demand capacity with point-in-time recovery over a 7-day window. The grid shows that each Lambda touches only the tables it needs: `feed` only reads, `upload` never touches DynamoDB, and `user` is the only function that deletes from other domains' tables, cascading an account removal to that user's posts, comments, likes, and follows.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture/9-data-before-after.png"
+    alt="Data before (one db.json file) and after (six DynamoDB tables), with a grid of which Lambda accesses which table"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Data: before and after</figcaption>
+</figure>
+
+Strictly speaking, these are domain-scoped functions rather than textbook microservices: several Lambdas read each other's tables instead of each owning its data behind its own API. At this scale that trade-off kept the code simple, but it is the first boundary I would tighten as the system grows.
+
+### The new cloud-native, serverless architecture
+
+Putting the components together produced a serverless architecture that covers every feature of the original backend, with stronger security, better scalability, and easier maintenance:
+
+- **Identity:** Cognito owns credentials and token issuance, and profile data lives in a dedicated DynamoDB table instead of a local JSON file. The app no longer stores password hashes or signing keys.
+- **Edge:** All traffic arrives over HTTPS (TLS 1.2 minimum) through API Gateway, which manages routes in one place and enforces an authentication boundary in front of protected paths.
+- **Compute:** Business logic is split across six Lambdas by domain. A fault or timeout in one function does not take down the others, and per-function CloudWatch log groups make failures traceable after the fact.
+- **Media:** Photos move directly between the client and S3 through short-lived presigned URLs, which keeps media handling out of the API entirely.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture/1-architecture-overview.png"
+    alt="Overview of the serverless architecture: Route 53, ACM and an API Gateway HTTP API with a JWT authoriser in front of six Lambda functions, with Cognito, SES, DynamoDB, S3 and CloudWatch Logs"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>The new serverless architecture</figcaption>
+</figure>
+
+## Challenges and limitations
+
+### Four things called "username"
+
+After login moved to Cognito, a wave of 401 errors appeared across the later user stories. The root cause was naming: a single user had four different things called "username". There was the JSON field the client sends, the app's own `username` attribute, Cognito's immutable internal `Username` (a UUID, because this user pool rejects email-format usernames), and the `USERNAME` parameter of `InitiateAuth`, which accepts that UUID or a verified email alias. The bug sat in the first one: the login handler read `email` from the request body, but the client sent `username`. I wrote up the full investigation in [Four Things Called "Username": An Email-vs-Username Login Bug in Amazon Cognito](/posts/Strobe/four-things-called-username-an-email-vs-username-login-bug-in-amazon-cognito).
+
+### In-memory habits don't survive the move to DynamoDB
+
+My first port kept the monolith's access patterns: for each post, look up the author and count its likes and comments. Against an in-memory dictionary, that costs nothing. Against DynamoDB, it meant one author lookup plus two full-table scans per post, all run in sequence. A 50-post profile page needed around 150 round trips and ran past Lambda's default 3-second timeout, which API Gateway returned as a 500.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture/lambda-timeout-cliff.png"
+    alt="Line chart: response time for a user's posts rose from 1.1 s for 1 post to about 3.25 s for 50 posts, past Lambda's 3-second default timeout"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Per-post lookups against DynamoDB hit Lambda's timeout</figcaption>
+</figure>
+
+I rewrote the enrichment step to scan each table once per request and aggregate the counts in memory. The deeper fix, designing keys and secondary indexes around the queries the app actually makes, is still outstanding: many reads are still `Scan`s, and they will get slower and more expensive as the tables grow.
+
+### Upload validation was lost
+
+The monolith checked each file's MIME type and capped it at 10 MB before writing it to disk. With presigned `PUT` URLs, bytes go straight to S3 and never pass through my code, so those checks disappeared. A presigned `POST` with policy conditions on content type and `content-length-range` would restore them at the storage layer.
+
+### Built by hand in the console
+
+The architecture scales, but the way I built it doesn't. I configured most resources through the AWS web console; only Lambda code deploys were scripted. Rebuilding the stack in another account or region would mean repeating dozens of manual steps, and configuration drift stays invisible. For example, Cognito's app client defaulted to 60-minute tokens, and because the frontend has no refresh logic, users were silently locked out of protected features after an hour until they logged in again. In infrastructure as code, that setting would have been explicit and reviewable. Defining the stack in Terraform or CDK is the first thing I'd change.
+
+## Takeaways
+
+The monolithic backend seemed overwhelming at first, but breaking it down into functional modules made the migration manageable. The key was not trying to design the final architecture in one go. Instead, I started with a single module and built the other services around it, one at a time. Because AWS services are loosely coupled and composable, each component could be plugged in, tested, and swapped out on its own, which kept development fast and contained.
+
+I built most of the stack in the AWS web console, which I've listed above as a limitation, yet it was also the best way to learn. AWS has so many services and options that the console's interactive view made the relationships between services, and the configuration each one exposes, far easier to grasp than documentation alone, and it made experimenting cheap. Now that I understand what each setting does, codifying it is the natural next step.
+
+Above all, the project showed me that moving a system to the cloud is not the same as designing for it. Components map neatly to managed services, but their hidden assumptions don't: data access that is free in memory becomes network calls, and validation that lived in the request path vanishes once bytes bypass it. Finding those assumptions was the most valuable part of the work.
