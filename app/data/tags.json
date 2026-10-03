@@ -15,5 +15,7 @@
   "evals": { "color": "#ea580c" },
   "rag": { "color": "#a16207" },
   "agents": { "color": "#4338ca" },
-  "mlops": { "color": "#15803d" }
+  "mlops": { "color": "#15803d" },
+  "aws": { "color": "#b81463" },
+  "qut": { "color": "#b8143a" }
 }
