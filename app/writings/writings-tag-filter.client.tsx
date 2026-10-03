@@ -450,8 +450,10 @@ export function WritingsTagFilter({
   )
 
   return (
-    <section className="grid grid-cols-12 gap-8 pt-[var(--header-height)]">
-      <aside className="hidden md:block bg-[var(--surface-sunken)] border-r border-[var(--border-subtle)] p-8 md:col-span-3 sticky md:top-[var(--header-height)] h-screen overflow-y-auto">
+    <section className="flex gap-8 pt-[var(--header-height)]">
+      {/* Fixed-width sidebar, shown only from lg: below that the cards'
+          2-column grid (md) would be squeezed, so the inline filters are used. */}
+      <aside className="hidden lg:block w-80 shrink-0 bg-[var(--surface-sunken)] border-r border-[var(--border-subtle)] p-8 sticky lg:top-[var(--header-height)] h-screen overflow-y-auto">
         <SeriesList series={series} basePath={basePath} variant="desktop" t={labels} />
 
         <h2 className="eyebrow mb-4">{labels.filterByTag}</h2>
@@ -466,11 +468,11 @@ export function WritingsTagFilter({
         />
       </aside>
 
-      <div className="col-span-12 px-6 py-8 md:col-span-9 md:pl-0 md:pr-8">
+      <div className="min-w-0 flex-1 px-6 py-8 lg:pl-0 lg:pr-8">
         <div className="mb-8">
           {heading}
 
-          <div className="block md:hidden mb-4">
+          <div className="block lg:hidden mb-4">
             <SeriesList series={series} basePath={basePath} variant="mobile" t={labels} />
             <TagList
               tags={tags}
