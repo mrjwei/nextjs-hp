@@ -477,6 +477,16 @@ export function groupProjects(items: TContentMeta[]): TProject[] {
   }))
 }
 
+// Home "Selected projects": the `limit` projects whose lead post is most
+// recent, ignoring `featured` ordering.
+export function getLatestProjects(items: TContentMeta[], limit: number): TProject[] {
+  return groupProjects(items)
+    .sort((a, b) =>
+      new Date(a.lead.metadata.publishedAt) > new Date(b.lead.metadata.publishedAt) ? -1 : 1
+    )
+    .slice(0, limit)
+}
+
 // Home "Featured writing" (see docs/roadmap/2026-09-ai-repositioning-brushup.md
 // §3): featured items first (lower `featured` wins), then the most recent
 // remaining posts whose tags intersect the profile's `focusTags`. Items

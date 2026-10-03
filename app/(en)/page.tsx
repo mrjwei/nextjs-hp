@@ -10,19 +10,14 @@ import { JsonLd } from "@/components/json-ld"
 import { buildPersonJsonLd } from "app/seo/person"
 import {
   getAllSortedWritings,
-  getFeaturedWritings,
-  groupProjects,
+  getLatestProjects,
 } from "app/utils"
 import { profile } from "app/content/profile"
 
 export default function Page() {
   const writings = getAllSortedWritings()
-  const projects = groupProjects(writings).slice(0, 3)
-  const featuredWriting = getFeaturedWritings(writings, {
-    focusTags: profile.en.focusTags,
-    limit: 4,
-    excludeSlugs: projects.map((p) => p.lead.slug),
-  })
+  const projects = getLatestProjects(writings, 4)
+  const latestPosts = writings.slice(0, 4)
   const p = profile.en
 
   return (
@@ -101,7 +96,7 @@ export default function Page() {
         <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
           <div className="mb-10 flex items-end justify-between">
             <div>
-              <span className="eyebrow">Featured</span>
+              <span className="eyebrow">Latest</span>
               <h2 className="mt-2.5 text-3xl font-semibold tracking-tight text-[var(--text-strong)]">
                 Posts
               </h2>
@@ -114,7 +109,7 @@ export default function Page() {
               <ArrowRight className="size-4" />
             </Link>
           </div>
-          <Grid writings={featuredWriting} path="writings" />
+          <Grid writings={latestPosts} path="writings" />
         </div>
       </div>
     </section>
