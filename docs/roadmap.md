@@ -55,7 +55,7 @@ EN                                   JA
 - **Header**: Posts · Projects · About (logo = Home), search, LinkedIn, GitHub. Active state uses prefix matching. Instagram, Gallery and email are in the footer.
 - **Home**: hero (from `profile.ts`) → proof strip (static) → selected projects (one card per project, ordered by `featured`) → How I work (static) → featured posts.
 - **Projects** are a *view* over posts: any post with a `project` ID. `/posts` URLs are always canonical. `/writings/*`, `/work/*` and `/portfolio/*` 301 to the new paths. Full rules are in `docs/publish.md`.
-- **Content knobs**: `project`, `featured`, `track`, `draft`, `archived`, plus the case-study fields (`result`, `role`, `client`, `industry`, `duration`, `stack`, `status`, `confidential`). They're validated in both `app/utils/index.ts` (zod) and `scripts/generate-content-index.mjs`.
+- **Content knobs**: `project`, `featured`, `track`, `draft`, `archived`, plus the case-study fields (`role`, `client`, `industry`, `duration`, `stack`, `status`, `confidential`). They're validated in both `app/utils/index.ts` (zod) and `scripts/generate-content-index.mjs`.
 - **Drafts** live outside the repo. Publish with `/publish-post <path>`.
 
 ### Where the 23 Sep plan landed

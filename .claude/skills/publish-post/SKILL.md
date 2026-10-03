@@ -82,7 +82,7 @@ tags: ["tag1", "tag2"]
 - **`publishedAt`**: today's date with no time (`date +%F`), whatever value the draft had.
 - **`summary`**: keep it if present; otherwise write one or two sentences.
 - **`tags`**: must be a non-empty array (the content-index build fails otherwise). Keep the draft's tags, or infer them from the content. Read `app/data/tags.json` and reuse existing tags where they fit. Use a new tag only when no existing one fits.
-- Keep any other frontmatter the draft has (`project`, `featured`, `track`, `result`, `series*`, `partOf*`, etc.). For project and case-study fields, see `docs/publish.md` and `docs/templates/case-study.mdx`.
+- Never add a `result` field, and drop it if a draft has one. Keep any other frontmatter the draft has (`project`, `featured`, `track`, `series*`, `partOf*`, etc.). For project and case-study fields, see `docs/publish.md` and `docs/templates/case-study.mdx`.
 - Drop Obsidian-only frontmatter the site doesn't use (`aliases`, `cssclasses`, `created`, `updated`, etc.).
 
 ### 5a. Register new tags

@@ -5,7 +5,6 @@ publishedAt: "2026-10-03"
 summary: "How I moved Strobe, a photo-sharing app, from a single FastAPI monolith to API Gateway, Lambda, Cognito, DynamoDB and S3 without changing its API contract, and the in-memory assumptions that didn't survive the move."
 tags: ["casestudy", "dev", "security", "aws", "qut"]
 project: "Strobe"
-result: "Replaced a single FastAPI process with 27 API Gateway routes, six Lambda functions and six DynamoDB tables, moved credentials to Cognito and media to a private S3 bucket, and kept the API contract unchanged: the deployed API passed all 10 autograded user stories."
 stack: ["AWS Lambda", "API Gateway", "Cognito", "DynamoDB", "S3", "Python"]
 ---
 
