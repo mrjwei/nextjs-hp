@@ -26,7 +26,8 @@ export type TMetadata = {
   partNumber?: number
   lang?: Lang
   // Positioning-as-data content knobs (see docs/roadmap/2026-09-ai-repositioning-brushup.md §4).
-  featured?: number
+  // Marks the post that represents its project on cards (see groupProjects).
+  lead?: boolean
   track?: WorkTrack
   draft?: boolean
   // Short one-word project ID (e.g. "LingoBun"). Its presence makes the post a
@@ -123,7 +124,7 @@ const baseFrontmatterSchema = z.object({
   partOf: z.string().min(1).optional(),
   partOfTitle: z.string().min(1).optional(),
   partNumber: z.number().int().positive().optional(),
-  featured: z.number().int().positive().optional(),
+  lead: z.boolean().optional(),
   track: workTrackSchema.optional(),
   draft: z.boolean().optional(),
   project: z
@@ -444,8 +445,8 @@ export function getProjectHref(project: string, lang: Lang = "en") {
 export type TProject = {
   id: string
   slug: string
-  // The post that represents the project on cards: the one with the lowest
-  // `featured`, else the most recent. Typically its overview.
+  // The post that represents the project on cards: the one marked `lead`
+  // (typically its overview), else the most recent.
   lead: TContentMeta
   // Every post sharing the project ID: the lead first, then newest first.
   items: TContentMeta[]
@@ -462,11 +463,7 @@ export function groupProjects(items: TContentMeta[]): TProject[] {
     byId.get(id)!.push(item)
   }
   return Array.from(byId.entries()).map(([id, posts]) => {
-    const lead = posts.reduce((best, post) =>
-      (post.metadata.featured ?? Infinity) < (best.metadata.featured ?? Infinity)
-        ? post
-        : best
-    )
+    const lead = posts.find((p) => p.metadata.lead) ?? posts[0]
     return {
       id,
       slug: getProjectSlug(id),
@@ -477,36 +474,17 @@ export function groupProjects(items: TContentMeta[]): TProject[] {
   })
 }
 
-// Home "Selected projects": the `limit` most recent projects.
-export function getLatestProjects(items: TContentMeta[], limit: number): TProject[] {
-  return groupProjects(items).slice(0, limit)
-}
-
-// Home "Featured writing" (see docs/roadmap/2026-09-ai-repositioning-brushup.md
-// §3): featured items first (lower `featured` wins), then the most recent
-// remaining posts whose tags intersect the profile's `focusTags`. Items
-// already surfaced elsewhere on Home (e.g. Selected work) are passed in
-// `excludeSlugs` so the two sections don't repeat the same piece.
-export function getFeaturedWritings<T extends TContentMeta>(
+// Home highlights (see `highlights` in app/content/profile.ts): the pinned
+// items first, in pin order, then the rest of `items` (already newest first)
+// up to `limit`. Pins with no match, e.g. an untranslated post, are skipped.
+export function pickHighlights<T extends object>(
   items: T[],
-  { focusTags, limit, excludeSlugs = [] }: { focusTags: string[]; limit: number; excludeSlugs?: string[] }
+  { pinned, keyOf, limit }: { pinned: string[]; keyOf: (item: T) => string; limit: number }
 ): T[] {
-  const excluded = new Set(excludeSlugs)
-  const pool = items.filter((item) => !excluded.has(item.slug))
-
-  const featured = pool
-    .filter((item) => item.metadata.featured != null)
-    .sort((a, b) => a.metadata.featured! - b.metadata.featured!)
-
-  const featuredSlugs = new Set(featured.map((item) => item.slug))
-  const rest = pool
-    .filter((item) => !featuredSlugs.has(item.slug))
-    .filter((item) => item.metadata.tags.some((tag) => focusTags.includes(tag)))
-    .sort((a, b) =>
-      new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt) ? -1 : 1
-    )
-
-  return [...featured, ...rest].slice(0, limit)
+  const byKey = new Map(items.map((item) => [keyOf(item), item]))
+  const picked = pinned.flatMap((key) => byKey.get(key) ?? [])
+  const pickedSet = new Set(picked)
+  return [...picked, ...items.filter((item) => !pickedSet.has(item))].slice(0, limit)
 }
 
 const WORK_TRACK_ORDER: WorkTrack[] = [

@@ -181,14 +181,6 @@ function assertOptionalBoolean(value, field, absFilePath) {
   }
 }
 
-function assertOptionalPositiveInt(value, field, absFilePath) {
-  if (value != null && !(Number.isInteger(value) && value > 0)) {
-    throw new Error(
-      `Invalid frontmatter in ${path.relative(CWD, absFilePath)}: ${field} must be a positive integer`
-    );
-  }
-}
-
 function assertOptionalEnum(value, field, allowed, absFilePath) {
   if (value != null && !allowed.includes(value)) {
     throw new Error(
@@ -265,7 +257,7 @@ function buildIndexSectionForLang(sectionKey, config, lang, baseDir) {
     }
 
     assertOptionalBoolean(meta.draft, "draft", absFilePath);
-    assertOptionalPositiveInt(meta.featured, "featured", absFilePath);
+    assertOptionalBoolean(meta.lead, "lead", absFilePath);
     assertOptionalEnum(meta.track, "track", WORK_TRACKS, absFilePath);
     assertOptionalStringArray(meta.stack, "stack", absFilePath);
     if (meta.project != null && !(typeof meta.project === "string" && /^\S{1,12}$/.test(meta.project))) {
@@ -300,7 +292,7 @@ function buildIndexSectionForLang(sectionKey, config, lang, baseDir) {
         partOfTitle,
         partNumber,
         lang,
-        featured: typeof meta.featured === "number" ? meta.featured : undefined,
+        lead: typeof meta.lead === "boolean" ? meta.lead : undefined,
         track: typeof meta.track === "string" ? meta.track : undefined,
         draft: typeof meta.draft === "boolean" ? meta.draft : undefined,
         project: typeof meta.project === "string" ? meta.project : undefined,

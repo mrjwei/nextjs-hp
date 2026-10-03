@@ -20,7 +20,6 @@ export type Profile = {
   meta: { title: string; description: string }
   proof: ProofItem[]
   howIWork: HowIWorkItem[]
-  focusTags: string[]
   rolesSought: string[]
   languages: string[]
   social: Social[]
@@ -57,7 +56,15 @@ const features = {
   cv: false,
 }
 
-const focusTags = ["ai", "machine-learning", "deep-learning", "security"]
+// Home highlights: pinned items show first on Home, in this order, and the
+// remaining slots fill with the most recent. Shared by EN and JA; a pin with
+// no match in a language (e.g. an untranslated post) is skipped there.
+export const highlights: { projects: string[]; posts: string[] } = {
+  // Project IDs, as in a post's `project` frontmatter, e.g. "LingoBun".
+  projects: [],
+  // Post slugs (the file name without .mdx), e.g. "ai-design-guidelines".
+  posts: [],
+}
 
 export const profile: Record<Lang, Profile> = {
   en: {
@@ -92,7 +99,6 @@ export const profile: Record<Lang, Profile> = {
         body: "Ground truth, a scoring rubric, and a re-run before every change — so \"it works\" is a number, not a feeling.",
       },
     ],
-    focusTags,
     rolesSought: [
       "Forward Deployed Engineer",
       "AI Solutions Engineer",
@@ -133,7 +139,6 @@ export const profile: Record<Lang, Profile> = {
         body: "正解データ、採点基準、変更のたびの再評価。「動いている」を感覚ではなく数値で示します。",
       },
     ],
-    focusTags,
     rolesSought: [
       "アプライドAIエンジニア",
       "Forward Deployed Engineer",
