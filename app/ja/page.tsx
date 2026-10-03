@@ -11,19 +11,14 @@ import { JsonLd } from "@/components/json-ld"
 import { buildPersonJsonLd } from "app/seo/person"
 import {
   getAllSortedWritings,
-  getFeaturedWritings,
-  groupProjects,
+  getLatestProjects,
 } from "app/utils"
 import { profile } from "app/content/profile"
 
 export default function Page() {
   const writings = getAllSortedWritings("ja")
-  const projects = groupProjects(writings).slice(0, 3)
-  const featuredWriting = getFeaturedWritings(writings, {
-    focusTags: profile.ja.focusTags,
-    limit: 4,
-    excludeSlugs: projects.map((p) => p.lead.slug),
-  })
+  const projects = getLatestProjects(writings, 4)
+  const latestPosts = writings.slice(0, 4)
   const p = profile.ja
 
   return (
@@ -119,10 +114,10 @@ export default function Page() {
               <ArrowRight className="size-4" />
             </Link>
           </div>
-          {featuredWriting.length === 0 ? (
+          {latestPosts.length === 0 ? (
             <JaEmptyNotice englishHref="/posts" englishLabel="英語版の記事を見る" />
           ) : (
-            <Grid writings={featuredWriting} path="writings" lang="ja" />
+            <Grid writings={latestPosts} path="writings" lang="ja" />
           )}
         </div>
       </div>
