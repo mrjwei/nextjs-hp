@@ -8,6 +8,7 @@ Decisions
 - Scheduled run: publishes the first due, ready entry only (one per run); blocked entries get a ⚠️ reason on their line; nothing due → skip silently.
 - Editing: proofread + light refine, UK/AU English, all non-trivial edits listed in report.
 - End state: branch post/<slug> → content index + MDX compile + npm run build → merge --no-ff to main → push. Restore public/search-index.json (Vercel regenerates it).
+- Translation labels: ignore "require translation", "translated" and any other translation-related text in queue entries. They belong to the translate skill; they never affect readiness, ordering or blocking, and are left untouched when the queue note is written.
 - Drafts are never modified; only the queue note is written.
 - Schedule from Claude Code on the Mac (Cowork VM can't push via SSH and can't clear git lock files).
 - Auto-rename published drafts with ✅ prefix and remove the "draft" tag (if present). Update docs/publish.md when old skill is removed.
