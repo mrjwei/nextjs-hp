@@ -70,6 +70,8 @@ export function ProjectView({
 
       <ResultBlock metadata={lead.metadata} lang={lang} />
 
+      <hr className="my-10 border-[var(--border-subtle)]" />
+
       <h2 className="mb-6 text-2xl font-semibold tracking-tight text-[var(--text-strong)]">
         {t.articles(items.length)}
       </h2>
