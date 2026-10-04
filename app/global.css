@@ -402,6 +402,12 @@
   color: var(--text-strong);
 }
 
+/* Divider between top-level sections (muted; uses the subtle border token) */
+.prose h2 {
+  @apply pt-8 mt-12;
+  border-top: 1px solid var(--border-subtle);
+}
+
 .prose :is(h1, h2, h3, h4) {
   scroll-margin-top: calc(var(--header-height) + 1rem);
 }
@@ -552,4 +558,38 @@ input[type="email"] {
   letter-spacing: 0;
   line-height: 1.4;
   font-feature-settings: "palt";
+}
+
+/* Japanese heading scale. Han/kana glyphs fill the full em-box, so they
+   read larger than Latin at the same size; keep h2 at ~1.25-1.5rem
+   (body stays >=16px) and let the hierarchy rest on weight + spacing. */
+:lang(ja) .prose h1 {
+  font-size: clamp(1.75rem, 2.4vw, 2.25rem);
+  line-height: 1.4;
+}
+
+:lang(ja) .prose h2 {
+  font-size: clamp(1.25rem, 1.8vw, 1.5rem);
+  line-height: 1.5;
+}
+
+:lang(ja) .prose h3 {
+  font-size: clamp(1.125rem, 1.4vw, 1.25rem);
+  line-height: 1.5;
+}
+
+:lang(ja) .prose h4 {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Table of contents: compact in JA */
+:lang(ja) .prose > ul:first-of-type {
+  @apply p-6;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+:lang(ja) .prose > ul:first-of-type:before {
+  @apply text-xs;
 }
