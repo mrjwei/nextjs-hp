@@ -18,9 +18,11 @@ Translate one or more articles and/or portfolio entries between English and Japa
 
 The backlog is the queue note used by the `publish-blog-post` skill: `~/projects/Notes/Publish Queue.md` (one checklist line per entry; see `.claude/skills/publish-blog-post/SKILL.md` for its conventions).
 
-An entry may carry an optional `require translation` label somewhere on its line (after the link, among any free-text notes). Entries without it are not touched.
+Scan only the `## Log` section of the queue note for candidates, not the checklist above it. Translation happens after the original is published, and published entries are moved into `## Log`. Entries still in the checklist above `## Log` are unpublished; ignore them even if they carry the label.
 
-For each entry labelled `require translation`, top to bottom:
+An entry in `## Log` may carry an optional `require translation` label somewhere on its line (after the link, among any free-text notes). Entries without it are not touched.
+
+For each entry in `## Log` labelled `require translation`, top to bottom:
 
 1. **Find the existing version** in this project that matches the entry name. The name is the link target or label (e.g. `[[WAmazing/注文フォームUIUXの改善|注文フォームUIUXの改善]]`), which may be a slug, a title, or a vault path. Search both locales for a matching filename/slug (ignoring any `✅` prefix and the folder in the vault path) and then by `title:` frontmatter. Search:
    - `app/writings/posts/` (EN) and `app/writings/posts-ja/` (JA)
@@ -32,7 +34,7 @@ For each entry labelled `require translation`, top to bottom:
 Don't relabel an entry that was skipped or failed. Skip and report it when:
 - no matching existing version is found, or several are equally plausible (ask which);
 - both language versions already exist (don't overwrite; report it and ask whether to relabel as `translated` or retranslate);
-- the entry is still unpublished (no version in the project yet), since there is nothing to translate from. Leave the label so it can be handled after publishing.
+- the entry is in `## Log` but no version is found in the project (nothing to translate from).
 
 Never edit anything else in the vault; the queue note is the only file there you write to, and only to flip these labels.
 

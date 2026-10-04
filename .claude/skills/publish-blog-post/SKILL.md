@@ -8,7 +8,8 @@ Decisions
 - Scheduled run: publishes the first due, ready entry only (one per run); blocked entries get a ⚠️ reason on their line; nothing due → skip silently.
 - Editing: proofread + light refine, UK/AU English, all non-trivial edits listed in report.
 - End state: branch post/<slug> → content index + MDX compile + npm run build → merge --no-ff to main → push. Restore public/search-index.json (Vercel regenerates it).
-- Translation labels: ignore "require translation", "translated" and any other translation-related text in queue entries. They belong to the translate skill; they never affect readiness, ordering or blocking, and are left untouched when the queue note is written.
+- Treat text after the draft title in the queue note as notes/instructions for Claude that must be checked. These are separated by "|".
+- Translation labels: ignore "require translation", "translated" and any other translation-related text in the notes/instructions of queue entries. They belong to the translate skill; they never affect readiness, ordering or blocking, and are left untouched when the queue note is written.
 - Check and obfuscate any PII in the draft content (e.g., company names, real person names,email addresses, phone numbers, URLs, etc.) before publishing. If any PII is found, replace it with a placeholder or remove it. When unsure, ask for guidance. The goal is to avoid publishing any sensitive information that could identify individuals or organizations.
 - Drafts are never modified; only the queue note is written.
 - Schedule from Claude Code on the Mac (Cowork VM can't push via SSH and can't clear git lock files).
