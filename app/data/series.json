@@ -11,5 +11,6 @@
   "radio-buttons": { "en": "UX Insight: Radio Buttons", "ja": "UXインサイト:ラジオボタン" },
   "LingoBun": { "en": "LingoBun", "ja": "LingoBun" },
   "AuStride": { "en": "AuStride", "ja": "AuStride" },
-  "AWS": { "en": "AWS", "ja": "AWS" }
+  "AWS": { "en": "AWS", "ja": "AWS" },
+  "strobe-assistant": { "en": "Strobe Assistant", "ja": "Strobe Assistant" }
 }
