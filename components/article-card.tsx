@@ -3,6 +3,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Tags } from "@/components/tags"
 import { ProjectBadge } from "@/components/project-badge"
+import { ComingSoonBadge } from "@/components/coming-soon-badge"
 import { formatDate } from "app/utils"
 import type { Lang } from "app/i18n/config"
 
@@ -91,6 +92,9 @@ export function WritingCard({
         <div className="p-6 pb-4 flex flex-col justify-between">
           <div>
             <div className="mb-4">
+              {article.metadata.placeholder && (
+                <ComingSoonBadge lang={lang} className="mb-3" />
+              )}
               <h3
                 className={clsx(
                   "text-lg leading-normal font-semibold mb-2 text-[var(--text-strong)] transition-colors group-hover:text-[var(--accent-text)]",

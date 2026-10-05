@@ -17,6 +17,7 @@ import { WritingCard } from "@/components/article-card"
 import { Tags } from "@/components/tags"
 import { ResultBlock } from "@/components/result-block"
 import { ProjectBadge } from "@/components/project-badge"
+import { ComingSoonBadge } from "@/components/coming-soon-badge"
 import { ReadingSeriesBadge } from "@/components/reading-series"
 import { BackLink } from "@/components/back-link"
 import { SeriesView } from "app/writings/series-view"
@@ -215,12 +216,16 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
             }}
           />
 
-          {writing.metadata.project && (
-            <ProjectBadge
-              project={writing.metadata.project}
-              href={getProjectHref(writing.metadata.project, "ja")}
-              className="mb-4"
-            />
+          {(writing.metadata.project || writing.metadata.placeholder) && (
+            <div className="mb-4 flex flex-wrap items-center gap-2">
+              {writing.metadata.project && (
+                <ProjectBadge
+                  project={writing.metadata.project}
+                  href={getProjectHref(writing.metadata.project, "ja")}
+                />
+              )}
+              {writing.metadata.placeholder && <ComingSoonBadge lang="ja" />}
+            </div>
           )}
           <h1 className="display text-4xl mb-4">{writing.metadata.title}</h1>
           {seriesParts.length > 1 && partIndex !== -1 && (
