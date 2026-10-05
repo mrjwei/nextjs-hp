@@ -4,7 +4,7 @@ import Image from "next/image"
 import { Tags } from "@/components/tags"
 import { ProjectBadge } from "@/components/project-badge"
 import { ComingSoonBadge } from "@/components/coming-soon-badge"
-import { formatDate } from "app/utils"
+import { formatDate, getProjectHref } from "app/utils"
 import type { Lang } from "app/i18n/config"
 
 const copy: Record<Lang, { published: string; galleryThumbnail: string }> = {
@@ -61,7 +61,11 @@ export function WritingCard({
       )}
     >
       {project && (
-        <ProjectBadge project={project} className="pointer-events-none absolute top-3 -right-1 z-10 shadow-sm" />
+        <ProjectBadge
+          project={project}
+          href={getProjectHref(project, lang)}
+          className="absolute top-3 -right-1 z-10 shadow-sm"
+        />
       )}
       <Link
         key={article.slug}

@@ -6,6 +6,7 @@ import { TrackedLink } from "@/components/tracked-link"
 import { ProjectBadge } from "@/components/project-badge"
 import { Badge } from "@/components/ui/badge"
 import type { TContentMeta } from "app/utils"
+import { getProjectHref } from "app/utils/project-href"
 import type { Lang } from "app/i18n/config"
 
 const articleCountLabel: Record<Lang, (n: number) => string> = {
@@ -55,7 +56,11 @@ export function WorkCard({
       )}
     >
       {project && (
-        <ProjectBadge project={project} className="pointer-events-none absolute top-3 -right-1 z-10 shadow-sm" />
+        <ProjectBadge
+          project={project}
+          href={getProjectHref(project, lang)}
+          className="absolute top-3 -right-1 z-10 shadow-sm"
+        />
       )}
       <TrackedLink
         href={href}

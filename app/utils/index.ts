@@ -4,6 +4,7 @@ import { cache } from "react"
 import { z } from "zod"
 import { getContentBaseDir, type ContentLang } from "app/content/config"
 import seriesTitles from "app/data/series.json"
+import { getProjectSlug, getProjectHref } from "app/utils/project-href"
 
 export type Lang = ContentLang
 
@@ -434,18 +435,7 @@ function byNewest(a: TContentMeta, b: TContentMeta) {
     : 1
 }
 
-// URL segment for a project ID: "LingoBun" -> "lingobun", "AI+Sec" -> "ai-sec".
-export function getProjectSlug(project: string) {
-  return project
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-}
-
-export function getProjectHref(project: string, lang: Lang = "en") {
-  const prefix = lang === "ja" ? "/ja" : ""
-  return `${prefix}/projects/${getProjectSlug(project)}`
-}
+export { getProjectSlug, getProjectHref }
 
 export type TProject = {
   id: string
