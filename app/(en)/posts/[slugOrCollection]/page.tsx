@@ -120,7 +120,7 @@ export default async function SlugOrCollectionPage({ params, searchParams }) {
     )
 
     const similarWritings = writings
-      .filter((w) => w.slug !== writing.slug)
+      .filter((w) => w.slug !== writing.slug && !w.metadata.placeholder)
       .filter((w) => w.metadata.tags.some((t) => writingTagSet.has(t)))
       .sort((a, b) =>
         new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt) ? -1 : 1
