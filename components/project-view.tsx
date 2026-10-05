@@ -2,7 +2,7 @@ import Link from "next/link"
 import { BackLink } from "@/components/back-link"
 import { WritingCard } from "@/components/article-card"
 import { ResultBlock } from "@/components/result-block"
-import type { TProject } from "app/utils"
+import { getProjectPostHref, type TProject } from "app/utils"
 import type { Lang } from "app/i18n/config"
 
 const copy: Record<
@@ -77,7 +77,13 @@ export function ProjectView({
       </h2>
       <div className="grid grid-cols-12 gap-y-8 md:gap-8">
         {items.map((item) => (
-          <WritingCard key={item.slug} article={item} lang={lang} showProjectBadge={false} />
+          <WritingCard
+            key={item.slug}
+            article={item}
+            lang={lang}
+            showProjectBadge={false}
+            href={getProjectPostHref(project.id, item.slug, lang)}
+          />
         ))}
       </div>
     </div>

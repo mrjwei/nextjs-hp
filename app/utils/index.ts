@@ -4,7 +4,7 @@ import { cache } from "react"
 import { z } from "zod"
 import { getContentBaseDir, type ContentLang } from "app/content/config"
 import seriesTitles from "app/data/series.json"
-import { getProjectSlug, getProjectHref } from "app/utils/project-href"
+import { getProjectSlug, getProjectHref, getProjectPostHref } from "app/utils/project-href"
 
 export type Lang = ContentLang
 
@@ -435,7 +435,7 @@ function byNewest(a: TContentMeta, b: TContentMeta) {
     : 1
 }
 
-export { getProjectSlug, getProjectHref }
+export { getProjectSlug, getProjectHref, getProjectPostHref }
 
 export type TProject = {
   id: string

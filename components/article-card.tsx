@@ -21,6 +21,7 @@ export function WritingCard({
   wrapperProps,
   lang = "en",
   showProjectBadge = true,
+  href: hrefOverride,
 }: {
   article: any
   className?: string
@@ -35,6 +36,9 @@ export function WritingCard({
   lang?: Lang
   // Off on a project's own page, where every card would carry the same badge.
   showProjectBadge?: boolean
+  // Where the card links instead of the post's /posts URL (e.g. the project
+  // path on a project's own page).
+  href?: string
 }) {
   const t = copy[lang]
   const isGallery = path === "gallery"
@@ -47,9 +51,10 @@ export function WritingCard({
   const prefix = lang === "ja" ? "/ja" : ""
 
   const href =
-    path === "writings" && writingCollection
+    hrefOverride ??
+    (path === "writings" && writingCollection
       ? `${prefix}/posts/${writingCollection}/${article.slug}`
-      : `${prefix}/${path}/${article.slug}`
+      : `${prefix}/${path}/${article.slug}`)
 
   return (
     <div

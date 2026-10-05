@@ -15,3 +15,9 @@ export function getProjectHref(project: string, lang: Lang = "en") {
   const prefix = lang === "ja" ? "/ja" : ""
   return `${prefix}/projects/${getProjectSlug(project)}`
 }
+
+// A post read from its project's page stays under the project path; the
+// canonical URL is still the /posts one.
+export function getProjectPostHref(project: string, slug: string, lang: Lang = "en") {
+  return `${getProjectHref(project, lang)}/${slug}`
+}
