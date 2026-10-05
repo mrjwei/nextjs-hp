@@ -7,6 +7,7 @@ import { WritingCard } from "@/components/article-card"
 import { Tags } from "@/components/tags"
 import { ResultBlock } from "@/components/result-block"
 import { ProjectBadge } from "@/components/project-badge"
+import { ComingSoonBadge } from "@/components/coming-soon-badge"
 import { ReadingSeriesBadge } from "@/components/reading-series"
 import { BackLink } from "@/components/back-link"
 import {
@@ -96,7 +97,7 @@ export default async function WritingInCollection({ params, searchParams }) {
   )
 
   const similarWritings = writings
-    .filter((w) => w.slug !== writing.slug)
+    .filter((w) => w.slug !== writing.slug && !w.metadata.placeholder)
     .filter((w) => w.metadata.tags.some((t) => writingTagSet.has(t)))
     .sort((a, b) =>
       new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
@@ -167,12 +168,16 @@ export default async function WritingInCollection({ params, searchParams }) {
           }}
         />
 
-        {writing.metadata.project && (
-          <ProjectBadge
-            project={writing.metadata.project}
-            href={getProjectHref(writing.metadata.project)}
-            className="mb-4"
-          />
+        {(writing.metadata.project || writing.metadata.placeholder) && (
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            {writing.metadata.project && (
+              <ProjectBadge
+                project={writing.metadata.project}
+                href={getProjectHref(writing.metadata.project)}
+              />
+            )}
+            {writing.metadata.placeholder && <ComingSoonBadge />}
+          </div>
         )}
         <h1 className="display text-4xl mb-4">
           {writing.metadata.title}
