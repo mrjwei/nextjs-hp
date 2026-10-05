@@ -482,6 +482,18 @@ export function groupProjects(items: TContentMeta[]): TProject[] {
   })
 }
 
+// Whether a project's card links to its project page rather than straight to
+// its only post. Counts both languages, so a project whose follow-up posts
+// aren't translated yet still gets a project page in the other language.
+export function hasProjectPage(project: TProject) {
+  if (project.items.length > 1) return true
+  return (["en", "ja"] as const).some(
+    (lang) =>
+      getAllSortedWritings(lang).filter((w) => w.metadata.project === project.id)
+        .length > 1
+  )
+}
+
 // Home highlights (see `highlights` in app/content/profile.ts): the pinned
 // items first, in pin order, then the rest of `items` (already newest first)
 // up to `limit`. Pins with no match, e.g. an untranslated post, are skipped.
@@ -710,12 +722,18 @@ export function getGalleryItemBySlug(slug: string, lang: Lang = "en"): TContentI
   return { slug, metadata, content }
 }
 
-export function formatDate(date: string, includeRelative = false) {
+// Japanese pages show dates as yyyy-mm-dd; English ones as dd/mm/yyyy (en-AU).
+export function formatDate(date: string, includeRelative = false, lang: Lang = "en") {
   let currentDate = new Date()
   if (!date.includes("T")) {
     date = `${date}T00:00:00`
   }
   let targetDate = new Date(date)
+
+  if (lang === "ja") {
+    const pad = (n: number) => String(n).padStart(2, "0")
+    return `${targetDate.getFullYear()}-${pad(targetDate.getMonth() + 1)}-${pad(targetDate.getDate())}`
+  }
 
   let yearsAgo = currentDate.getFullYear() - targetDate.getFullYear()
   let monthsAgo = currentDate.getMonth() - targetDate.getMonth()

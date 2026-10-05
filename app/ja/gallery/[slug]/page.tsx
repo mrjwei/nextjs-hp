@@ -95,9 +95,9 @@ export default async function GalleryItemPage({ params, searchParams }) {
         <Tags tags={item.metadata.tags} className="mb-4" />
         <div className="flex justify-between items-center mt-2 mb-12 text-sm border-b border-[var(--border-subtle)] pb-6">
           <p className="text-sm text-[var(--text-muted)]">
-            公開日: {formatDate(item.metadata.publishedAt)}
+            公開日: {formatDate(item.metadata.publishedAt, false, "ja")}
             {item.metadata.updatedAt && (
-              <> · 更新日: {formatDate(item.metadata.updatedAt)}</>
+              <> · 更新日: {formatDate(item.metadata.updatedAt, false, "ja")}</>
             )}
           </p>
         </div>

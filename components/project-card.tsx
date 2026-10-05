@@ -1,10 +1,10 @@
 import { WorkCard } from "@/components/work-card"
-import { getProjectHref, type TProject } from "app/utils"
+import { getProjectHref, hasProjectPage, type TProject } from "app/utils"
 import type { Lang } from "app/i18n/config"
 
 // One card per project (see groupProjects): the lead post's card, linking to
 // the project page with an article count when the project spans several
-// posts, or straight to the post when it's the only one.
+// posts (in either language), or straight to the post when it's the only one.
 export function ProjectCard({
   project,
   lang = "en",
@@ -17,7 +17,7 @@ export function ProjectCard({
     <WorkCard
       work={project.lead}
       lang={lang}
-      href={count > 1 ? getProjectHref(project.id, lang) : undefined}
+      href={hasProjectPage(project) ? getProjectHref(project.id, lang) : undefined}
       articleCount={count}
       wrapperProps={{ "data-work-track": project.track }}
     />
