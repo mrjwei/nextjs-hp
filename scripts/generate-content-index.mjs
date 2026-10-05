@@ -257,6 +257,7 @@ function buildIndexSectionForLang(sectionKey, config, lang, baseDir) {
     }
 
     assertOptionalBoolean(meta.draft, "draft", absFilePath);
+    assertOptionalBoolean(meta.placeholder, "placeholder", absFilePath);
     assertOptionalBoolean(meta.lead, "lead", absFilePath);
     assertOptionalEnum(meta.track, "track", WORK_TRACKS, absFilePath);
     assertOptionalStringArray(meta.stack, "stack", absFilePath);
@@ -295,6 +296,7 @@ function buildIndexSectionForLang(sectionKey, config, lang, baseDir) {
         lead: typeof meta.lead === "boolean" ? meta.lead : undefined,
         track: typeof meta.track === "string" ? meta.track : undefined,
         draft: typeof meta.draft === "boolean" ? meta.draft : undefined,
+        placeholder: typeof meta.placeholder === "boolean" ? meta.placeholder : undefined,
         project: typeof meta.project === "string" ? meta.project : undefined,
         result: typeof meta.result === "string" ? meta.result : undefined,
         role: typeof meta.role === "string" ? meta.role : undefined,

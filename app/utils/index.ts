@@ -30,6 +30,10 @@ export type TMetadata = {
   lead?: boolean
   track?: WorkTrack
   draft?: boolean
+  // Stand-in for a post that's announced but not written yet (e.g. a later part
+  // of a series an overview already links to). Listed as usual, but badged
+  // "Coming soon" on cards and the post page, and never a project's lead.
+  placeholder?: boolean
   // Short one-word project ID (e.g. "LingoBun"). Its presence makes the post a
   // project: listed on /projects and badged on every card.
   project?: string
@@ -127,6 +131,7 @@ const baseFrontmatterSchema = z.object({
   lead: z.boolean().optional(),
   track: workTrackSchema.optional(),
   draft: z.boolean().optional(),
+  placeholder: z.boolean().optional(),
   project: z
     .string()
     .regex(/^\S{1,12}$/, "project must be one word of at most 12 characters")
@@ -446,7 +451,7 @@ export type TProject = {
   id: string
   slug: string
   // The post that represents the project on cards: the one marked `lead`
-  // (typically its overview), else the most recent.
+  // (typically its overview), else the most recent that isn't a placeholder.
   lead: TContentMeta
   // Every post sharing the project ID: the lead first, then newest first.
   items: TContentMeta[]
@@ -463,7 +468,10 @@ export function groupProjects(items: TContentMeta[]): TProject[] {
     byId.get(id)!.push(item)
   }
   return Array.from(byId.entries()).map(([id, posts]) => {
-    const lead = posts.find((p) => p.metadata.lead) ?? posts[0]
+    const lead =
+      posts.find((p) => p.metadata.lead) ??
+      posts.find((p) => !p.metadata.placeholder) ??
+      posts[0]
     return {
       id,
       slug: getProjectSlug(id),
