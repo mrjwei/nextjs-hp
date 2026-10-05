@@ -11,7 +11,7 @@ import { JaEmptyNotice } from "@/components/ja-empty-notice"
 export const metadata = buildStandardMetadata({
   title: "プロジェクト",
   description:
-    "選定したプロジェクト——実際の事業のために構築したアプライドAIシステムとプロダクトの仕事。",
+    "選定したプロジェクト——実際の事業のために構築したアプライドAIシステムとプロダクトの仕事",
   pathname: "/ja/projects",
   alternatePathname: "/projects",
   alternateLang: "en",
@@ -33,7 +33,7 @@ export default async function ProjectsPage() {
           プロジェクト
         </h1>
         <p className="text-lg text-[var(--text-muted)] mb-4">
-          選定したプロジェクト——実際の事業のために構築したアプライドAIシステムとプロダクトの仕事。
+          選定したプロジェクト——実際の事業のために構築したアプライドAIシステムとプロダクトの仕事
         </p>
       </div>
 
