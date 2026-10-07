@@ -1,6 +1,6 @@
 ---
 name: translate
-description: Translate specified articles and/or portfolio entries, or work through the "require translation" entries in the publish queue.
+description: Translate specified articles and/or portfolio entries, or work through published notes marked requireTranslate in the Obsidian vault.
 ---
 
 # Translate
@@ -12,31 +12,33 @@ Translate one or more articles and/or portfolio entries between English and Japa
 `$ARGUMENTS` is zero or more articles and/or portfolio entries, given as a slug (filename without `.mdx`, e.g. `zod`), or a path relative to the repo root or an absolute path.
 
 - **One or more arguments**: translate each named entry (see "Translating an entry").
-- **No arguments**: work through the publish queue backlog (see below). If the queue has no entries marked "require translation", say so and stop.
+- **No arguments**: work through the backlog (see below). If there are no candidates, say so and stop.
 
-## Backlog: the publish queue
+## Backlog: published notes in the vault
 
-The backlog is the queue note used by the `publish-blog-post` skill: `~/projects/Notes/Publish Queue.md` (one checklist line per entry; see `.claude/skills/publish-blog-post/SKILL.md` for its conventions).
+The backlog is the frontmatter of the published drafts in `~/projects/Notes` (see `.claude/skills/publish-blog-post/SKILL.md`). Candidates are notes with `status` Published, `requireTranslate: true` and `translated` not `true`. List them without reading any note in full:
 
-Scan only the `## Log` section of the queue note for candidates, not the checklist above it. Translation happens after the original is published, and published entries are moved into `## Log`. Entries still in the checklist above `## Log` are unpublished; ignore them even if they carry the label.
+```bash
+bash .claude/skills/publish-blog-post/list-posts.sh Published | awk -F'\t' '$4 == "true" && $5 != "true"'
+```
 
-An entry in `## Log` may carry an optional `require translation` label somewhere on its line (after the link, among any free-text notes). Entries without it are not touched.
+Each line is `scheduledAt  path  note  requireTranslate  translated`, oldest first. Unpublished notes (Drafting, Ready) are never candidates, even if they have `requireTranslate: true`.
 
-For each entry in `## Log` labelled `require translation`, top to bottom:
+For each candidate, in that order:
 
-1. **Find the existing version** in this project that matches the entry name. The name is the link target or label (e.g. `[[WAmazing/注文フォームUIUXの改善|注文フォームUIUXの改善]]`), which may be a slug, a title, or a vault path. Search both locales for a matching filename/slug (ignoring any `✅` prefix and the folder in the vault path) and then by `title:` frontmatter. Search:
+1. **Find the existing version** in this project that matches the note. Its name is the vault filename without the `✅` prefix and `.md`. The site's slug is that name lowercased with punctuation dropped and spaces as hyphens, but titles can differ, so search both locales for a matching filename/slug and then by `title:` frontmatter. Search:
    - `app/writings/posts/` (EN) and `app/writings/posts-ja/` (JA)
    - `app/gallery/posts/` (EN) and `app/gallery/posts-ja/` (JA)
 2. **Pick the direction from the existing version's language**: English → translate to Japanese; Japanese → translate to English.
 3. **Translate it** (see below), writing the new file to the mirrored path in the other locale's directory.
-4. **Only after the file is written**, change that entry's label from `require translation` to `translated`. Change nothing else on the line, and touch no other line.
+4. **Only after the file is written**, set that note's `translated` property to `true`. Change nothing else in the note.
 
-Don't relabel an entry that was skipped or failed. Skip and report it when:
+Don't set `translated` on a note that was skipped or failed. Skip and report it when:
 - no matching existing version is found, or several are equally plausible (ask which);
-- both language versions already exist (don't overwrite; report it and ask whether to relabel as `translated` or retranslate);
-- the entry is in `## Log` but no version is found in the project (nothing to translate from).
+- both language versions already exist (don't overwrite; report it and ask whether to set `translated: true` or retranslate);
+- the note is Published but no version is found in the project (nothing to translate from).
 
-Never edit anything else in the vault; the queue note is the only file there you write to, and only to flip these labels.
+Never edit anything else in the vault; the `translated` property of the candidate notes is the only thing you write there.
 
 ## Translating an entry
 
@@ -50,8 +52,8 @@ Never edit anything else in the vault; the queue note is the only file there you
 
 ## Branches and commits
 
-Follow the repo's CLAUDE.md: do the work on a new branch (e.g. `translate/<slug>`), commit with a clear message, and merge back to `main` when done. Don't commit the queue note; it lives outside this repo.
+Follow the repo's CLAUDE.md: do the work on a new branch (e.g. `translate/<slug>`), commit with a clear message, and merge back to `main` when done. Vault notes live outside this repo; don't commit them.
 
 ## Report
 
-List each entry handled: source path → new path, direction, and whether its label was flipped to `translated`; then anything skipped and why.
+List each entry handled: source path → new path, direction, and whether its `translated` property was set; then anything skipped and why.
