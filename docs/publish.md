@@ -37,7 +37,7 @@ All optional; see `docs/templates/case-study.mdx` for the full skeleton and `Res
 - `project?: string` — see above.
 - `lead?: boolean` — marks the post that represents its project on cards (one per project). It doesn't affect list order. See `groupProjects` in `app/utils/index.ts`.
 - `track?: "ai-engineering" | "product-design" | "security" | "research"` — powers the track filter on `/projects`.
-- `draft?: boolean` — excluded from all grids, search, sitemap, RSS, and direct URL access in production (`npm run build`/deploy); still fully visible in `npm run dev`. Unfinished drafts don't live in this repo: they stay outside it (e.g. in the Obsidian vault) until published with `/publish-post <path>`.
+- `draft?: boolean` — excluded from all grids, search, sitemap, RSS, and direct URL access in production (`npm run build`/deploy); still fully visible in `npm run dev`. Unfinished drafts don't live in this repo: they stay outside it (e.g. in the Obsidian vault) until published with `/publish-pipeline`.
 - `placeholder?: boolean` — marks a "coming soon" stand-in for a post that's announced but not written yet (e.g. a later part of a series that an overview already links to). It is listed and reachable like any post, but cards and the post page show a "Coming soon" badge, and it is never picked as a project's lead. Replace the file (dropping the flag) when the real post is published.
 - `archived?: boolean` — excluded from all grids, search, sitemap and RSS, and its URL returns 404 (in dev too).
 - `role`, `client`, `industry`, `duration`, `stack: string[]`, `status: "production" | "pilot" | "research" | "shipped" | "archived"`, `confidential?: boolean` — case-study fields. Do not add a `result` field; it has been retired. `client` should be a type, not a name, unless the client has agreed otherwise; set `confidential: true` instead of vague wording when a detail can't be named.
@@ -46,7 +46,7 @@ Array-valued frontmatter (like `stack`) uses the same `[...]` JSON syntax as `ta
 
 ## Publishing with Claude Code
 
-Drafts live outside this repo. To publish one, run `/publish-post <path-to-draft>` (`.md` or `.mdx`, several paths allowed). The skill copies the draft into `app/writings/posts/`, converts Obsidian syntax, copies images to `public/<slug>/`, stamps `publishedAt`, registers new tags and validates the content index. It never modifies the source file. See `.claude/skills/publish-post/SKILL.md`.
+Drafts live outside this repo, in the Obsidian vault (`~/projects/Notes`), which is the single source of truth for every post, project write-up and translation. Run `/publish-pipeline` to work the queue, or `/publish-pipeline <note path>` for specific notes. It publishes Ready notes, writes their translations into the vault next to the originals (held for review when the self-check flags anything), publishes reviewed translations, and updates the notes' frontmatter. The pipeline is driven by the notes' frontmatter; see `.claude/skills/publish-pipeline/SKILL.md` for the properties and the review flow.
 
 The `npm run publish` script below is the older alternative and works without Claude Code.
 
