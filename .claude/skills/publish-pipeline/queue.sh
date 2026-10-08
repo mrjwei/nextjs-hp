@@ -28,13 +28,12 @@ command grep -rl --null --include='*.md' --exclude-dir=.trash --exclude-dir=.obs
     if (pri >= 7 && !all) return
     printf "%d\t%s\t%s\t%s\t%s\n", pri, action, (sched == "" ? "~" : sched), FILENAME, detail
   }
-  function decide(   n, base) {
+  function decide(   n) {
     n = split(st, parts, ",")
     if (st == "") { emit("idle", note); return }
     if (n != 1) { emit("invalid", "status must have exactly one value (has: " st ")"); return }
     if (sched != "" && !isdate(sched)) { emit("invalid", "scheduledAt is not YYYY-MM-DD: " sched); return }
     if (pub != "" && !isdate(pub)) { emit("invalid", "publishedAt is not YYYY-MM-DD: " pub); return }
-    base = FILENAME; sub(/.*\//, "", base)
     if (st == "Drafting") { emit("idle", note); return }
     if (st == "Review") { emit("review", note); return }
     if (st == "Ready") {
@@ -42,20 +41,22 @@ command grep -rl --null --include='*.md' --exclude-dir=.trash --exclude-dir=.obs
       emit(tof != "" ? "publish-translation" : "publish", note); return
     }
     if (st == "Published") {
-      if (base !~ /^✅/) { emit("finish", note); return }
+      if (site == "" || lang == "" || pub == "") { emit("finish", note); return }
       if (tof == "" && rt == "true" && tr != "true" && tlink == "") { emit("translate", note); return }
       emit("idle", note); return
     }
     emit("invalid", "unknown status: " st)
   }
   FNR == 1 {
-    fm = ($0 == "---"); key = ""; st = ""; sched = ""; pub = ""; note = ""; rt = ""; tr = ""; tlink = ""; tof = ""
+    fm = ($0 == "---"); key = ""; st = ""; sched = ""; pub = ""; note = ""; rt = ""; tr = ""; tlink = ""; tof = ""; site = ""; lang = ""
     if (!fm) nextfile
     next
   }
   $0 == "---" { decide(); nextfile }
   /^[ \t]*-[ \t]/ {
-    if (key == "status") { v = $0; sub(/^[ \t]*-[ \t]*/, "", v); v = unq(v); if (v != "") st = (st == "" ? v : st "," v) }
+    v = $0; sub(/^[ \t]*-[ \t]*/, "", v); v = unq(v)
+    if (key == "status" && v != "") st = (st == "" ? v : st "," v)
+    if (key == "sitePath" && v != "") site = v
     next
   }
   /^[^ \t#][^:]*:/ {
@@ -69,5 +70,7 @@ command grep -rl --null --include='*.md' --exclude-dir=.trash --exclude-dir=.obs
     else if (key == "translated") tr = unq(val)
     else if (key == "translation") tlink = unq(val)
     else if (key == "translationOf") tof = unq(val)
+    else if (key == "sitePath") site = unq(val)
+    else if (key == "lang") lang = unq(val)
   }
 ' | LC_ALL=C sort -t "$(printf '\t')" -k1,1n -k3,3 -k4,4 | cut -f2-

@@ -12,7 +12,7 @@ The Obsidian vault `~/projects/Notes` (attachments in `/assets`) is the single s
 | Stage | Runs on | Does | Instructions |
 | --- | --- | --- | --- |
 | publish | a Ready note (original or translation) | vault note → MDX post, built, merged to main and pushed | `stages/publish.md` |
-| after-publish | the note just published | frontmatter updates, `✅ ` rename | `stages/after-publish.md` |
+| after-publish | the note just published, or a Published note missing pipeline properties | writes the note's pipeline properties | `stages/after-publish.md` |
 | translate | a Published original with `requireTranslate: true` | writes the translation note next to it, as Review or Ready | `stages/translate.md` |
 
 Paths are relative to this skill's folder. Read a stage's file when you're about to run that stage, not before.
@@ -28,13 +28,15 @@ Set by the author:
 | `status` | list, one of `Drafting`, `Review`, `Ready`, `Published` | Where the note is in the pipeline. `Review` = a translation waiting for the author's check. | Not a pipeline note, but a note passed by path is treated as Ready. Empty → Drafting. Several values or an unknown one → invalid: skip and report. |
 | `scheduledAt` | date | Queue order (earliest first), the day from which it may be published, and the default publish date. | Sorts last, can be published right away, publish date = the day it's published. Not a valid date → invalid. |
 | `publishedAt` | date | Overrides the publish date shown on the site. | `scheduledAt`, else the day it's published. Not a valid date → invalid. |
-| `note` | text | Instructions for Claude, `;`-separated, applied when publishing (e.g. `project: Strobe; add placeholder pages for referenced pages that do not exist yet`). | No extra instructions. |
+| `series` | text | The series (collection) folder, e.g. `strobe-assistant`. A folder that doesn't exist yet starts a new series. | Claude matches an existing series or publishes at the root. |
+| `project` | text | The project ID (one word, at most 12 characters, e.g. `Strobe`, `AI+Sec`); the post is listed under `/projects`. | Not part of a project. |
+| `note` | text | Other instructions for Claude, `;`-separated, applied when publishing (e.g. `add placeholder pages for referenced pages that do not exist yet`, `lead: true`, case-study fields). | No extra instructions. |
 | `requireTranslate` | checkbox | Translate the post after publishing it. | false |
 | `reviewTranslation` | text: `flagged`, `always`, `never` | When the translation waits for the author (see "Translation review"). Read from the original. | `flagged`. Any other value → `flagged`, and report it. |
-| `title` | text | The post's title. | The note's H1 if it opens the body, else the filename without the `✅` prefix. |
+| `title` | text | The post's title. | The note's H1 if it opens the body, else the filename without a `✅` prefix. |
 | `summary` | text | The post's summary. | Claude writes one. |
 | `lang` | text: `en`, `ja` | The note's language. | Detected from the body; after-publish writes it. |
-| `sitePath` | text | The post's path in the repo, e.g. `app/writings/posts/strobe-assistant/<slug>.mdx`. Set it to choose the folder or slug. | The publish stage chooses one; after-publish writes it. |
+| `sitePath` | text, or a list for a note published as several posts | The post's path in the repo, e.g. `app/writings/posts/strobe-assistant/<slug>.mdx`. It links the note to its post. Set it only to force an exact slug; `series` is the normal way to choose the folder. | The publish stage derives it; after-publish writes it. |
 
 Written by the pipeline only:
 
@@ -49,29 +51,34 @@ The vault's `status` drives this pipeline only. Never copy it into a post (case 
 
 ## Finding work
 
-Run `bash .claude/skills/publish-pipeline/queue.sh`. It reads frontmatter only and prints one TSV line per note that needs something, in the order to handle them: `action  scheduledAt  path  detail`. Read only the notes you act on, and don't search the vault for work any other way. Plain `grep` finds nothing in the vault (its .gitignore is `*`); use the script or `command grep`. `--all` also lists notes scheduled for later (`scheduled`) and notes with nothing to do (`idle`).
+Run `bash .claude/skills/publish-pipeline/queue.sh`. It reads frontmatter only and prints one TSV line per note that needs something, in the order to handle them: `action  scheduledAt  path  detail`. Read only the notes you act on, and don't search the vault for work any other way. Plain `grep` finds nothing in the vault (its .gitignore is `*`); use the script or `command grep`. `--all` also lists the `scheduled` and `idle` notes.
 
-| action | Meaning | Do |
+Every pipeline note is in exactly one of these states (checked top to bottom):
+
+| Note's frontmatter | action | Do |
 | --- | --- | --- |
-| `finish` | Published, but not renamed with `✅`: an after-publish stopped part-way. | after-publish |
-| `publish-translation` | A translation note set to Ready, by the author after review or by the translate stage. | publish → after-publish |
-| `publish` | A Ready original whose `scheduledAt` has come. | publish → after-publish → translate if `requireTranslate` → if the translation came out Ready: publish → after-publish |
-| `translate` | A Published original with `requireTranslate: true` and no translation note yet. | translate → if Ready: publish → after-publish |
-| `review` | A translation waiting for the author. | Nothing; list it in the report. |
-| `invalid` | Malformed frontmatter; `detail` says what. | Nothing; report it. |
+| `status` has several values or an unknown one, or a date isn't `YYYY-MM-DD` | `invalid` | Nothing; report `detail`. |
+| `status` empty or Drafting | `idle` | Nothing. |
+| Review | `review` | Nothing; list it in the report as waiting for the author. |
+| Ready, `scheduledAt` in the future | `scheduled` | Nothing until that day. |
+| Ready, has `translationOf` | `publish-translation` | publish → after-publish |
+| Ready, original | `publish` | publish → after-publish → translate if `requireTranslate` → if the translation came out Ready: publish it → after-publish |
+| Published, missing `sitePath`, `lang` or `publishedAt` | `finish` | after-publish (fills in what's missing; it never republishes) |
+| Published original, `requireTranslate: true`, no `translation`, `translated` not true | `translate` | translate → if Ready: publish → after-publish |
+| Published, anything else (done; or its translation is in Review or Ready, and that note carries the next action) | `idle` | Nothing. |
 
 ## Runs
 
 - **Scheduled run** (no arguments, nobody to ask):
   1. Do every `finish` line, then every `publish-translation` line.
   2. Take the first `publish` line through the whole pipeline. One original per run.
-  3. If there was no `publish` line to do, take the first `translate` line instead.
+  3. If no `publish` line could be done, take the first `translate` line instead.
   4. If an item is blocked (unfinished draft, PII you're unsure about, a file conflict, a build failure you can't attribute to the post), leave it untouched, report why, and move to the next line of the same action.
   5. Nothing to do → end without changes or a report.
 - **Manual run, no arguments**: the same, but ask instead of skipping when something is blocked or unclear. If there's nothing to do, say so.
 - **Manual run with note path(s)**: run each note's next action from the table, whatever its place in the queue. A future `scheduledAt` → ask whether to publish now (then the publish date is today unless `publishedAt` is set) or wait. No paths and nothing in the queue → ask for a path.
 
-A failed stage stops that note's pipeline there; earlier stages stay done (if translation fails, the original stays live). Never undo a merged publish. The frontmatter records progress, so the next run picks the note up at the first unfinished stage.
+A failed stage stops that note's pipeline there; earlier stages stay done (if translation fails, the original stays live). Never undo a merged publish. The frontmatter records progress, so the next run picks the note up at the first unfinished stage. A Ready note whose post is already on main (a run that stopped between merging and after-publish) is caught by the publish stage, which skips to after-publish.
 
 ## Translation review
 
@@ -85,7 +92,7 @@ The author reviews in Obsidian: open the note from the board's Review column, ch
 
 ## Rules for every stage
 
-- Vault writes are limited to what the stage files list: the properties above, `✅ ` renames and new translation notes. Never edit a note's body, except the translation note you're creating. Change nothing else in the vault.
+- Vault writes are limited to what the stage files list: the properties above, new translation notes and images copied into `assets/`. Never edit a note's body, except the translation note you're creating, and never rename or move a note. Change nothing else in the vault.
 - The vault is outside the repo; never commit anything from it.
 - Repo changes happen only in the publish stage, one branch per published note. See `stages/publish.md`.
 - Run from Claude Code on the Mac. The Cowork VM can't push via SSH or clear git lock files.

@@ -4,13 +4,13 @@ Write the translation of a Published original as a new vault note in the same fo
 
 ## 1. Source and target
 
-- Read the original's frontmatter and its published post at `sitePath`. If `sitePath` is missing (a post published before this pipeline), find the post in both locale trees by the slug derived from the note's name, then by `title:`. No match, or several equally likely → blocked.
+- Read the original's frontmatter and its published post at `sitePath` (always set by now: a Published note without it goes through `finish` first). If `sitePath` is a list (one note published as several posts), translate each post into its own translation note, named with the post's slug: `<original's name without a ✅ prefix> (JA, <slug>).md`, and record them all in `translation` as a list.
 - **Translate from the published post, not the note's body.** The post has the publish stage's edits and PII removals; the note doesn't.
 - Direction from the post's locale: `posts/` (en) → ja, `posts-ja/` (ja) → en. Target path: the same path with `posts` ↔ `posts-ja` swapped, same subfolder and filename. The content index pairs translations by that path.
-- Translation note: `<original's name without the ✅ prefix> (JA).md` (or `(EN).md`), in the original's folder.
+- Translation note: `<original's name without a ✅ prefix> (JA).md` (or `(EN).md`), in the original's folder.
 - Something already exists:
   - the translation note, with `translationOf` pointing at this original (an earlier run stopped part-way) → skip to step 5;
-  - a post at the target path (translated before this pipeline) → import it: write the translation note from that post as in step 3 (status Published, name with the `✅ ` prefix, `reviewFocus` empty), then do step 5 and set `translated: true` on the original;
+  - a post at the target path (translated before this pipeline) → import it: write the translation note from that post as in step 3 (status Published, no `reviewFocus`), then do step 5 and set `translated: true` on the original;
   - a note with that name that isn't this original's translation → blocked.
 
 ## 2. Translate
@@ -21,7 +21,7 @@ Write the translation of a Published original as a new vault note in the same fo
 
 ## 3. Write the note
 
-Write the body as ordinary Obsidian Markdown, as the original note is written: no table of contents (publish regenerates it), images back as the original note's embeds (same files), no MDX wrappers. Frontmatter:
+Write the body as ordinary Obsidian Markdown, as the original note is written: no table of contents (publish regenerates it) and no MDX wrappers. Each image becomes an embed with its translated alt text, `![[assets/<folder>/file.png|alt text]]`, with its caption, if any, as an italic line directly below. `<folder>/file.png` is the image's path under `public/`. If that file isn't in the vault's `assets/<folder>/` yet, copy it there. Frontmatter:
 
 ```yaml
 status:
@@ -31,6 +31,8 @@ publishedAt: …        # the original post's publishedAt: both versions share t
 title: "…"            # translated
 summary: "…"          # the original post's summary, translated
 lang: ja              # or en
+series: …             # the original's, if any
+project: …            # the original's, if any
 sitePath: "…"         # the target path
 translationOf: "[[<original's name>]]"
 requireTranslate: false
