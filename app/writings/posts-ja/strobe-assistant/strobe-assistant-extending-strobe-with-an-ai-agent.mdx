@@ -111,7 +111,7 @@ Strobeアプリでの写真のアップロード:
 
 検索そのものは、画像用と長めのテキスト用の2つのベクトルインデックスに問い合わせ、その結果を順位に基づいて統合します。なぜそのような構成にしたのか、そしてそれが検索品質の面でどんな代償を伴ったのかについては、別の記事で取り上げています。
 
-このプレーンを支えるALBとECSの構成は、きちんと理解するまでに時間がかかったため、[パート1](/posts/strobe-assistant/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb)(英語)と[パート2](/posts/strobe-assistant/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together)(英語)にまとめました。ACP + MCPパイプラインそのものの詳細は[パート3](/posts/strobe-assistant/strobe-assistant-part-3-acp-mcp-pipeline)(英語)を、認証の境界については[パート4](/posts/strobe-assistant/strobe-assistant-part-4-how-cognito-and-auth-fit-in)(英語)を、デュアルインデックス検索については[パート7](/posts/strobe-assistant/strobe-assistant-part-7-dual-index-rrf-and-mrr)(英語)をご覧ください。
+このプレーンを支えるALBとECSの構成は、きちんと理解するまでに時間がかかったため、[パート1](/ja/posts/strobe-assistant/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb)と[パート2](/ja/posts/strobe-assistant/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together)にまとめました。ACP + MCPパイプラインそのものの詳細は[パート3](/ja/posts/strobe-assistant/strobe-assistant-part-3-acp-mcp-pipeline)を、認証の境界については[パート4](/ja/posts/strobe-assistant/strobe-assistant-part-4-how-cognito-and-auth-fit-in)を、デュアルインデックス検索については[パート7](/ja/posts/strobe-assistant/strobe-assistant-part-7-dual-index-rrf-and-mrr)をご覧ください。
 
 ### プレーンB:取り込み
 
@@ -119,7 +119,7 @@ Strobeアプリでの写真のアップロード:
 
 この処理はSQSキューでバッファリングされ、取り込みワーカーのLambdaによって処理されます。その理由は、本当のボトルネックが計算資源ではなくBedrockのクォータにあるからです。アップロードはバースト的に発生します。誰かがアルバム丸ごとを1分で共有することもあります。間にキューがあれば、バーストは単なる短い遅延に変わり、失敗し続けるメッセージは消えてしまうのではなくデッドレターキューに入ります。キューがなければ、クォータを超えたリクエストはスロットリングされ、私からは見えず制御もできないバッファによって再試行されることになり、一部は最終的に一度も処理されないまま失われてしまう可能性があります。
 
-SQSは各メッセージを*少なくとも*1回配信するため、ワーカーは決定的なキーで書き込みます。再配信されたメッセージは、重複を作るのではなく、以前の結果を上書きするだけです。何を埋め込み、どこに保存しているかは[パート5](/posts/strobe-assistant/strobe-assistant-part-5-embeddings-for-posts-moments-and-search)(英語)で、なぜキューを置いているのかは[パート6](/posts/strobe-assistant/strobe-assistant-part-6-why-ingestion-goes-through-sqs)(英語)で説明しています。
+SQSは各メッセージを*少なくとも*1回配信するため、ワーカーは決定的なキーで書き込みます。再配信されたメッセージは、重複を作るのではなく、以前の結果を上書きするだけです。何を埋め込み、どこに保存しているかは[パート5](/ja/posts/strobe-assistant/strobe-assistant-part-5-embeddings-for-posts-moments-and-search)で、なぜキューを置いているのかは[パート6](/ja/posts/strobe-assistant/strobe-assistant-part-6-why-ingestion-goes-through-sqs)で説明しています。
 
 ### プレーンC:定期実行
 
@@ -147,10 +147,10 @@ SQSは各メッセージを*少なくとも*1回配信するため、ワーカ�
 
 ## Strobe Assistantシリーズ
 
-- [パート1:AWSのターゲットグループとApplication Load Balancer](/posts/strobe-assistant/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb)(英語)
-- [パート2:ECSはタスク、ALB、ターゲットグループをどう結びつけるのか](/posts/strobe-assistant/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together)(英語)
-- [パート3:ACP + MCPパイプライン](/posts/strobe-assistant/strobe-assistant-part-3-acp-mcp-pipeline)(英語)
-- [パート4:Cognitoと認証の位置づけ](/posts/strobe-assistant/strobe-assistant-part-4-how-cognito-and-auth-fit-in)(英語)
-- [パート5:投稿・モーメント・検索のための埋め込み](/posts/strobe-assistant/strobe-assistant-part-5-embeddings-for-posts-moments-and-search)(英語)
-- [パート6:取り込みにSQSを挟む理由](/posts/strobe-assistant/strobe-assistant-part-6-why-ingestion-goes-through-sqs)(英語)
-- [パート7:デュアルインデックス、RRF、MRR](/posts/strobe-assistant/strobe-assistant-part-7-dual-index-rrf-and-mrr)(英語)
+- [パート1:AWSのターゲットグループとApplication Load Balancer](/ja/posts/strobe-assistant/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb)
+- [パート2:ECSはタスク、ALB、ターゲットグループをどう結びつけるのか](/ja/posts/strobe-assistant/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together)
+- [パート3:ACP + MCPパイプライン](/ja/posts/strobe-assistant/strobe-assistant-part-3-acp-mcp-pipeline)
+- [パート4:Cognitoと認証の位置づけ](/ja/posts/strobe-assistant/strobe-assistant-part-4-how-cognito-and-auth-fit-in)
+- [パート5:投稿・モーメント・検索のための埋め込み](/ja/posts/strobe-assistant/strobe-assistant-part-5-embeddings-for-posts-moments-and-search)
+- [パート6:取り込みにSQSを挟む理由](/ja/posts/strobe-assistant/strobe-assistant-part-6-why-ingestion-goes-through-sqs)
+- [パート7:デュアルインデックス、RRF、MRR](/ja/posts/strobe-assistant/strobe-assistant-part-7-dual-index-rrf-and-mrr)
