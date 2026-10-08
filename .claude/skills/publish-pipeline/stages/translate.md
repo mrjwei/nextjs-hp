@@ -4,21 +4,21 @@ Write the translation of a Published original as a new vault note in the same fo
 
 ## 1. Source and target
 
-- Read the original's frontmatter and its published post at `sitePath` (always set by now: a Published note without it goes through `finish` first). If `sitePath` is a list (one note published as several posts), translate each post into its own translation note, named with the post's slug: `<original's name without a ✅ prefix> (JA, <slug>).md`, and record them all in `translation` as a list.
+- Read the original's frontmatter (`fm.sh`) and its published post at `sitePath` (always set by now: a Published note without it goes through `finish` first). If `sitePath` is a list (one note published as several posts), translate each post into its own translation note, named with the post's slug: `<original's name without a ✅ prefix> (JA, <slug>).md`, and record them all in `translation` as a list.
 - **Translate from the published post, not the note's body.** The post has the publish stage's edits and PII removals; the note doesn't.
 - Direction from the post's locale: `posts/` (en) → ja, `posts-ja/` (ja) → en. Target path: the same path with `posts` ↔ `posts-ja` swapped, same subfolder and filename. The content index pairs translations by that path.
 - Translation note: `<original's name without a ✅ prefix> (JA).md` (or `(EN).md`), in the original's folder.
 - Something already exists:
   - the translation note, with `translationOf` pointing at this original (an earlier run stopped part-way) → skip to step 5;
-  - a `placeholder: true` stand-in at the target path → not a translation: translate as normal (the publish stage replaces the placeholder);
+  - a `placeholder: true` stand-in at the target path → not a translation (see Placeholders in SKILL.md): translate as normal, and the publish stage replaces it;
   - any other post at the target path (translated before this pipeline) → import it: write the translation note from that post as in step 3 (status Published, no `reviewFocus`), then do step 5 and set `translated: true` on the original;
   - a note with that name that isn't this original's translation → blocked.
 
 ## 2. Translate
 
 - Prose, headings, image alt text and captions. Leave code blocks, inline code, URLs, file names and maths untouched. Keep the structure identical: same headings in the same order, same images, same lists and tables.
-- Read a sibling post in the target locale first and follow it: Japanese in です・ます調 unless the neighbours differ, English in UK/AU spelling. Translate recurring terms the way the existing translations do; keep product names and technical terms in their conventional form.
-- Links to other posts: the target locale's version when it exists, else leave the link as it is.
+- Check the style with `head -n 40` of a sibling post in the target locale and follow it: Japanese in です・ます調 unless the neighbours differ, English in UK/AU spelling. Translate recurring terms the way the existing translations do (when unsure, `command grep -rho` the term in the target tree rather than reading posts); keep product names and technical terms in their conventional form.
+- Links to other posts: the target locale's version when it exists (a placeholder counts). Else, if the source links to the only version of a single-language post, keep it and mark its language the way neighbouring posts do (e.g. `(英語)`); otherwise keep the link as it is, and the publish stage adds the missing placeholder.
 
 ## 3. Write the note
 
@@ -49,7 +49,7 @@ Compare the translation with the source section by section: nothing left out or 
 - a term with no established translation on the site, or where you departed from the existing one;
 - a passage you restructured substantially.
 
-Don't pad the list: an empty list means a clean translation that publishes without review. Untranslated text in images or diagrams goes in the report, not in `reviewFocus`.
+Don't pad the list: an empty list means a clean translation that publishes without review. Untranslated text in images or diagrams goes in the report's "Check", not in `reviewFocus`.
 
 Status from the original's `reviewTranslation` (see SKILL.md): `flagged` → Review if `reviewFocus` has anything, else Ready; `always` → Review; `never` → Ready.
 
