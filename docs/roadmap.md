@@ -33,7 +33,7 @@ Related docs: `docs/publish.md` (content model, frontmatter, publishing), `docs/
 2. **Outcome-first case studies.** Put the result on the first screen, then: constraint → system → evaluation → what I chose not to do → craft.
 3. **Positioning is data, not markup.** Role, headline, proof, socials, feature flags and Home `highlights` live in `app/content/profile.ts`. To change direction, edit that file (including what's pinned in `highlights`); don't rewrite pages.
 4. **Restraint.** Keep the existing tokens, type (Newsreader + Geist, Noto Sans JP on `/ja`) and the single accent. No dark mode, animation library, gradients, stock imagery, emoji, animated counters or employer logo walls.
-5. **Bilingual parity by construction.** Long prose lives in per-language MDX so the `translate` skill can keep EN and JA in sync.
+5. **Bilingual parity by construction.** Long prose lives in per-language MDX so the `publish-pipeline` skill's translate stage can keep EN and JA in sync.
 
 **Quality gates for every change:** `npm run lint && npm run typecheck && npm run build` pass; mobile Lighthouse per `docs/baseline.md`; no new dependencies unless the task needs them; one branch per task (see `CLAUDE.md`).
 
@@ -57,7 +57,7 @@ EN                                   JA
 - **Home**: hero (from `profile.ts`) → proof strip (static) → selected projects (one card per project) → How I work (static) → posts. Both lists show `highlights` pins first, then the latest.
 - **Projects** are a *view* over posts: any post with a `project` ID. `/posts` URLs are always canonical. `/writings/*`, `/work/*` and `/portfolio/*` 301 to the new paths. Full rules are in `docs/publish.md`.
 - **Content knobs**: `project`, `lead`, `track`, `draft`, `placeholder`, `archived`, plus the case-study fields (`role`, `client`, `industry`, `duration`, `stack`, `status`, `confidential`). They're validated in both `app/utils/index.ts` (zod) and `scripts/generate-content-index.mjs`.
-- **Drafts** live outside the repo. Publish with `/publish-post <path>`.
+- **Drafts** live in the Obsidian vault, outside the repo. Publish with `/publish-pipeline`.
 
 ### Where the 23 Sep plan landed
 
@@ -94,7 +94,7 @@ Until items 1–3 are live, Home's "Selected projects" shows LingoBun, AI+Sec (t
 4. [x] **LingoBun** reframed as AI product hardening (`featured: 1`).
 5. [ ] **WAmazing** (design track): its outcome number is the strongest (200+/week → ~4), but it shouldn't be featured above the AI work. Placeholder now lives outside the repo.
 6. [ ] **GoNOW design-ops**: "Eleven versions of one yellow badge" post and the case study. Both carried over from the Month-1 plan. Lower priority than 1–3 under the AI positioning.
-7. [ ] Use the `translate` skill on every case study pinned in `highlights`.
+7. [ ] Translate every case study pinned in `highlights` (via `/publish-pipeline`: set `requireTranslate` on its vault note).
 
 ### Tracked elsewhere (no work in this repo)
 
