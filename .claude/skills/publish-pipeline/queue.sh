@@ -3,7 +3,7 @@
 # Reads frontmatter only, so it stays cheap as the vault grows.
 #
 # Output, one TSV line per note, in the order to work on them:
-#   action  scheduledAt  path  detail
+#   action  scheduledAt  path (relative to the vault)  detail
 # action:   finish | publish-translation | publish | translate | review | invalid   (default)
 #           scheduled | idle                                                         (--all only)
 # detail:   the problem for `invalid`, otherwise the note's `note` property.
@@ -18,15 +18,16 @@ TODAY="$(date +%F)"
 
 # `command grep` bypasses the shell's grep wrapper, which honours the vault's .gitignore (`*`) and finds nothing.
 command grep -rl --null --include='*.md' --exclude-dir=.trash --exclude-dir=.obsidian -E '^status:' "$VAULT" 2>/dev/null \
-| xargs -0 awk -v today="$TODAY" -v all="$ALL" '
+| xargs -0 awk -v today="$TODAY" -v all="$ALL" -v vault="${VAULT%/}/" '
   function unq(s) { gsub(/^[ \t"\047]+|[ \t"\047]+$/, "", s); return s }
   function isdate(s) { return s ~ /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/ }
-  function emit(action, detail,   pri, base) {
+  function emit(action, detail,   pri, rel) {
     pri = (action == "finish") ? 1 : (action == "publish-translation") ? 2 : (action == "publish") ? 3 : \
           (action == "translate") ? 4 : (action == "review") ? 5 : (action == "invalid") ? 6 : \
           (action == "scheduled") ? 7 : 8
     if (pri >= 7 && !all) return
-    printf "%d\t%s\t%s\t%s\t%s\n", pri, action, (sched == "" ? "~" : sched), FILENAME, detail
+    rel = FILENAME; if (index(rel, vault) == 1) rel = substr(rel, length(vault) + 1)
+    printf "%d\t%s\t%s\t%s\t%s\n", pri, action, (sched == "" ? "~" : sched), rel, detail
   }
   function decide(   n) {
     n = split(st, parts, ",")

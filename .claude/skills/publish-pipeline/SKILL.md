@@ -5,98 +5,104 @@ description: Publish posts from the Obsidian vault (~/projects/Notes) end to end
 
 # publish-pipeline
 
-The Obsidian vault `~/projects/Notes` (attachments in `/assets`) is the single source of truth for every post and project write-up on the site, and for their translations. Every page on the site comes from a vault note. A translation is its own note, saved in the same folder as the original. The pipeline's state is the notes' own frontmatter, shown as a kanban in `~/projects/Notes/Posts.base` (don't read the .base file).
+The Obsidian vault `~/projects/Notes` (attachments in `/assets`) is the single source of truth for every post on the site and its translation. A translation is its own note, in the same folder as the original. The pipeline's state is the notes' frontmatter (shown as a kanban in `Posts.base`; don't read it).
 
 ## Stages
 
 | Stage | Runs on | Does | Instructions |
 | --- | --- | --- | --- |
-| publish | a Ready note (original or translation) | vault note → MDX post, built, merged to main and pushed | `stages/publish.md` |
-| after-publish | the note just published, or a Published note missing pipeline properties | writes the note's pipeline properties | `stages/after-publish.md` |
+| publish | a Ready note (original or translation) | vault note → MDX post (plus placeholders for posts it links to), built, merged to main and pushed | `stages/publish.md` |
+| after-publish | the note just published, or a `finish` note | writes the note's pipeline properties | `stages/after-publish.md` |
 | translate | a Published original with `requireTranslate: true` | writes the translation note next to it, as Review or Ready | `stages/translate.md` |
 
-Paths are relative to this skill's folder. Read a stage's file when you're about to run that stage, not before.
+Paths are relative to this skill's folder. Read a stage's file only when you're about to run it.
 
 ## Frontmatter
 
-These are the only properties the pipeline reads or writes; ignore every other property. A checkbox counts as true only when it is `true`. Write lists as Obsidian lists (`status:` then `  - Ready`), wikilinks quoted (`"[[Note name]]"`) and dates as `YYYY-MM-DD`.
+The only properties the pipeline reads or writes; ignore the rest. A checkbox is true only when it is `true`. Write lists as Obsidian lists (`status:` then `  - Ready`), wikilinks quoted (`"[[Note name]]"`), dates as `YYYY-MM-DD`.
 
 Set by the author:
 
-| Property | Type | Meaning | If missing |
-| --- | --- | --- | --- |
-| `status` | list, one of `Drafting`, `Review`, `Ready`, `Published` | Where the note is in the pipeline. `Review` = a translation waiting for the author's check. | Not a pipeline note, but a note passed by path is treated as Ready. Empty → Drafting. Several values or an unknown one → invalid: skip and report. |
-| `scheduledAt` | date | Queue order (earliest first), the day from which it may be published, and the default publish date. | Sorts last, can be published right away, publish date = the day it's published. Not a valid date → invalid. |
-| `publishedAt` | date | Overrides the publish date shown on the site. | `scheduledAt`, else the day it's published. Not a valid date → invalid. |
-| `series` | text | The series (collection) folder, e.g. `strobe-assistant`. A folder that doesn't exist yet starts a new series. | Claude matches an existing series or publishes at the root. |
-| `project` | text | The project ID (one word, at most 12 characters, e.g. `Strobe`, `AI+Sec`); the post is listed under `/projects`. | Not part of a project. |
-| `note` | text | Other instructions for Claude, `;`-separated, applied when publishing (e.g. `add placeholder pages for referenced pages that do not exist yet`, `lead: true`, case-study fields). | No extra instructions. |
-| `requireTranslate` | checkbox | Translate the post after publishing it. | false |
-| `reviewTranslation` | text: `flagged`, `always`, `never` | When the translation waits for the author (see "Translation review"). Read from the original. | `flagged`. Any other value → `flagged`, and report it. |
-| `title` | text | The post's title. | The note's H1 if it opens the body, else the filename without a `✅` prefix. |
-| `summary` | text | The post's summary. | Claude writes one. |
-| `lang` | text: `en`, `ja` | The note's language. | Detected from the body; after-publish writes it. |
-| `sitePath` | text, or a list for a note published as several posts | The post's path in the repo, e.g. `app/writings/posts/strobe-assistant/<slug>.mdx`. It links the note to its post. Set it only to force an exact slug; `series` is the normal way to choose the folder. | The publish stage derives it; after-publish writes it. |
+| Property | Meaning | If missing |
+| --- | --- | --- |
+| `status` | One of `Drafting`, `Review` (a translation waiting for the author), `Ready`, `Published`. | Not a pipeline note, though a note passed by path counts as Ready. Empty → Drafting. Several or unknown → invalid. |
+| `scheduledAt` | Queue order (earliest first), earliest publish day, default publish date. | Sorts last; publishable now; date = publish day. |
+| `publishedAt` | Overrides the publish date. | `scheduledAt`, else publish day. |
+| `series` | Series folder, e.g. `strobe-assistant`. A new folder starts a new series. | Claude matches a series or uses the root. |
+| `project` | Project ID (one word, ≤12 chars, e.g. `Strobe`); lists the post under `/projects`. | None. |
+| `note` | `;`-separated instructions applied when publishing (e.g. `lead: true`, case-study fields, editing requests). | None. |
+| `requireTranslate` | Checkbox: translate after publishing. Explicitly `false` also makes the post single-language for placeholders and links. | false (but placeholders are made in both locales, see below) |
+| `reviewTranslation` | `flagged` / `always` / `never`, read from the original (see "Translation review"). | `flagged`; any other value → `flagged`, and report it. |
+| `title` | Post title. | The H1 opening the body, else the filename without a `✅` prefix. |
+| `summary` | Post summary. | Claude writes one. |
+| `lang` | `en` or `ja`. | Detected from the body; after-publish writes it. |
+| `sitePath` | Repo path of the post (a list for a note published as several posts), e.g. `app/writings/posts/strobe-assistant/<slug>.mdx`. Links note and post. Set by hand only to force a slug. | Derived by publish; written by after-publish, or by publish when it makes a placeholder for the note. |
 
-Written by the pipeline only:
+Written by the pipeline only: `translation` (wikilink, on an original: its translation note), `translationOf` (wikilink, on a translation: its original; such a note is never translated), `translated` (checkbox, on an original: its translation is published), `reviewFocus` (list, on a translation: spots for the author to check).
 
-| Property | Type | Meaning | If missing |
-| --- | --- | --- | --- |
-| `translation` | wikilink | On an original: its translation note. | No translation note yet. |
-| `translationOf` | wikilink | On a translation note: its original. Marks the note as a translation, which is never translated itself. | The note is an original. |
-| `translated` | checkbox | On an original: its translation is published. | false |
-| `reviewFocus` | list | On a translation note: the spots the author should check. | Nothing flagged. |
+The vault's `status` never goes into a post (case studies have their own site `status`, from `note`).
 
-The vault's `status` drives this pipeline only. Never copy it into a post (case studies have their own site `status` field; it comes from `note`).
+## Placeholders
+
+A placeholder is a post with `placeholder: true`: a "coming soon" stand-in for a post that's linked to but not published yet. The publish stage makes them in both locales whenever a post links to a missing post, except for a single-language target (its note has `requireTranslate: false`), which keeps its one version and is linked to from both locales. A placeholder is never a publication: its note stays Drafting, its original's `translated` stays false, after-publish never links a note to one, publish replaces one at its path, and translate translates over one.
 
 ## Finding work
 
-Run `bash .claude/skills/publish-pipeline/queue.sh`. It reads frontmatter only and prints one TSV line per note that needs something, in the order to handle them: `action  scheduledAt  path  detail`. Read only the notes you act on, and don't search the vault for work any other way. Plain `grep` finds nothing in the vault (its .gitignore is `*`); use the script or `command grep`. `--all` also lists the `scheduled` and `idle` notes.
+`bash .claude/skills/publish-pipeline/queue.sh` reads frontmatter only and prints one TSV line per note that needs something, in order: `action  scheduledAt  path-in-vault  detail`. `--all` adds `scheduled` and `idle` notes. Don't search the vault for work any other way; plain `grep` finds nothing there (its .gitignore is `*`), so use the scripts or `command grep`.
 
-Every pipeline note is in exactly one of these states (checked top to bottom):
-
-| Note's frontmatter | action | Do |
+| Note's frontmatter (checked top to bottom) | action | Do |
 | --- | --- | --- |
-| `status` has several values or an unknown one, or a date isn't `YYYY-MM-DD` | `invalid` | Nothing; report `detail`. |
+| several/unknown `status`, or a date not `YYYY-MM-DD` | `invalid` | Report `detail`. |
 | `status` empty or Drafting | `idle` | Nothing. |
-| Review | `review` | Nothing; list it in the report as waiting for the author. |
-| Ready, `scheduledAt` in the future | `scheduled` | Nothing until that day. |
+| Review | `review` | Report as waiting for the author. |
+| Ready, `scheduledAt` in the future | `scheduled` | Nothing until then. |
 | Ready, has `translationOf` | `publish-translation` | publish → after-publish |
-| Ready, original | `publish` | publish → after-publish → translate if `requireTranslate` → if the translation came out Ready: publish it → after-publish |
-| Published, missing `sitePath`, `lang` or `publishedAt` | `finish` | after-publish (fills in what's missing; it never republishes) |
+| Ready, original | `publish` | publish → after-publish → translate if `requireTranslate` → if the translation is Ready: publish → after-publish |
+| Published, missing `sitePath`, `lang` or `publishedAt` | `finish` | after-publish (never republishes) |
 | Published original, `requireTranslate: true`, no `translation`, `translated` not true | `translate` | translate → if Ready: publish → after-publish |
-| Published, anything else (done; or its translation is in Review or Ready, and that note carries the next action) | `idle` | Nothing. |
+| Published, anything else | `idle` | Nothing. |
+
+## Keep runs cheap
+
+- Read a note's body only when publishing it or writing its placeholder summary (then only its opening). For any other note, `bash .claude/skills/publish-pipeline/fm.sh <path or wikilink target>...` prints just the frontmatter; it also takes repo `.mdx` paths.
+- Read a post in full only when translating it. For format, read the top of one sibling (`head -n 40`), not whole posts.
+- Never print `app/data/content-index.json` or build logs whole: use the queries and log filters in `stages/publish.md`.
+- Don't re-read a file after editing it, and use `git -q` where it exists.
 
 ## Runs
 
 - **Scheduled run** (no arguments, nobody to ask):
-  1. Do every `finish` line, then every `publish-translation` line.
-  2. Take the first `publish` line through the whole pipeline. One original per run.
-  3. If no `publish` line could be done, take the first `translate` line instead.
-  4. If an item is blocked (unfinished draft, PII you're unsure about, a file conflict, a build failure you can't attribute to the post), leave it untouched, report why, and move to the next line of the same action.
-  5. Nothing to do → end without changes or a report.
-- **Manual run, no arguments**: the same, but ask instead of skipping when something is blocked or unclear. If there's nothing to do, say so.
-- **Manual run with note path(s)**: run each note's next action from the table, whatever its place in the queue. A future `scheduledAt` → ask whether to publish now (then the publish date is today unless `publishedAt` is set) or wait. No paths and nothing in the queue → ask for a path.
+  1. Every `finish` line, then every `publish-translation` line.
+  2. The first `publish` line, through the whole pipeline. One original per run.
+  3. If no `publish` line could be done, the first `translate` line.
+  4. A blocked item (unfinished draft, PII you're unsure about, a file conflict, a build failure that isn't the post's) stays untouched; report it and move to the next line of the same action.
+  5. Nothing to do → end with no changes and no report.
+- **Manual run, no arguments**: the same, but ask instead of skipping when blocked or unsure. Nothing to do → say so.
+- **Manual run with note path(s)**: each note's next action from the table, regardless of queue order. A future `scheduledAt` → ask: publish now (date = today unless `publishedAt`) or wait. No paths and an empty queue → ask for a path.
 
-A failed stage stops that note's pipeline there; earlier stages stay done (if translation fails, the original stays live). Never undo a merged publish. The frontmatter records progress, so the next run picks the note up at the first unfinished stage. A Ready note whose post is already on main (a run that stopped between merging and after-publish) is caught by the publish stage, which skips to after-publish.
+A failed stage stops that note's pipeline there; earlier stages stay done, and a merged publish is never undone. The next run picks the note up at its first unfinished stage (a Ready note whose post is already on main skips to after-publish).
 
 ## Translation review
 
-The translate stage reviews its own translation and records in `reviewFocus` only the spots that need a human: where it had to interpret, or where it can't be sure the meaning or terminology is right. The original's `reviewTranslation` then sets the translation's status:
+The translate stage lists in `reviewFocus` only the spots that need a human. The original's `reviewTranslation` then sets the translation's status: `flagged` → Review if `reviewFocus` has anything, else Ready (publishes in the same run); `always` → Review; `never` → Ready (`reviewFocus` still recorded). The author checks Review notes in Obsidian and sets them to Ready; instructions in the translation's `note` are applied when it's published. To start over, the author deletes the translation note and clears `translation` on the original.
 
-- `flagged` (default): Review if `reviewFocus` has anything, Ready otherwise. A clean translation publishes in the same run; the author only checks the flagged ones.
-- `always`: always Review.
-- `never`: always Ready. `reviewFocus` is still recorded, for reading later.
+## Rules
 
-The author reviews in Obsidian: open the note from the board's Review column, check the `reviewFocus` spots, edit the body if needed, and set `status` to Ready. To have Claude revise it instead, write the instructions in the translation note's `note` and set it to Ready; the publish stage applies them. To start over, delete the translation note and clear `translation` on the original.
-
-## Rules for every stage
-
-- Vault writes are limited to what the stage files list: the properties above, new translation notes and images copied into `assets/`. Never edit a note's body, except the translation note you're creating, and never rename or move a note. Change nothing else in the vault.
-- The vault is outside the repo; never commit anything from it.
-- Repo changes happen only in the publish stage, one branch per published note. See `stages/publish.md`.
-- Run from Claude Code on the Mac. The Cowork VM can't push via SSH or clear git lock files.
+- Vault writes: only the properties above, new translation notes, and images copied into `assets/`. Never edit a note's body (except the translation note being created), never rename or move a note.
+- Never commit anything from the vault. Repo changes happen only in the publish stage, one branch per published note.
+- Run from Claude Code on the Mac (the Cowork VM can't push via SSH or clear git lock files).
 
 ## Report
 
-For each note handled: the actions done; the vault path → site path; the publish date; non-trivial edits and PII replacements; for translations, the status (with the `reviewFocus` items if Review); and the vault properties written. Then: items skipped or blocked and why, translations waiting for review, and invalid notes.
+Only what the author needs to see or act on, one line per item, empty sections left out. Don't list routine property writes, stage-by-stage steps or unchanged things.
+
+```
+Published
+- <title> (en) → /posts/<folder>/<slug>, <publishedAt>
+Placeholders: /posts/…, /ja/posts/… (note properties set: <note>: Drafting, requireTranslate; …)
+Needs you
+- Review: <translation note>: "<quote>" (reason); …
+- Blocked: <note>: <why>
+- Invalid: <note>: <detail>
+- Check: <non-trivial edit, PII replacement, new tag or series title, untranslated text in an image, a wikilink left as plain text, …>
+```
