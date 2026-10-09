@@ -2,6 +2,7 @@
 title: "Strobe Assistant Part 3—ACP+MCP Pipeline"
 slug: "strobe-assistant-part-3-acp-mcp-pipeline"
 publishedAt: "2026-10-08"
+updatedAt: "2026-10-09"
 summary: "How Strobe Assistant chains an ACP client, an agent service and an MCP server behind one ALB: why an ALB rather than API Gateway, how ACP over WebSocket meets MCP over Streamable HTTP, and how the user's Cognito token is verified at every hop."
 tags: ["ai", "agents", "aws", "qut"]
 project: "Strobe"
@@ -20,13 +21,13 @@ partNumber: 3
 - [Wrapping up](#wrapping-up)
 - [Further reading](#further-reading)
 
-One of the key architectural decisions in Strobe Assistant was how to connect the ACP client, the ACP server (the agent service) and the MCP server. This chain is the functional foundation of the app: every chat message, every tool call and every scheduled run passes through it, so it sits at the centre of the whole architecture.
+One of the key architectural decisions in the Strobe Assistant was how to connect the ACP client, the ACP server (the agent service) and the MCP server. This chain is the functional foundation of the app: every chat message, every tool call and every scheduled run passes through it, so it sits at the centre of the whole architecture.
 
-This is Part 3 of the [Strobe Assistant](/posts/strobe-assistant/strobe-assistant-extending-strobe-with-an-ai-agent) series. [Part 1](/posts/strobe-assistant/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb) covers the ALB and target groups in front of the services, and [Part 2](/posts/strobe-assistant/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together) covers how ECS runs them. This post steps back to the pipeline itself: what each piece does, how the pieces talk to each other, and why they are split the way they are.
+This is Part 3 of the series. [Part 1](/posts/strobe-assistant/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb) covers the ALB and target groups in front of the services, and [Part 2](/posts/strobe-assistant/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together) covers how ECS runs them. This post steps back to the pipeline itself: what each piece does, how the pieces talk to each other, and why they are split the way they are.
 
 ## The big picture
 
-The following diagram details the design of this part of the system:
+The following diagram details the design of this architectural unit of the system:
 
 <figure style={{ textAlign: "center" }}>
   <img
@@ -263,7 +264,7 @@ The MCP server is also the only component that touches the downstream services n
 
 Amazon Bedrock is accessed by both the agent and the MCP server, for different purposes, and both authenticate with their ECS task role rather than an API key:
 
-- **The agent** uses Bedrock's ConverseStream API with Gemma 3 12B to converse with the user. This is the model that reads the request, decides which tools to call (up to eight rounds per turn) and streams the answer back. Gemma 3 doesn't return native tool-use blocks on Bedrock, so the agent describes the tools in the system prompt and parses the model's tool calls out of its text; see How LLMs Call Tools for the details.
+- **The agent** uses Bedrock's ConverseStream API with Gemma 3 12B to converse with the user. This is the model that reads the request, decides which tools to call (up to eight rounds per turn) and streams the answer back. Gemma 3 doesn't return native tool-use blocks on Bedrock, so the agent describes the tools in the system prompt and parses the model's tool calls out of its text; see [LLMs Can't Run Code—How Tool Calling Actually Works](/posts/llms-cant-run-code-how-tool-calling-actually-works) for the details.
 - **The MCP server** uses Bedrock's InvokeModel API with the Titan embedding models (Titan Multimodal Embeddings G1 for images, Titan Text Embeddings V2 for posts and comments) to embed the user's search query, or a photo pasted into the chat, into the same vector spaces as the indexed content. The semantic search itself then happens in S3 Vectors, filtered by `userId`, and the two result lists are merged with reciprocal rank fusion. [Part 5](/posts/strobe-assistant/strobe-assistant-part-5-embeddings-for-posts-moments-and-search) and [Part 7](/posts/strobe-assistant/strobe-assistant-part-7-dual-index-rrf-and-mrr) cover that side.
 
 Splitting the work this way means the agent only needs to know how to talk to a language model and to an MCP server, while everything that depends on how Strobe stores its data stays behind the MCP boundary.
