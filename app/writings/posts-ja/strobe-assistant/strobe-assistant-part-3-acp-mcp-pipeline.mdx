@@ -1,19 +1,280 @@
 ---
 title: "Strobe Assistant パート3:ACP + MCPパイプライン"
 slug: "strobe-assistant-part-3-acp-mcp-pipeline"
-publishedAt: "2026-10-05"
-summary: "近日公開。Strobe Assistantの会話を支えるACP + MCPパイプラインを詳しく解説します。"
-tags: ["ai", "aws", "qut"]
+publishedAt: "2026-10-08"
+summary: "Strobe Assistantが、ACPクライアント、エージェントサービス、MCPサーバーを1つのALBの背後でどのようにつないでいるのか。API GatewayではなくALBを選んだ理由、WebSocket上のACPとStreamable HTTP上のMCPがどこで出会うのか、そしてユーザーのCognitoトークンがすべての経路でどのように検証されるのかを解説します。"
+tags: ["ai", "agents", "aws", "qut"]
 project: "Strobe"
-placeholder: true
 seriesOrder: 3
 partOf: "strobe-assistant"
 partOfTitle: "Strobe Assistant"
 partNumber: 3
 ---
 
-{/* Placeholder page: replace this file when the full Part 3 is published. */}
+- [全体像](#全体像)
+- [1つの玄関口:ALB](#1つの玄関口alb)
+- [エージェント:クライアントに向き合うACPサーバー](#エージェントクライアントに向き合うacpサーバー)
+- [エージェントからツールへ:MCPクライアント](#エージェントからツールへmcpクライアント)
+- [MCPサーバー:独立したコンポーネント、独立した認証境界](#mcpサーバー独立したコンポーネント独立した認証境界)
+- [2つの異なる用途で使うBedrock](#2つの異なる用途で使うbedrock)
+- [まとめ](#まとめ)
+- [参考資料](#参考資料)
 
-Strobe Assistantシリーズのこのパートは現在執筆中で、近日中にここで公開する予定です。
+Strobe Assistantにおける重要なアーキテクチャ上の決定の1つが、ACPクライアント、ACPサーバー(エージェントサービス)、MCPサーバーをどのようにつなぐかでした。このチェーンはアプリの機能面の土台です。すべてのチャットメッセージ、すべてのツール呼び出し、すべての定期実行がここを通るため、アーキテクチャ全体の中心に位置しています。
 
-それまでの間は、[プロジェクトの概要](/ja/posts/strobe-assistant/strobe-assistant-extending-strobe-with-an-ai-agent)で、Strobe Assistantの全体像と、このパートがどこに位置づけられるのかを解説しています。
+本稿は[Strobe Assistant](/ja/posts/strobe-assistant/strobe-assistant-extending-strobe-with-an-ai-agent)シリーズのパート3です。[パート1](/ja/posts/strobe-assistant/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb)ではサービスの前段にあるALBとターゲットグループを、[パート2](/ja/posts/strobe-assistant/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together)ではECSがそれらをどのように動かしているのかを扱いました。本稿では一歩引いてパイプラインそのものを見ていきます。各要素が何をしているのか、要素同士がどのようにやり取りするのか、そしてなぜこのように分割しているのかです。
+
+## 全体像
+
+次の図は、システムのこの部分の設計を詳しく示しています:
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/strobe-assistant-part-3-acp-mcp-pipeline/acp-mcp-architecture.svg"
+    alt="Strobe AssistantのACP + MCPの経路。ブラウザはRoute 53とALBを経由してwssで接続し、ALBのパスルールが/acp*をエージェントサービスへ、/mcp*をMCPサーバーへ、それ以外をWebUIへ振り分ける。エージェントはBedrock(Gemma 3)を呼び出し、ALBを経由してMCPサーバーを呼び出す。MCPサーバーはCognitoトークンを検証し、S3 Vectors、DynamoDB、S3、A1 APIを読み取る"
+    style={{ marginBottom: "8px" }}
+  />
+</figure>
+
+チェーンには3つのサービスがあります:
+
+- **ACPクライアント**、つまりチャットのWebUIです。厳密に言えば、クライアントはユーザーのブラウザ上で動いています。WebUI*サービス*は静的なバンドルを配信するnginxにすぎず、エージェントへのプロキシはしていません。(2つ目のACPクライアントである定期実行の振り返りLambdaも、同じ方法でエージェントとやり取りします。)
+- **エージェントサービス**(Node.js / TypeScript)。クライアントに対してはACPサーバー、ツールに対してはMCPクライアントとして振る舞い、その間でBedrockのツール呼び出しループを実行します。
+- **MCPサーバー**(Python / FastMCP)。ツールを公開しており、ユーザーのデータにアクセスできる唯一のコンポーネントです。
+
+3つはそれぞれがFargate上の独立したECSサービスで、タスク定義、ターゲットグループ、必要なタスク数もそれぞれ別です。そのため**完全に疎結合**になっています。どれか1つを再デプロイしたり、スケールしたり、停止したりしても、ほかには一切影響しません。
+
+ただし1つ注意点があります。エージェントはセッションをメモリ上に保持しているため、エージェントのタスクを2つ以上動かすには**スティッキーセッション**か外部のセッションストアが必要になります。ECSがコンテナイメージをどのようにして負荷分散された実行中のタスクに変えるのかは、それだけで1本の記事にする価値があり、それが[パート2](/ja/posts/strobe-assistant/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together)の役割です。
+
+## 1つの玄関口:ALB
+
+ALBは、背後のサービスや設定がどう変わっても、ACPクライアントに`HTTPS:443`上の`wss://…/acp`という安定したエンドポイントを提供します。正確に言うと、安定しているのはIPアドレスではなくALBのDNS名です。ALBのIPアドレスは時間とともに変わることがあるため、Route 53ではエイリアスレコードを使って独自ドメインをALBに向けています。その名前の背後では、リスナールールが`/acp*`をエージェントへ、`/mcp*`をMCPサーバーへ、それ以外をすべてWebUIへ送ります。
+
+API GatewayではなくALBを選んだ理由は3つあります:
+
+1. **WebSocket。** ACPクライアントには、エージェントへの継続的に開いたWSS接続が必要です。1回のターンで、数秒にわたって(ツールの実行中はそれよりずっと長く)多くの更新がストリーミングで返ってくるからです。API GatewayのREST APIとHTTP APIはリクエスト/レスポンス型のみで、統合タイムアウトは約29〜30秒、WebSocketのアップグレードもプロキシできません。API GatewayにはWebSocket APIが別に用意されていますが、これはソケットを自分で終端し、メッセージごとにルートキーで振り分けてバックエンドを1回ずつ呼び出す仕組みです。返信はコールバックAPIを通して送り返す必要があり、接続は最長2時間(アイドルタイムアウトは10分)に制限されています。エージェントは接続を所有できなくなり、ACPの周りに独自のレイヤーを作る必要が出てきます。大きな画像メッセージを分割するか別の場所に逃がす、29秒の制限を回避するために各レスポンスをリクエストから切り離す、セッションの状態をプロセスの外に置く、といったことです。ALBなら、WebSocketをそのままエージェントまでプロキシするだけです。
+2. **3つのサービスに1つの玄関口。** パスベースのルールにより、静的なUI、エージェント、MCPサーバーが1つのドメインと1つのTLS証明書を共有できます。
+3. **ECSとの自然な連携。** ECSは各タスクを自動的にターゲットグループに登録し、ターゲットグループのヘルスチェックの結果は、異常なタスクを置き換えるECSの判断にそのまま反映されます。
+
+エージェント側で実際にALBとやり取りしているのは`server.ts`です。ターゲットグループのヘルスチェックに`/healthz`で応答し、`/acp`でACPを提供し、WebSocketへのアップグレードはその1つのパスでしか許可しません:
+
+```typescript
+// server.ts
+// one AcpServer; createAgent() runs once per connection, so identity is connection-scoped
+const acpServer = new AcpServer({ createAgent: () => createStrobeAgent({ config, verifier, model }) });
+const acpHttpHandler = createNodeHttpHandler(acpServer);
+const webSocketServer = withKeepalive(new WebSocketServer({ noServer: true, maxPayload: 8 * 1024 * 1024 }));
+const acpWebSocketUpgradeHandler = createNodeWebSocketUpgradeHandler(acpServer, webSocketServer);
+
+const server = createServer((request, response) => {
+  const pathname = pathName(request);
+  if (pathname === "/healthz") {
+    // the ALB health check: cheap, unauthenticated, never /acp
+    sendJson(response, 200, { status: "ok", service: AGENT_NAME, version: AGENT_VERSION });
+  } else if (pathname === "/acp") {
+    // ACP over Streamable HTTP (handy for curl and scripts)
+    acpHttpHandler(request, response);
+  } else {
+    sendJson(response, 404, { error: "Not found" });
+  }
+});
+
+// ACP over WebSocket: only /acp may be upgraded
+server.on("upgrade", (request, socket, head) => {
+  if (pathName(request) !== "/acp") {
+    socket.destroy();
+    return;
+  }
+  acpWebSocketUpgradeHandler(request, socket, head);
+});
+
+server.listen(PORT, HOST, () => {...});
+
+// close the ACP server cleanly on SIGTERM, e.g. when ECS stops the task
+const shutdown = () => {...};
+```
+
+`withKeepalive`ラッパーがあるのもALBのためです。ALBは、アイドルタイムアウトの間データがまったく流れないと接続を閉じます(私はこれを60秒から300秒に引き上げました)。そしてツールの実行中は、ターンが静かになることがあります。そこでエージェントは、開いているすべてのソケットに30秒ごとにpingを送ります:
+
+```typescript
+// server.ts: inside withKeepalive(), for every upgraded socket
+const timer = setInterval(() => {
+  if (ws.readyState === ws.OPEN) ws.ping();
+}, PING_INTERVAL_MS); // 30 s, well inside the ALB's 300 s idle timeout
+ws.once("close", () => clearInterval(timer));
+```
+
+## エージェント:クライアントに向き合うACPサーバー
+
+Agent Client Protocol(ACP)は、Zedがコードエディタとコーディングエージェントをつなぐために作ったJSON-RPC 2.0のプロトコルで、通常はstdio上で使われます。ここでは、ACPのTypeScript SDKのサーバーモジュールがそれをWebSocket上で動かしているので、ブラウザがエディタの役割を担えます。下のシーケンス図は、ハンドシェイクからキャンセルまでの1つのセッションを示しています:
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/strobe-assistant-part-3-acp-mcp-pipeline/acp-session-sequence.svg"
+    alt="WebUIクライアント、エージェント、MCPサーバーの間のACPセッションのシーケンス図。initialize、CognitoのIDトークンによるauthenticate、session/new(MCPサーバーに接続し、最近の実行サマリーを読み込む)、ツールを呼び出しながらsession/update通知をストリーミングするsession/promptのターン、そしてsession/cancel"
+    style={{ marginBottom: "8px" }}
+  />
+</figure>
+
+`agent.ts`は、この図にほぼ1対1で対応しています。`createStrobeAgent()`はWebSocket接続ごとに1回実行されるため、そのクロージャ内の変数は接続ごとの状態、つまり検証済みのIDと、その接続で開かれたセッションになります。2つのガードレールにより、検証済みで(期限切れでない)CognitoのIDトークンなしにはセッションを開けず、リクエストは自分の接続に属するセッションにしか触れられないようになっています:
+
+```typescript
+// agent.ts
+export function createStrobeAgent(deps: AgentDependencies): acp.AgentApp {
+  let identity: Identity | null = null;          // set by authenticate, per connection
+  const sessions = new Map<string, Session>();   // sessions opened on this connection
+
+  // auth guardrail: no verified, unexpired ID token -> no session, no prompt
+  const requireIdentity = (): Identity => {...};
+  // session guardrail: the sessionId must belong to this connection
+  const requireSession = (sessionId: string): Session => {...};
+  // lazily (re)connect this session's MCP client, using the user's ID token
+  const ensureTools = async (session: Session, who: Identity): Promise<StrobeTools> => {...};
+
+  return acp
+    .agent({ name: AGENT_NAME })
+    // clean up all sessions (and their MCP clients) when the connection closes
+    .onConnect((connection) => {...})
+    // advertise the Cognito auth method and image prompts
+    .onRequest(acp.methods.agent.initialize, (context) => {...})
+    // verify the ID token passed in _meta.idToken; keep `sub` for this connection
+    .onRequest(acp.methods.agent.authenticate, async (context) => {...})
+    // this is where ACP meets MCP
+    .onRequest(acp.methods.agent.session.new, async (context) => {
+      const who = requireIdentity();
+      // `params.mcpServers` is ignored on purpose: the agent owns its MCP connection
+      const session: Session = { id: crypto.randomUUID(), tools: null, ... };
+      sessions.set(session.id, session);
+      try {
+        const tools = await ensureTools(session, who);
+        session.recentRuns = await tools.recentRuns(MEMORY_RUNS); // agent memory
+      } catch (error) {
+        // degrade rather than refuse: the first prompt will retry and explain
+      }
+      return { sessionId: session.id };
+    })
+    // the Bedrock tool loop, streamed back as session/update notifications
+    .onRequest(acp.methods.agent.session.prompt, async (context) => {...})
+    // abort the pending turn
+    .onNotification(acp.methods.agent.session.cancel, (context) => {...});
+}
+```
+
+ハンドシェイクには、触れておきたい点が2つあります。1つ目に、トークンはヘッダーやURLではなく、ACP自身の`authenticate`呼び出しの中で渡されます。ブラウザのWebSocket APIでは`Authorization`ヘッダーを設定できず、URLに含めたトークンはアクセスログやブラウザの履歴に残ってしまうからです。2つ目に、ACPではクライアントがエージェントに対して使用するMCPサーバーを指定できます(`session/new`の`mcpServers`)。エージェントはこのリストを意図的に無視しています。ブラウザは信頼できないものであり、エージェントのツールをどこから取得するかをブラウザに決めさせてはならないからです。この認証の側面については[パート4](/ja/posts/strobe-assistant/strobe-assistant-part-4-how-cognito-and-auth-fit-in)で詳しく扱います。
+
+## エージェントからツールへ:MCPクライアント
+
+ACPのセッションごとに、専用のMCPクライアントが用意されます。MCPクライアントは、ツールをstdioのサブプロセスとして起動するのではなく、ネットワーク越しにMCPのStreamable HTTPトランスポートで通信します。これによって、MCPサーバーを別個にデプロイされるコンポーネントにできています。エンドユーザーのCognito IDトークンは、すべてのリクエストにベアラートークンとして付与されます:
+
+```typescript
+// mcp.ts
+export class StrobeTools {
+  // set on a transport failure, so ensureTools() reconnects on the next turn
+  broken = false;
+
+  constructor(private readonly mcpUrl: string, private readonly idToken: string) {}
+
+  // connect to the MCP server over Streamable HTTP, with the user's ID token
+  async connect(): Promise<McpTool[]> {
+    const transport = new StreamableHTTPClientTransport(new URL(this.mcpUrl), {
+      requestInit: { headers: { Authorization: `Bearer ${this.idToken}` } },
+    });
+    const client = new Client({ name: ..., version: "0.1.0" });
+    await client.connect(transport);
+    this.client = client;
+    this.tools = (await client.listTools()).tools;
+    return this.tools;
+  }
+
+  // the tool list as the model sees it: the agent-only memory tools are removed
+  modelVisibleTools(): McpTool[] {...}
+
+  // tool calling (60 s timeout); a transport failure marks the client as broken
+  async call(name: string, args: Record<string, unknown>, signal?: AbortSignal): Promise<CallToolResult> {...}
+
+  // close the connection
+  async close(): Promise<void> {...}
+}
+```
+
+もう半分を担うのが`agent.ts`の`ensureTools()`です。クライアントを必要になった時点で作成し、前の接続が壊れていれば置き換えます。そのため、会話の途中でMCPサーバーが再起動や再デプロイされても、次のターンで自動的に復旧します。MCPサーバーにまったく到達できない場合は、ターンが止まったままになるのではなく、「I can't reach the Strobe tools service right now」というわかりやすいメッセージで終わります:
+
+```typescript
+// agent.ts
+const ensureTools = async (session: Session, who: Identity): Promise<StrobeTools> => {
+  if (session.tools && !session.tools.broken) return session.tools;
+  if (session.tools) {
+    void session.tools.close();
+    session.tools = null;
+  }
+  const tools = new StrobeTools(deps.config.mcpUrl, who.idToken);
+  session.toolSpecs = await tools.connect();
+  session.tools = tools;
+  return tools;
+};
+```
+
+MCPの呼び出しの多くは、ターンの途中でモデルがツールを要求したときに発生しますが、すべてではありません。エージェントは、モデルからは見えない呼び出しもいくつか自分で行います。セッションの開始時に直近のいくつかの実行サマリーを読み込み(`get_recent_runs`)、ターンが終わるたびにサマリーを書き戻し(`save_run_summary`)、検索で上位にヒットした画像のサムネイルを取得します(`get_image`)。メモリ用のツールをモデルのツール一覧から外しておくことで、キャプションに隠されたプロンプトインジェクションが、アシスタントがユーザーについて「覚えている」内容を書き換えることはできません。
+
+## MCPサーバー:独立したコンポーネント、独立した認証境界
+
+このプロジェクトでは、MCPサーバーにアクセスするのはエージェントだけで、その経路もALB経由です。Parameter Storeに保存されているMCPのURLは公開の`https://…/mcp`のアドレスなので、エージェントからMCPへの呼び出しは再びロードバランサーに入り、`/mcp*`のルールに一致します。MCPサーバーは独立してデプロイされ、独自の認証境界を持っているので、ほかのエージェントやデスクトップのMCPクライアントなど、別のサービスから再利用することもできます。だからこそ、この境界が重要になります。エージェントがすでに確認済みであっても、MCPサーバーは入ってくるすべてのトラフィックを信頼できないものとして扱い、上流から受け取ったトークンを検証しなければなりません。
+
+FastMCPなら、これは数行で済みます。`JWTVerifier`は、ツール本体が実行される前にトークンの署名、発行者、オーディエンス、有効期限をチェックします。そして各ツールは、ユーザーのIDを引数としてではなく、サーバーが注入する依存関係として受け取ります:
+
+```python
+# fastmcp_http_server.py
+COGNITO_ISSUER = f"https://cognito-idp.{REGION}.amazonaws.com/{COGNITO_USER_POOL_ID}"
+
+# every request to /mcp must carry a valid Cognito ID token
+auth = JWTVerifier(
+    jwks_uri=f"{COGNITO_ISSUER}/.well-known/jwks.json",
+    issuer=COGNITO_ISSUER,
+    audience=COGNITO_APP_CLIENT_ID,
+    algorithm="RS256",
+)
+mcp = FastMCP("Strobe Assistant tools", instructions=..., auth=auth)
+
+@mcp.tool(annotations={"readOnlyHint": True})
+async def search_my_content(
+    query: str,
+    media_type: Literal["all", "image", "text"] = "all",
+    limit: int = 10,
+    user_id: str = TokenClaim("sub"),           # from the verified token; not in the tool's input schema
+    token: AccessToken = CurrentAccessToken(),  # forwarded to the A1 API to enrich results
+) -> dict:
+    ...
+
+def _query_index(index_name, embedding, user_id, top_k):
+    response = s3vectors.query_vectors(
+        ...,
+        queryVector={"float32": embedding},
+        topK=top_k,
+        filter={"userId": user_id},  # every vector query is scoped to the caller
+        ...
+    )
+```
+
+`user_id`はツールの入力スキーマに一切現れないため、どのようなプロンプトを与えられても、**モデルが他のユーザーのコンテンツを要求する手段はありません**。
+
+また、ツール呼び出しを処理するのに必要な下流のサービスにアクセスするのも、MCPサーバーだけです。セマンティック検索のためのS3 Vectors、画像の分類とエージェントの実行履歴のためのDynamoDB、署名付きURLとサムネイルのためのS3メディアバケット、そして投稿とコメントのための(ユーザー自身のトークンを使う)A1 APIです。エージェントがこれらのサービスに直接アクセスすることはありません。ただし、正直に書いておくべき注意点が1つあります。私の構成では、この分離はIAMではなくコードによって担保されています。3つのタスク定義がすべて、事前に用意された同じタスクロールを使っているからです。本番環境であれば、サービスごとに最小権限のロールを与え、仮にエージェントが侵害されても境界が保たれるようにします。
+
+## 2つの異なる用途で使うBedrock
+
+Amazon Bedrockには、エージェントとMCPサーバーの両方が、それぞれ異なる目的でアクセスしています。どちらもAPIキーではなく、ECSのタスクロールで認証しています:
+
+- **エージェント**は、BedrockのConverseStream APIとGemma 3 12Bを使ってユーザーと会話します。リクエストを読み、どのツールを呼び出すかを決め(1ターンにつき最大8ラウンド)、回答をストリーミングで返すのがこのモデルです。Gemma 3はBedrock上でネイティブのtool-useブロックを返さないため、エージェントはシステムプロンプトの中でツールを説明し、モデルのテキストからツール呼び出しを解析しています。詳しくは「How LLMs Call Tools」を参照してください。
+- **MCPサーバー**は、BedrockのInvokeModel APIとTitanの埋め込みモデル(画像にはTitan Multimodal Embeddings G1、投稿とコメントにはTitan Text Embeddings V2)を使い、ユーザーの検索クエリやチャットに貼り付けられた写真を、インデックス済みのコンテンツと同じベクトル空間に埋め込みます。セマンティック検索自体はその後S3 Vectorsで`userId`で絞り込んで行われ、2つの結果リストはReciprocal Rank Fusionで統合されます。その側面については[パート5](/ja/posts/strobe-assistant/strobe-assistant-part-5-embeddings-for-posts-moments-and-search)と[パート7](/ja/posts/strobe-assistant/strobe-assistant-part-7-dual-index-rrf-and-mrr)で扱います。
+
+このように役割を分けることで、エージェントは言語モデルとMCPサーバーとのやり取りの仕方だけを知っていればよく、Strobeがデータをどのように保存しているかに依存する部分はすべてMCPの境界の向こう側にとどまります。
+
+## まとめ
+
+全体として見ると、このパイプラインは3つの狭い契約のチェーンです。WebSocket上のACPがクライアントとエージェントを、Streamable HTTP上のMCPがエージェントとツールをつなぎ、ユーザーのCognito IDトークンが全行程を移動して、各ホップで検証されます。ALBはチェーンに安定した1つの玄関口を与え、ECSは各リンクをそれぞれ独立して動かし続けます。どのリンクも、ほかに気づかれることなく置き換え、再デプロイ、再利用ができます。これこそ、アーキテクチャの中心に私が求めていたものです。
+
+## 参考資料
+
+- [Agent Client Protocol](https://agentclientprotocol.com/) — プロトコルの概要、メッセージの種類、SDK。
+- [MCP transports](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports) — MCP仕様におけるstdioとStreamable HTTPの比較。
+- [Quotas for configuring and running a WebSocket API in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-execution-service-websocket-limits-table.html) — 接続時間、アイドルタイムアウト、統合タイムアウトの制限。
+- [Carry out a conversation with the Converse API operations](https://docs.aws.amazon.com/bedrock/latest/userguide/conversation-inference.html) — ツールの利用を含む、BedrockのConverse APIとConverseStream API。
