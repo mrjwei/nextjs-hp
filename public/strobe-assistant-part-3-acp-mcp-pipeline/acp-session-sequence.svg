@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1170" viewBox="0 0 1120 1170">
+  <title>ACP session lifecycle</title>
+  <defs>
+    <marker id="a-solid" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1f3a5f"/>
+    </marker>
+    <marker id="a-open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M1,1 L9,5 L1,9" fill="none" stroke="#1f3a5f" stroke-width="1.6"/>
+    </marker>
+    <marker id="a-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8a919c"/>
+    </marker>
+    <marker id="a-grey-open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M1,1 L9,5 L1,9" fill="none" stroke="#8a919c" stroke-width="1.6"/>
+    </marker>
+  </defs>
+  <rect width="1120" height="1170" fill="#ffffff"/>
+  <text x="40" y="44" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="22" font-weight="700" fill="#1b2230" text-anchor="start" >ACP session lifecycle</text>
+  <text x="40" y="68" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#4a5363" text-anchor="start" >What the chat client and the Strobe agent say to each other, one turn end to end. MCP traffic shown in grey for context.</text>
+  <rect x="24" y="184" width="1072" height="200" fill="#fafbfc"/>
+  <text x="34" y="202" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#8a919c" text-anchor="start" letter-spacing="1.2">HANDSHAKE</text>
+  <text x="34" y="402" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#8a919c" text-anchor="start" letter-spacing="1.2">SESSION</text>
+  <rect x="24" y="580" width="1072" height="395" fill="#fafbfc"/>
+  <text x="34" y="598" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#8a919c" text-anchor="start" letter-spacing="1.2">PROMPT TURN</text>
+  <text x="34" y="993" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#8a919c" text-anchor="start" letter-spacing="1.2">CANCEL</text>
+  <rect x="75.0" y="96" width="250" height="54" rx="8" fill="#eef2f7" stroke="#1f3a5f" stroke-width="1.4" />
+  <text x="200" y="118" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#1b2230" text-anchor="middle" >ACP client</text>
+  <text x="200" y="137" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#4a5363" text-anchor="middle" >WebUI in the browser (or the retro Lambda)</text>
+  <rect x="495.0" y="96" width="250" height="54" rx="8" fill="#eef2f7" stroke="#1f3a5f" stroke-width="1.4" />
+  <text x="620" y="118" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#1b2230" text-anchor="middle" >Agent</text>
+  <text x="620" y="137" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#4a5363" text-anchor="middle" >ACP server · one instance per connection</text>
+  <rect x="835.0" y="96" width="250" height="54" rx="8" fill="#f6f7f9" stroke="#c3c8d0" stroke-width="1.1" />
+  <text x="960" y="118" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#8a919c" text-anchor="middle" >MCP server</text>
+  <text x="960" y="137" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8a919c" text-anchor="middle" >tools, reached over HTTPS</text>
+  <line x1="200" y1="150" x2="200" y2="1095" stroke="#1f3a5f" stroke-width="1.2" stroke-dasharray="4 5"/>
+  <line x1="620" y1="150" x2="620" y2="1095" stroke="#1f3a5f" stroke-width="1.2" stroke-dasharray="4 5"/>
+  <line x1="960" y1="150" x2="960" y2="1095" stroke="#c3c8d0" stroke-width="1.2" stroke-dasharray="4 5"/>
+  <rect x="615" y="298" width="10" height="66" rx="2" fill="#ffffff" stroke="#1f3a5f" stroke-width="1.2" />
+  <rect x="615" y="410" width="10" height="147" rx="2" fill="#ffffff" stroke="#1f3a5f" stroke-width="1.2" />
+  <rect x="615" y="616" width="10" height="331" rx="2" fill="#ffffff" stroke="#1f3a5f" stroke-width="1.2" />
+  <rect x="260.0" y="158" width="300" height="20" rx="0" fill="#ffffff" stroke="none" stroke-width="1.2" />
+  <text x="410.0" y="172" font-family="'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#4a5363" text-anchor="middle" >JSON-RPC 2.0 over WebSocket (wss://…/acp)</text>
+  <rect x="700.0" y="158" width="180" height="20" rx="0" fill="#ffffff" stroke="none" stroke-width="1.2" />
+  <text x="790.0" y="172" font-family="'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8a919c" text-anchor="middle" >MCP · Streamable HTTP</text>
+  <path d="M206,214 L614,214" fill="none" stroke="#1f3a5f" stroke-width="1.5" marker-end="url(#a-solid)" stroke-linejoin="round"/>
+  <text x="410.0" y="206" font-family="'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace" font-size="12.5" font-weight="600" fill="#1b2230" text-anchor="middle" >initialize</text>
+  <text x="410.0" y="231" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#4a5363" text-anchor="middle" >protocolVersion · clientCapabilities</text>
+  <path d="M614,262 L206,262" fill="none" stroke="#1f3a5f" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#a-open)" stroke-linejoin="round"/>
+  <text x="410.0" y="254" font-family="'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace" font-size="12.5" font-weight="600" fill="#1b2230" text-anchor="middle" >result</text>
+  <text x="410.0" y="279" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#4a5363" text-anchor="middle" >promptCapabilities.image = true · authMethods: [cognito-id-token]</text>
+  <path d="M206,312 L614,312" fill="none" stroke="#1f3a5f" stroke-width="1.5" marker-end="url(#a-solid)" stroke-linejoin="round"/>
+  <text x="410.0" y="304" font-family="'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace" font-size="12.5" font-weight="600" fill="#1b2230" text-anchor="middle" >authenticate</text>
+  <text x="410.0" y="329" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#4a5363" text-anchor="middle" >methodId cognito-id-token · _meta.idToken = Cognito ID token</text>
+  <path d="M614,364 L206,364" fill="none" stroke="#1f3a5f" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#a-open)" stroke-linejoin="round"/>
+  <text x="410.0" y="356" font-family="'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace" font-size="12.5" font-weight="600" fill="#1b2230" text-anchor="middle" >result  {}</text>
+  <rect x="640" y="290" width="290" height="46" rx="6" fill="#ffffff" stroke="#c3c8d0" stroke-width="1.2" />
+  <text x="652" y="309" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#4a5363" text-anchor="start" >auth.ts verifies the JWT: signature (JWKS),</text>
+  <text x="652" y="325" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#4a5363" text-anchor="start" >iss, aud, exp → keeps sub for this connection</text>
+  <path d="M206,418 L614,418" fill="none" stroke="#1f3a5f" stroke-width="1.5" marker-end="url(#a-solid)" stroke-linejoin="round"/>
+  <text x="410.0" y="410" font-family="'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace" font-size="12.5" font-weight="600" fill="#1b2230" text-anchor="middle" >session/new</text>
+  <text x="410.0" y="435" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#4a5363" text-anchor="middle" >mcpServers from the client is ignored</text>
+  <path d="M626,452 L954,452" fill="none" stroke="#8a919c" stroke-width="1.5" marker-end="url(#a-grey)" stroke-linejoin="round"/>
+  <text x="790.0" y="444" font-family="'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace" font-size="12.5" font-weight="600" fill="#8a919c" text-anchor="middle" >connect + tools/list</text>
+  <text x="790.0" y="469" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8a919c" text-anchor="middle" >Authorization: Bearer &lt;ID token&gt;</text>
+  <path d="M626,496 L954,496" fill="none" stroke="#8a919c" stroke-width="1.5" marker-end="url(#a-grey)" stroke-linejoin="round"/>
+  <text x="790.0" y="488" font-family="'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace" font-size="12.5" font-weight="600" fill="#8a919c" text-anchor="middle" >tools/call get_recent_runs</text>
+  <text x="790.0" y="513" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8a919c" text-anchor="middle" >last 5 run summaries → agent memory</text>
+  <path d="M954,538 L626,538" fill="none" stroke="#8a919c" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#a-grey-open)" stroke-linejoin="round"/>
+  <text x="790.0" y="530" font-family="'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace" font-size="12.5" font-weight="600" fill="#8a919c" text-anchor="middle" ></text>
+  <path d="M614,557 L206,557" fill="none" stroke="#1f3a5f" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#a-open)" stroke-linejoin="round"/>
+  <text x="410.0" y="549" font-family="'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace" font-size="12.5" font-weight="600" fill="#1b2230" text-anchor="middle" >result  { sessionId }</text>
+  <path d="M206,620 L614,620" fill="none" stroke="#1f3a5f" stroke-width="1.5" marker-end="url(#a-solid)" stroke-linejoin="round"/>
+  <text x="410.0" y="612" font-family="'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace" font-size="12.5" font-weight="600" fill="#1b2230" text-anchor="middle" >session/prompt</text>
+  <text x="410.0" y="637" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#4a5363" text-anchor="middle" >prompt: [ text, optional image block ]</text>
+  <rect x="140" y="648" width="900" height="264" rx="4" fill="none" stroke="#4a5363" stroke-width="1" />
+  <path d="M140,648 h150 v14 l-8,8 h-142 z" fill="#ffffff" stroke="#4a5363" stroke-width="1"/>
+  <text x="148" y="663" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#4a5363" text-anchor="start" >loop  each model step</text>
+  <text x="300" y="663" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#4a5363" text-anchor="start" font-style="italic" >until the reply is plain text · max 8 tool rounds</text>
+  <path d="M614,700 L206,700" fill="none" stroke="#1f3a5f" stroke-width="1.5" marker-end="url(#a-open)" stroke-linejoin="round"/>
+  <text x="410.0" y="692" font-family="'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace" font-size="12.5" font-weight="600" fill="#1b2230" text-anchor="middle" >session/update · agent_thought_chunk</text>
+  <text x="410.0" y="717" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#4a5363" text-anchor="middle" >“Reading the request…”</text>
+  <path d="M614,746 L206,746" fill="none" stroke="#1f3a5f" stroke-width="1.5" marker-end="url(#a-open)" stroke-linejoin="round"/>
+  <text x="410.0" y="738" font-family="'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace" font-size="12.5" font-weight="600" fill="#1b2230" text-anchor="middle" >session/update · tool_call</text>
+  <text x="410.0" y="763" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#4a5363" text-anchor="middle" >UI shows “Searching your photos…” (status in_progress)</text>
+  <path d="M626,778 L954,778" fill="none" stroke="#8a919c" stroke-width="1.5" marker-end="url(#a-grey)" stroke-linejoin="round"/>
+  <text x="790.0" y="770" font-family="'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace" font-size="12.5" font-weight="600" fill="#8a919c" text-anchor="middle" >tools/call search_my_content</text>
+  <path d="M954,806 L626,806" fill="none" stroke="#8a919c" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#a-grey-open)" stroke-linejoin="round"/>
+  <text x="790.0" y="798" font-family="'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace" font-size="12.5" font-weight="600" fill="#8a919c" text-anchor="middle" >result (hits, strobe:// refs)</text>
+  <path d="M614,836 L206,836" fill="none" stroke="#1f3a5f" stroke-width="1.5" marker-end="url(#a-open)" stroke-linejoin="round"/>
+  <text x="410.0" y="828" font-family="'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace" font-size="12.5" font-weight="600" fill="#1b2230" text-anchor="middle" >session/update · tool_call_update</text>
+  <text x="410.0" y="853" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#4a5363" text-anchor="middle" >status completed + trace</text>
+  <path d="M614,884 L206,884" fill="none" stroke="#1f3a5f" stroke-width="1.5" marker-end="url(#a-open)" stroke-linejoin="round"/>
+  <text x="410.0" y="876" font-family="'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace" font-size="12.5" font-weight="600" fill="#1b2230" text-anchor="middle" >session/update · agent_message_chunk</text>
+  <text x="410.0" y="901" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#4a5363" text-anchor="middle" >text deltas, or image blocks (inline photos)</text>
+  <path d="M614,947 L206,947" fill="none" stroke="#1f3a5f" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#a-open)" stroke-linejoin="round"/>
+  <text x="410.0" y="939" font-family="'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace" font-size="12.5" font-weight="600" fill="#1b2230" text-anchor="middle" >result  { stopReason: end_turn, usage }</text>
+  <text x="410.0" y="964" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#4a5363" text-anchor="middle" >closes the session/prompt request — the turn is over</text>
+  <path d="M206,1012 L614,1012" fill="none" stroke="#1f3a5f" stroke-width="1.5" marker-end="url(#a-open)" stroke-linejoin="round"/>
+  <text x="410.0" y="1004" font-family="'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace" font-size="12.5" font-weight="600" fill="#1b2230" text-anchor="middle" >session/cancel</text>
+  <text x="410.0" y="1029" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#4a5363" text-anchor="middle" >stop button · a notification, so no reply of its own</text>
+  <path d="M614,1060 L206,1060" fill="none" stroke="#1f3a5f" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#a-open)" stroke-linejoin="round"/>
+  <text x="410.0" y="1052" font-family="'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace" font-size="12.5" font-weight="600" fill="#1b2230" text-anchor="middle" >pending session/prompt → { stopReason: cancelled }</text>
+  <path d="M40,1132 L86,1132" fill="none" stroke="#1f3a5f" stroke-width="1.5" marker-end="url(#a-solid)" stroke-linejoin="round"/>
+  <text x="96" y="1136" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#4a5363" text-anchor="start" >request</text>
+  <path d="M186.2,1132 L232.2,1132" fill="none" stroke="#1f3a5f" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#a-open)" stroke-linejoin="round"/>
+  <text x="242.2" y="1136" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#4a5363" text-anchor="start" >response</text>
+  <path d="M339.0,1132 L385.0,1132" fill="none" stroke="#1f3a5f" stroke-width="1.5" marker-end="url(#a-open)" stroke-linejoin="round"/>
+  <text x="395.0" y="1136" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#4a5363" text-anchor="start" >notification (no reply)</text>
+  <text x="1080" y="1136" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8a919c" text-anchor="end" >Source: agent/src/agent.ts, server.ts, mcp.ts</text>
+</svg>
