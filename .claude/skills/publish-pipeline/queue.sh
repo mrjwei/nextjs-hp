@@ -37,6 +37,7 @@ command grep -rl --null --include='*.md' --exclude-dir=.trash --exclude-dir=.obs
     if (n != 1) { emit("invalid", "status must have exactly one value (has: " st ")"); return }
     if (sched != "" && !isdate(sched)) { emit("invalid", "scheduledAt is not YYYY-MM-DD: " sched); return }
     if (pub != "" && !isdate(pub)) { emit("invalid", "publishedAt is not YYYY-MM-DD: " pub); return }
+    if (upd != "" && !isdate(upd)) { emit("invalid", "updatedAt is not YYYY-MM-DD: " upd); return }
     if (st == "Drafting") { emit("idle", note); return }
     if (st == "Review") { emit("review", note); return }
     if (st == "Updated") {
@@ -55,7 +56,7 @@ command grep -rl --null --include='*.md' --exclude-dir=.trash --exclude-dir=.obs
     emit("invalid", "unknown status: " st)
   }
   FNR == 1 {
-    fm = ($0 == "---"); key = ""; st = ""; sched = ""; pub = ""; note = ""; rt = ""; tr = ""; tlink = ""; tof = ""; site = ""; lang = ""
+    fm = ($0 == "---"); key = ""; st = ""; sched = ""; pub = ""; upd = ""; note = ""; rt = ""; tr = ""; tlink = ""; tof = ""; site = ""; lang = ""
     if (!fm) nextfile
     next
   }
@@ -72,6 +73,7 @@ command grep -rl --null --include='*.md' --exclude-dir=.trash --exclude-dir=.obs
     if (key == "status") { gsub(/[][]/, "", val); gsub(/[ \t]*,[ \t]*/, ",", val); st = unq(val) }
     else if (key == "scheduledAt") sched = unq(val)
     else if (key == "publishedAt") pub = unq(val)
+    else if (key == "updatedAt") upd = unq(val)
     else if (key == "note") note = unq(val)
     else if (key == "requireTranslate") rt = unq(val)
     else if (key == "translated") tr = unq(val)
