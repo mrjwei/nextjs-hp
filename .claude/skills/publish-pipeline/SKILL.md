@@ -25,7 +25,7 @@ Set by the author:
 
 | Property | Meaning | If missing |
 | --- | --- | --- |
-| `status` | One of `Drafting`, `Review` (a translation waiting for the author), `Ready`, `Published`. | Not a pipeline note, though a note passed by path counts as Ready. Empty → Drafting. Several or unknown → invalid. |
+| `status` | One of `Drafting`, `Review` (a translation waiting for the author), `Ready`, `Updated` (a published note edited by the author: `/update-pipeline`), `Published`. | Not a pipeline note, though a note passed by path counts as Ready. Empty → Drafting. Several or unknown → invalid. |
 | `scheduledAt` | Queue order (earliest first), earliest publish day, default publish date. | Sorts last; publishable now; date = publish day. |
 | `publishedAt` | Overrides the publish date. | `scheduledAt`, else publish day. |
 | `series` | Series folder, e.g. `strobe-assistant`. A new folder starts a new series. | Claude matches a series or uses the root. |
@@ -37,6 +37,8 @@ Set by the author:
 | `summary` | Post summary. | Claude writes one. |
 | `lang` | `en` or `ja`. | Detected from the body; after-publish writes it. |
 | `sitePath` | Repo path of the post (a list for a note published as several posts), e.g. `app/writings/posts/strobe-assistant/<slug>.mdx`. Links note and post. Set by hand only to force a slug. | Derived by publish; written by after-publish, or by publish when it makes a placeholder for the note. |
+
+Updates (`/update-pipeline`) also use `updateNote` and `updatedAt`.
 
 Written by the pipeline only: `translation` (wikilink, on an original: its translation note), `translationOf` (wikilink, on a translation: its original; such a note is never translated), `translated` (checkbox, on an original: its translation is published), `reviewFocus` (list, on a translation: spots for the author to check).
 
@@ -58,6 +60,7 @@ A placeholder is a post with `placeholder: true`: a "coming soon" stand-in for a
 | Ready, `scheduledAt` in the future | `scheduled` | Nothing until then. |
 | Ready, has `translationOf` | `publish-translation` | publish → after-publish |
 | Ready, original | `publish` | publish → after-publish → translate if `requireTranslate` → if the translation is Ready: publish → after-publish |
+| Updated, or Ready with a baseline (deployed before) | `update` / `update-translation` | `/update-pipeline`'s: skip. |
 | Published, missing `sitePath`, `lang` or `publishedAt` | `finish` | after-publish (never republishes) |
 | Published original, `requireTranslate: true`, no `translation`, `translated` not true | `translate` | translate → if Ready: publish → after-publish |
 | Published, anything else | `idle` | Nothing. |
@@ -88,7 +91,7 @@ The translate stage lists in `reviewFocus` only the spots that need a human. The
 
 ## Rules
 
-- Vault writes: only the properties above, new translation notes, and images copied into `assets/`. Never edit a note's body (except the translation note being created), never rename or move a note.
+- Vault writes: only the properties above, new translation notes, images copied into `assets/`, and baselines (`baseline.sh`: the note's content as deployed, which `/update-pipeline` diffs against). Never edit a note's body (except the translation note being created), never rename or move a note.
 - Never commit anything from the vault. Repo changes happen only in the publish stage, one branch per published note.
 - Run from Claude Code on the Mac (the Cowork VM can't push via SSH or clear git lock files).
 
