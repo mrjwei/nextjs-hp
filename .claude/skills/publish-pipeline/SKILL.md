@@ -60,7 +60,7 @@ A placeholder is a post with `placeholder: true`: a "coming soon" stand-in for a
 | Ready, `scheduledAt` in the future | `scheduled` | Nothing until then. |
 | Ready, has `translationOf` | `publish-translation` | publish → after-publish |
 | Ready, original | `publish` | publish → after-publish → translate if `requireTranslate` → if the translation is Ready: publish → after-publish |
-| Updated, or Ready with a baseline (deployed before) | `update` / `update-translation` | `/update-pipeline`'s: skip. |
+| Updated | `update` | `/update-pipeline`'s: skip. |
 | Published, missing `sitePath`, `lang` or `publishedAt` | `finish` | after-publish (never republishes) |
 | Published original, `requireTranslate: true`, no `translation`, `translated` not true | `translate` | translate → if Ready: publish → after-publish |
 | Published, anything else | `idle` | Nothing. |
@@ -91,7 +91,7 @@ The translate stage lists in `reviewFocus` only the spots that need a human. The
 
 ## Rules
 
-- Vault writes: only the properties above, new translation notes, images copied into `assets/`, and baselines (`baseline.sh`: the note's content as deployed, which `/update-pipeline` diffs against). Never edit a note's body (except the translation note being created), never rename or move a note.
+- Vault writes: only the properties above, new translation notes, and images copied into `assets/`. Never edit a note's body (except the translation note being created), never rename or move a note.
 - Never commit anything from the vault. Repo changes happen only in the publish stage, one branch per published note.
 - Run from Claude Code on the Mac (the Cowork VM can't push via SSH or clear git lock files).
 

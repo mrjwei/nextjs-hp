@@ -48,7 +48,7 @@ Array-valued frontmatter (like `stack`) uses the same `[...]` JSON syntax as `ta
 
 Drafts live outside this repo, in the Obsidian vault (`~/projects/Notes`), which is the single source of truth for every post, project write-up and translation. Run `/publish-pipeline` to work the queue, or `/publish-pipeline <note path>` for specific notes. It publishes Ready notes, writes their translations into the vault next to the originals (held for review when the self-check flags anything), publishes reviewed translations, and updates the notes' frontmatter. The pipeline is driven by the notes' frontmatter; see `.claude/skills/publish-pipeline/SKILL.md` for the properties and the review flow.
 
-To change a published post, edit its note and set its status to `Updated`, then run `/update-pipeline`. It applies only what changed since the last deploy (diffed against a baseline saved at publish time, so the publish edits survive), sets the post's `updatedAt`, carries the change into the translation, deploys every queued update in one build and sets the notes back to Published. See `.claude/skills/update-pipeline/SKILL.md`.
+To change a published post, edit its note and set its status to `Updated`, then run `/update-pipeline`. It writes each note's current content into its post as is (keeping the post's URL and frontmatter), sets `updatedAt`, updates link text in other posts that quotes a changed title, deploys every queued update in one build and sets the notes back to Published. Each language's note is updated on its own. See `.claude/skills/update-pipeline/SKILL.md`.
 
 The `npm run publish` script below is the older alternative and works without Claude Code.
 

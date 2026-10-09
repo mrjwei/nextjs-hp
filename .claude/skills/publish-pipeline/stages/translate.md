@@ -11,7 +11,7 @@ Write the translation of a Published original as a new vault note in the same fo
 - Something already exists:
   - the translation note, with `translationOf` pointing at this original (an earlier run stopped part-way) → skip to step 5;
   - a `placeholder: true` stand-in at the target path → not a translation (see Placeholders in SKILL.md): translate as normal, and the publish stage replaces it;
-  - any other post at the target path (translated before this pipeline) → import it: write the translation note from that post as in step 3 (status Published, no `reviewFocus`), then do step 5, set `translated: true` on the original and save its baseline (`baseline.sh save <translation note>`);
+  - any other post at the target path (translated before this pipeline) → import it: write the translation note from that post as in step 3 (status Published, no `reviewFocus`), then do step 5 and set `translated: true` on the original;
   - a note with that name that isn't this original's translation → blocked.
 
 ## 2. Translate
