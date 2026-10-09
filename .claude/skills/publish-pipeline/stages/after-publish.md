@@ -13,4 +13,3 @@ Record a published post in its vault note. It runs after the publish stage has p
    - `status`: Published
 
    When `series` or `project` is now a property, remove the matching item (e.g. `project: Strobe`) from `note`, and remove `note` if nothing is left.
-4. `bash .claude/skills/publish-pipeline/baseline.sh save <note>`: the note as published, for later updates (`/update-pipeline`).
