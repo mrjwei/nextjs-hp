@@ -4,8 +4,11 @@
 #
 # Output, one TSV line per note, in the order to work on them:
 #   action  scheduledAt  path (relative to the vault)  detail
-# action:   finish | publish-translation | publish | translate | review | invalid   (default)
-#           scheduled | idle                                                         (--all only)
+# action:   finish | publish-translation | publish | translate                      (publish-pipeline)
+#           update | update-translation                                            (update-pipeline)
+#           review | invalid                                                       (both)
+#           scheduled | idle                                                       (--all only)
+# An update is a note with status Updated, or a Ready note that has a baseline (it was deployed before; see baseline.sh).
 # detail:   the problem for `invalid`, otherwise the note's `note` property.
 # A missing scheduledAt prints as "~" and sorts last within its action.
 #
@@ -23,11 +26,16 @@ command grep -rl --null --include='*.md' --exclude-dir=.trash --exclude-dir=.obs
   function isdate(s) { return s ~ /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/ }
   function emit(action, detail,   pri, rel) {
     pri = (action == "finish") ? 1 : (action == "publish-translation") ? 2 : (action == "publish") ? 3 : \
-          (action == "translate") ? 4 : (action == "review") ? 5 : (action == "invalid") ? 6 : \
-          (action == "scheduled") ? 7 : 8
-    if (pri >= 7 && !all) return
+          (action == "translate") ? 4 : (action == "update") ? 5 : (action == "update-translation") ? 6 : \
+          (action == "review") ? 7 : (action == "invalid") ? 8 : (action == "scheduled") ? 9 : 10
+    if (pri >= 9 && !all) return
     rel = FILENAME; if (index(rel, vault) == 1) rel = substr(rel, length(vault) + 1)
     printf "%d\t%s\t%s\t%s\t%s\n", pri, action, (sched == "" ? "~" : sched), rel, detail
+  }
+  function baselined(   b, line, ok) {
+    if (site == "") return 0
+    b = site; sub(/^app\/writings\//, "", b); sub(/\.mdx$/, "", b); b = vault ".pipeline/baselines/" b ".md"
+    ok = ((getline line < b) > 0); close(b); return ok
   }
   function decide(   n) {
     n = split(st, parts, ",")
@@ -37,6 +45,10 @@ command grep -rl --null --include='*.md' --exclude-dir=.trash --exclude-dir=.obs
     if (pub != "" && !isdate(pub)) { emit("invalid", "publishedAt is not YYYY-MM-DD: " pub); return }
     if (st == "Drafting") { emit("idle", note); return }
     if (st == "Review") { emit("review", note); return }
+    if (st == "Updated" || (st == "Ready" && baselined())) {
+      if (site == "") { emit("invalid", "status Updated but never published (no sitePath): set it to Ready"); return }
+      emit(tof != "" ? "update-translation" : "update", note); return
+    }
     if (st == "Ready") {
       if (sched != "" && sched > today) { emit("scheduled", note); return }
       emit(tof != "" ? "publish-translation" : "publish", note); return
@@ -57,7 +69,7 @@ command grep -rl --null --include='*.md' --exclude-dir=.trash --exclude-dir=.obs
   /^[ \t]*-[ \t]/ {
     v = $0; sub(/^[ \t]*-[ \t]*/, "", v); v = unq(v)
     if (key == "status" && v != "") st = (st == "" ? v : st "," v)
-    if (key == "sitePath" && v != "") site = v
+    if (key == "sitePath" && v != "" && site == "") site = v
     next
   }
   /^[^ \t#][^:]*:/ {
