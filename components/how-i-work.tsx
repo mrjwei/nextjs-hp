@@ -1,13 +1,13 @@
-import { MessagesSquare, Workflow, FlaskConical } from "lucide-react"
+import { Search, Workflow, PenTool, FlaskConical } from "lucide-react"
 import type { HowIWorkItem } from "app/content/profile"
 
-const icons = [MessagesSquare, Workflow, FlaskConical]
+const icons = [Search, Workflow, PenTool, FlaskConical]
 
 export function HowIWork({ items }: { items: HowIWorkItem[] }) {
   if (!items.length) return null
 
   return (
-    <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-10">
+    <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-10 lg:grid-cols-4">
       {items.map((item, i) => {
         const Icon = icons[i % icons.length]
         return (

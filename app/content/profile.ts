@@ -63,81 +63,91 @@ export const highlights: { projects: string[]; posts: string[] } = {
 
 export const profile: Record<Lang, Profile> = {
   en: {
-    role: "Applied AI engineer",
-    eyebrow: "Applied AI engineer · Japan & Australia",
-    headline: "AI that gets used, not just demoed.",
+    role: "Product designer & engineer",
+    eyebrow: "Product designer & engineer · Design × frontend × AI · Japan",
+    headline: "Changing how people work, through design and AI.",
     subhead:
-      "I ship LLM systems into real business workflows — from messy Japanese documents to evaluated, production-ready pipelines. A decade of product design and engineering is why people actually adopt them.",
+      "Ten years of B2B product design and 3+ years leading frontend. I've helped a paper-run welfare business onto digital workflows, cut a booking flow's peak-season inquiries from 200+ a week to about four, and built a first design system for a team that had none. Now I build LLM features into real operations, with a person at every decision that matters.",
     meta: {
       title:
-        "Jesse Wei — Applied AI engineer shipping LLM systems into real workflows",
+        "Jesse Wei — Product designer & engineer for digital and AI transformation",
       description:
-        "Applied AI engineer who ships LLM systems into real business workflows — document pipelines, evaluation and delivery — backed by ten years of product design and engineering. Based in Japan, working in English, Japanese and Chinese.",
+        "Product designer and frontend engineer with ten years in B2B, bringing digital and AI-assisted workflows into businesses that run on paper, spreadsheets and legacy code — from requirements to a system people adopt. Based in Japan; works in English, Japanese and Chinese.",
     },
     proof: [
-      { label: "LLM pipelines shipped for 2 client businesses" },
-      { label: "Eval harness · 146 labelled attacks scored" },
-      { label: "10 yrs product · 3+ yrs frontend leadership" },
-      { label: "EN · 日本語 · 中文" },
+      { label: "10 yrs B2B product · 3+ yrs frontend lead" },
+      { label: "Booking redesign: 200+ → ~4 inquiries/week" },
+      { label: "Paper-run welfare operator → ~100 staff on digital workflows" },
+      { label: "LLM systems built for 2 client businesses, with human review gates" },
     ],
     howIWork: [
       {
-        title: "Scope it with the customer",
-        body: "Start from the workflow, not the model — where AI can be trusted, where it can't, and what a human has to sign off on.",
+        title: "Understand the operation",
+        body: "Start from how the work is done today — on paper, in spreadsheets, in people's heads — and what the business actually needs to change.",
       },
       {
-        title: "Build the pipeline",
-        body: "Retrieval, orchestration, guardrails, cost and latency budgets — production code, not a notebook demo.",
+        title: "Decide who decides",
+        body: "Design the system and its review points: what's deterministic code, what an LLM drafts, and what a person must sign off.",
       },
       {
-        title: "Prove it with evals",
-        body: "Ground truth, a scoring rubric, and a re-run before every change — so \"it works\" is a number, not a feeling.",
+        title: "Design and build it",
+        body: "Interface and production frontend in one head, so trade-offs are made once instead of traded across a handoff.",
+      },
+      {
+        title: "Prove it and make it stick",
+        body: "Tests, evaluation and field feedback until the team uses it every day, plus a design system so it stays consistent after I leave.",
       },
     ],
     rolesSought: [
-      "Forward Deployed Engineer",
-      "AI Solutions Engineer",
-      "Applied AI (生成AI) Engineer",
+      "Design engineer / UX engineer",
+      "AI product engineer",
+      "Technical director · AI & digital transformation",
+      "Forward deployed / solutions engineer",
     ],
     languages: ["Chinese (native)", "English", "Japanese", "Korean"],
     social,
     features,
   },
   ja: {
-    role: "アプライドAIエンジニア",
-    eyebrow: "アプライドAIエンジニア・日本／オーストラリア",
-    headline: "デモで終わらない、現場で使われるAIを。",
+    role: "プロダクトデザイナー／エンジニア",
+    eyebrow: "プロダクトデザイナー／エンジニア・UX×フロントエンド×生成AI・日本",
+    headline: "デザインとAIで、人の働き方を変える。",
     subhead:
-      "生成AI／LLMシステムを実際の業務に実装しています。日本語の複雑な文書処理から、評価設計を伴う本番運用可能なパイプラインまで一貫して担当。10年のプロダクトデザインと開発の経験が、「使われるAI」につながっています。",
+      "B2Bプロダクトデザイン10年、フロントエンド開発リード3年以上。紙で回っていた福祉事業のDX、繁忙期の問い合わせを週200件超から約4件に減らした予約フロー改善、デザインの土台がなかった組織での初のデザインシステム構築。いまは、要所に人の確認を組み込んだ生成AI機能を、実際の業務に実装しています。",
     meta: {
-      title: "Jesse Wei — 業務に実装されるAIをつくるアプライドAIエンジニア",
+      title: "Jesse Wei — 業務DX・生成AI実装を担うプロダクトデザイナー／エンジニア",
       description:
-        "生成AI／LLMシステムを実際の業務に実装するアプライドAIエンジニア。文書処理パイプライン、評価設計、顧客との要件整理から本番運用までを担当し、10年のプロダクトデザイン・開発経験で「使われるAI」をつくります。拠点は日本、英語・日本語・中国語で対応可能です。",
+        "B2Bプロダクトデザイン10年・フロントエンド開発リードの経験を持つプロダクトデザイナー／エンジニア。紙・スプレッドシート・レガシーシステムで回る業務に、デジタルと生成AIを組み込みます。要件定義から設計・開発・定着まで一貫して担当。拠点は日本、英語・日本語・中国語に対応。",
     },
     proof: [
-      { label: "クライアント企業2社にLLMパイプラインを実装" },
-      { label: "評価ハーネス · 146件のラベル付き攻撃を採点" },
-      { label: "プロダクト経験10年・フロントエンドリード3年以上" },
-      { label: "英語 · 日本語 · 中国語" },
+      { label: "B2Bプロダクト10年・フロントエンドリード3年以上" },
+      { label: "予約フロー改善：問い合わせ 週200件超→約4件" },
+      { label: "紙運用の福祉事業→約100名規模のデジタル運用へ" },
+      { label: "クライアント2社に生成AIシステムを構築（人の確認を組み込んだ設計）" },
     ],
     howIWork: [
       {
-        title: "顧客と一緒に要件を定める",
-        body: "起点はモデルではなく業務フロー。AIを信頼できる範囲はどこか、どこで人間の承認が必須かを最初に決めます。",
+        title: "業務を理解する",
+        body: "紙・スプレッドシート・個人の頭の中にある「いまのやり方」と、事業として本当に変えるべき点から始めます。",
       },
       {
-        title: "パイプラインを構築する",
-        body: "検索、オーケストレーション、ガードレール、コストとレイテンシの予算設計まで——ノートブックのデモではなく本番コードとして。",
+        title: "判断の分担を設計する",
+        body: "コードで決めること、AIに下書きさせること、人が必ず確認することを切り分けて設計します。",
       },
       {
-        title: "評価で証明する",
-        body: "正解データ、採点基準、変更のたびの再評価。「動いている」を感覚ではなく数値で示します。",
+        title: "デザインし、つくる",
+        body: "UIと本番のフロントエンドを一人で担うので、トレードオフを引き継ぎの中で失わずに判断できます。",
+      },
+      {
+        title: "検証し、定着させる",
+        body: "テスト・評価・現場のフィードバックで毎日使われる状態まで仕上げ、デザインシステムで品質が続く仕組みを残します。",
       },
     ],
     rolesSought: [
-      "アプライドAIエンジニア",
-      "Forward Deployed Engineer",
+      "デザインエンジニア／UXエンジニア",
       "AIプロダクトエンジニア",
+      "テクニカルディレクター（DX・生成AI）",
+      "Forward Deployed Engineer",
     ],
     languages: ["中国語（母語）", "英語", "日本語", "韓国語"],
     social,
