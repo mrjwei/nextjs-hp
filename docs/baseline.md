@@ -12,8 +12,6 @@ Use the same set of URLs every time:
 - One project page: `/projects/<project-slug>`
 - Posts index: `/posts`
 - One post with a ResultBlock: `/posts/<collection>/<slug>`
-- Gallery index: `/gallery`
-- One gallery item: `/gallery/<some-slug>`
 - JA home: `/ja`
 
 ## Lighthouse (manual)

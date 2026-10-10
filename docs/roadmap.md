@@ -50,10 +50,9 @@ EN                                   JA
 /posts               Posts           /ja/posts             記事
 /posts/[...]         Post            /ja/posts/[...]
 /about               About           /ja/about
-/gallery             (footer only)   /ja/gallery
 ```
 
-- **Header**: Posts · Projects · About (logo = Home), search, LinkedIn, GitHub. Active state uses prefix matching. Instagram, Gallery and email are in the footer.
+- **Header**: Posts · Projects · About (logo = Home), search, LinkedIn, GitHub. Active state uses prefix matching. Email is in the footer.
 - **Home**: hero (from `profile.ts`) → proof strip (static) → selected projects (one card per project) → How I work (static) → posts. Both lists show `highlights` pins first, then the latest.
 - **Projects** are a *view* over posts: any post with a `project` ID. `/posts` URLs are always canonical. `/writings/*`, `/work/*` and `/portfolio/*` 301 to the new paths. Full rules are in `docs/publish.md`.
 - **Content knobs**: `project`, `lead`, `track`, `draft`, `placeholder`, `archived`, plus the case-study fields (`role`, `client`, `industry`, `duration`, `stack`, `status`, `confidential`). They're validated in both `app/utils/index.ts` (zod) and `scripts/generate-content-index.mjs`.
@@ -116,7 +115,7 @@ Until items 1–3 are live, Home's "Selected projects" shows LingoBun, AI+Sec (t
 **Resolved**
 
 - Contact: `mailto:jesseweijapan@gmail.com`, in the footer and About.
-- Gallery: kept, footer link only.
+- Gallery and Instagram: removed (2026-10).
 - URL policy: `/posts/...` is canonical, and `/projects` is a view over it (replacing the planned `/work/[slug]`).
 - `/now` page and availability chip: dropped.
 

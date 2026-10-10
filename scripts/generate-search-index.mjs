@@ -19,8 +19,7 @@ async function generateSearchIndex() {
   // Archived and draft entries 404 on the site, so they must not be searchable.
   const isListed = (p) => !p.metadata?.archived && !p.metadata?.draft;
   const allPosts = [
-    ...(contentIndex.writings || []).map(p => ({ ...p, type: 'writing' })),
-    ...(contentIndex.gallery || []).map(p => ({ ...p, type: 'gallery' }))
+    ...(contentIndex.writings || []).map(p => ({ ...p, type: 'writing' }))
   ].filter(isListed);
 
   console.log(`Found ${allPosts.length} total posts.`);

@@ -36,7 +36,6 @@ function isActivePath(path: string, pathName: string) {
 const socialLabels: Record<string, string> = {
   linkedin: "LinkedIn profile",
   github: "GitHub profile",
-  instagram: "Instagram profile",
   email: "Email",
 }
 

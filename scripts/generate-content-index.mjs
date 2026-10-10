@@ -20,14 +20,6 @@ const CONTENT = {
       ja: path.join(CWD, "app", "writings", "posts-ja"),
     },
   },
-  gallery: {
-    kind: "gallery",
-    requireTags: false,
-    baseDirsByLang: {
-      en: path.join(CWD, "app", "gallery", "posts"),
-      ja: path.join(CWD, "app", "gallery", "posts-ja"),
-    },
-  },
 };
 
 function isDirectory(absPath) {
@@ -322,13 +314,12 @@ function main() {
     version: 1,
     generatedAt: new Date().toISOString(),
     writings: buildIndexSection("writings", CONTENT.writings),
-    gallery: buildIndexSection("gallery", CONTENT.gallery),
   };
 
   fs.writeFileSync(OUTPUT_PATH, JSON.stringify(index, null, 2) + "\n", "utf-8");
 
   console.log(
-    `Generated content index at ${path.relative(CWD, OUTPUT_PATH)} (writings=${index.writings.length}, gallery=${index.gallery.length})`
+    `Generated content index at ${path.relative(CWD, OUTPUT_PATH)} (writings=${index.writings.length})`
   );
 }
 

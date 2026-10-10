@@ -1,15 +1,14 @@
 import clsx from "clsx"
 import Link from "next/link"
-import Image from "next/image"
 import { Tags } from "@/components/tags"
 import { ProjectBadge } from "@/components/project-badge"
 import { ComingSoonBadge } from "@/components/coming-soon-badge"
 import { formatDate, getProjectHref } from "app/utils"
 import type { Lang } from "app/i18n/config"
 
-const copy: Record<Lang, { published: string; galleryThumbnail: string }> = {
-  en: { published: "Published:", galleryThumbnail: "Gallery thumbnail" },
-  ja: { published: "公開日:", galleryThumbnail: "ギャラリーのサムネイル" },
+const copy: Record<Lang, { published: string }> = {
+  en: { published: "Published:" },
+  ja: { published: "公開日:" },
 }
 
 export function WritingCard({
@@ -41,8 +40,6 @@ export function WritingCard({
   href?: string
 }) {
   const t = copy[lang]
-  const isGallery = path === "gallery"
-  const thumbnailSrc = article?.metadata?.image
   const project: string | undefined = showProjectBadge
     ? article?.metadata?.project
     : undefined
@@ -77,27 +74,6 @@ export function WritingCard({
         href={`${href}${from ? `?from=${from}` : ""}`}
         className="flex-1 flex flex-col"
       >
-        {isGallery ? (
-          <div className="relative w-full aspect-[16/9] overflow-hidden rounded-t-lg bg-[var(--surface-sunken)]">
-            {thumbnailSrc ? (
-              <Image
-                src={thumbnailSrc}
-                alt={
-                  article?.metadata?.title
-                    ? `${article.metadata.title} thumbnail`
-                    : t.galleryThumbnail
-                }
-                fill
-                sizes="(min-width: 768px) 50vw, 100vw"
-                className="object-cover transition-transform duration-300 ease-[var(--ease-out)] group-hover:scale-105"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center font-sans font-semibold text-2xl text-[var(--text-subtle)]">
-                {article.metadata.title?.[0]}
-              </div>
-            )}
-          </div>
-        ) : null}
         <div className="p-6 pb-4 flex flex-col justify-between">
           <div>
             <div className="mb-4">
@@ -109,7 +85,7 @@ export function WritingCard({
                   "text-lg leading-normal font-semibold mb-2 text-[var(--text-strong)] transition-colors group-hover:text-[var(--accent-text)]",
                   {
                     "break-all": article.metadata.shouldBreakWord,
-                    "pr-20": project && !isGallery,
+                    "pr-20": project,
                   }
                 )}
               >

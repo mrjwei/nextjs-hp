@@ -25,14 +25,12 @@ const copy = {
     noResults: "No results found.",
     post: "Post",
     project: "Project",
-    gallery: "Gallery",
   },
   ja: {
     placeholder: "記事を検索...",
     noResults: "見つかりませんでした。",
     post: "記事",
     project: "プロジェクト",
-    gallery: "ギャラリー",
   },
 };
 
@@ -111,13 +109,11 @@ export function SearchPalette({ isLight }: { isLight: boolean }) {
 
   const getPath = (type: string, slug: string, collection?: string) => {
     const prefix = lang === "ja" ? "/ja" : "";
-    if (type === "gallery") return `${prefix}/gallery/${slug}`;
     if (collection) return `${prefix}/posts/${collection}/${slug}`;
     return `${prefix}/posts/${slug}`; // Assume writing by default
   };
 
   const getLabel = (result: SearchResultItem) => {
-    if (result.type === "gallery") return t.gallery;
     if (result.project) return `${t.project} · ${result.project}`;
     return t.post;
   };
