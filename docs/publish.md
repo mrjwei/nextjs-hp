@@ -36,7 +36,7 @@ All optional; see `docs/templates/case-study.mdx` for the full skeleton and `Res
 
 - `project?: string` — see above.
 - `lead?: boolean` — marks the post that represents its project on cards (one per project). It doesn't affect list order. See `groupProjects` in `app/utils/index.ts`.
-- `track?: "ai-engineering" | "product-design" | "security" | "research"` — powers the track filter on `/projects`.
+- `track?: "transformation" | "ai-engineering" | "product-design" | "design-systems" | "security" | "research"` — powers the track filter on `/projects`. Labels: Digital transformation / 業務DX, AI systems / AIシステム, Product design / プロダクトデザイン, Design systems & ops / デザインシステム・デザインOps, Security, Research. Filter order is `trackOrder` in `app/content/profile.ts`.
 - `draft?: boolean` — excluded from all grids, search, sitemap, RSS, and direct URL access in production (`npm run build`/deploy); still fully visible in `npm run dev`. Unfinished drafts don't live in this repo: they stay outside it (e.g. in the Obsidian vault) until published with `/publish-pipeline`.
 - `placeholder?: boolean` — marks a "coming soon" stand-in for a post that's announced but not written yet (e.g. a later part of a series that an overview already links to). It is listed and reachable like any post, but cards and the post page show a "Coming soon" badge, and it is never picked as a project's lead. Replace the file (dropping the flag) when the real post is published.
 - `archived?: boolean` — excluded from all grids, search, sitemap and RSS, and its URL returns 404 (in dev too).

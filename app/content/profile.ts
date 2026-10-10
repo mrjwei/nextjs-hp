@@ -1,4 +1,5 @@
 import type { Lang } from "app/i18n/config"
+import type { WorkTrack } from "app/utils"
 
 export type SocialId = "linkedin" | "github" | "email"
 
@@ -56,10 +57,27 @@ const features = {
 // no match in a language (e.g. an untranslated post) is skipped there.
 export const highlights: { projects: string[]; posts: string[] } = {
   // Project IDs, as in a post's `project` frontmatter, e.g. "LingoBun".
-  projects: [],
+  // "UIUX" is the WAmazing booking-form case study (JA only for now).
+  projects: ["UIUX", "LingoBun", "AI+Sec", "Strobe"],
   // Post slugs (the file name without .mdx), e.g. "ai-design-guidelines".
-  posts: [],
+  posts: [
+    "designing-infrastructure-not-assets",
+    "from-requirements-to-assumptions",
+    "ai-design-guidelines",
+    "ai-productivity-gains-not-evenly-shared",
+  ],
 }
+
+// Order of the track filter on /projects (only tracks with projects show).
+// Reorder to shift which lane the site leads with.
+export const trackOrder: WorkTrack[] = [
+  "transformation",
+  "ai-engineering",
+  "product-design",
+  "design-systems",
+  "security",
+  "research",
+]
 
 export const profile: Record<Lang, Profile> = {
   en: {
