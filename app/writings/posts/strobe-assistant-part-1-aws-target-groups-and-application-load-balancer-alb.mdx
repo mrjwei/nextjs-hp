@@ -26,7 +26,7 @@ partNumber: 1
 
 When I built the Strobe Assistant pipeline for my cloud computing assignment, two pieces of AWS ended up doing more of the heavy lifting than I expected: the **Application Load Balancer (ALB)** and its **target groups**. I'd treated load balancers as a black box before: traffic goes in, traffic comes out. Wiring one up for three containerised services, one of which uses WebSocket, made me dig into what each piece actually does. This post is what I wish I'd read before I started.
 
-This is Part 1 of the [Strobe Assistant](/posts/strobe-assistant/strobe-assistant-extending-strobe-with-an-ai-agent) series. [Part 2](/posts/strobe-assistant/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together) covers how ECS ties tasks, services and target groups together, and [Part 3](/posts/strobe-assistant/strobe-assistant-part-3-acp-mcp-pipeline) walks through the ACP + MCP pipeline that sits behind all of this.
+This is Part 1 of the [Strobe Assistant](/posts/strobe-assistant-extending-strobe-with-an-ai-agent) series. [Part 2](/posts/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together) covers how ECS ties tasks, services and target groups together, and [Part 3](/posts/strobe-assistant-part-3-acp-mcp-pipeline) walks through the ACP + MCP pipeline that sits behind all of this.
 
 ## What an ALB is, and why it is useful
 
@@ -91,7 +91,7 @@ When you create a target group, you choose its **target type**, and you can't ch
 | `ip` | A private IP address (plus a port) | Containers with their own network interface, such as ECS tasks on Fargate |
 | `lambda` | A single Lambda function | Serverless HTTP handlers |
 
-In the Strobe Assistant, every target group uses the `ip` type, so each target is just `task-IP:port`. Why `ip` rather than `instance`? Fargate runs tasks in `awsvpc` network mode, where each task gets its own elastic network interface and private IP address. There's no EC2 instance for you to register, so AWS requires the `ip` target type for these services. ([Part 2](/posts/strobe-assistant/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together) explains what a task is.)
+In the Strobe Assistant, every target group uses the `ip` type, so each target is just `task-IP:port`. Why `ip` rather than `instance`? Fargate runs tasks in `awsvpc` network mode, where each task gets its own elastic network interface and private IP address. There's no EC2 instance for you to register, so AWS requires the `ip` target type for these services. ([Part 2](/posts/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together) explains what a task is.)
 
 ## Who actually manages the targets?
 
@@ -186,7 +186,7 @@ If I were starting again, here's what I'd tell myself:
 
 ## Wrapping up
 
-Once the pieces clicked, the ALB turned out to be a neat division of labour: the listener decides where to listen, the rules decide where each request goes, the target group knows who can serve it and whether they're alive, and the ECS service keeps that list up to date. In [Part 2](/posts/strobe-assistant/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together), I'll zoom in on that last piece and look at how ECS glues tasks, services and target groups together.
+Once the pieces clicked, the ALB turned out to be a neat division of labour: the listener decides where to listen, the rules decide where each request goes, the target group knows who can serve it and whether they're alive, and the ECS service keeps that list up to date. In [Part 2](/posts/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together), I'll zoom in on that last piece and look at how ECS glues tasks, services and target groups together.
 
 ## Further reading
 

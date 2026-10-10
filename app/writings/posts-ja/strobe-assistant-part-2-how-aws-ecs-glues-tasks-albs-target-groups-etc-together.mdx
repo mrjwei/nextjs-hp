@@ -20,9 +20,9 @@ partNumber: 2
 - [まとめ](#まとめ)
 - [参考資料](#参考資料)
 
-Strobe Assistantの3つのサービス(WebUI、エージェント、MCPサーバー)は、それぞれがFargate上の独立したECSサービスとして動いています。[パート1](/ja/posts/strobe-assistant/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb)では、ALBとそのターゲットグループをロードバランサーの側から見ました。本稿ではその反対側、つまりECSがコンテナイメージをどのように実行中のタスクに変えるのか、そしてそのタスクがどのようにしてALBのトラフィックの送り先となるターゲットになるのかを見ていきます。
+Strobe Assistantの3つのサービス(WebUI、エージェント、MCPサーバー)は、それぞれがFargate上の独立したECSサービスとして動いています。[パート1](/ja/posts/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb)では、ALBとそのターゲットグループをロードバランサーの側から見ました。本稿ではその反対側、つまりECSがコンテナイメージをどのように実行中のタスクに変えるのか、そしてそのタスクがどのようにしてALBのトラフィックの送り先となるターゲットになるのかを見ていきます。
 
-本稿は[Strobe Assistant](/ja/posts/strobe-assistant/strobe-assistant-extending-strobe-with-an-ai-agent)シリーズのパート2です。続く[パート3](/ja/posts/strobe-assistant/strobe-assistant-part-3-acp-mcp-pipeline)では、これらすべての上で動くACP + MCPパイプラインを解説しています。
+本稿は[Strobe Assistant](/ja/posts/strobe-assistant-extending-strobe-with-an-ai-agent)シリーズのパート2です。続く[パート3](/ja/posts/strobe-assistant-part-3-acp-mcp-pipeline)では、これらすべての上で動くACP + MCPパイプラインを解説しています。
 
 最初は用語に混乱しました。コンテナイメージ、タスク定義、タスク、コンテナ、サービス、クラスター、ターゲットグループは、どれも同じものを指していてもおかしくないように聞こえますし、AWSのコンソールもその境界をわかりやすく示してはくれません。そこで用語を書き出し、1つずつAWSのドキュメントで調べ、互いの関係を説明できるようになるまでコンソールで実際に触ってみました。結果的に、それがデプロイ全体の仕組みを理解する鍵になりました。下の図はその成果で、エージェントを例にしています:
 
@@ -48,9 +48,9 @@ Strobe Assistantの3つのサービス(WebUI、エージェント、MCPサーバ
 
 **[ECSサービス](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html)** は、すべてが動き出す場所です。長時間稼働し続ける管理者で、3つの重要な設定を持っています:
 
-- **どのタスク定義リビジョンを、いくつ実行するか(必要なタスク数、desired count)。** タスクがクラッシュしたり、停止したり、ヘルスチェックに失敗したりすると、サービススケジューラが代わりのタスクを起動して、必要なタスク数に戻します。サービスに新しいリビジョンを指定すると、新しいタスクを起動して古いタスクを退役させることで、変更を順次展開していきます。私はどのサービスも必要なタスク数を1にしていました。課題にはそれで十分ですし、そもそもエージェントはACPのセッションをメモリ上に保持しているので、2つ目のエージェントタスクを動かすには、先にスティッキーセッションか外部のセッションストアが必要になります([パート3](/ja/posts/strobe-assistant/strobe-assistant-part-3-acp-mcp-pipeline)を参照)。
+- **どのタスク定義リビジョンを、いくつ実行するか(必要なタスク数、desired count)。** タスクがクラッシュしたり、停止したり、ヘルスチェックに失敗したりすると、サービススケジューラが代わりのタスクを起動して、必要なタスク数に戻します。サービスに新しいリビジョンを指定すると、新しいタスクを起動して古いタスクを退役させることで、変更を順次展開していきます。私はどのサービスも必要なタスク数を1にしていました。課題にはそれで十分ですし、そもそもエージェントはACPのセッションをメモリ上に保持しているので、2つ目のエージェントタスクを動かすには、先にスティッキーセッションか外部のセッションストアが必要になります([パート3](/ja/posts/strobe-assistant-part-3-acp-mcp-pipeline)を参照)。
 - **タスクをどこで実行するか(起動タイプ)。** 私はサーバーレスの選択肢である **[Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html)** を選びました。プロビジョニングやパッチ適用、サイズ調整が必要なEC2インスタンスはなく、各タスクが確保するCPUとメモリの分だけ料金を払えば済みます。ただし、自分のメモを1つ訂正しておきます。私はFargateが「自動的にスケールする」と書いていました。少なくとも、負荷に応じてタスクを追加するという意味では、そうではありません。Fargateはサービスが求めるタスクのための計算資源を確保してくれますが、タスクの *数* を変えるのは、必要なタスク数、あるいは設定していれば[Service Auto Scaling](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-auto-scaling.html)の役割です。
-- **どのロードバランサーのターゲットグループを使うか。** コンテナ名とポートからターゲットグループへの対応づけとして設定します(エージェントの場合は、ポート3000のコンテナ `agent` → エージェントのターゲットグループ)。このたった1行の設定こそが、ECSとALBを結びつけているものです。そもそもなぜサービスをALBの背後に置くのかについては、[パート3](/ja/posts/strobe-assistant/strobe-assistant-part-3-acp-mcp-pipeline)で取り上げています。
+- **どのロードバランサーのターゲットグループを使うか。** コンテナ名とポートからターゲットグループへの対応づけとして設定します(エージェントの場合は、ポート3000のコンテナ `agent` → エージェントのターゲットグループ)。このたった1行の設定こそが、ECSとALBを結びつけているものです。そもそもなぜサービスをALBの背後に置くのかについては、[パート3](/ja/posts/strobe-assistant-part-3-acp-mcp-pipeline)で取り上げています。
 
 サービスを収める **[クラスター](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/clusters.html)** は、名前から受ける印象ほど面白いものではありません。Fargateの場合、クラスターは単なる論理的なグループ、つまりサービスとタスクのための名前空間です。トラフィックがクラスターを「通過」することはありません。
 
@@ -58,7 +58,7 @@ Strobe Assistantの3つのサービス(WebUI、エージェント、MCPサーバ
 
 **タスク** はタスク定義リビジョンの実行中のコピー1つであり、**コンテナ** はその中で動いている、イメージから起動されたプロセスです。タスク定義をクラスと考えるなら、タスクはオブジェクトにあたります。いくつでも作ることができ、それぞれが独立して生成され、動き、終了します。
 
-Fargateのタスクは[`awsvpc` ネットワークモード](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-task-networking.html)を使うので、小さなVMと同じように、**各タスクが独自のElastic Network Interface(ENI)とプライベートIPアドレスを持ちます**。ここから2つのことが導かれます。第一に、ALBが宛先にする必要があるのはホストマシンではなくタスクそのものであり、だからこそターゲットグループは `ip` ターゲットタイプを使っています([パート1](/ja/posts/strobe-assistant/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb#ターゲットタイプ)を参照)。第二に、タスクは **起動するたびに新しいIPを得ます**。ECSの外側にあるものが手作業でそれを追跡し続けることはできません。まさにこの問題を解決するのが、次のステップです。
+Fargateのタスクは[`awsvpc` ネットワークモード](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-task-networking.html)を使うので、小さなVMと同じように、**各タスクが独自のElastic Network Interface(ENI)とプライベートIPアドレスを持ちます**。ここから2つのことが導かれます。第一に、ALBが宛先にする必要があるのはホストマシンではなくタスクそのものであり、だからこそターゲットグループは `ip` ターゲットタイプを使っています([パート1](/ja/posts/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb#ターゲットタイプ)を参照)。第二に、タスクは **起動するたびに新しいIPを得ます**。ECSの外側にあるものが手作業でそれを追跡し続けることはできません。まさにこの問題を解決するのが、次のステップです。
 
 ## 引き渡し:タスクがターゲットになるまで
 
@@ -124,7 +124,7 @@ WebUIとMCPサーバーも、エージェントとまったく同じ方法でつ
 
 ECSが腑に落ちたきっかけは、*何を実行するか*、*それを動かし続けること*、*そこへルーティングすること* を切り分けて考えたことでした。イメージとタスク定義は静的な設計図、サービスは適切な数のタスクを生かし続ける管理者、タスクは使い捨ての実行中のコピー、そしてターゲットグループはECSとALBが出会う場所です。ターゲットのリストを最新に保っているのが、私でもALBでもなくサービスだとわかってからは、アーキテクチャの残りの部分もずっと考えやすくなりました。
 
-[パート3](/ja/posts/strobe-assistant/strobe-assistant-part-3-acp-mcp-pipeline)では一段上のレベルに移り、これらのタスクの中で実際に何が動いているのか、つまりチャットUI、エージェント、ツールをつなぐACP + MCPパイプラインを見ていきます。
+[パート3](/ja/posts/strobe-assistant-part-3-acp-mcp-pipeline)では一段上のレベルに移り、これらのタスクの中で実際に何が動いているのか、つまりチャットUI、エージェント、ツールをつなぐACP + MCPパイプラインを見ていきます。
 
 ## 参考資料
 

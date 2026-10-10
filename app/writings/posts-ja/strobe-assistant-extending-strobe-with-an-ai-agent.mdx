@@ -22,7 +22,7 @@ stack: ["ECS Fargate", "Application Load Balancer", "Amazon Bedrock", "S3 Vector
 
 私たちの多くは何千枚もの写真を持っていながら、それをうまく活用する手段を持っていません。本当に求められているのは、「うちの犬の写真を探して」と頼んだり、アルバムをナレーション付きのスライドショーにしたりといったことが、ただそれだけで実現することです。
 
-Strobeは、私がクラウドコンピューティングの授業の前半で[AWS上に構築した](/ja/posts/AWS/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture)写真共有アプリです。写真を保存することはできても、こうしたことは何もできません。ユーザーはそれ以上のことを求めていました。自然な言葉で写真を検索すること、手元の写真に似た写真を見つけること、アルバムをまとめること、そして過去の思い出を振り返ることです。しかも、これらすべてをStrobeアプリそのものを使わ*ずに*行いたいという要望でした。
+Strobeは、私がクラウドコンピューティングの授業の前半で[AWS上に構築した](/ja/posts/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture)写真共有アプリです。写真を保存することはできても、こうしたことは何もできません。ユーザーはそれ以上のことを求めていました。自然な言葉で写真を検索すること、手元の写真に似た写真を見つけること、アルバムをまとめること、そして過去の思い出を振り返ることです。しかも、これらすべてをStrobeアプリそのものを使わ*ずに*行いたいという要望でした。
 
 その答えがStrobe Assistantです。Strobeに機能を追加するのではなく、Strobeの既存のクラウドインフラを土台に、対話型のAIエージェント、すべての写真を検索可能にする非同期パイプライン、そして毎朝自律的に動くエージェントで拡張しています。本稿はこのプロジェクトの概要として、何を作ったのか、それがどう組み合わさっているのか、そして今ならどう変えるかをまとめたものです。主要な概念や判断については7本の関連記事で掘り下げており、本文中の各所と末尾にリンクを載せています。
 
@@ -111,7 +111,7 @@ Strobeアプリでの写真のアップロード:
 
 検索そのものは、画像用と長めのテキスト用の2つのベクトルインデックスに問い合わせ、その結果を順位に基づいて統合します。なぜそのような構成にしたのか、そしてそれが検索品質の面でどんな代償を伴ったのかについては、別の記事で取り上げています。
 
-このプレーンを支えるALBとECSの構成は、きちんと理解するまでに時間がかかったため、[パート1](/ja/posts/strobe-assistant/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb)と[パート2](/ja/posts/strobe-assistant/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together)にまとめました。ACP + MCPパイプラインそのものの詳細は[パート3](/ja/posts/strobe-assistant/strobe-assistant-part-3-acp-mcp-pipeline)を、認証の境界については[パート4](/ja/posts/strobe-assistant/strobe-assistant-part-4-how-cognito-and-auth-fit-in)を、デュアルインデックス検索については[パート7](/ja/posts/strobe-assistant/strobe-assistant-part-7-dual-index-rrf-and-mrr)をご覧ください。
+このプレーンを支えるALBとECSの構成は、きちんと理解するまでに時間がかかったため、[パート1](/ja/posts/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb)と[パート2](/ja/posts/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together)にまとめました。ACP + MCPパイプラインそのものの詳細は[パート3](/ja/posts/strobe-assistant-part-3-acp-mcp-pipeline)を、認証の境界については[パート4](/ja/posts/strobe-assistant-part-4-how-cognito-and-auth-fit-in)を、デュアルインデックス検索については[パート7](/ja/posts/strobe-assistant-part-7-dual-index-rrf-and-mrr)をご覧ください。
 
 ### プレーンB:取り込み
 
@@ -119,7 +119,7 @@ Strobeアプリでの写真のアップロード:
 
 この処理はSQSキューでバッファリングされ、取り込みワーカーのLambdaによって処理されます。その理由は、本当のボトルネックが計算資源ではなくBedrockのクォータにあるからです。アップロードはバースト的に発生します。誰かがアルバム丸ごとを1分で共有することもあります。間にキューがあれば、バーストは単なる短い遅延に変わり、失敗し続けるメッセージは消えてしまうのではなくデッドレターキューに入ります。キューがなければ、クォータを超えたリクエストはスロットリングされ、私からは見えず制御もできないバッファによって再試行されることになり、一部は最終的に一度も処理されないまま失われてしまう可能性があります。
 
-SQSは各メッセージを*少なくとも*1回配信するため、ワーカーは決定的なキーで書き込みます。再配信されたメッセージは、重複を作るのではなく、以前の結果を上書きするだけです。何を埋め込み、どこに保存しているかは[パート5](/ja/posts/strobe-assistant/strobe-assistant-part-5-embeddings-for-posts-moments-and-search)で、なぜキューを置いているのかは[パート6](/ja/posts/strobe-assistant/strobe-assistant-part-6-why-ingestion-goes-through-sqs)で説明しています。
+SQSは各メッセージを*少なくとも*1回配信するため、ワーカーは決定的なキーで書き込みます。再配信されたメッセージは、重複を作るのではなく、以前の結果を上書きするだけです。何を埋め込み、どこに保存しているかは[パート5](/ja/posts/strobe-assistant-part-5-embeddings-for-posts-moments-and-search)で、なぜキューを置いているのかは[パート6](/ja/posts/strobe-assistant-part-6-why-ingestion-goes-through-sqs)で説明しています。
 
 ### プレーンC:定期実行
 
@@ -147,10 +147,10 @@ SQSは各メッセージを*少なくとも*1回配信するため、ワーカ�
 
 ## Strobe Assistantシリーズ
 
-- [パート1:AWSのターゲットグループとApplication Load Balancer](/ja/posts/strobe-assistant/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb)
-- [パート2:ECSはタスク、ALB、ターゲットグループをどう結びつけるのか](/ja/posts/strobe-assistant/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together)
-- [パート3:ACP + MCPパイプライン](/ja/posts/strobe-assistant/strobe-assistant-part-3-acp-mcp-pipeline)
-- [パート4:Cognitoと認証の位置づけ](/ja/posts/strobe-assistant/strobe-assistant-part-4-how-cognito-and-auth-fit-in)
-- [パート5:投稿・モーメント・検索のための埋め込み](/ja/posts/strobe-assistant/strobe-assistant-part-5-embeddings-for-posts-moments-and-search)
-- [パート6:取り込みにSQSを挟む理由](/ja/posts/strobe-assistant/strobe-assistant-part-6-why-ingestion-goes-through-sqs)
-- [パート7:デュアルインデックス、RRF、MRR](/ja/posts/strobe-assistant/strobe-assistant-part-7-dual-index-rrf-and-mrr)
+- [パート1:AWSのターゲットグループとApplication Load Balancer](/ja/posts/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb)
+- [パート2:ECSはタスク、ALB、ターゲットグループをどう結びつけるのか](/ja/posts/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together)
+- [パート3:ACP + MCPパイプライン](/ja/posts/strobe-assistant-part-3-acp-mcp-pipeline)
+- [パート4:Cognitoと認証の位置づけ](/ja/posts/strobe-assistant-part-4-how-cognito-and-auth-fit-in)
+- [パート5:投稿・モーメント・検索のための埋め込み](/ja/posts/strobe-assistant-part-5-embeddings-for-posts-moments-and-search)
+- [パート6:取り込みにSQSを挟む理由](/ja/posts/strobe-assistant-part-6-why-ingestion-goes-through-sqs)
+- [パート7:デュアルインデックス、RRF、MRR](/ja/posts/strobe-assistant-part-7-dual-index-rrf-and-mrr)

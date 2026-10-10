@@ -22,7 +22,7 @@ stack: ["ECS Fargate", "Application Load Balancer", "Amazon Bedrock", "S3 Vector
 
 Most of us have thousands of photos and no real way to make sense of them. What people actually want is to ask for something like "find me the photos of my dog", or to turn an album into a narrated slideshow, and have it just work.
 
-Strobe, the photo-sharing app I [built on AWS](/posts/AWS/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture) earlier in my cloud computing course, stores those photos but can't do any of that. Users wanted more from it: searching their photos in plain language, finding photos similar to one they already have, putting together albums, and getting retrospectives of past moments. They also wanted all of this *without* having to use the Strobe app itself.
+Strobe, the photo-sharing app I [built on AWS](/posts/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture) earlier in my cloud computing course, stores those photos but can't do any of that. Users wanted more from it: searching their photos in plain language, finding photos similar to one they already have, putting together albums, and getting retrospectives of past moments. They also wanted all of this *without* having to use the Strobe app itself.
 
 Strobe Assistant is my answer to that. Rather than adding features to Strobe, it builds on Strobe's existing cloud infrastructure and extends it with a conversational AI agent, an asynchronous pipeline that makes every photo searchable, and an agent that runs on its own every morning. This post is the overview of the project: what I built, how it fits together, and what I'd do differently. Seven companion posts go deeper into the key concepts and decisions; they're linked throughout and listed at the end.
 
@@ -111,7 +111,7 @@ The MCP server, however, doesn't simply trust the agent. It verifies the token a
 
 Search itself queries two vector indexes, one for images and one for longer text, and merges their results by rank. Why it's built that way, and what it cost in retrieval quality, has a post of its own.
 
-The ALB and ECS setup behind this plane took me a while to understand properly, so I wrote about it in [Part 1](/posts/strobe-assistant/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb) and [Part 2](/posts/strobe-assistant/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together). For an in-depth look at the ACP + MCP pipeline itself, see [Part 3](/posts/strobe-assistant/strobe-assistant-part-3-acp-mcp-pipeline); the auth boundary is unpacked in [Part 4](/posts/strobe-assistant/strobe-assistant-part-4-how-cognito-and-auth-fit-in); and the dual-index search is covered in [Part 7](/posts/strobe-assistant/strobe-assistant-part-7-dual-index-rrf-and-mrr).
+The ALB and ECS setup behind this plane took me a while to understand properly, so I wrote about it in [Part 1](/posts/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb) and [Part 2](/posts/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together). For an in-depth look at the ACP + MCP pipeline itself, see [Part 3](/posts/strobe-assistant-part-3-acp-mcp-pipeline); the auth boundary is unpacked in [Part 4](/posts/strobe-assistant-part-4-how-cognito-and-auth-fit-in); and the dual-index search is covered in [Part 7](/posts/strobe-assistant-part-7-dual-index-rrf-and-mrr).
 
 ### Plane B: ingestion
 
@@ -119,7 +119,7 @@ Plane B is the asynchronous, event-driven pipeline that makes photos searchable.
 
 That work is buffered through an SQS queue and processed by an ingest worker Lambda. The reason is that the real bottleneck isn't compute but Bedrock's quota. Uploads are bursty: someone might share a whole album in a minute. With the queue in the middle, a burst simply turns into a short delay, and messages that keep failing land in a dead-letter queue instead of disappearing. Without it, requests above the quota would be throttled and retried by a buffer I couldn't see or control, and some could eventually be dropped without ever being processed.
 
-SQS delivers each message *at least* once, so the worker writes with deterministic keys. A redelivered message simply overwrites its earlier result instead of creating a duplicate. [Part 5](/posts/strobe-assistant/strobe-assistant-part-5-embeddings-for-posts-moments-and-search) explains what gets embedded and where it's stored, and [Part 6](/posts/strobe-assistant/strobe-assistant-part-6-why-ingestion-goes-through-sqs) explains why the queue is there.
+SQS delivers each message *at least* once, so the worker writes with deterministic keys. A redelivered message simply overwrites its earlier result instead of creating a duplicate. [Part 5](/posts/strobe-assistant-part-5-embeddings-for-posts-moments-and-search) explains what gets embedded and where it's stored, and [Part 6](/posts/strobe-assistant-part-6-why-ingestion-goes-through-sqs) explains why the queue is there.
 
 ### Plane C: the scheduled run
 
@@ -147,10 +147,10 @@ Looking back, three ideas shaped the project more than any single service did.
 
 ## The Strobe Assistant series
 
-- [Part 1: AWS target groups and the Application Load Balancer](/posts/strobe-assistant/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb)
-- [Part 2: How ECS glues tasks, ALBs and target groups together](/posts/strobe-assistant/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together)
-- [Part 3: The ACP + MCP pipeline](/posts/strobe-assistant/strobe-assistant-part-3-acp-mcp-pipeline)
-- [Part 4: How Cognito and auth fit in](/posts/strobe-assistant/strobe-assistant-part-4-how-cognito-and-auth-fit-in)
-- [Part 5: Embeddings for posts, moments and search](/posts/strobe-assistant/strobe-assistant-part-5-embeddings-for-posts-moments-and-search)
-- [Part 6: Why ingestion goes through SQS](/posts/strobe-assistant/strobe-assistant-part-6-why-ingestion-goes-through-sqs)
-- [Part 7: Dual index, RRF and MRR](/posts/strobe-assistant/strobe-assistant-part-7-dual-index-rrf-and-mrr)
+- [Part 1: AWS target groups and the Application Load Balancer](/posts/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb)
+- [Part 2: How ECS glues tasks, ALBs and target groups together](/posts/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together)
+- [Part 3: The ACP + MCP pipeline](/posts/strobe-assistant-part-3-acp-mcp-pipeline)
+- [Part 4: How Cognito and auth fit in](/posts/strobe-assistant-part-4-how-cognito-and-auth-fit-in)
+- [Part 5: Embeddings for posts, moments and search](/posts/strobe-assistant-part-5-embeddings-for-posts-moments-and-search)
+- [Part 6: Why ingestion goes through SQS](/posts/strobe-assistant-part-6-why-ingestion-goes-through-sqs)
+- [Part 7: Dual index, RRF and MRR](/posts/strobe-assistant-part-7-dual-index-rrf-and-mrr)

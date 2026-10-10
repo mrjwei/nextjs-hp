@@ -26,7 +26,7 @@ partNumber: 1
 
 クラウドコンピューティングの課題でStrobe Assistantのパイプラインを構築したとき、想定以上に重要な役割を担うことになったAWSの構成要素が2つありました。**Application Load Balancer(ALB)** と、その **ターゲットグループ** です。それまで私はロードバランサーをブラックボックスとして扱っていました。トラフィックが入って、トラフィックが出ていく、それだけのものです。しかし、そのうち1つがWebSocketを使う3つのコンテナ化されたサービスにALBをつなぎ込むうちに、各構成要素が実際に何をしているのかを掘り下げる必要に迫られました。本稿は、取りかかる前に読んでおきたかった内容をまとめたものです。
 
-本稿は[Strobe Assistant](/ja/posts/strobe-assistant/strobe-assistant-extending-strobe-with-an-ai-agent)シリーズのパート1です。[パート2](/ja/posts/strobe-assistant/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together)ではECSがタスク、サービス、ターゲットグループをどう結びつけているのかを、[パート3](/ja/posts/strobe-assistant/strobe-assistant-part-3-acp-mcp-pipeline)ではそのすべての背後にあるACP + MCPパイプラインを解説しています。
+本稿は[Strobe Assistant](/ja/posts/strobe-assistant-extending-strobe-with-an-ai-agent)シリーズのパート1です。[パート2](/ja/posts/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together)ではECSがタスク、サービス、ターゲットグループをどう結びつけているのかを、[パート3](/ja/posts/strobe-assistant-part-3-acp-mcp-pipeline)ではそのすべての背後にあるACP + MCPパイプラインを解説しています。
 
 ## ALBとは何か、なぜ便利なのか
 
@@ -91,7 +91,7 @@ ALBは3つのレイヤーで設定され、それぞれが1つの問いに答え
 | `ip` | プライベートIPアドレス(とポート) | 独自のネットワークインターフェースを持つコンテナ(Fargate上のECSタスクなど) |
 | `lambda` | 1つのLambda関数 | サーバーレスのHTTPハンドラー |
 
-Strobe Assistantでは、すべてのターゲットグループが `ip` タイプを使っているため、各ターゲットは単なる `task-IP:port` です。なぜ `instance` ではなく `ip` なのでしょうか。Fargateはタスクを `awsvpc` ネットワークモードで実行し、各タスクがそれぞれ独自のElastic Network InterfaceとプライベートIPアドレスを持ちます。登録できるEC2インスタンスが存在しないため、AWSはこうしたサービスに `ip` ターゲットタイプを要求します。(タスクとは何かについては[パート2](/ja/posts/strobe-assistant/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together)で説明しています。)
+Strobe Assistantでは、すべてのターゲットグループが `ip` タイプを使っているため、各ターゲットは単なる `task-IP:port` です。なぜ `instance` ではなく `ip` なのでしょうか。Fargateはタスクを `awsvpc` ネットワークモードで実行し、各タスクがそれぞれ独自のElastic Network InterfaceとプライベートIPアドレスを持ちます。登録できるEC2インスタンスが存在しないため、AWSはこうしたサービスに `ip` ターゲットタイプを要求します。(タスクとは何かについては[パート2](/ja/posts/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together)で説明しています。)
 
 ## ターゲットを実際に管理しているのは誰か
 
@@ -186,7 +186,7 @@ Strobe Assistantは3つのサービスで構成されており、それぞれが
 
 ## まとめ
 
-各構成要素の関係が腑に落ちてみると、ALBはきれいな役割分担になっていました。リスナーはどこで待ち受けるかを決め、ルールは各リクエストの行き先を決め、ターゲットグループは誰がリクエストを処理でき、それが生きているかを把握し、ECSサービスがそのリストを最新の状態に保ちます。[パート2](/ja/posts/strobe-assistant/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together)では、この最後の部分に焦点を当て、ECSがタスク、サービス、ターゲットグループをどう結びつけているのかを見ていきます。
+各構成要素の関係が腑に落ちてみると、ALBはきれいな役割分担になっていました。リスナーはどこで待ち受けるかを決め、ルールは各リクエストの行き先を決め、ターゲットグループは誰がリクエストを処理でき、それが生きているかを把握し、ECSサービスがそのリストを最新の状態に保ちます。[パート2](/ja/posts/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together)では、この最後の部分に焦点を当て、ECSがタスク、サービス、ターゲットグループをどう結びつけているのかを見ていきます。
 
 ## 参考資料
 

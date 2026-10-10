@@ -23,7 +23,7 @@ partNumber: 3
 
 One of the key architectural decisions in the Strobe Assistant was how to connect the ACP client, the ACP server (the agent service) and the MCP server. This chain is the functional foundation of the app: every chat message, every tool call and every scheduled run passes through it, so it sits at the centre of the whole architecture.
 
-This is Part 3 of the series. [Part 1](/posts/strobe-assistant/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb) covers the ALB and target groups in front of the services, and [Part 2](/posts/strobe-assistant/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together) covers how ECS runs them. This post steps back to the pipeline itself: what each piece does, how the pieces talk to each other, and why they are split the way they are.
+This is Part 3 of the series. [Part 1](/posts/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb) covers the ALB and target groups in front of the services, and [Part 2](/posts/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together) covers how ECS runs them. This post steps back to the pipeline itself: what each piece does, how the pieces talk to each other, and why they are split the way they are.
 
 ## The big picture
 
@@ -45,7 +45,7 @@ There are three services in the chain:
 
 Each of the three is its own ECS service on Fargate, with its own task definition, target group and desired count. They are therefore **fully decoupled**: I can redeploy, scale or even stop one without touching the others.
 
-The one caveat is that the agent keeps its sessions in memory, so running more than one agent task would require **sticky sessions** or an external session store. How ECS turns a container image into a running, load-balanced task deserves a post of its own, which is what [Part 2](/posts/strobe-assistant/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together) is for.
+The one caveat is that the agent keeps its sessions in memory, so running more than one agent task would require **sticky sessions** or an external session store. How ECS turns a container image into a running, load-balanced task deserves a post of its own, which is what [Part 2](/posts/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together) is for.
 
 ## One front door: the ALB
 
@@ -161,7 +161,7 @@ export function createStrobeAgent(deps: AgentDependencies): acp.AgentApp {
 }
 ```
 
-Two details in the handshake are worth pointing out. First, the token travels inside ACP's own `authenticate` call rather than in a header or the URL, because the browser's WebSocket API can't set an `Authorization` header and a token in the URL would end up in access logs and browser history. Second, ACP lets the client tell the agent which MCP servers to use (`mcpServers` on `session/new`). The agent deliberately ignores that list: the browser is untrusted and must not choose where the agent's tools come from. [Part 4](/posts/strobe-assistant/strobe-assistant-part-4-how-cognito-and-auth-fit-in) covers the auth side of this in detail.
+Two details in the handshake are worth pointing out. First, the token travels inside ACP's own `authenticate` call rather than in a header or the URL, because the browser's WebSocket API can't set an `Authorization` header and a token in the URL would end up in access logs and browser history. Second, ACP lets the client tell the agent which MCP servers to use (`mcpServers` on `session/new`). The agent deliberately ignores that list: the browser is untrusted and must not choose where the agent's tools come from. [Part 4](/posts/strobe-assistant-part-4-how-cognito-and-auth-fit-in) covers the auth side of this in detail.
 
 ## From the agent to the tools: the MCP client
 
@@ -265,7 +265,7 @@ The MCP server is also the only component that touches the downstream services n
 Amazon Bedrock is accessed by both the agent and the MCP server, for different purposes, and both authenticate with their ECS task role rather than an API key:
 
 - **The agent** uses Bedrock's ConverseStream API with Gemma 3 12B to converse with the user. This is the model that reads the request, decides which tools to call (up to eight rounds per turn) and streams the answer back. Gemma 3 doesn't return native tool-use blocks on Bedrock, so the agent describes the tools in the system prompt and parses the model's tool calls out of its text; see [LLMs Can't Run Code—How Tool Calling Actually Works](/posts/ai-agent/llms-cant-run-code-how-tool-calling-actually-works) for the details.
-- **The MCP server** uses Bedrock's InvokeModel API with the Titan embedding models (Titan Multimodal Embeddings G1 for images, Titan Text Embeddings V2 for posts and comments) to embed the user's search query, or a photo pasted into the chat, into the same vector spaces as the indexed content. The semantic search itself then happens in S3 Vectors, filtered by `userId`, and the two result lists are merged with reciprocal rank fusion. [Part 5](/posts/strobe-assistant/strobe-assistant-part-5-embeddings-for-posts-moments-and-search) and [Part 7](/posts/strobe-assistant/strobe-assistant-part-7-dual-index-rrf-and-mrr) cover that side.
+- **The MCP server** uses Bedrock's InvokeModel API with the Titan embedding models (Titan Multimodal Embeddings G1 for images, Titan Text Embeddings V2 for posts and comments) to embed the user's search query, or a photo pasted into the chat, into the same vector spaces as the indexed content. The semantic search itself then happens in S3 Vectors, filtered by `userId`, and the two result lists are merged with reciprocal rank fusion. [Part 5](/posts/strobe-assistant-part-5-embeddings-for-posts-moments-and-search) and [Part 7](/posts/strobe-assistant-part-7-dual-index-rrf-and-mrr) cover that side.
 
 Splitting the work this way means the agent only needs to know how to talk to a language model and to an MCP server, while everything that depends on how Strobe stores its data stays behind the MCP boundary.
 
