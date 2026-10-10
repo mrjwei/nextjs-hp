@@ -12,5 +12,6 @@
   "LingoBun": { "en": "LingoBun", "ja": "LingoBun" },
   "AuStride": { "en": "AuStride", "ja": "AuStride" },
   "AWS": { "en": "AWS", "ja": "AWS" },
-  "strobe-assistant": { "en": "Strobe Assistant", "ja": "Strobe Assistant" }
+  "strobe-assistant": { "en": "Strobe Assistant", "ja": "Strobe Assistant" },
+  "ai-agent": { "en": "AI Agent", "ja": "AIエージェント" }
 }
