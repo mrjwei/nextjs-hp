@@ -9,7 +9,7 @@ Record a published post in its vault note. It runs after the publish stage has p
    - `publishedAt`: the post's `publishedAt` (the first post's, for a list)
    - `lang`: the post's locale
    - `series`: the post's folder, if it's in one
-   - `project`: the post's `project`, if it has one
+   - `project`: the post's `project`, if it has one; otherwise remove `project` from the note (a series post has none)
    - `status`: Published
 
    When `series` or `project` is now a property, remove the matching item (e.g. `project: Strobe`) from `note`, and remove `note` if nothing is left.

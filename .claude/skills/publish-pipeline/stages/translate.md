@@ -33,7 +33,7 @@ title: "…"            # translated
 summary: "…"          # the original post's summary, translated
 lang: ja              # or en
 series: …             # the original's, if any
-project: …            # the original's, if any
+project: …            # the original post's, if any
 sitePath: "…"         # the target path
 translationOf: "[[<original's name>]]"
 requireTranslate: false

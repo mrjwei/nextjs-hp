@@ -39,7 +39,7 @@ bash .claude/skills/publish-pipeline/queue.sh | awk -F'\t' '$1 == "update" || $1
 
 1. **Plan.** One `bash $P/fm.sh` call for every note and every post at their `sitePath`s. No post there, or a `placeholder: true` one → blocked: never published, set it to Ready. Branch from an up-to-date main: `update/<YYYY-MM-DD-HHMM>`; first delete leftover `git branch --no-merged main --list 'update/*'` (a failed run; the vault still holds everything).
 2. **Write each post.** Read the note, and once per run `sed -n '/^## 3\./,/^## 5\./p' $P/stages/publish.md` (conversion, links and placeholders). The post's new body is the note's body converted by those rules. Don't read the old body: write the whole file through Bash (`cat > <post> <<'__MDX__'`), with the frontmatter from `fm.sh`, changed only as follows:
-   - `title`, `summary`, `project`: the note's, when it has them.
+   - `title`, `summary`, `project`: the note's, when it has them. Never add a `project` to a post in a series folder: series and projects are exclusive (publish-pipeline's SKILL.md, "Series or project"); report the note's `project` under "Check" instead.
    - `updatedAt: "YYYY-MM-DD"` after `publishedAt`: the note's `updatedAt` when the author set it (see Frontmatter), else the deploy day; `minor` → as it was.
    - any other `updateNote` instruction.
 
