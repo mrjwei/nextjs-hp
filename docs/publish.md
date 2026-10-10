@@ -22,6 +22,8 @@ Every entry lives under `/posts` (`/posts/[slug]`, or `/posts/[collection]/[slug
 
 To add a new project: set `project: "<ID>"` (one word, at most 12 characters, e.g. `"LingoBun"`, `"AI+Sec"`) — no routing or content-index change needed. Use the same ID on every post that belongs to that project, and on the JA translation.
 
+Series and projects are mutually exclusive: a post is in one series or one project, never both. A project's posts live in the project's own folder (e.g. `strobe-assistant` for `Strobe`), or at the root for a single-post project, and every post in that folder carries the ID. A post in a topic series folder (e.g. `ai-agent`) has no `project`, even when it uses a project as its example.
+
 `/projects` (and Home's "Selected projects") show **one card per project** (`groupProjects` in `app/utils/index.ts`). Projects are ordered newest first by each project's most recent post, the same as `/posts`. The card shows the project's lead post (the one with `lead: true`, else the most recent), so mark the overview post `lead: true`. When a project spans several posts, the card shows an "N articles" badge and links to `/projects/<project-slug>`, a page listing every post in the project. The slug is the lowercased ID with non-alphanumerics as hyphens, e.g. `AI+Sec` → `/projects/ai-sec`. A single-post project's card links straight to the post. The project badge on post pages links to the project page.
 
 Home shows 4 projects and 4 posts, newest first, skipping posts already shown as a project card. To pin something there regardless of date, add its project ID or post slug to `highlights` in `app/content/profile.ts`. Pins come first in the listed order and the remaining slots fill with the latest. One list covers EN and JA.

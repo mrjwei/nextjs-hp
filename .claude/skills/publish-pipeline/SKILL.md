@@ -28,8 +28,8 @@ Set by the author:
 | `status` | One of `Drafting`, `Review` (a translation waiting for the author), `Ready`, `Updated` (a published note edited by the author: `/update-pipeline`), `Published`. | Not a pipeline note, though a note passed by path counts as Ready. Empty → Drafting. Several or unknown → invalid. |
 | `scheduledAt` | Queue order (earliest first), earliest publish day. Never the publish date: a note published late isn't backdated to it. | Sorts last; publishable now. |
 | `publishedAt` | Overrides the publish date. On a translation: always the original post's. | The publish day. |
-| `series` | Series folder, e.g. `strobe-assistant`. A new folder starts a new series. | Claude matches a series or uses the root. |
-| `project` | Project ID (one word, ≤12 chars, e.g. `Strobe`); lists the post under `/projects`. | None. |
+| `series` | Folder, e.g. `ai-agent`. A new folder starts a new series. | Claude decides (see "Series or project"). |
+| `project` | Project ID (one word, ≤12 chars, e.g. `Strobe`); lists the post under `/projects`. | Claude decides (see "Series or project"). |
 | `note` | `;`-separated instructions applied when publishing (e.g. `lead: true`, case-study fields, editing requests). | None. |
 | `requireTranslate` | Checkbox: translate after publishing. Explicitly `false` also makes the post single-language for placeholders and links. | false (but placeholders are made in both locales, see below) |
 | `reviewTranslation` | `flagged` / `always` / `never`, read from the original (see "Translation review"). | `flagged`; any other value → `flagged`, and report it. |
@@ -45,6 +45,10 @@ Written by the pipeline only: `translation` (wikilink, on an original: its trans
 The vault's `status` never goes into a post (case studies have their own site `status`, from `note`).
 
 **One date per post.** Both locale versions of a post, including a placeholder standing in for one, always carry the same `publishedAt`: the date the first real version was published. Only `updatedAt` may differ between them.
+
+## Series or project
+
+Every post belongs to exactly one series or one project, never both. A series is a topic folder (e.g. `ai-agent`) whose posts have no `project`. A project is a project ID; its posts sit in that project's own folder, where every post has the ID (e.g. `strobe-assistant` for `Strobe`), or at the root for a single-post project. A post never has a `project` while in a series folder. The publish stage decides which (`stages/publish.md` step 2); a translation follows its original.
 
 ## Placeholders
 
