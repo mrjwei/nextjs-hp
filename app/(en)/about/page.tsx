@@ -57,7 +57,7 @@ export default function Page() {
       <JsonLd data={profilePageJsonLd} />
       <span className="eyebrow">About</span>
       <h1 className="mt-3 mb-10 text-4xl md:text-5xl font-semibold tracking-tight text-[var(--text-strong)]">About me</h1>
-      <div className="grid grid-cols-12 gap-8 md:gap-16">
+      <div className="grid grid-cols-12 gap-y-8 md:gap-16">
         <div className="text-[var(--text-body)] col-span-12 order-2 md:col-span-8 md:order-1">
           <CustomMDX source={about.content} components={aboutComponents} />
           {profile.en.features.cv && (
