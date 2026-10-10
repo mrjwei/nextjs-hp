@@ -21,6 +21,7 @@ Turn one Ready vault note into a post on the site, with placeholders for the pos
   - a `placeholder: true` stand-in → replace it, keeping its series and part fields. If the note is single-language (`requireTranslate: false`) and a placeholder for it exists in the other locale, delete that one too (step 6's link check then lists the links to repoint);
   - already this note's post (an earlier run merged it but stopped before after-publish) → skip to after-publish;
   - anything else → blocked: don't overwrite.
+- The other locale's mirror path (`posts` ↔ `posts-ja`) holds a placeholder for this note (or one is moved there to follow a new series folder) → set its `publishedAt` to this post's (step 6), on this branch. A placeholder keeps the date of the post that first linked to it until then, and the translation will take this post's date.
 
 ## 3. Convert to MDX
 
@@ -52,7 +53,7 @@ For each target, in this post's locale:
 Creating a placeholder:
 
 - Path: the target note's `sitePath`, else derived as in step 2 from the note's `series`, else the series of this post when the target clearly belongs to it (e.g. its next part), else Claude's choice. The other locale's placeholder mirrors it (`posts` ↔ `posts-ja`).
-- Content: copy the format of an existing placeholder (`command grep -rl 'placeholder: true' app/writings`; prefer one in the same folder): title, `slug` (in a folder), `publishedAt` = this post's, a summary starting "Coming soon." / "近日公開。", this post's tags, `project` and part fields like its siblings, `placeholder: true`, and a body saying it's still being written plus a link to a related published post in the same locale. Base the title and summary on the target note's title and opening lines (`head -n 30`), not the whole note.
+- Content: copy the format of an existing placeholder (`command grep -rl 'placeholder: true' app/writings`; prefer one in the same folder): title, `slug` (in a folder), `publishedAt` = the target's real post's when one locale already has one, else this post's, a summary starting "Coming soon." / "近日公開。", this post's tags, `project` and part fields like its siblings, `placeholder: true`, and a body saying it's still being written plus a link to a related published post in the same locale. Base the title and summary on the target note's title and opening lines (`head -n 30`), not the whole note.
 - The target note, if it exists, in one edit: `sitePath` = the placeholder path in the note's language (so its publish replaces the placeholder); `status: Drafting` if it has no status; `requireTranslate: true` if both locales got a placeholder and the property is missing. Change nothing else. A target with no vault note gets only the placeholders; report it.
 
 Older `note` instructions like "add placeholder pages for referenced pages that do not exist yet" are covered by this step; nothing extra to do.
@@ -77,7 +78,7 @@ tags: ["…"]
 ```
 
 - `title`, `summary`: the note's properties, else the defaults in SKILL.md.
-- `publishedAt`: the note's `publishedAt`, else `scheduledAt`, else today (`date +%F`).
+- `publishedAt`: the note's `publishedAt`, else today (`date +%F`). Never `scheduledAt`: a note blocked past its scheduled day is published on the day it actually goes out. A translation: the original post's, even if its note says otherwise (see "One date per post" in SKILL.md).
 - `tags`: a non-empty array (the build fails otherwise). Reuse keys from `app/data/tags.json`; add a new tag only when none fits. Register a new tag there with colour `hsl(hue, 80%, 40%)` as hex, where hue = (sum of the tag's char codes) mod 360, keeping the file's existing entries and 2-space indentation.
 - `project`: the note's `project`. A post in a series folder also takes `slug`, and `seriesOrder`/`partOf`/`partOfTitle`/`partNumber` when its siblings use them (follow the siblings' numbering, e.g. "Part 3" → 3).
 - Other fields (`lead`, `track`, case-study fields) come from `note` or a replaced placeholder. A translation takes every field except `title` and `summary` from the original post. See `docs/publish.md` and `docs/templates/case-study.mdx`. Never add `result`. The vault's pipeline properties (`status`, `scheduledAt`, `requireTranslate`, …) never go into the post.
@@ -92,4 +93,4 @@ tags: ["…"]
 3. `npm run build > /tmp/publish-pipeline-build.log 2>&1; echo $?` (it regenerates the content index first). Non-zero → read only the errors: `command grep -n -i -m 20 -B2 -A8 'error' /tmp/publish-pipeline-build.log`. Fix failures the post causes; one that isn't the post's → blocked: don't merge.
 4. Check the post (and a translation's pairing) is indexed: `node -e 'for (const p of require("./app/data/content-index.json").writings) if (p.slug === process.argv[1]) console.log(p.metadata.lang, p.filePath)' <slug>` lists one line per locale version.
 5. Restore `public/search-index.json` (Vercel regenerates it), commit with a message like the earlier `post:` commits, merge `--no-ff` into main and push.
-6. Go on to after-publish only once the push has succeeded.
+6. Go on to after-publish only once the push has succeeded. The note's pipeline isn't finished there (see "Finish the row" in SKILL.md).
