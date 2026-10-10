@@ -84,39 +84,11 @@ module.exports = {
         destination: "/ja/posts/radio-buttons",
         permanent: true,
       },
-      // Old /portfolio section (retired 2026-09 in favour of /gallery +
-      // case studies folded into /posts). Specific slugs first, then a
-      // catch-all so any stray link still lands somewhere useful.
-      {
-        source: "/portfolio/artworks",
-        destination: "/gallery",
-        permanent: true,
-      },
+      // Old /portfolio section (retired 2026-09; case studies folded into
+      // /posts). Specific slugs first, then a catch-all.
       {
         source: "/portfolio/projects",
         destination: "/projects",
-        permanent: true,
-      },
-      // content-creator and gold-hunt are archived (their pages 404), so
-      // they land on the Gallery index instead.
-      {
-        source: "/portfolio/artisanship",
-        destination: "/gallery/artisanship",
-        permanent: true,
-      },
-      {
-        source: "/portfolio/content-creator",
-        destination: "/gallery",
-        permanent: true,
-      },
-      {
-        source: "/portfolio/gold-hunt",
-        destination: "/gallery",
-        permanent: true,
-      },
-      {
-        source: "/portfolio/treasure-and-pleasure",
-        destination: "/gallery/treasure-and-pleasure",
         permanent: true,
       },
       {

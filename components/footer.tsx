@@ -22,7 +22,6 @@ const copy: Record<Lang, { heading: string; subtext: string }> = {
 const socialLabels: Record<SocialId, string> = {
   linkedin: "LinkedIn",
   github: "GitHub",
-  instagram: "Instagram",
   email: "Email",
 }
 
@@ -30,11 +29,9 @@ type SiteLink = { key: string; href: string; label: string }
 
 const siteLinksByLang: Record<Lang, SiteLink[]> = {
   en: [
-    { key: "gallery", href: "/gallery", label: "Gallery" },
     { key: "rss", href: "/rss", label: "RSS" },
   ],
   ja: [
-    { key: "gallery", href: "/ja/gallery", label: "ギャラリー" },
     { key: "rss", href: "/rss", label: "RSS" },
   ],
 }

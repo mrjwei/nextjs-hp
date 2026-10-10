@@ -1,5 +1,4 @@
 import {
-  getAllSortedGallery,
   getAllSortedWritings,
   getProjectHref,
   groupProjects,
@@ -27,12 +26,6 @@ export default async function sitemap() {
     lastModified: writing.metadata.updatedAt ?? writing.metadata.publishedAt,
   }))
 
-  const galleryList = getAllSortedGallery()
-  let gallery = galleryList.map((item) => ({
-    url: `${baseUrl}/gallery/${item.slug}`,
-    lastModified: item.metadata.updatedAt ?? item.metadata.publishedAt,
-  }))
-
   const today = new Date().toISOString().split("T")[0]
 
   const maxPublishedAt = (dates: Array<string | undefined>) => {
@@ -45,9 +38,6 @@ export default async function sitemap() {
 
   const writingsLastMod = maxPublishedAt(
     writingsList.map((w) => w.metadata.updatedAt ?? w.metadata.publishedAt)
-  )
-  const galleryLastMod = maxPublishedAt(
-    galleryList.map((p) => p.metadata.updatedAt ?? p.metadata.publishedAt)
   )
 
   const collectionRoutes = (list: typeof writingsList, lang: "en" | "ja") => {
@@ -71,25 +61,17 @@ export default async function sitemap() {
     { url: `${baseUrl}/projects`, lastModified: writingsLastMod },
     { url: `${baseUrl}/posts`, lastModified: writingsLastMod },
     { url: `${baseUrl}/posts/series`, lastModified: writingsLastMod },
-    { url: `${baseUrl}/gallery`, lastModified: galleryLastMod },
     { url: `${baseUrl}/ja`, lastModified: today },
     { url: `${baseUrl}/ja/about`, lastModified: today },
     { url: `${baseUrl}/ja/projects`, lastModified: today },
     { url: `${baseUrl}/ja/posts`, lastModified: today },
     { url: `${baseUrl}/ja/posts/series`, lastModified: today },
-    { url: `${baseUrl}/ja/gallery`, lastModified: today },
   ]
 
   const writingsJaList = getAllSortedWritings("ja")
   const writingsJa = writingsJaList.map((writing) => ({
     url: writingUrl(writing, "ja"),
     lastModified: writing.metadata.updatedAt ?? writing.metadata.publishedAt,
-  }))
-
-  const galleryJaList = getAllSortedGallery("ja")
-  const galleryJa = galleryJaList.map((item) => ({
-    url: `${baseUrl}/ja/gallery/${item.slug}`,
-    lastModified: item.metadata.updatedAt ?? item.metadata.publishedAt,
   }))
 
   const projectRoutes = (list: typeof writingsList, lang: "en" | "ja") =>
@@ -106,9 +88,7 @@ export default async function sitemap() {
   return [
     ...routes,
     ...writings,
-    ...gallery,
     ...writingsJa,
-    ...galleryJa,
     ...writingsCollections,
     ...writingsCollectionsJa,
     ...projectRoutes(writingsList, "en"),

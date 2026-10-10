@@ -57,19 +57,12 @@ export type TContentItem = TContentMeta & {
   content: string
 }
 
-type ContentKind = "writing" | "gallery"
+type ContentKind = "writing"
 
 type ContentIndexFile = {
   version: 1
   generatedAt: string
   writings?: Array<{
-    slug: string
-    filePath: string
-    collection?: string
-    metadata: TMetadata
-    content?: string
-  }>
-  gallery?: Array<{
     slug: string
     filePath: string
     collection?: string
@@ -88,10 +81,6 @@ export const CONTENT_INDEX_PATH = path.join(
 const writingsBaseDirByLang: Record<Lang, string> = {
   en: getContentBaseDir("writings", "en"),
   ja: getContentBaseDir("writings", "ja"),
-}
-const galleryBaseDirByLang: Record<Lang, string> = {
-  en: getContentBaseDir("gallery", "en"),
-  ja: getContentBaseDir("gallery", "ja"),
 }
 
 const tagSchema = z
@@ -150,13 +139,8 @@ const writingFrontmatterSchema = baseFrontmatterSchema.extend({
   tags: z.array(tagSchema).min(1),
 })
 
-const galleryFrontmatterSchema = baseFrontmatterSchema.extend({
-  tags: z.array(tagSchema).default([]),
-})
-
 const frontmatterSchemaByKind: Record<ContentKind, z.ZodType<TMetadata>> = {
   writing: writingFrontmatterSchema,
-  gallery: galleryFrontmatterSchema,
 }
 
 function parseFrontmatter(
@@ -358,15 +342,9 @@ const getAllWritingsFilePaths = cache((lang: Lang) => {
   return result
 })
 
-// Gallery content is a flat directory (no sub-collections).
-const getAllGalleryFilePaths = cache((lang: Lang) => {
-  const dirPath = galleryBaseDirByLang[lang]
-  return getMdxFilesInDir(dirPath).map((file) => path.join(dirPath, file))
-})
-
 const getSlugToPathMap = cache((kind: ContentKind, lang: Lang) => {
   const map = new Map<string, string>()
-  const files = kind === "writing" ? getAllWritingsFilePaths(lang) : getAllGalleryFilePaths(lang)
+  const files = getAllWritingsFilePaths(lang)
 
   for (const absFilePath of files) {
     const slug = fileSlug(absFilePath)
@@ -624,87 +602,6 @@ export function getWritingBySlug(slug: string, lang: Lang = "en"): TContentItem 
   const absFilePath = getSlugToPathMap("writing", lang).get(slug)
   if (!absFilePath) return null
   const { metadata, content } = readMdxWithContent(absFilePath, "writing", lang) as {
-    metadata: TMetadata
-    content: string
-  }
-  if (isHidden(metadata)) return null
-  return { slug, metadata, content }
-}
-
-// Gallery content is a flat list (illustrations, no sub-collections).
-export const getAllSortedGallery = cache((lang: Lang = "en") => {
-  const index = readContentIndex()
-  const isProd = process.env.NODE_ENV === "production"
-  const indexItems = index?.gallery?.filter(
-    (item) =>
-      itemLang(item.metadata) === lang &&
-      !item.metadata.archived &&
-      !(isProd && item.metadata.draft)
-  )
-
-  if (indexItems?.length) {
-    const items = isProd
-      ? indexItems
-      : indexItems.filter((item) =>
-          fs.existsSync(path.join(process.cwd(), item.filePath))
-        )
-
-    return items
-      .map((item) => ({ slug: item.slug, metadata: item.metadata }))
-      .sort((a, b) =>
-        new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
-          ? -1
-          : 1
-      )
-  }
-
-  let items = getAllGalleryFilePaths(lang)
-    .map((absFilePath) => {
-      const { metadata } = readFrontmatterOnly(absFilePath, "gallery", lang)
-      return { metadata, slug: fileSlug(absFilePath) }
-    })
-    .filter((item) => !item.metadata.archived)
-  items = items.sort((a, b) =>
-    new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
-      ? -1
-      : 1
-  )
-  return items
-})
-
-export function getGalleryItemBySlug(slug: string, lang: Lang = "en"): TContentItem | null {
-  const index = readContentIndex()
-  const indexed = index?.gallery?.find(
-    (item) => item.slug === slug && itemLang(item.metadata) === lang
-  )
-  if (indexed) {
-    if (isHidden(indexed.metadata)) return null
-
-    if (process.env.NODE_ENV === "production") {
-      if (typeof indexed.content !== "string") {
-        throw new Error(
-          `Content index entry for gallery "${slug}" is missing embedded content. Re-run the content index generator.`
-        )
-      }
-      return { slug, metadata: indexed.metadata, content: indexed.content }
-    }
-
-    const absFilePath = path.join(process.cwd(), indexed.filePath)
-    if (!fs.existsSync(absFilePath)) {
-      return null
-    }
-    const { metadata, content } = readMdxWithContent(
-      absFilePath,
-      "gallery",
-      lang
-    ) as { metadata: TMetadata; content: string }
-    if (isHidden(metadata)) return null
-    return { slug, metadata, content }
-  }
-
-  const absFilePath = getSlugToPathMap("gallery", lang).get(slug)
-  if (!absFilePath) return null
-  const { metadata, content } = readMdxWithContent(absFilePath, "gallery", lang) as {
     metadata: TMetadata
     content: string
   }

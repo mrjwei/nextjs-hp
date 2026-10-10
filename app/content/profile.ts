@@ -1,6 +1,6 @@
 import type { Lang } from "app/i18n/config"
 
-export type SocialId = "linkedin" | "github" | "instagram" | "email"
+export type SocialId = "linkedin" | "github" | "email"
 
 export type Social = {
   id: SocialId
@@ -37,11 +37,6 @@ const social: Social[] = [
     inHeader: true,
   },
   { id: "github", href: "https://github.com/mrjwei", inHeader: true },
-  {
-    id: "instagram",
-    href: "https://www.instagram.com/mrjwei/",
-    inHeader: false,
-  },
   {
     id: "email",
     href: "mailto:jesseweijapan@gmail.com",

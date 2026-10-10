@@ -1,7 +1,7 @@
 import path from "path"
 
-export type ContentKind = "writing" | "gallery"
-export type ContentSectionKey = "writings" | "gallery"
+export type ContentKind = "writing"
+export type ContentSectionKey = "writings"
 export type ContentLang = "en" | "ja"
 
 export const contentConfig: Record<
@@ -21,14 +21,6 @@ export const contentConfig: Record<
       ja: ["app", "writings", "posts-ja"],
     },
     supportsCollections: true,
-  },
-  gallery: {
-    kind: "gallery",
-    baseDirPartsByLang: {
-      en: ["app", "gallery", "posts"],
-      ja: ["app", "gallery", "posts-ja"],
-    },
-    supportsCollections: false,
   },
 }
 
