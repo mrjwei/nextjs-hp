@@ -13,17 +13,17 @@ Turn one Ready vault note into a post on the site, with placeholders for the pos
 - Language: `lang`, else detect it from the body. `en` → `app/writings/posts/`, `ja` → `app/writings/posts-ja/`.
 - **Series or project** (exactly one; see SKILL.md). A translation takes its original post's. Otherwise, first match wins:
   1. `note` says which (e.g. `series: ai-agent`, `project: Strobe`, "put it in the Strobe project"). It overrides the `series` and `project` properties.
-  2. The note sets only one of them: `project`, or a `series` that isn't a project's folder.
+  2. The note sets only one of them: `project`, or a `series` (a topic folder).
   3. Claude's judgment from the post. A write-up of something the author built (its overview, architecture, build decisions, lessons, results) is a project post. A post that teaches a topic and stands on its own for a reader who doesn't care about the project is a series post, even when a project is its running example. Unsure in a manual run → ask.
 
   Then pick the place. List the folders and the project IDs in use first: `ls app/writings/posts app/writings/posts-ja` and `command grep -rh '^project:' app/writings | sort | uniq -c`.
   - Series: an existing folder whose posts have no `project` and that matches the post's topic, else a new folder. Folders are topic series a reader would browse, not broad categories. See `docs/publish.md`.
-  - Project: an existing project's ID and its folder (where its other posts are), else a new project: a new ID (one word, ≤12 chars) and a new folder named after the project. Report a new series or project.
+  - Project: an existing project's ID, else a new project: a new ID (one word, ≤12 chars). The post goes at the root of the locale tree, never in a folder (a project is not a series). Report a new series or project.
 - Path, first match wins:
-  1. `sitePath` (a translation note always has it: the mirror of the original's path; a note with a placeholder has it too). It must be `app/writings/posts/` (en) or `app/writings/posts-ja/` (ja), then at most one folder, then `<slug>.mdx`. If `series` is also set, the folder must equal it, and the folder must fit the choice above (the project's folder or the root for a project post, a series folder for a series post). Otherwise → blocked; don't guess which one is meant.
+  1. `sitePath` (a translation note always has it: the mirror of the original's path; a note with a placeholder has it too). It must be `app/writings/posts/` (en) or `app/writings/posts-ja/` (ja), then at most one folder, then `<slug>.mdx`. If `series` is also set, the folder must equal it, and the path must fit the choice above (the root for a project post, a series folder for a series post). Otherwise → blocked; don't guess which one is meant.
   2. The folder chosen above, plus the slug below.
 - Slug: the title lowercased, punctuation dropped, spaces as hyphens. For a Japanese title, a short English slug that says the same thing (`注文フォームUIUXの改善` → `order-form-ui-ux-improvement`). Slugs must be unique within each locale tree.
-- A folder that doesn't exist yet (a new series, or a new project's folder): create it, and add its EN and JA display titles to `app/data/series.json` (report them). Name new folders in lowercase with hyphens unless the series is a proper name (`LingoBun`, `AWS`).
+- A folder that doesn't exist yet (a new series): create it, and add its EN and JA display titles to `app/data/series.json` (report them). Name new folders in lowercase with hyphens unless the series is a proper name (`LingoBun`, `AWS`).
 - If a file already exists at the path:
   - a `placeholder: true` stand-in → replace it, keeping its series and part fields. If the note is single-language (`requireTranslate: false`) and a placeholder for it exists in the other locale, delete that one too (step 6's link check then lists the links to repoint);
   - already this note's post (an earlier run merged it but stopped before after-publish) → skip to after-publish;
@@ -60,7 +60,7 @@ For each target, in this post's locale:
 Creating a placeholder:
 
 - Path: the target note's `sitePath`, else derived as in step 2 from the note's `series`, else the series of this post when the target clearly belongs to it (e.g. its next part), else Claude's choice. The other locale's placeholder mirrors it (`posts` ↔ `posts-ja`).
-- Content: copy the format of an existing placeholder (`command grep -rl 'placeholder: true' app/writings`; prefer one in the same folder): title, `slug` (in a folder), `publishedAt` = the target's real post's when one locale already has one, else this post's, a summary starting "Coming soon." / "近日公開。", this post's tags, part fields like its siblings, `project` only in a project's folder (its siblings' ID), `placeholder: true`, and a body saying it's still being written plus a link to a related published post in the same locale. Base the title and summary on the target note's title and opening lines (`head -n 30`), not the whole note.
+- Content: copy the format of an existing placeholder (`command grep -rl 'placeholder: true' app/writings`; prefer one in the same folder): title, `slug` (in a folder), `publishedAt` = the target's real post's when one locale already has one, else this post's, a summary starting "Coming soon." / "近日公開。", this post's tags, part fields like its siblings, `project` only for a project's post (its siblings' ID; the placeholder goes at the root), `placeholder: true`, and a body saying it's still being written plus a link to a related published post in the same locale. Base the title and summary on the target note's title and opening lines (`head -n 30`), not the whole note.
 - The target note, if it exists, in one edit: `sitePath` = the placeholder path in the note's language (so its publish replaces the placeholder); `status: Drafting` if it has no status; `requireTranslate: true` if both locales got a placeholder and the property is missing. Change nothing else. A target with no vault note gets only the placeholders; report it.
 
 Older `note` instructions like "add placeholder pages for referenced pages that do not exist yet" are covered by this step; nothing extra to do.
@@ -87,7 +87,7 @@ tags: ["…"]
 - `title`, `summary`: the note's properties, else the defaults in SKILL.md.
 - `publishedAt`: the note's `publishedAt`, else today (`date +%F`). Never `scheduledAt`: a note blocked past its scheduled day is published on the day it actually goes out. A translation: the original post's, even if its note says otherwise (see "One date per post" in SKILL.md).
 - `tags`: a non-empty array (the build fails otherwise). Reuse keys from `app/data/tags.json`; add a new tag only when none fits. Register a new tag there with colour `hsl(hue, 80%, 40%)` as hex, where hue = (sum of the tag's char codes) mod 360, keeping the file's existing entries and 2-space indentation.
-- `project`: the ID chosen in step 2, for a project post only. A series post never has one, even when the note sets `project`. A post in a folder also takes `slug`, and `seriesOrder`/`partOf`/`partOfTitle`/`partNumber` when its siblings use them (follow the siblings' numbering, e.g. "Part 3" → 3).
+- `project`: the ID chosen in step 2, for a project post only. A series post never has one, even when the note sets `project`. A post in a folder (or in a project's multi-part sequence) also takes `slug`, and `seriesOrder`/`partOf`/`partOfTitle`/`partNumber` when its siblings use them (follow the siblings' numbering, e.g. "Part 3" → 3).
 - Other fields (`lead`, `track`, case-study fields) come from `note` or a replaced placeholder. A translation takes every field except `title` and `summary` from the original post. See `docs/publish.md` and `docs/templates/case-study.mdx`. Never add `result`. The vault's pipeline properties (`status`, `scheduledAt`, `requireTranslate`, …) never go into the post.
 
 ## 7. Build, merge, push

@@ -36,7 +36,7 @@ Set by the author:
 | `title` | Post title. | The H1 opening the body, else the filename without a `✅` prefix. |
 | `summary` | Post summary. | Claude writes one. |
 | `lang` | `en` or `ja`. | Detected from the body; after-publish writes it. |
-| `sitePath` | Repo path of the post (a list for a note published as several posts), e.g. `app/writings/posts/strobe-assistant/<slug>.mdx`. Links note and post. Set by hand only to force a slug. | Derived by publish; written by after-publish, or by publish when it makes a placeholder for the note. |
+| `sitePath` | Repo path of the post (a list for a note published as several posts), e.g. `app/writings/posts/ai-agent/<slug>.mdx`. Links note and post. Set by hand only to force a slug. | Derived by publish; written by after-publish, or by publish when it makes a placeholder for the note. |
 
 Updates (`/update-pipeline`) also use `updateNote` and `updatedAt`.
 
@@ -48,7 +48,7 @@ The vault's `status` never goes into a post (case studies have their own site `s
 
 ## Series or project
 
-Every post belongs to exactly one series or one project, never both. A series is a topic folder (e.g. `ai-agent`) whose posts have no `project`. A project is a project ID; its posts sit in that project's own folder, where every post has the ID (e.g. `strobe-assistant` for `Strobe`), or at the root for a single-post project. A post never has a `project` while in a series folder. The publish stage decides which (`stages/publish.md` step 2); a translation follows its original.
+Every post belongs to exactly one series or one project, never both. A series is a topic folder (e.g. `ai-agent`) whose posts have no `project`. A project is a project ID, not a folder: its posts sit at the root of the locale tree, each with the ID. A post never has a `project` while in a series folder, and a series folder never holds a project's posts. The publish stage decides which (`stages/publish.md` step 2); a translation follows its original.
 
 ## Placeholders
 

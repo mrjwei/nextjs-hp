@@ -20,9 +20,9 @@ partNumber: 2
 - [Wrapping up](#wrapping-up)
 - [Further reading](#further-reading)
 
-Each of the three Strobe Assistant services (the WebUI, the agent and the MCP server) runs as its own ECS service on Fargate. In [Part 1](/posts/strobe-assistant/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb), I looked at the ALB and its target groups from the load balancer's side. This post looks at the other side: how ECS turns a container image into a running task, and how that task ends up as a target the ALB can send traffic to.
+Each of the three Strobe Assistant services (the WebUI, the agent and the MCP server) runs as its own ECS service on Fargate. In [Part 1](/posts/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb), I looked at the ALB and its target groups from the load balancer's side. This post looks at the other side: how ECS turns a container image into a running task, and how that task ends up as a target the ALB can send traffic to.
 
-This is Part 2 of the [Strobe Assistant](/posts/strobe-assistant/strobe-assistant-extending-strobe-with-an-ai-agent) series. [Part 3](/posts/strobe-assistant/strobe-assistant-part-3-acp-mcp-pipeline) then walks through the ACP + MCP pipeline that runs on top of all this.
+This is Part 2 of the [Strobe Assistant](/posts/strobe-assistant-extending-strobe-with-an-ai-agent) series. [Part 3](/posts/strobe-assistant-part-3-acp-mcp-pipeline) then walks through the ACP + MCP pipeline that runs on top of all this.
 
 The terminology confused me at first. Container image, task definition, task, container, service, cluster and target group all sound like they could mean the same thing, and the AWS console doesn't make the boundaries obvious. So I listed the terms, looked each one up in the AWS docs, and poked at them in the console until I could explain how they relate. That turned out to be the key to understanding how the whole deployment works. The diagram below is the result, using the agent as the worked example:
 
@@ -48,9 +48,9 @@ The detail that helped me most is that task definitions are **immutable**. Every
 
 The **[ECS service](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html)** is where things come to life. It's a long-running manager that holds three key settings:
 
-- **Which task definition revision to run, and how many copies (the desired count).** If a task crashes, stops or fails a health check, the service scheduler launches a replacement to get back to the desired count. When I point the service at a new revision, it rolls the change out by starting new tasks and retiring old ones. I kept the desired count at 1 for each service. That's enough for the assignment, and the agent keeps its ACP sessions in memory anyway, so a second agent task would need sticky sessions or an external session store first (see [Part 3](/posts/strobe-assistant/strobe-assistant-part-3-acp-mcp-pipeline)).
+- **Which task definition revision to run, and how many copies (the desired count).** If a task crashes, stops or fails a health check, the service scheduler launches a replacement to get back to the desired count. When I point the service at a new revision, it rolls the change out by starting new tasks and retiring old ones. I kept the desired count at 1 for each service. That's enough for the assignment, and the agent keeps its ACP sessions in memory anyway, so a second agent task would need sticky sessions or an external session store first (see [Part 3](/posts/strobe-assistant-part-3-acp-mcp-pipeline)).
 - **Where the tasks run (the launch type).** I chose **[Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html)**, the serverless option: there are no EC2 instances for me to provision, patch or size, and I pay only for the CPU and memory each task reserves. One correction to my own notes, though: I'd written that Fargate "scales automatically". It doesn't, at least not in the sense of adding tasks under load. Fargate finds capacity for whatever tasks the service asks for, but changing *how many* tasks there are is the job of the desired count, or of [Service Auto Scaling](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-auto-scaling.html) if you configure it.
-- **Which load balancer target group to use**, as a mapping from a container name and port to a target group (for the agent, container `agent` on port 3000 → the agent target group). This one line of configuration is what ties ECS to the ALB. Why the services sit behind an ALB at all is covered in [Part 3](/posts/strobe-assistant/strobe-assistant-part-3-acp-mcp-pipeline#one-front-door-the-alb).
+- **Which load balancer target group to use**, as a mapping from a container name and port to a target group (for the agent, container `agent` on port 3000 → the agent target group). This one line of configuration is what ties ECS to the ALB. Why the services sit behind an ALB at all is covered in [Part 3](/posts/strobe-assistant-part-3-acp-mcp-pipeline#one-front-door-the-alb).
 
 The **[cluster](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/clusters.html)** that contains the services is less exciting than it sounds. With Fargate it's just a logical grouping, a namespace for services and tasks. Traffic never flows "through" a cluster.
 
@@ -58,7 +58,7 @@ The **[cluster](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/clus
 
 A **task** is one running copy of a task definition revision, and a **container** is the process running inside it, started from the image. If I think of the task definition as a class, the task is an object: I can have many of them, and each one is created, lives and dies on its own.
 
-Because Fargate tasks use the [`awsvpc` network mode](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-task-networking.html), **each task gets its own elastic network interface (ENI) and private IP address**, just like a small VM would. Two consequences follow from that. First, the task itself, not a host machine, is what the ALB needs to address, which is why the target groups use the `ip` target type (see [Part 1](/posts/strobe-assistant/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb#target-types)). Second, a task gets a **new IP every time it starts**. Nothing outside ECS could keep track of that by hand, which is exactly the problem the next step solves.
+Because Fargate tasks use the [`awsvpc` network mode](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-task-networking.html), **each task gets its own elastic network interface (ENI) and private IP address**, just like a small VM would. Two consequences follow from that. First, the task itself, not a host machine, is what the ALB needs to address, which is why the target groups use the `ip` target type (see [Part 1](/posts/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb#target-types)). Second, a task gets a **new IP every time it starts**. Nothing outside ECS could keep track of that by hand, which is exactly the problem the next step solves.
 
 ## The handover: how a task becomes a target
 
@@ -124,7 +124,7 @@ Because the three services share nothing but the ALB and the cluster, I can rede
 
 The thing that made ECS click for me was separating *what to run* from *keeping it running* from *routing to it*. The image and task definition are static blueprints, the service is the manager that keeps the right number of tasks alive, the tasks are the disposable running copies, and the target group is where ECS and the ALB meet. Once I saw that the service, not me and not the ALB, keeps the target list up to date, the rest of the architecture became much easier to reason about.
 
-In [Part 3](/posts/strobe-assistant/strobe-assistant-part-3-acp-mcp-pipeline), I'll move up a level and look at what actually runs inside these tasks: the ACP + MCP pipeline that connects the chat UI, the agent and the tools.
+In [Part 3](/posts/strobe-assistant-part-3-acp-mcp-pipeline), I'll move up a level and look at what actually runs inside these tasks: the ACP + MCP pipeline that connects the chat UI, the agent and the tools.
 
 ## Further reading
 

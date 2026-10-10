@@ -84,6 +84,50 @@ module.exports = {
         destination: "/ja/posts/radio-buttons",
         permanent: true,
       },
+      // Project posts left their folders (2026-10): a project is not a series,
+      // so its posts now live at /posts/<slug>. Old folder URLs redirect there,
+      // and the old folder index pages go to the project page. (/posts/strobe-assistant
+      // and /posts/ai-assisted-siem-workflow stay: they are the "Part N of M" pages.)
+      {
+        source: "/posts/:folder(strobe-assistant|LingoBun|AuStride|ai-assisted-siem-workflow)/:slug",
+        destination: "/posts/:slug",
+        permanent: true,
+      },
+      {
+        source: "/posts/AWS/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture",
+        destination: "/posts/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture",
+        permanent: true,
+      },
+      {
+        source: "/posts/LingoBun",
+        destination: "/projects/lingobun",
+        permanent: true,
+      },
+      {
+        source: "/posts/AuStride",
+        destination: "/posts/austride-overview",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/:folder(strobe-assistant|LingoBun|AuStride|ai-assisted-siem-workflow)/:slug",
+        destination: "/ja/posts/:slug",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/AWS/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture",
+        destination: "/ja/posts/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/LingoBun",
+        destination: "/ja/projects/lingobun",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/AuStride",
+        destination: "/ja/posts/austride-overview",
+        permanent: true,
+      },
       // Old /portfolio section (retired 2026-09; case studies folded into
       // /posts). Specific slugs first, then a catch-all.
       {
@@ -93,12 +137,12 @@ module.exports = {
       },
       {
         source: "/portfolio/austride",
-        destination: "/posts/AuStride/austride-overview",
+        destination: "/posts/austride-overview",
         permanent: true,
       },
       {
         source: "/portfolio/lingobun",
-        destination: "/posts/LingoBun/lingobun-overview",
+        destination: "/posts/lingobun-overview",
         permanent: true,
       },
       // These three were "coming soon" placeholders, unpublished until written

@@ -22,7 +22,7 @@ partNumber: 3
 
 Strobe Assistantにおける重要なアーキテクチャ上の決定の1つが、ACPクライアント、ACPサーバー(エージェントサービス)、MCPサーバーをどのようにつなぐかでした。このチェーンはアプリの機能面の土台です。すべてのチャットメッセージ、すべてのツール呼び出し、すべての定期実行がここを通るため、アーキテクチャ全体の中心に位置しています。
 
-本稿は[Strobe Assistant](/ja/posts/strobe-assistant/strobe-assistant-extending-strobe-with-an-ai-agent)シリーズのパート3です。[パート1](/ja/posts/strobe-assistant/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb)ではサービスの前段にあるALBとターゲットグループを、[パート2](/ja/posts/strobe-assistant/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together)ではECSがそれらをどのように動かしているのかを扱いました。本稿では一歩引いてパイプラインそのものを見ていきます。各要素が何をしているのか、要素同士がどのようにやり取りするのか、そしてなぜこのように分割しているのかです。
+本稿は[Strobe Assistant](/ja/posts/strobe-assistant-extending-strobe-with-an-ai-agent)シリーズのパート3です。[パート1](/ja/posts/strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb)ではサービスの前段にあるALBとターゲットグループを、[パート2](/ja/posts/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together)ではECSがそれらをどのように動かしているのかを扱いました。本稿では一歩引いてパイプラインそのものを見ていきます。各要素が何をしているのか、要素同士がどのようにやり取りするのか、そしてなぜこのように分割しているのかです。
 
 ## 全体像
 
@@ -44,7 +44,7 @@ Strobe Assistantにおける重要なアーキテクチャ上の決定の1つが
 
 3つはそれぞれがFargate上の独立したECSサービスで、タスク定義、ターゲットグループ、必要なタスク数もそれぞれ別です。そのため**完全に疎結合**になっています。どれか1つを再デプロイしたり、スケールしたり、停止したりしても、ほかには一切影響しません。
 
-ただし1つ注意点があります。エージェントはセッションをメモリ上に保持しているため、エージェントのタスクを2つ以上動かすには**スティッキーセッション**か外部のセッションストアが必要になります。ECSがコンテナイメージをどのようにして負荷分散された実行中のタスクに変えるのかは、それだけで1本の記事にする価値があり、それが[パート2](/ja/posts/strobe-assistant/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together)の役割です。
+ただし1つ注意点があります。エージェントはセッションをメモリ上に保持しているため、エージェントのタスクを2つ以上動かすには**スティッキーセッション**か外部のセッションストアが必要になります。ECSがコンテナイメージをどのようにして負荷分散された実行中のタスクに変えるのかは、それだけで1本の記事にする価値があり、それが[パート2](/ja/posts/strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together)の役割です。
 
 ## 1つの玄関口:ALB
 
@@ -160,7 +160,7 @@ export function createStrobeAgent(deps: AgentDependencies): acp.AgentApp {
 }
 ```
 
-ハンドシェイクには、触れておきたい点が2つあります。1つ目に、トークンはヘッダーやURLではなく、ACP自身の`authenticate`呼び出しの中で渡されます。ブラウザのWebSocket APIでは`Authorization`ヘッダーを設定できず、URLに含めたトークンはアクセスログやブラウザの履歴に残ってしまうからです。2つ目に、ACPではクライアントがエージェントに対して使用するMCPサーバーを指定できます(`session/new`の`mcpServers`)。エージェントはこのリストを意図的に無視しています。ブラウザは信頼できないものであり、エージェントのツールをどこから取得するかをブラウザに決めさせてはならないからです。この認証の側面については[パート4](/ja/posts/strobe-assistant/strobe-assistant-part-4-how-cognito-and-auth-fit-in)で詳しく扱います。
+ハンドシェイクには、触れておきたい点が2つあります。1つ目に、トークンはヘッダーやURLではなく、ACP自身の`authenticate`呼び出しの中で渡されます。ブラウザのWebSocket APIでは`Authorization`ヘッダーを設定できず、URLに含めたトークンはアクセスログやブラウザの履歴に残ってしまうからです。2つ目に、ACPではクライアントがエージェントに対して使用するMCPサーバーを指定できます(`session/new`の`mcpServers`)。エージェントはこのリストを意図的に無視しています。ブラウザは信頼できないものであり、エージェントのツールをどこから取得するかをブラウザに決めさせてはならないからです。この認証の側面については[パート4](/ja/posts/strobe-assistant-part-4-how-cognito-and-auth-fit-in)で詳しく扱います。
 
 ## エージェントからツールへ:MCPクライアント
 
@@ -264,7 +264,7 @@ def _query_index(index_name, embedding, user_id, top_k):
 Amazon Bedrockには、エージェントとMCPサーバーの両方が、それぞれ異なる目的でアクセスしています。どちらもAPIキーではなく、ECSのタスクロールで認証しています:
 
 - **エージェント**は、BedrockのConverseStream APIとGemma 3 12Bを使ってユーザーと会話します。リクエストを読み、どのツールを呼び出すかを決め(1ターンにつき最大8ラウンド)、回答をストリーミングで返すのがこのモデルです。Gemma 3はBedrock上でネイティブのtool-useブロックを返さないため、エージェントはシステムプロンプトの中でツールを説明し、モデルのテキストからツール呼び出しを解析しています。詳しくは「How LLMs Call Tools」を参照してください。
-- **MCPサーバー**は、BedrockのInvokeModel APIとTitanの埋め込みモデル(画像にはTitan Multimodal Embeddings G1、投稿とコメントにはTitan Text Embeddings V2)を使い、ユーザーの検索クエリやチャットに貼り付けられた写真を、インデックス済みのコンテンツと同じベクトル空間に埋め込みます。セマンティック検索自体はその後S3 Vectorsで`userId`で絞り込んで行われ、2つの結果リストはReciprocal Rank Fusionで統合されます。その側面については[パート5](/ja/posts/strobe-assistant/strobe-assistant-part-5-embeddings-for-posts-moments-and-search)と[パート7](/ja/posts/strobe-assistant/strobe-assistant-part-7-dual-index-rrf-and-mrr)で扱います。
+- **MCPサーバー**は、BedrockのInvokeModel APIとTitanの埋め込みモデル(画像にはTitan Multimodal Embeddings G1、投稿とコメントにはTitan Text Embeddings V2)を使い、ユーザーの検索クエリやチャットに貼り付けられた写真を、インデックス済みのコンテンツと同じベクトル空間に埋め込みます。セマンティック検索自体はその後S3 Vectorsで`userId`で絞り込んで行われ、2つの結果リストはReciprocal Rank Fusionで統合されます。その側面については[パート5](/ja/posts/strobe-assistant-part-5-embeddings-for-posts-moments-and-search)と[パート7](/ja/posts/strobe-assistant-part-7-dual-index-rrf-and-mrr)で扱います。
 
 このように役割を分けることで、エージェントは言語モデルとMCPサーバーとのやり取りの仕方だけを知っていればよく、Strobeがデータをどのように保存しているかに依存する部分はすべてMCPの境界の向こう側にとどまります。
 

@@ -5,7 +5,7 @@
 //       In links to that locale's version of the post, replace the old title in the link text with the new one.
 //   move <old key> <new key>
 //       Point every link to either locale's version at the new key, keeping #anchors.
-// key = the post's path under its tree without .mdx, e.g. "strobe-assistant/part-3"; lang = en | ja.
+// key = the post's path under its tree without .mdx, e.g. "ai-agent/part-3"; lang = en | ja.
 //
 // Output, one TSV line per file: `changed <file>`, then `mention <vault note>` for each vault note that
 // still contains the old title or old URL (the pipeline doesn't edit note bodies; report them).
