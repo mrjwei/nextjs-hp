@@ -1,4 +1,5 @@
 import Image from "next/image"
+import Link from "next/link"
 import { CustomMDX } from "@/components/mdx"
 import { ExtLink } from "@/components/ext-link"
 import { JsonLd } from "@/components/json-ld"
@@ -36,6 +37,16 @@ const aboutComponents = {
   ),
   strong: ({ children }: { children: React.ReactNode }) => (
     <strong className={strong}>{children}</strong>
+  ),
+  // Markdown links in About point at posts on this site; external links use
+  // <ExtLink>.
+  a: ({ href, children }: { href: string; children: React.ReactNode }) => (
+    <Link href={href} className="text-[var(--accent-text)] hover:underline">
+      {children}
+    </Link>
+  ),
+  ul: ({ children }: { children: React.ReactNode }) => (
+    <ul className="mb-4 list-disc space-y-2 pl-5">{children}</ul>
   ),
   ExtLink,
 }
