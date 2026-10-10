@@ -1,4 +1,5 @@
 import Image from "next/image"
+import Link from "next/link"
 import { CustomMDX } from "@/components/mdx"
 import { ExtLink } from "@/components/ext-link"
 import { JsonLd } from "@/components/json-ld"
@@ -37,6 +38,16 @@ const aboutComponents = {
   strong: ({ children }: { children: React.ReactNode }) => (
     <strong className={strong}>{children}</strong>
   ),
+  // Markdown links in About point at posts on this site; external links use
+  // <ExtLink>.
+  a: ({ href, children }: { href: string; children: React.ReactNode }) => (
+    <Link href={href} className="text-[var(--accent-text)] hover:underline">
+      {children}
+    </Link>
+  ),
+  ul: ({ children }: { children: React.ReactNode }) => (
+    <ul className="mb-4 list-disc space-y-2 pl-5">{children}</ul>
+  ),
   ExtLink,
 }
 
@@ -46,7 +57,7 @@ export default function Page() {
       <JsonLd data={profilePageJsonLd} />
       <span className="eyebrow">About</span>
       <h1 className="mt-3 mb-10 text-4xl md:text-5xl font-semibold tracking-tight text-[var(--text-strong)]">About me</h1>
-      <div className="grid grid-cols-12 gap-8 md:gap-16">
+      <div className="grid grid-cols-12 gap-y-8 md:gap-16">
         <div className="text-[var(--text-body)] col-span-12 order-2 md:col-span-8 md:order-1">
           <CustomMDX source={about.content} components={aboutComponents} />
           {profile.en.features.cv && (
