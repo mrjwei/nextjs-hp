@@ -22,10 +22,14 @@ export default function Page() {
     keyOf: (project) => project.id,
     limit: 4,
   })
-  // Skip posts already shown as a project card above.
+  // Skip posts already shown as a project card above, and unwritten
+  // "Coming soon" placeholders: only finished posts are highlighted here.
   const projectLeads = new Set(projects.map((project) => project.lead.slug))
   const latestPosts = pickHighlights(
-    writings.filter((writing) => !projectLeads.has(writing.slug)),
+    writings.filter(
+      (writing) =>
+        !projectLeads.has(writing.slug) && !writing.metadata.placeholder
+    ),
     { pinned: highlights.posts, keyOf: (writing) => writing.slug, limit: 4 }
   )
   const p = profile.en
