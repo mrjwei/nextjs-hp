@@ -23,16 +23,17 @@ export default function Page() {
     keyOf: (project) => project.id,
     limit: 4,
   })
-  // Project posts belong to "Selected projects" above, and unwritten
-  // "Coming soon" placeholders aren't ready: only finished non-project posts
-  // are highlighted here.
-  const latestPosts = pickHighlights(
+  // Selected writing: pinned posts first, then the latest. Project posts
+  // belong to "Selected projects" above, and unwritten "Coming soon"
+  // placeholders aren't ready, so neither is picked here.
+  const selectedPosts = pickHighlights(
     writings.filter(
       (writing) =>
         !isProject(writing.metadata) && !writing.metadata.placeholder
     ),
     { pinned: highlights.posts, keyOf: (writing) => writing.slug, limit: 4 }
   )
+  const email = profile.en.social.find((s) => s.id === "email")?.href
   const p = profile.en
 
   return (
@@ -40,7 +41,7 @@ export default function Page() {
       <JsonLd data={buildPersonJsonLd("en")} />
 
       {/* Hero */}
-      <div className="mx-auto w-full max-w-[1120px] px-8 pt-28 pb-20 md:pt-36 md:pb-24">
+      <div className="mx-auto w-full max-w-[1120px] px-8 pt-28 pb-20 md:pt-28 md:pb-20">
         <span className="eyebrow">{p.eyebrow}</span>
         <h1 className="display mt-6 text-5xl leading-[1.04] md:text-6xl">
           {p.headline}
@@ -57,6 +58,15 @@ export default function Page() {
           <Button asChild variant="ghost" size="lg">
             <Link href="/about">About me</Link>
           </Button>
+          {email && (
+            <TrackedLink
+              href={email}
+              eventName="contact_click"
+              className="self-center px-3 text-sm font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--text-strong)] hover:underline"
+            >
+              Email me
+            </TrackedLink>
+          )}
         </div>
       </div>
 
@@ -106,14 +116,14 @@ export default function Page() {
         </div>
       </div>
 
-      {/* Posts */}
+      {/* Selected writing */}
       <div className="w-full border-t border-[var(--border-subtle)]">
         <div className="mx-auto w-full max-w-[1120px] px-8 py-20">
           <div className="mb-10 flex items-end justify-between">
             <div>
-              <span className="eyebrow">Latest</span>
+              <span className="eyebrow">Writing</span>
               <h2 className="mt-2.5 text-3xl font-semibold tracking-tight text-[var(--text-strong)]">
-                Posts
+                Selected writing
               </h2>
             </div>
             <Link
@@ -124,7 +134,7 @@ export default function Page() {
               <ArrowRight className="size-4" />
             </Link>
           </div>
-          <Grid writings={latestPosts} path="writings" />
+          <Grid writings={selectedPosts} path="writings" />
         </div>
       </div>
     </section>
