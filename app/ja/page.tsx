@@ -12,6 +12,7 @@ import { buildPersonJsonLd } from "app/seo/person"
 import {
   getAllSortedWritings,
   groupProjects,
+  isProject,
   pickHighlights,
 } from "app/utils"
 import { highlights, profile } from "app/content/profile"
@@ -23,13 +24,13 @@ export default function Page() {
     keyOf: (project) => project.id,
     limit: 4,
   })
-  // Skip posts already shown as a project card above, and unwritten
-  // "Coming soon" placeholders: only finished posts are highlighted here.
-  const projectLeads = new Set(projects.map((project) => project.lead.slug))
+  // Project posts belong to "Selected projects" above, and unwritten
+  // "Coming soon" placeholders aren't ready: only finished non-project posts
+  // are highlighted here.
   const latestPosts = pickHighlights(
     writings.filter(
       (writing) =>
-        !projectLeads.has(writing.slug) && !writing.metadata.placeholder
+        !isProject(writing.metadata) && !writing.metadata.placeholder
     ),
     { pinned: highlights.posts, keyOf: (writing) => writing.slug, limit: 4 }
   )
