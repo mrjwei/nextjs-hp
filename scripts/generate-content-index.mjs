@@ -163,7 +163,14 @@ function assertTags(value, absFilePath, requireTags) {
   return value;
 }
 
-const WORK_TRACKS = ["ai-engineering", "product-design", "security", "research"];
+const WORK_TRACKS = [
+  "transformation",
+  "ai-engineering",
+  "product-design",
+  "design-systems",
+  "security",
+  "research",
+];
 
 function assertOptionalBoolean(value, field, absFilePath) {
   if (value != null && typeof value !== "boolean") {

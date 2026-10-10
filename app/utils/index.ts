@@ -5,10 +5,17 @@ import { z } from "zod"
 import { getContentBaseDir, type ContentLang } from "app/content/config"
 import seriesTitles from "app/data/series.json"
 import { getProjectSlug, getProjectHref, getProjectPostHref } from "app/utils/project-href"
+import { trackOrder } from "app/content/profile"
 
 export type Lang = ContentLang
 
-export type WorkTrack = "ai-engineering" | "product-design" | "security" | "research"
+export type WorkTrack =
+  | "transformation"
+  | "ai-engineering"
+  | "product-design"
+  | "design-systems"
+  | "security"
+  | "research"
 
 export type TMetadata = {
   title: string
@@ -98,8 +105,10 @@ const dateSchema = z
   })
 
 const workTrackSchema = z.enum([
+  "transformation",
   "ai-engineering",
   "product-design",
+  "design-systems",
   "security",
   "research",
 ])
@@ -475,13 +484,6 @@ export function pickHighlights<T extends object>(
   return [...picked, ...items.filter((item) => !pickedSet.has(item))].slice(0, limit)
 }
 
-const WORK_TRACK_ORDER: WorkTrack[] = [
-  "ai-engineering",
-  "product-design",
-  "security",
-  "research",
-]
-
 export function getWorkTrackFacets(
   items: Array<{ track?: WorkTrack }>
 ): Array<{ value: WorkTrack; count: number }> {
@@ -491,7 +493,7 @@ export function getWorkTrackFacets(
     if (!track) continue
     counts.set(track, (counts.get(track) ?? 0) + 1)
   }
-  return WORK_TRACK_ORDER.filter((track) => counts.has(track)).map((value) => ({
+  return trackOrder.filter((track) => counts.has(track)).map((value) => ({
     value,
     count: counts.get(value)!,
   }))

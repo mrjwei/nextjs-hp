@@ -7,14 +7,18 @@ import type { WorkTrack } from "app/utils"
 
 const trackLabel: Record<Lang, Record<WorkTrack, string>> = {
   en: {
-    "ai-engineering": "AI engineering",
+    transformation: "Digital transformation",
+    "ai-engineering": "AI systems",
     "product-design": "Product design",
+    "design-systems": "Design systems & ops",
     security: "Security",
     research: "Research",
   },
   ja: {
-    "ai-engineering": "AIエンジニアリング",
+    transformation: "業務DX",
+    "ai-engineering": "AIシステム",
     "product-design": "プロダクトデザイン",
+    "design-systems": "デザインシステム・デザインOps",
     security: "セキュリティ",
     research: "リサーチ",
   },
