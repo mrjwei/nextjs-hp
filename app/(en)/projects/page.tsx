@@ -10,7 +10,7 @@ import { buildStandardMetadata } from "app/seo/metadata"
 export const metadata = buildStandardMetadata({
   title: "Projects",
   description:
-    "Selected projects — applied AI systems and product work shipped for real businesses.",
+    "Selected projects — product design, engineering and AI work for real businesses.",
   pathname: "/projects",
   alternatePathname: "/ja/projects",
   alternateLang: "ja",
@@ -32,7 +32,7 @@ export default async function ProjectsPage() {
           Projects
         </h1>
         <p className="text-lg text-[var(--text-muted)] mb-4">
-          Applied AI systems and product work shipped for real businesses.
+          Product design, engineering and AI work for real businesses.
           Each one is written up in full under Posts.
         </p>
       </div>
