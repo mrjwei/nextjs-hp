@@ -17,7 +17,10 @@ function escapeXml(input: string) {
 }
 
 export async function GET() {
-  const allBlogs = getAllSortedWritings()
+  // "Coming soon" placeholders have no content yet, so they stay off the feed.
+  const allBlogs = getAllSortedWritings().filter(
+    (post) => !post.metadata.placeholder
+  )
 
   const itemsXml = allBlogs
     .map(

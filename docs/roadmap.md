@@ -1,5 +1,7 @@
 # jessewei.net — roadmap
 
+> **10 Oct 2026:** the positioning in §1 (audience, one-line positioning, vocabulary) is superseded by `docs/plans/2026-10-10-positioning-rebalance.md` — hybrid product designer & engineer, with AI as the current edge rather than the title. Implement that plan's phases; §2 onwards still applies.
+
 *This is the canonical plan for this repo. It replaces `docs/roadmap/2026-09-ai-repositioning-brushup.md` (23 Sep 2026) and `docs/roadmap/month-1-evidence-and-spine.md` (14 Sep 2026). Last updated 2 Oct 2026.*
 
 Positioning source of truth (Notes vault): `Career/Job hunting/⭐️ai-engineering-pivot-2026Q4.md` and `career-profile-{en,ja}.md`. The design-first framing of the Q4 portfolio roadmap (`⭐️portfolio-roadmap-2026Q4.md`) is superseded for this site.
