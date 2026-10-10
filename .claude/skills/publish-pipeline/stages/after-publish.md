@@ -13,3 +13,4 @@ Record a published post in its vault note. It runs after the publish stage has p
    - `status`: Published
 
    When `series` or `project` is now a property, remove the matching item (e.g. `project: Strobe`) from `note`, and remove `note` if nothing is left.
+4. Next, in the same run, unless this was a `finish` line: an original with `requireTranslate: true` and no published translation → `stages/translate.md` now, even when the request only said "publish". A translation note → done.
