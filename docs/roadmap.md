@@ -1,10 +1,10 @@
 # jessewei.net — roadmap
 
-> **10 Oct 2026:** the positioning in §1 (audience, one-line positioning, vocabulary) is superseded by `docs/plans/2026-10-10-positioning-rebalance.md` — hybrid product designer & engineer, with AI as the current edge rather than the title. Implement that plan's phases; §2 onwards still applies.
+> **10 Oct 2026:** §1 now carries the hybrid positioning from `docs/plans/2026-10-10-positioning-rebalance.md` (implemented 10 Oct): product designer & engineer, with AI as the current edge rather than the title. That plan holds the audit, the lane analysis and the job-hunting strategy behind it.
 
-*This is the canonical plan for this repo. It replaces `docs/roadmap/2026-09-ai-repositioning-brushup.md` (23 Sep 2026) and `docs/roadmap/month-1-evidence-and-spine.md` (14 Sep 2026). Last updated 2 Oct 2026.*
+*This is the canonical plan for this repo. It replaces `docs/roadmap/2026-09-ai-repositioning-brushup.md` (23 Sep 2026) and `docs/roadmap/month-1-evidence-and-spine.md` (14 Sep 2026). Last updated 10 Oct 2026.*
 
-Positioning source of truth (Notes vault): `Career/Job hunting/⭐️ai-engineering-pivot-2026Q4.md` and `career-profile-{en,ja}.md`. The design-first framing of the Q4 portfolio roadmap (`⭐️portfolio-roadmap-2026Q4.md`) is superseded for this site.
+Positioning source of truth: §1 below, from `docs/plans/2026-10-10-positioning-rebalance.md`. It supersedes the positioning section of the vault's `Career/Job hunting/⭐️ai-engineering-pivot-2026Q4.md` (its 90-day plan still applies to Lane C prep) and the design-first framing of `⭐️portfolio-roadmap-2026Q4.md`.
 
 Related docs: `docs/publish.md` (content model, frontmatter, publishing), `docs/baseline.md` (Lighthouse/build checks), `docs/templates/case-study.mdx` (case-study skeleton).
 
@@ -12,21 +12,27 @@ Related docs: `docs/publish.md` (content model, frontmatter, publishing), `docs/
 
 ## 1. Positioning
 
-**Audience, in priority order**
+**Audience, in priority order** (Tokyo first)
 
-1. Hiring managers and recruiters for **Forward Deployed Engineer / AI Solutions Engineer / Applied AI (生成AI) Engineer** roles, mostly in Tokyo and some in Australia. They spend 30–90 seconds on the site to answer one question: *has this person shipped LLM systems for real users, and can they prove the quality?*
-2. Japanese hiring managers reading `/ja`. Same question, plus evidence of 上流工程 and Japanese-language delivery.
-3. Later, behind a feature flag (§5): Japanese SME owners looking for AI + design help.
+1. Hiring managers and recruiters for **hybrid product-builder roles**: design engineer / UX engineer / AI product engineer at in-house product and DX teams (Lane A), and AI experience / technologist / technical director roles at consultancies and agencies (Lane B). Their question: *can this person turn how a business works into software people adopt, and is the AI work real?*
+2. Japanese hiring managers and agents reading `/ja`. Same question, plus a legible 職種, 上流工程 (要件定義) and Japanese-language delivery.
+3. Applied AI / FDE roles (Lane C) as a stretch; senior product designer / design systems roles (Lane D) in reserve.
+4. Later, behind a feature flag (§5): Japanese SME owners looking for AI + design help.
 
-**One-line positioning** (use these verbatim; don't paraphrase them in new places)
+To shift lane emphasis, edit `profile.ts` (copy, `highlights`, `trackOrder`); no redesign needed.
 
-- EN: *Applied AI engineer who ships LLM systems into real business workflows — from messy Japanese documents to evaluated, production-ready pipelines — with a decade of product experience that makes those systems usable and adopted.*
-- JA: *生成AI/LLMシステムを実際の業務に実装するアプライドAIエンジニア。日本語の複雑な文書処理から、評価設計を伴う本番運用可能なパイプライン構築まで一貫して担当。10年のプロダクト経験を活かし、「使われるAI」を作る。*
+**Core thesis** (guides all copy; not necessarily shown verbatim)
+
+- EN: *I turn how a business really works into software people keep using: product design and frontend engineering in one head, ten years of B2B, and now LLM features with a person at every decision that matters.*
+- JA: *業務の実態から、使われ続けるソフトウェアをつくる。プロダクトデザインとフロントエンド開発を一人で担い、B2Bで10年。いまは要所に人の判断を残した生成AI機能を、実際の業務に実装している。*
+
+Role label: **Product designer & engineer** / **プロダクトデザイナー／エンジニア**. Headline: *Changing how people work, through design and AI.* / *デザインとAIで、人の働き方を変える。*
 
 **Vocabulary**
 
-- Use: LLM pipelines, evaluation, ground truth, retrieval, orchestration, guardrails, human-in-the-loop, cost/latency, deployed for a client, production.
-- Avoid in new copy: "design leadership", "design culture", "vibe coding", "AI literacy", "未経験". Design gets a **differentiator sentence**, never the headline.
+- Use: design and build / 一気通貫; digital transformation / 業務DX; requirements / 要件定義; human review gate / 人の確認; design system; adoption / 定着; evaluation / 評価; LLM features and pipelines; legacy / low-maturity.
+- Avoid: "Applied AI engineer" as the title; "shipped to production" unless true (DEN's AI records system is a **pilot**; KOD's system was **built for** the client); "design leadership" (say "built the design practice" or "set up design infrastructure"); "vibe coding"; "AI literacy"; 未経験.
+- GoNOW is Zerospec's product, not a company: never list it as an employer.
 - Use UK/AU spelling in English.
 
 **Design principles**
@@ -55,7 +61,8 @@ EN                                   JA
 ```
 
 - **Header**: Posts · Projects · About (logo = Home), search, LinkedIn, GitHub. Active state uses prefix matching. Email is in the footer.
-- **Home**: hero (from `profile.ts`) → proof strip (static) → selected projects (one card per project) → How I work (static) → posts. Both lists show `highlights` pins first, then the latest.
+- **Home**: hero (from `profile.ts`, with a quiet Email me link) → proof strip (static) → selected projects (one card per project) → How I work (4 steps, static) → Selected writing. Both lists show `highlights` pins first, then the latest; `scripts/check-parity.mjs` warns at build time about pins missing in a language.
+- **Tracks** (`/projects` filter): transformation, ai-engineering (labelled "AI systems"), product-design, design-systems, security, research. Order comes from `trackOrder` in `profile.ts`.
 - **Projects** are a *view* over posts: any post with a `project` ID. `/posts` URLs are always canonical. `/writings/*`, `/work/*` and `/portfolio/*` 301 to the new paths. Full rules are in `docs/publish.md`.
 - **Content knobs**: `project`, `lead`, `track`, `draft`, `placeholder`, `archived`, plus the case-study fields (`role`, `client`, `industry`, `duration`, `stack`, `status`, `confidential`). They're validated in both `app/utils/index.ts` (zod) and `scripts/generate-content-index.mjs`.
 - **Drafts** live in the Obsidian vault, outside the repo. Publish with `/publish-pipeline`.
@@ -87,15 +94,17 @@ EN                                   JA
 
 ### Content (each becomes a project)
 
-Until items 1–3 are live, Home's "Selected projects" shows LingoBun, AI+Sec (the two security-pipeline posts) and the AI-guidelines audit. That is the current state.
+Pinned now: projects UIUX (the WAmazing booking-form case study, JA only), LingoBun, AI+Sec, Strobe; posts are the four design × AI essays. DEN and KOD go to the front of `highlights.projects` when their case studies land.
 
-1. [ ] **Capstone evals**: "Most detection gaps were logging gaps", plus the scoring rule that inflated accuracy (75.0% → 97.9%). Can be published once the supervisor approves. Reuse the IFN738 visual pack.
-2. [ ] **DEN**: letting an LLM write regulatory records, and deciding where it isn't allowed to. ◎/○/★ → code / LLM / human; eval harness results. Needs 加納社長's written permission for naming and screenshots (seed data only).
-3. [ ] **KOD**: LLM document checking (anonymised). Architecture diagram, text-vs-vector warning-symbol extraction, rule engine, Japanese requirements. Needs KOD's OK on what can be named.
-4. [x] **LingoBun** reframed as AI product hardening (`featured: 1`).
-5. [ ] **WAmazing** (design track): its outcome number is the strongest (200+/week → ~4), but it shouldn't be featured above the AI work. Placeholder now lives outside the repo.
-6. [ ] **GoNOW design-ops**: "Eleven versions of one yellow badge" post and the case study. Both carried over from the Month-1 plan. Lower priority than 1–3 under the AI positioning.
-7. [ ] Translate every case study pinned in `highlights` (via `/publish-pipeline`: set `requireTranslate` on its vault note).
+1. [ ] **DEN, JA-first**: 「紙とスプレッドシートの福祉事業所に、人の確認を前提とした生成AIを入れる」 — 業務DX + 要件定義 + ◎/○/★ gate + eval results; describe the AI system as a pilot. Needs 加納社長's written permission for screenshots (seed data only). Track: `transformation`.
+2. [ ] **WAmazing case study in EN** (the JA post is project `UIUX`, `track: product-design`, `lead: true`). Jesse drafts or approves the EN version in the vault; publish with the same `project: "UIUX"`. The project ID stays `UIUX` because the case study is written not to identify the organisation.
+3. [ ] **Design infrastructure at Zerospec (GoNOW product)**: "Eleven versions of one yellow badge" teaser plus the case study. Track: `design-systems`.
+4. [ ] **KOD**: LLM document checking for a manufacturer, requirements in Japanese. KOD may be named. Track: `ai-engineering`.
+5. [ ] **Capstone evals**: "Most detection gaps were logging gaps", plus the scoring rule that inflated accuracy (75.0% → 97.9%). Needs the supervisor's OK. Track: `security` / `research`.
+6. [x] **LingoBun** reframed as AI product hardening.
+7. [ ] **JA translations of the pinned essays**: `ai-productivity-gains-not-evenly-shared` has `requireTranslate: true` on its vault note (run `/publish-pipeline`). `designing-infrastructure-not-assets` and `from-requirements-to-assumptions` have no vault note yet, so one must be created before the pipeline can translate them.
+
+Keep publishing the coursework explainers (Strobe, VAE, Transformers); they show learning velocity but aren't pinned.
 
 ### Tracked elsewhere (no work in this repo)
 
@@ -109,14 +118,17 @@ Until items 1–3 are live, Home's "Selected projects" shows LingoBun, AI+Sec (t
 
 **Open** (Claude Code should ask Jesse, not guess):
 
-1. **Permissions**: what may be named or shown for KOD, DEN and the capstone. This drives `confidential`, the client wording and the diagrams.
-2. **Languages**: the proof strip says EN · 日本語 · 中文, but `person.ts` `knowsLanguage` also lists Korean. Confirm whether Korean (and French) belong on the site.
-3. **CV**: publish the PDFs on the site, or send them on request?
-4. **Availability statement**: removed with `/now`. If it comes back, decide whether to mention visa sponsorship for Australia.
+1. **Capstone permissions**: what may be shown from the capstone (needs the supervisor's OK).
+2. **CV**: publish the PDFs on the site, or send them on request?
 
 **Resolved**
 
-- Contact: `mailto:jesseweijapan@gmail.com`, in the footer and About.
+- Positioning (10 Oct): hybrid product designer & engineer; headline *Changing how people work, through design and AI.*
+- Naming: DEN, KOD and Zerospec may be named; GoNOW is Zerospec's product. The WAmazing case study keeps project ID `UIUX` (it doesn't identify the organisation).
+- Status words: DEN's AI records system is a pilot; KOD's was built for the client.
+- Languages: Chinese (native), English, Japanese, Korean (no French).
+- Availability: Tokyo only, from early 2027. No employment dates on About.
+- Contact: `mailto:jesseweijapan@gmail.com`, in the footer, About and the Home hero.
 - Gallery and Instagram: removed (2026-10).
 - URL policy: `/posts/...` is canonical, and `/projects` is a view over it (replacing the planned `/work/[slug]`).
 - `/now` page and availability chip: dropped.

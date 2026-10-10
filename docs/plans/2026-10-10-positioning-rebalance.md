@@ -1,5 +1,7 @@
 # jessewei.net — positioning rebalance plan (Oct 2026)
 
+> **Implemented 10 Oct 2026** (P0–P3, P5, P6, and the in-repo part of P4). Decisions in §8 are answered below the table, and they override the draft copy where the two differ. Still open: the EN WAmazing case study, the JA essay translations, and the §7 content backlog (all vault work).
+
 *Prepared 10 Oct 2026 for implementation by Claude Code inside `nextjs-hp`. Written from an audit of the live site (jessewei.net, 10 Oct), the repo (`app/content/profile.ts`, About MDX, content index: 94 entries), the vault's `Posts.base` queue, and the career notes in `Notes/Career/` (pivot doc, career profiles, Japan openings, DEN and GoNOW evidence docs).*
 
 **This plan supersedes the positioning in `docs/roadmap.md` §1 (audience, one-line positioning, vocabulary) and the 23 Sep "AI repositioning brush-up".** The site architecture, content model and design principles in `docs/roadmap.md` stay. Only the story the site tells changes, plus a few small model and Home changes.
@@ -256,6 +258,8 @@ Keep publishing the coursework explainers (Strobe, VAE, Transformers). They show
 | D4 | Can GoNOW (and Zerospec, DEN, KOD) be named? | Name the company where permitted; otherwise use "a Tokyo IoT startup" style |
 | D5 | DEN and KOD status words: "in production", "pilot" or "built for"? | Use the most conservative true wording |
 | D6 | Employment dates for About | Required for the JA audience |
+
+**Answers (Jesse, 10 Oct):** D1: *Changing how people work, through design and AI.* / *デザインとAIで、人の働き方を変える。* (Jesse's own). D2: keep Korean; no French. D3: Tokyo only. D4: DEN, KOD and Zerospec may be named; **GoNOW is Zerospec's product, not a company**. D5: DEN pilot, KOD built. D6: no dates on About. Also: the WAmazing project ID stays `UIUX` (no rename or redirect) because the case study is written not to identify the organisation.
 
 ---
 
