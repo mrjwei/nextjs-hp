@@ -1,0 +1,130 @@
+---
+title: "Sign In Once, Verify Anywhere—How Cognito Tokens Work"
+publishedAt: "2026-10-13"
+summary: "The foundations behind Strobe's auth: the three jobs hidden in the word \"auth\", the tokens a Cognito user pool issues, how any service verifies a JWT locally with public keys, and why a verified sub, never a client or a model, decides whose data a request can touch."
+tags: ["aws", "security", "qut"]
+project: "Strobe"
+---
+
+- ["Auth" is really three jobs](#auth-is-really-three-jobs)
+- [What Cognito hands back after sign-in](#what-cognito-hands-back-after-sign-in)
+- [How a service trusts a token without asking Cognito](#how-a-service-trusts-a-token-without-asking-cognito)
+- [User identity vs workload identity](#user-identity-vs-workload-identity)
+- [Where Cognito sits in the Strobe app](#where-cognito-sits-in-the-strobe-app)
+- [Further reading](#further-reading)
+
+The fundamental rule is this: identity comes from a *verified token*, never from what a client or a model says. Cognito proves who the user is once; every service after that checks the signed token for itself; and the `sub` claim it recovers is the only thing that decides *whose* data a request can touch.
+
+This post sticks to the foundations: what Cognito issues and how a service checks it. [Part 4](/posts/strobe-assistant-part-4-how-cognito-and-auth-fit-in) then follows the token through Strobe Assistant itself.
+
+## "Auth" is really three jobs
+
+I realised that I often say "auth" for three separate jobs. Keeping them apart makes the whole architecture much easier to follow:
+
+| Question | Name | Who answers it | In Strobe |
+|---|---|---|---|
+| *Who are you?* | **Authentication** | Cognito, once, with a password | A1 auth Lambda → Cognito `InitiateAuth` |
+| *Is this token genuine and current?* | **Verification** | Every service, on its own, with public keys | API Gateway JWT authorizer, `auth.ts`, FastMCP `JWTVerifier` |
+| *What may this user touch?* | **Authorization** | The app's own code, using the verified `sub` | `filter={"userId": sub}`, `post.userId == sub` |
+
+Cognito only does the first job. It knows nothing about posts, photos or vectors, so authorization is always the app's own job.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/sign-in-once-verify-anywhere-how-cognito-tokens-work/auth-1-cognito-token-basics.svg"
+    alt="How Cognito tokens work: a client signs in once to the Cognito user pool with email and password and receives three signed tokens (ID, access and refresh); any service that later receives the ID token verifies it locally with the pool's cached public keys (kid lookup, RS256 signature, iss, aud, exp and token_use) without calling Cognito, then trusts sub as the user's identity; below, authentication, verification and authorization are shown as three separate questions"
+    style={{ marginBottom: "8px" }}
+  />
+</figure>
+
+## What Cognito hands back after sign-in
+
+A **user pool** is a user directory plus a token issuer. When a sign-in succeeds, it returns [three tokens](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html):
+
+- **ID token**: *who the user is* (`sub`, `email`, `cognito:username`) and *which app client it was minted for* (`aud`).
+- **Access token**: *what the app may call* (`scope`). It carries `client_id` instead of `aud`.
+- **Refresh token**: a long-lived token (30 days by default) that is traded for new ID and access tokens. It isn't a JWT you can verify: it's encrypted, only Cognito can read it, and Cognito *can* revoke it.
+
+ID and access tokens are **[JWTs](https://datatracker.ietf.org/doc/html/rfc7519)** (JSON Web Tokens): three base64url-encoded parts joined by dots, `header.payload.signature`.
+
+**Why Strobe uses the ID token, not the access token.** Strobe Assistant's verifiers (the agent's `auth.ts` and the MCP server's [`JWTVerifier`](https://gofastmcp.com/servers/auth/token-verification)) check `aud` against the app client id. Cognito access tokens have no `aud` claim, so that check rejects them by design. The ID token also carries the user details the agent uses for its display name. Both files explain this in their docstrings, and I cover why both of them verify the token in [Part 3](/posts/strobe-assistant-part-3-acp-mcp-pipeline#the-mcp-server-its-own-component-its-own-auth-boundary).
+
+## How a service trusts a token without asking Cognito
+
+Cognito signs every token with a **private key** that never leaves Cognito, and publishes the matching **public keys** at a well-known URL as a **JWKS** (JSON Web Key Set):
+
+```
+https://cognito-idp.ap-southeast-2.amazonaws.com/<poolId>/.well-known/jwks.json
+```
+
+With those keys, a service verifies a token locally, with no call back to Cognito per request:
+
+1. Read `kid` from the header and pick the matching public key from the JWKS (downloaded once, then cached).
+2. Check the RS256 signature. If even one byte of the header or payload has changed, it fails.
+3. `iss` must be *my* pool's URL. This rejects tokens from other pools, such as a classmate's.
+4. `aud` must be *my* app client id. This rejects tokens minted for a different app.
+5. `exp` must be in the future.
+6. `token_use` must be `"id"` ([aws-jwt-verify](https://github.com/awslabs/aws-jwt-verify), used by the agent, also checks this).
+
+Every expected value (the pool URL, the client id, the keys) is known in advance, which is why no per-request call to Cognito is needed. Once all the checks pass, the claims can be treated as facts, and `sub` is safe to use as the user's identity.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/sign-in-once-verify-anywhere-how-cognito-tokens-work/auth-2-id-token-anatomy.svg"
+    alt="Anatomy of a Strobe ID token: the encoded header, payload and signature, the decoded header (kid, alg RS256) and illustrative payload claims (sub, iss, aud, token_use, iat, exp, email), and what the verifier checks for each one (kid, iss, aud, token_use, exp, signature), with notes that base64url is not encryption, that the token never goes in a URL, and a comparison of ID and access tokens"
+    style={{ marginBottom: "8px" }}
+  />
+</figure>
+
+Note that the signature proves the token is *authentic* and *unedited*; it does nothing to hide what's inside. This design has two consequences worth remembering:
+
+- **Readable ≠ trustworthy.** base64url is an encoding, not encryption, so anyone holding the token can read the payload. Secrets must never go in the claims. The Strobe Assistant WebUI decodes the token itself just to show your name (`tokenLabel()` in `main.ts`), without verifying anything. That's fine for display, but never for decisions.
+- **Bearer = whoever holds it.** A valid token works for anyone who has it until `exp`. So it must travel only over TLS, [never sit in a URL](https://datatracker.ietf.org/doc/html/rfc6750#section-5.3) (where it ends up in logs and browser history), and stay short-lived. And because nobody asks Cognito per request, a service can't see a sign-out either. Even revoking a refresh token doesn't reach it: AWS notes that revoked tokens still pass any library that checks only the signature and expiry. That's why ID and access tokens are short-lived (Cognito's default is 60 minutes) and the refresh token is the revocable part.
+
+## User identity vs workload identity
+
+There are two kinds of identity in this system, and they shouldn't be confused:
+
+- **User identity: the Cognito JWT.** It answers *whose data is this request for?*
+- **Workload identity: an IAM role.** It answers *which component is calling AWS?* The agent's and MCP server's ECS task roles and the Lambda execution roles sign every AWS API call (SigV4).
+
+In Strobe, the user's token **never unlocks AWS**. Bedrock, S3 Vectors and DynamoDB are reached with IAM roles; the token only decides *which rows* those calls ask for.
+
+## Where Cognito sits in the Strobe app
+
+In Assessment 1 (the photo-sharing app that Strobe Assistant extends; see [the series intro](/posts/strobe-assistant-extending-strobe-with-an-ai-agent)), Cognito sits behind a thin auth Lambda, and API Gateway's **[JWT authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-jwt-authorizer.html)** guards every protected route.
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/sign-in-once-verify-anywhere-how-cognito-tokens-work/auth-3-strobe-a1-auth.svg"
+    alt="Where Cognito sits in Strobe (A1): sign-in goes from the React client through API Gateway to the auth Lambda, which calls Cognito InitiateAuth with a secret hash and returns only the ID token; on protected routes the API Gateway JWT authorizer verifies the token before any Lambda runs (401 otherwise), the upload Lambda presigns a key prefixed with the verified sub, and the post Lambda allows an update only when post.userId equals sub (403 otherwise)"
+    style={{ marginBottom: "8px" }}
+  />
+</figure>
+
+**Sign-in goes through a Lambda, not straight from the browser to Cognito.** The app client is *confidential*: it has a client secret, and every `InitiateAuth` call needs a secret hash computed from it. A browser can't keep a secret, so `POST /v1/auth/login` (a public route) invokes the auth Lambda, which calls Cognito server-side and returns `{ user, token }`, where `token` is the ID token.
+
+**Protected routes are checked before any code runs.** The HTTP API's JWT authorizer verifies the signature, `iss`, audience (`aud`, or `client_id` for access tokens) and `exp` against the pool. A bad token gets a `401` and **the Lambda is never invoked**, so you don't pay for the invocation and no code path can forget the check. The Lambda receives the verified claims in its event. Below is the shape for an HTTP API event. It's illustrative, because the A1 Lambdas aren't in the A2 repo:
+
+```python
+claims = event["requestContext"]["authorizer"]["jwt"]["claims"]
+user_id = claims["sub"]   # never read the user id from the request body
+```
+
+**`sub` becomes rules in two places:**
+
+- **Ownership checks.** For example, editing a post requires `post.userId == sub`; otherwise it's a `403`.
+- **Storage keys.** The upload Lambda presigns a PUT for the key `{sub}/{postId}/{fileId}`. The client never chooses the `{sub}` part. This matters later, because the A2 ingestion worker trusts that prefix (see [Part 4](/posts/strobe-assistant-part-4-how-cognito-and-auth-fit-in)).
+
+Cognito is also where the **moderator group** lives. Group membership appears in the ID token as `cognito:groups`.
+
+## Further reading
+
+- [Understanding user pool JSON web tokens (JWTs)](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html) — the three Cognito tokens and what each one is for.
+- [Verifying JSON web tokens](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-verifying-a-jwt.html) — Cognito's own checklist: the JWKS URL, `iss`, `aud`/`client_id`, `token_use` and `exp`.
+- [Ending user sessions with token revocation](https://docs.aws.amazon.com/cognito/latest/developerguide/token-revocation.html) — what revocation does, and why locally verified tokens survive it until they expire.
+- [aws-jwt-verify](https://github.com/awslabs/aws-jwt-verify) — AWS's JavaScript library for verifying Cognito JWTs, which the agent uses.
+- [Control access to HTTP APIs with JWT authorizers in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-jwt-authorizer.html) — what the authorizer validates, including when it falls back from `aud` to `client_id`.
+- [How to secure API Gateway HTTP endpoints with JWT authorizer](https://aws.amazon.com/blogs/security/how-to-secure-api-gateway-http-endpoints-with-jwt-authorizer/) (AWS Security Blog) — a step-by-step walkthrough with a Cognito user pool.
+- [JSON Web Token Introduction](https://jwt.io/introduction) (jwt.io) — a friendly primer on JWT structure. The site's debugger is handy for decoding a token, but use a test token, not a live one.
+- [RFC 7519: JSON Web Token](https://datatracker.ietf.org/doc/html/rfc7519) and [RFC 6750: Bearer Token Usage](https://datatracker.ietf.org/doc/html/rfc6750) — the specs behind JWTs and bearer tokens.
