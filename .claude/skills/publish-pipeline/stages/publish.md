@@ -85,7 +85,7 @@ tags: ["…"]
 ```
 
 - `title`, `summary`: the note's properties, else the defaults in SKILL.md.
-- `publishedAt`: the note's `publishedAt`, else today (`date +%F`). Never `scheduledAt`: a note blocked past its scheduled day is published on the day it actually goes out. A translation: the original post's, even if its note says otherwise (see "One date per post" in SKILL.md).
+- `publishedAt`: the note's `publishedAt`, else its `scheduledAt`, else today (`date +%F`) only when `scheduledAt` is missing. A note blocked past its scheduled day still takes `scheduledAt`. A translation: the original post's, even if its note says otherwise (see "One date per post" in SKILL.md).
 - `tags`: a non-empty array (the build fails otherwise). Reuse keys from `app/data/tags.json`; add a new tag only when none fits. Register a new tag there with colour `hsl(hue, 80%, 40%)` as hex, where hue = (sum of the tag's char codes) mod 360, keeping the file's existing entries and 2-space indentation.
 - `project`: the ID chosen in step 2, for a project post only. A series post never has one, even when the note sets `project`. A post in a folder (or in a project's multi-part sequence) also takes `slug`, and `seriesOrder`/`partOf`/`partOfTitle`/`partNumber` when its siblings use them (follow the siblings' numbering, e.g. "Part 3" → 3).
 - Other fields (`lead`, `track`, case-study fields) come from `note` or a replaced placeholder. A translation takes every field except `title` and `summary` from the original post. See `docs/publish.md` and `docs/templates/case-study.mdx`. Never add `result`. The vault's pipeline properties (`status`, `scheduledAt`, `requireTranslate`, …) never go into the post.
