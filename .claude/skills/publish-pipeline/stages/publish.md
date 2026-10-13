@@ -4,6 +4,7 @@ Turn one Ready vault note into a post on the site, with placeholders for the pos
 
 ## 1. Read and check
 
+- `scheduledAt` after today (`date +%F`) → stop: don't publish, change nothing. A note is published only on or after its `scheduledAt`.
 - Read the note in full: frontmatter, body and every image reference (`![[image.png]]` or `![alt](path)`).
 - It must be finished. Placeholder text ("TODO", "add example here"), sections that are only a heading, or a bullet skeleton where prose should be → blocked: report what's unfinished. Publishing doesn't write missing content.
 - **Translation note** (`translationOf` set): also run `fm.sh` on the original note and on the original's published post at its `sitePath`. Every site frontmatter field except `title` and `summary` comes from that post, unchanged.
