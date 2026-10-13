@@ -63,7 +63,7 @@ A placeholder is a post with `placeholder: true`: a "coming soon" stand-in for a
 | several/unknown `status`, or a date not `YYYY-MM-DD` | `invalid` | Report `detail`. |
 | `status` empty or Drafting | `idle` | Nothing. |
 | Review | `review` | Report as waiting for the author. |
-| Ready, `scheduledAt` in the future | `scheduled` | Nothing until then. |
+| Ready, `scheduledAt` in the future | `scheduled` | Nothing until then, however the run started. |
 | Ready, has `translationOf` | `publish-translation` | publish → after-publish |
 | Ready, original | `publish` | publish → after-publish → translate if `requireTranslate` → if the translation is Ready: publish → after-publish |
 | Updated | `update` | `/update-pipeline`'s: skip. |
@@ -87,9 +87,9 @@ A placeholder is a post with `placeholder: true`: a "coming soon" stand-in for a
   4. A blocked item (unfinished draft, PII you're unsure about, a file conflict, a build failure that isn't the post's) stays untouched; report it and move to the next line of the same action.
   5. Nothing to do → end with no changes and no report.
 - **Manual run, no arguments**: the same, but ask instead of skipping when blocked or unsure. Nothing to do → say so.
-- **Manual run with note path(s)**: each note's next action from the table, regardless of queue order. A future `scheduledAt` → ask: publish now (dated `publishedAt`, else that future `scheduledAt`) or wait. No paths and an empty queue → ask for a path.
+- **Manual run with note path(s)**: each note's next action from the table, regardless of queue order. A future `scheduledAt` → skip the note and change nothing; just say it's scheduled for that day. No paths and an empty queue → ask for a path.
 
-**Finish the row.** Whatever started the publish (the queue, a path, or a request like "fix it and publish it" in a conversation), an original's pipeline is its whole row in the table: publish → after-publish → translate when `requireTranslate: true` → publish and after-publish of the translation when it's Ready. It isn't done until then. Before reporting, rerun `queue.sh` and check that no line remains for a note this run touched other than `review`, `scheduled` or a blocked item named in the report.
+**Finish the row.** Whatever started the publish (the queue, a path, or a request like "fix it and publish it" in a conversation), an original's pipeline is its whole row in the table: publish → after-publish → translate when `requireTranslate: true` → publish and after-publish of the translation when it's Ready. It isn't done until then, except that a note is never published before its `scheduledAt`: only a `scheduledAt` of today or earlier (or none) can be published, and a later one is left for its day. Before reporting, rerun `queue.sh` and check that no line remains for a note this run touched other than `review`, `scheduled` or a blocked item named in the report.
 
 A failed stage stops that note's pipeline there; earlier stages stay done, and a merged publish is never undone. The next run picks the note up at its first unfinished stage (a Ready note whose post is already on main skips to after-publish).
 
