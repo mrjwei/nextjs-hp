@@ -16,7 +16,7 @@ Write the translation of a Published original as a new vault note in the same fo
 
 ## 2. Translate
 
-- Prose, headings, image alt text and captions. Leave code blocks, inline code, URLs, file names and maths untouched. Keep the structure identical: same headings in the same order, same images, same lists and tables.
+- Prose, headings, image alt text and captions. Leave code blocks, inline code, URLs, file names and maths untouched, and text inside images and diagrams too: both versions use the same image files, and that isn't worth reporting. Keep the structure identical: same headings in the same order, same images, same lists and tables.
 - Check the style with `head -n 40` of a sibling post in the target locale and follow it: Japanese in です・ます調 unless the neighbours differ, English in UK/AU spelling. Translate recurring terms the way the existing translations do (when unsure, `command grep -rho` the term in the target tree rather than reading posts); keep product names and technical terms in their conventional form.
 - Links to other posts: the target locale's version when it exists (a placeholder counts). Else, if the source links to the only version of a single-language post, keep it and mark its language the way neighbouring posts do (e.g. `(英語)`); otherwise keep the link as it is, and the publish stage adds the missing placeholder.
 
@@ -49,7 +49,7 @@ Compare the translation with the source section by section: nothing left out or 
 - a term with no established translation on the site, or where you departed from the existing one;
 - a passage you restructured substantially.
 
-Don't pad the list: an empty list means a clean translation that publishes without review. Untranslated text in images or diagrams goes in the report's "Check", not in `reviewFocus`.
+Don't pad the list: an empty list means a clean translation that publishes without review.
 
 Status from the original's `reviewTranslation` (see SKILL.md): `flagged` → Review if `reviewFocus` has anything, else Ready; `always` → Review; `never` → Ready.
 
