@@ -1,0 +1,130 @@
+---
+title: "一度のサインインで、どこでも検証できる:Cognitoトークンの仕組み"
+publishedAt: "2026-10-13"
+summary: "Strobeの認証を支える基礎を解説します。「auth」という言葉に隠れた3つの役割、Cognitoユーザープールが発行するトークン、あらゆるサービスが公開鍵を使ってJWTをローカルで検証する仕組み、そしてリクエストが誰のデータに触れられるかを決めるのはクライアントでもモデルでもなく、検証済みのsubだけである理由です。"
+tags: ["aws", "security", "qut"]
+project: "Strobe"
+---
+
+- [「auth」は実は3つの役割](#authは実は3つの役割)
+- [サインイン後にCognitoが返すもの](#サインイン後にcognitoが返すもの)
+- [サービスがCognitoに問い合わせずにトークンを信頼できる仕組み](#サービスがcognitoに問い合わせずにトークンを信頼できる仕組み)
+- [ユーザーのアイデンティティとワークロードのアイデンティティ](#ユーザーのアイデンティティとワークロードのアイデンティティ)
+- [StrobeアプリにおけるCognitoの位置づけ](#strobeアプリにおけるcognitoの位置づけ)
+- [参考資料](#参考資料)
+
+基本的なルールはこうです。アイデンティティは*検証済みのトークン*から得るものであり、クライアントやモデルの言い分から得るものでは決してありません。Cognitoはユーザーが誰なのかを一度だけ証明します。その後は、各サービスが署名付きトークンを自分自身でチェックします。そして、そこから取り出した`sub`クレームだけが、リクエストが*誰の*データに触れられるかを決めます。
+
+本稿では基礎に絞って、Cognitoが何を発行し、サービスがそれをどのようにチェックするのかを扱います。Strobe Assistant自体の中でトークンがどのように流れるのかは、[パート4](/ja/posts/strobe-assistant-part-4-how-cognito-and-auth-fit-in)で追いかけます。
+
+## 「auth」は実は3つの役割
+
+私は、別々の3つの役割をまとめて「auth」と呼びがちだと気づきました。これらを分けて考えると、アーキテクチャ全体がずっと理解しやすくなります:
+
+| 問い | 名前 | 誰が答えるか | Strobeでは |
+|---|---|---|---|
+| *あなたは誰?* | **認証(Authentication)** | Cognitoが一度だけ、パスワードを使って | A1の認証Lambda → Cognito `InitiateAuth` |
+| *このトークンは本物で、有効期限内か?* | **検証(Verification)** | 各サービスがそれぞれ、公開鍵を使って | API GatewayのJWTオーソライザー、`auth.ts`、FastMCPの`JWTVerifier` |
+| *このユーザーは何に触れてよいか?* | **認可(Authorization)** | アプリ自身のコードが、検証済みの`sub`を使って | `filter={"userId": sub}`、`post.userId == sub` |
+
+Cognitoが担うのは1つ目の役割だけです。Cognitoは投稿や写真やベクトルについては何も知らないので、認可は常にアプリ自身の役割です。
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/sign-in-once-verify-anywhere-how-cognito-tokens-work/auth-1-cognito-token-basics.svg"
+    alt="Cognitoトークンの仕組み。クライアントはメールアドレスとパスワードでCognitoユーザープールに一度だけサインインし、署名付きの3つのトークン(ID、アクセス、リフレッシュ)を受け取る。その後IDトークンを受け取ったサービスは、キャッシュしたプールの公開鍵を使って、Cognitoを呼び出すことなくローカルで検証し(kidの照合、RS256署名、iss、aud、exp、token_use)、subをユーザーのアイデンティティとして信頼する。下部では、認証・検証・認可が3つの別々の問いとして示されている"
+    style={{ marginBottom: "8px" }}
+  />
+</figure>
+
+## サインイン後にCognitoが返すもの
+
+**ユーザープール**は、ユーザーディレクトリとトークン発行者を兼ねたものです。サインインに成功すると、[3つのトークン](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html)を返します:
+
+- **IDトークン**:*ユーザーが誰なのか*(`sub`、`email`、`cognito:username`)と、*どのアプリクライアント向けに発行されたのか*(`aud`)。
+- **アクセストークン**:*アプリが何を呼び出してよいか*(`scope`)。`aud`の代わりに`client_id`を持ちます。
+- **リフレッシュトークン**:新しいIDトークンとアクセストークンに交換するための、有効期間の長いトークン(デフォルトは30日)。検証できるJWTではありません。暗号化されていてCognitoだけが読むことができ、Cognitoは*取り消すことができます*。
+
+IDトークンとアクセストークンは**[JWT](https://datatracker.ietf.org/doc/html/rfc7519)**(JSON Web Token)です。base64urlでエンコードされた3つの部分をドットでつないだもので、`header.payload.signature`という形をしています。
+
+**StrobeがアクセストークンではなくIDトークンを使う理由。** Strobe Assistantの検証側(エージェントの`auth.ts`とMCPサーバーの[`JWTVerifier`](https://gofastmcp.com/servers/auth/token-verification))は、`aud`をアプリクライアントIDと照合します。Cognitoのアクセストークンには`aud`クレームがないため、このチェックは設計上アクセストークンを拒否します。また、IDトークンにはエージェントが表示名に使うユーザー情報も含まれています。どちらのファイルもこのことをdocstringで説明しています。両方がトークンを検証する理由は[パート3](/ja/posts/strobe-assistant-part-3-acp-mcp-pipeline#mcpサーバー独立したコンポーネント独立した認証境界)で解説しています。
+
+## サービスがCognitoに問い合わせずにトークンを信頼できる仕組み
+
+Cognitoはすべてのトークンを、Cognitoの外に決して出ない**秘密鍵**で署名し、対応する**公開鍵**を**JWKS**(JSON Web Key Set)として既知のURLで公開しています:
+
+```
+https://cognito-idp.ap-southeast-2.amazonaws.com/<poolId>/.well-known/jwks.json
+```
+
+これらの鍵があれば、サービスはリクエストのたびにCognitoを呼び出すことなく、ローカルでトークンを検証できます:
+
+1. ヘッダーから`kid`を読み取り、JWKSから一致する公開鍵を選びます(一度ダウンロードした後はキャッシュします)。
+2. RS256署名をチェックします。ヘッダーやペイロードが1バイトでも変わっていれば失敗します。
+3. `iss`は*自分の*プールのURLでなければなりません。これにより、クラスメイトのものなど、他のプールのトークンを拒否します。
+4. `aud`は*自分の*アプリクライアントIDでなければなりません。これにより、別のアプリ向けに発行されたトークンを拒否します。
+5. `exp`は未来の時刻でなければなりません。
+6. `token_use`は`"id"`でなければなりません(エージェントが使う[aws-jwt-verify](https://github.com/awslabs/aws-jwt-verify)はこれもチェックします)。
+
+期待される値(プールのURL、クライアントID、鍵)はすべて事前にわかっているため、リクエストごとにCognitoを呼び出す必要はありません。すべてのチェックに通れば、クレームは事実として扱うことができ、`sub`をユーザーのアイデンティティとして安全に使えます。
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/sign-in-once-verify-anywhere-how-cognito-tokens-work/auth-2-id-token-anatomy.svg"
+    alt="StrobeのIDトークンの構造。エンコードされたヘッダー、ペイロード、署名と、デコードしたヘッダー(kid、alg RS256)およびペイロードのクレームの例(sub、iss、aud、token_use、iat、exp、email)、そしてそれぞれについて検証側がチェックする内容(kid、iss、aud、token_use、exp、署名)。base64urlは暗号化ではないこと、トークンをURLに入れないこと、IDトークンとアクセストークンの比較も示されている"
+    style={{ marginBottom: "8px" }}
+  />
+</figure>
+
+署名が証明するのは、トークンが*本物*であり*改ざんされていない*ということであって、中身を隠すわけではない点に注意してください。この設計には、覚えておくべき2つの帰結があります:
+
+- **読める ≠ 信頼できる。** base64urlは暗号化ではなくエンコードなので、トークンを持っている人なら誰でもペイロードを読めます。クレームに秘密情報を入れてはいけません。Strobe AssistantのWebUIは、名前を表示するためだけにトークンを自分でデコードしており(`main.ts`の`tokenLabel()`)、何も検証していません。表示にはそれで問題ありませんが、判断に使ってはいけません。
+- **ベアラー = 持っている人。** 有効なトークンは、`exp`までは持っている人なら誰でも使えます。そのため、トークンはTLS上でのみ送り、[URLに入れることは決してせず](https://datatracker.ietf.org/doc/html/rfc6750#section-5.3)(URLに入れるとログやブラウザ履歴に残ります)、有効期間を短く保つ必要があります。さらに、リクエストごとにCognitoに問い合わせる人はいないので、サービスはサインアウトも知ることができません。リフレッシュトークンを取り消しても、その影響は届きません。AWSも、取り消されたトークンであっても、署名と有効期限だけをチェックするライブラリは通過してしまうと注意しています。だからこそ、IDトークンとアクセストークンは有効期間が短く(Cognitoのデフォルトは60分)、取り消し可能なのはリフレッシュトークンの方なのです。
+
+## ユーザーのアイデンティティとワークロードのアイデンティティ
+
+このシステムには2種類のアイデンティティがあり、混同してはいけません:
+
+- **ユーザーのアイデンティティ:CognitoのJWT。** *このリクエストは誰のデータのためのものか?*に答えます。
+- **ワークロードのアイデンティティ:IAMロール。** *どのコンポーネントがAWSを呼び出しているのか?*に答えます。エージェントとMCPサーバーのECSタスクロール、そしてLambdaの実行ロールが、すべてのAWS API呼び出しに署名します(SigV4)。
+
+Strobeでは、ユーザーのトークンで**AWSが使えるようになることは決してありません**。Bedrock、S3 Vectors、DynamoDBにはIAMロールでアクセスします。トークンが決めるのは、それらの呼び出しが*どの行*を求めるかだけです。
+
+## StrobeアプリにおけるCognitoの位置づけ
+
+Assessment 1(Strobe Assistantが拡張している写真共有アプリ。[シリーズの紹介記事](/ja/posts/strobe-assistant-extending-strobe-with-an-ai-agent)を参照)では、Cognitoは薄い認証Lambdaの背後にあり、API Gatewayの**[JWTオーソライザー](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-jwt-authorizer.html)**がすべての保護されたルートを守っています。
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/sign-in-once-verify-anywhere-how-cognito-tokens-work/auth-3-strobe-a1-auth.svg"
+    alt="Strobe(A1)におけるCognitoの位置づけ。サインインはReactクライアントからAPI Gatewayを経由して認証Lambdaに届き、認証Lambdaがシークレットハッシュ付きでCognitoのInitiateAuthを呼び出し、IDトークンだけを返す。保護されたルートでは、API GatewayのJWTオーソライザーがLambdaの実行前にトークンを検証し(失敗すれば401)、アップロードLambdaは検証済みのsubをプレフィックスとするキーを署名付きURLにし、投稿Lambdaはpost.userIdがsubと一致する場合にだけ更新を許可する(一致しなければ403)"
+    style={{ marginBottom: "8px" }}
+  />
+</figure>
+
+**サインインはブラウザから直接Cognitoに行くのではなく、Lambdaを経由します。** アプリクライアントは*コンフィデンシャル*クライアントで、クライアントシークレットを持っており、`InitiateAuth`を呼び出すたびに、そこから計算したシークレットハッシュが必要です。ブラウザは秘密を保持できないため、`POST /v1/auth/login`(公開ルート)が認証Lambdaを呼び出し、認証Lambdaがサーバー側でCognitoを呼び出して`{ user, token }`を返します。この`token`がIDトークンです。
+
+**保護されたルートは、コードが動く前にチェックされます。** HTTP APIのJWTオーソライザーは、署名、`iss`、オーディエンス(`aud`、アクセストークンの場合は`client_id`)、`exp`をプールに照らして検証します。不正なトークンには`401`が返り、**Lambdaは呼び出されません**。そのため呼び出しの料金はかからず、チェックを忘れるコードパスもあり得ません。Lambdaはイベントの中で検証済みのクレームを受け取ります。以下はHTTP APIのイベントでの形です。A1のLambdaはA2のリポジトリにはないため、あくまで例示です:
+
+```python
+claims = event["requestContext"]["authorizer"]["jwt"]["claims"]
+user_id = claims["sub"]   # never read the user id from the request body
+```
+
+**`sub`は2つの場所でルールになります:**
+
+- **所有者チェック。** たとえば、投稿を編集するには`post.userId == sub`である必要があり、そうでなければ`403`になります。
+- **ストレージのキー。** アップロードLambdaは、キー`{sub}/{postId}/{fileId}`に対するPUTの署名付きURLを発行します。`{sub}`の部分をクライアントが選ぶことはありません。A2の取り込みワーカーはこのプレフィックスを信頼するため、これは後で重要になります([パート4](/ja/posts/strobe-assistant-part-4-how-cognito-and-auth-fit-in)を参照)。
+
+Cognitoには**モデレーターグループ**もあります。グループへの所属は、IDトークンの中で`cognito:groups`として現れます。
+
+## 参考資料
+
+- [Understanding user pool JSON web tokens (JWTs)](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html) — Cognitoの3つのトークンと、それぞれの用途。
+- [Verifying JSON web tokens](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-verifying-a-jwt.html) — Cognito自身によるチェックリスト。JWKSのURL、`iss`、`aud`/`client_id`、`token_use`、`exp`。
+- [Ending user sessions with token revocation](https://docs.aws.amazon.com/cognito/latest/developerguide/token-revocation.html) — 取り消しで何が起きるのか、そしてローカルで検証されるトークンが有効期限まで取り消しの影響を受けない理由。
+- [aws-jwt-verify](https://github.com/awslabs/aws-jwt-verify) — CognitoのJWTを検証するためのAWS製JavaScriptライブラリ。エージェントで使っています。
+- [Control access to HTTP APIs with JWT authorizers in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-jwt-authorizer.html) — オーソライザーが検証する内容。`aud`から`client_id`にフォールバックする条件も含みます。
+- [How to secure API Gateway HTTP endpoints with JWT authorizer](https://aws.amazon.com/blogs/security/how-to-secure-api-gateway-http-endpoints-with-jwt-authorizer/)(AWS Security Blog) — Cognitoユーザープールを使った手順解説。
+- [JSON Web Token Introduction](https://jwt.io/introduction)(jwt.io) — JWTの構造をわかりやすく紹介する入門。サイトのデバッガーはトークンのデコードに便利ですが、本番のトークンではなくテスト用のトークンを使ってください。
+- [RFC 7519: JSON Web Token](https://datatracker.ietf.org/doc/html/rfc7519)と[RFC 6750: Bearer Token Usage](https://datatracker.ietf.org/doc/html/rfc6750) — JWTとベアラートークンの仕様。
