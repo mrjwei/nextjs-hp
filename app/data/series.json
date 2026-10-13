@@ -9,5 +9,6 @@
   "multifunctional-ai-assistant": { "en": "Multifunctional AI Assistant", "ja": "多機能AIアシスタント" },
   "radio-buttons": { "en": "UX Insight: Radio Buttons", "ja": "UXインサイト:ラジオボタン" },
   "AWS": { "en": "AWS", "ja": "AWS" },
-  "ai-agent": { "en": "AI Agent", "ja": "AIエージェント" }
+  "ai-agent": { "en": "AI Agent", "ja": "AIエージェント" },
+  "workflows": { "en": "Workflows", "ja": "ワークフロー" }
 }
