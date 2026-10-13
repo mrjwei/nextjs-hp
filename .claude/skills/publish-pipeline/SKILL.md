@@ -115,5 +115,5 @@ Needs you
 - Review: <translation note>: "<quote>" (reason); …
 - Blocked: <note>: <why>
 - Invalid: <note>: <detail>
-- Check: <non-trivial edit, PII replacement, new tag or series title, untranslated text in an image, a wikilink left as plain text, …>
+- Check: <non-trivial edit, PII replacement, new tag or series title, a wikilink left as plain text, …>
 ```
