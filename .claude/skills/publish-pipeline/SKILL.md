@@ -26,8 +26,8 @@ Set by the author:
 | Property | Meaning | If missing |
 | --- | --- | --- |
 | `status` | One of `Drafting`, `Review` (a translation waiting for the author), `Ready`, `Updated` (a published note edited by the author: `/update-pipeline`), `Published`. | Not a pipeline note, though a note passed by path counts as Ready. Empty → Drafting. Several or unknown → invalid. |
-| `scheduledAt` | Queue order (earliest first), earliest publish day. Never the publish date: a note published late isn't backdated to it. | Sorts last; publishable now. |
-| `publishedAt` | Overrides the publish date. On a translation: always the original post's. | The publish day. |
+| `scheduledAt` | Queue order (earliest first), earliest publish day, and the publish date unless `publishedAt` is set: a note published late is still dated `scheduledAt`. | Sorts last; publishable now; the publish date is the publish day. |
+| `publishedAt` | Overrides the publish date. On a translation: always the original post's. | `scheduledAt`, else the publish day. |
 | `series` | Folder, e.g. `ai-agent`. A new folder starts a new series. | Claude decides (see "Series or project"). |
 | `project` | Project ID (one word, ≤12 chars, e.g. `Strobe`); lists the post under `/projects`. | Claude decides (see "Series or project"). |
 | `note` | `;`-separated instructions applied when publishing (e.g. `lead: true`, case-study fields, editing requests). | None. |
@@ -44,7 +44,7 @@ Written by the pipeline only: `translation` (wikilink, on an original: its trans
 
 The vault's `status` never goes into a post (case studies have their own site `status`, from `note`).
 
-**One date per post.** Both locale versions of a post, including a placeholder standing in for one, always carry the same `publishedAt`: the date the first real version was published. Only `updatedAt` may differ between them.
+**One date per post.** Both locale versions of a post, including a placeholder standing in for one, always carry the same `publishedAt`: the publish date of the first real version. Only `updatedAt` may differ between them.
 
 ## Series or project
 
@@ -87,7 +87,7 @@ A placeholder is a post with `placeholder: true`: a "coming soon" stand-in for a
   4. A blocked item (unfinished draft, PII you're unsure about, a file conflict, a build failure that isn't the post's) stays untouched; report it and move to the next line of the same action.
   5. Nothing to do → end with no changes and no report.
 - **Manual run, no arguments**: the same, but ask instead of skipping when blocked or unsure. Nothing to do → say so.
-- **Manual run with note path(s)**: each note's next action from the table, regardless of queue order. A future `scheduledAt` → ask: publish now (date = today unless `publishedAt`) or wait. No paths and an empty queue → ask for a path.
+- **Manual run with note path(s)**: each note's next action from the table, regardless of queue order. A future `scheduledAt` → ask: publish now (dated `publishedAt`, else that future `scheduledAt`) or wait. No paths and an empty queue → ask for a path.
 
 **Finish the row.** Whatever started the publish (the queue, a path, or a request like "fix it and publish it" in a conversation), an original's pipeline is its whole row in the table: publish → after-publish → translate when `requireTranslate: true` → publish and after-publish of the translation when it's Ready. It isn't done until then. Before reporting, rerun `queue.sh` and check that no line remains for a note this run touched other than `review`, `scheduled` or a blocked item named in the report.
 
