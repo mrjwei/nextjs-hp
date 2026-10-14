@@ -1,0 +1,105 @@
+---
+title: "Google Stitchを初めて試してみました"
+slug: "lost-in-translation-lost-in-context-my-first-try-at-google-stitch"
+publishedAt: "2026-10-14"
+summary: "ケーススタディ用に、いくつかのアプリ画面からブランドと具体的な文言を取り除くようGoogle Stitchに頼みました。ところが、Stitchは画面を翻訳し、装飾を加え、プロンプトをまたぐと制約を忘れてしまいました。初めての試用から学んだことをまとめます。"
+tags: ["design", "ai", "uiux", "casestudy"]
+---
+
+- [実験1:デザインの難読化](#実験1デザインの難読化)
+- [実験2:同じセッションで、さらにプロンプトを重ねる](#実験2同じセッションでさらにプロンプトを重ねる)
+- [まとめ](#まとめ)
+
+[Google Stitch](https://stitch.withgoogle.com/)は、Google LabsのAIデザインツールです。画面の内容を自然な言葉で説明したり、スクリーンショットを添付したりすると、GeminiがUIデザインを生成し、そのデザインを対話を通して改良し続けることができます。
+
+先日、実際の作業で初めてこのツールを試しました。ケーススタディのために、あるWebアプリのいくつかの画面を、ブランドアイデンティティと具体的な文言を取り除いたグレースケール版にする必要があったのです。AIデザインツールにうってつけの仕事に思えました。だからこそ、その結果には驚かされました。
+
+## 実験1:デザインの難読化
+
+### プロンプトとコンテキスト
+
+アプリのスクリーンショットを何枚か添付し、Stitchに次のプロンプトを入力しました。
+
+> The attached images come from the same web app.
+> I want to create a grayscale/monochrome (black, white, and grey) version of each screen for my case study, obfuscating brand identity and specific copy while preserving the structural hierarchy, field layouts, and validation states which are relevant to my case study.
+
+(和訳：*添付画像はすべて同じWebアプリのものです。ケーススタディのために、各画面のグレースケール/モノクロ(黒・白・グレー)版を作りたいと考えています。ブランドアイデンティティと具体的な文言は難読化しつつ、ケーススタディに関係する構造上の階層、フィールドのレイアウト、バリデーションの状態は維持してください。*)
+
+添付した画像の一枚がこちらです。
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/lost-in-translation-lost-in-context-my-first-try-at-google-stitch/original-checkout-screen.png" alt="元の日本語のチェックアウト画面。代表者情報フォーム、クレジットカード支払いパネル、キャンセルポリシー付きの注文概要がある" style={{ marginBottom: "8px" }} />
+</figure>
+
+### 結果
+
+最初に生成されたデザインがこちらです。
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/lost-in-translation-lost-in-context-my-first-try-at-google-stitch/first-generated-design-en.png" alt="Stitchが最初に生成したデザイン。チェックアウト画面のモノクロ版だが、英語に翻訳され、上部に「Activity Booking Service」というヘッダーが付いている" style={{ marginBottom: "8px" }} />
+</figure>
+
+### 追加のプロンプトで修正
+
+元の画面は日本語でしたが、生成されたデザインは英語になっていたため、日本語に戻すようStitchに頼みました。
+
+> Please use Japanese for the design
+
+(和訳：*デザインには日本語を使ってください*)
+
+### 修正後の結果
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/lost-in-translation-lost-in-context-my-first-try-at-google-stitch/revised-design-ja.png" alt="日本語に修正されたデザイン。残った英語の「Activity Booking Service」ヘッダーが赤枠で囲まれている" style={{ marginBottom: "8px" }} />
+</figure>
+
+### 気づいたこと
+
+明らかな問題がいくつもありました。
+
+- **言語が日本語から英語に変わってしまいました。** プロンプトでは翻訳を一切求めていませんし、なぜそうなったのかは今もはっきりしません。考えられる原因の一つは、モデルが画面の言語ではなく、プロンプトの言語に従ったことです。修正後も、一部に英語が残っていました(赤枠の部分)。
+- **モデルはデザインを抽象化・簡略化するどころか、むしろわずかに*充実させて*いました。** 色が削ぎ落とされているせいで、どれだけ要素が追加されたのかが見えにくくなっていました。たとえば、「リクエスト商品」のセクションはグレーの背景の枠で囲まれて情報が強調され、右側の支払いパネルは洗練され、日本語版には「Activity Booking Service」という架空のヘッダーまで加わっていました。
+- **識別可能な情報は十分に難読化・削除されていませんでした。** そのため、一部をグレーのパッチで覆っています。念のため補足すると、機密情報ではなく、個人やビジネス上の秘密が漏れるようなものではありません。含まれていたのは会社名とサービス名だけです。
+
+## 実験2:同じセッションで、さらにプロンプトを重ねる
+
+### 別のプロンプトとコンテキスト
+
+続いて同じセッションで、別の画面を添付して次のように頼みました。
+
+> Please generate the abstracted design for this image.
+
+(和訳：*この画像の抽象化したデザインを生成してください*)
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/lost-in-translation-lost-in-context-my-first-try-at-google-stitch/second-screen-original.png" alt="2枚目の元画面。進捗インジケーター、バリデーションメッセージ付きの氏名・生年月日フォーム、クレジットカードパネルがあるチェックアウトのステップ" style={{ marginBottom: "8px" }} />
+</figure>
+
+### 結果
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/lost-in-translation-lost-in-context-my-first-try-at-google-stitch/second-screen-generated.png" alt="2枚目の画面に対するStitchの出力。ティール色のアクセントも含めて元画面をほぼそのまま再現しており、支払いパネルだけがプレースホルダーに置き換えられている" style={{ marginBottom: "8px" }} />
+</figure>
+
+ここでは、前のプロンプトで指定したデザイン上の制約が完全に抜け落ちていました。ツールは入力されたデザインをほぼそのまま再現しており、ブランドのティール色のアクセントも戻っていました。実質的な変更は、支払いパネルがプレースホルダーに置き換えられたことだけでした。
+
+### 追加のプロンプトで修正
+
+> Please ensure consistency with the other designs you generated.
+
+(和訳：*これまでに生成した他のデザインとの一貫性を保ってください*)
+
+### 修正後の結果
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/lost-in-translation-lost-in-context-my-first-try-at-google-stitch/second-screen-revised.png" alt="修正された2枚目の画面。黒・白・グレーで、それまでに生成されたデザインと揃っている" style={{ marginBottom: "8px" }} />
+</figure>
+
+### 気づいたこと
+
+- **モデルは、同じセッション内であってもコンテキストを保つのに苦労していました**(少なくともユーザーの視点からは、同じセッションに見えていました)。
+- **実際には、毎回のプロンプトで同じ指示を繰り返す必要があるということです**(例:「他の画面との一貫性を保ってください」)。扱う画面が数枚を超えると、これはすぐに手間になります。
+
+## まとめ
+
+Stitchを初めて使ってみて、明確で制約のはっきりしたプロンプトだけでは十分ではないことがわかりました。このツールは、取り除くよりも付け加える方向に傾き、元の言語から離れていき、毎回言い直さない限りプロンプトをまたいで制約を忘れてしまいました。難読化のように、何かを取り除くことこそが目的の作業にとって、これは大きな制約です。そしてこの経験は、次にStitchを使ったときの私の取り組み方を形作ることになりました。
