@@ -1,37 +1,16 @@
-import { notFound } from "next/navigation"
-import { ProjectView } from "@/components/projects/project-view"
-import { getAllSortedWritings, groupProjects } from "@/lib/content"
-import { buildStandardMetadata } from "@/lib/seo/metadata"
+import { ProjectPageView, projectMetadata, projectStaticParams } from "@/components/views/project-views"
 
 export const dynamic = "force-static"
 export const dynamicParams = false
 
-function getProject(slug: string, lang: "en" | "ja" = "en") {
-  return groupProjects(getAllSortedWritings(lang)).find((p) => p.slug === slug)
-}
-
 export function generateStaticParams() {
-  return groupProjects(getAllSortedWritings()).map((p) => ({ project: p.slug }))
+  return projectStaticParams("en")
 }
 
 export function generateMetadata({ params }) {
-  const project = getProject(params.project)
-  if (!project) return
-
-  const hasOtherLang = !!getProject(params.project, "ja")
-  return buildStandardMetadata({
-    title: `${project.id} — Projects`,
-    description: project.lead.metadata.summary,
-    pathname: `/projects/${project.slug}`,
-    image: project.lead.metadata.image,
-    alternatePathname: hasOtherLang ? `/ja/projects/${project.slug}` : undefined,
-    alternateLang: hasOtherLang ? "ja" : undefined,
-  })
+  return projectMetadata("en", params.project)
 }
 
-export default function ProjectPage({ params }) {
-  const project = getProject(params.project)
-  if (!project) notFound()
-
-  return <ProjectView project={project} />
+export default function Page({ params }) {
+  return <ProjectPageView lang="en" projectSlug={params.project} />
 }

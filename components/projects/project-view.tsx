@@ -3,7 +3,7 @@ import { BackLink } from "@/components/layout/back-link"
 import { WritingCard } from "@/components/posts/article-card"
 import { ResultBlock } from "@/components/projects/result-block"
 import { getProjectPostHref, type TProject } from "@/lib/content"
-import type { Lang } from "@/lib/i18n/config"
+import { localePrefix, type Lang } from "@/lib/i18n/config"
 
 const copy: Record<
   Lang,
@@ -41,7 +41,7 @@ export function ProjectView({
   lang?: Lang
 }) {
   const t = copy[lang]
-  const prefix = lang === "ja" ? "/ja" : ""
+  const prefix = localePrefix(lang)
   const projectsHref = `${prefix}/projects`
   const { lead, items } = project
 

@@ -4,7 +4,7 @@ import { BackLink } from "@/components/layout/back-link"
 import { WritingsTagFilter, TSeriesFacet } from "@/components/posts/writings-tag-filter.client"
 import { normalizeTag, formatTagLabel } from "@/lib/content/tags"
 import type { TContentMeta } from "@/lib/content"
-import type { Lang } from "@/lib/i18n/config"
+import { localeHref, type Lang } from "@/lib/i18n/config"
 import tagsData from "@/app/data/tags.json"
 
 const copy: Record<
@@ -77,9 +77,9 @@ export function SeriesView({
     }))
     .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label))
 
-  const writingsRoot = lang === "ja" ? "/ja/posts" : "/posts"
+  const writingsRoot = localeHref(lang, "/posts")
   const basePath = `${writingsRoot}/${seriesSlug}`
-  const homeHref = lang === "ja" ? "/ja" : "/"
+  const homeHref = localeHref(lang, "/")
 
   return (
     <WritingsTagFilter

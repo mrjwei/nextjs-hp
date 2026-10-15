@@ -1,51 +1,20 @@
-import { notFound, redirect } from "next/navigation"
-import { ProjectPostView } from "@/components/projects/project-post-view"
-import { getAllSortedWritings, getWritingBySlug, getWritingHref, groupProjects } from "@/lib/content"
-import { buildStandardMetadata } from "@/lib/seo/metadata"
+import {
+  ProjectPostPageView,
+  projectPostMetadata,
+  projectPostStaticParams,
+} from "@/components/views/project-views"
 
 export const dynamic = "force-static"
 export const dynamicParams = true
 
-function getProjectPost(projectSlug: string, slug: string, lang: "en" | "ja" = "en") {
-  const project = groupProjects(getAllSortedWritings(lang)).find((p) => p.slug === projectSlug)
-  const writing = project?.items.some((w) => w.slug === slug) && getWritingBySlug(slug, lang)
-  return project && writing ? { project, writing } : undefined
-}
-
 export function generateStaticParams() {
-  return groupProjects(getAllSortedWritings("en")).flatMap((p) =>
-    p.items.map((w) => ({ project: p.slug, slug: w.slug }))
-  )
+  return projectPostStaticParams("en")
 }
 
 export function generateMetadata({ params }) {
-  const found = getProjectPost(params.project, params.slug)
-  if (!found) return
-
-  const { writing } = found
-  const { title, publishedAt: publishedTime, summary: description, image } = writing.metadata
-  return buildStandardMetadata({
-    title,
-    description,
-    // Canonical stays on /posts; this path is a view over it.
-    pathname: getWritingHref(writing, "en"),
-    type: "article",
-    publishedTime,
-    image,
-    // "Coming soon" placeholders are thin pages: keep them out of search results.
-    noIndex: writing.metadata.placeholder,
-  })
+  return projectPostMetadata("en", params)
 }
 
-export default function ProjectPostPage({ params }) {
-  const found = getProjectPost(params.project, params.slug)
-  if (!found) {
-    // Only in the other language (e.g. after the language toggle): send it to
-    // this language's /posts URL, which explains the post isn't translated.
-    const other = getProjectPost(params.project, params.slug, "ja")
-    if (other) redirect(getWritingHref(other.writing, "en"))
-    notFound()
-  }
-
-  return <ProjectPostView project={found.project} writing={found.writing} lang="en" />
+export default function Page({ params }) {
+  return <ProjectPostPageView lang="en" params={params} />
 }

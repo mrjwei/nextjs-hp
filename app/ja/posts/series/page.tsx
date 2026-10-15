@@ -1,52 +1,9 @@
-import Link from "next/link"
-import { getAllSortedWritingCollections } from "@/lib/content"
-import { buildStandardMetadata } from "@/lib/seo/metadata"
-import { BackLink } from "@/components/layout/back-link"
-import { SeriesIndexView } from "@/components/posts/series-index.client"
+import { SeriesIndexPageView, seriesIndexMetadata } from "@/components/views/index-views"
 
-export const metadata = buildStandardMetadata({
-  title: "シリーズ",
-  description: "すべてのシリーズを見る。",
-  pathname: "/ja/posts/series",
-  alternatePathname: "/posts/series",
-  alternateLang: "en",
-})
+export const metadata = seriesIndexMetadata("ja")
 
 export const dynamic = "force-static"
 
-export default async function Page() {
-  const series = getAllSortedWritingCollections("ja").map((s) => ({
-    slug: s.slug,
-    title: s.title,
-    count: s.items.length,
-  }))
-
-  return (
-    <div className="w-full max-w-[1024px] mx-auto px-6 md:px-8 py-24">
-      <nav aria-label="Breadcrumb" className="text-sm text-[var(--text-muted)] mb-4">
-        <Link href="/ja" className="hover:underline hover:text-[var(--text-strong)] transition-colors">
-          ホーム
-        </Link>
-        <span className="mx-2 text-[var(--text-subtle)]">/</span>
-        <Link href="/ja/posts" className="hover:underline hover:text-[var(--text-strong)] transition-colors">
-          記事
-        </Link>
-        <span className="mx-2 text-[var(--text-subtle)]">/</span>
-        <span className="text-[var(--text-strong)]">シリーズ</span>
-      </nav>
-
-      <div className="flex items-center justify-between mb-3">
-        <span className="eyebrow">シリーズ</span>
-        <BackLink href="/ja/posts" label="記事一覧に戻る" />
-      </div>
-      <h1 className="mb-3 text-3xl md:text-4xl font-semibold tracking-tight text-[var(--text-strong)]">
-        シリーズ
-      </h1>
-      <p className="text-lg text-[var(--text-muted)] mb-8">
-        関連記事のシリーズ {series.length}件。
-      </p>
-
-      <SeriesIndexView series={series} writingsRoot="/ja/posts" lang="ja" />
-    </div>
-  )
+export default function Page() {
+  return <SeriesIndexPageView lang="ja" />
 }

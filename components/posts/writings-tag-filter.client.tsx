@@ -14,6 +14,8 @@ const copy: Record<
     filterByTag: string
     all: string
     showingFiltered: (visible: number, total: number, tags: string) => string
+    /** Joins the selected tag names in `showingFiltered`. */
+    tagJoiner: string
     clear: string
   }
 > = {
@@ -24,6 +26,7 @@ const copy: Record<
     all: "All",
     showingFiltered: (visible, total, tags) =>
       `Showing ${visible} of ${total} posts tagged ${tags}.`,
+    tagJoiner: " or ",
     clear: "Clear",
   },
   ja: {
@@ -33,6 +36,7 @@ const copy: Record<
     all: "すべて",
     showingFiltered: (visible, total, tags) =>
       `「${tags}」に一致する記事: ${total}件中${visible}件を表示中。`,
+    tagJoiner: "・",
     clear: "クリア",
   },
 }
@@ -491,7 +495,7 @@ export function WritingsTagFilter({
                 {labels.showingFiltered(
                   visibleCount,
                   totalCount,
-                  selectedTags.map((tag) => labelByValue.get(tag) ?? tag).join(lang === "ja" ? "・" : " or ")
+                  selectedTags.map((tag) => labelByValue.get(tag) ?? tag).join(labels.tagJoiner)
                 )}
               </span>
               <button

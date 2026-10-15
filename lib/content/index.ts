@@ -6,6 +6,7 @@ import { getContentBaseDir, type ContentLang } from "@/lib/content/config"
 import seriesTitles from "@/app/data/series.json"
 import { getProjectSlug, getProjectHref, getProjectPostHref } from "@/lib/content/project-href"
 import { trackOrder } from "@/lib/content/profile"
+import { localePrefix } from "@/lib/i18n/config"
 
 export type Lang = ContentLang
 
@@ -403,7 +404,7 @@ export const getAllSortedWritings = cache((lang: Lang = "en") => {
 })
 
 export function getWritingHref(writing: TContentMeta, lang: Lang = "en") {
-  const prefix = lang === "ja" ? "/ja" : ""
+  const prefix = localePrefix(lang)
   return writing.metadata.series
     ? `${prefix}/posts/${writing.metadata.series}/${writing.slug}`
     : `${prefix}/posts/${writing.slug}`

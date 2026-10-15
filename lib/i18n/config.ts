@@ -28,3 +28,19 @@ export function toggleLangPath(pathname: string, targetLang: Lang): string {
 export function getLangFromPathname(pathname: string): Lang {
   return pathname === "/ja" || pathname.startsWith("/ja/") ? "ja" : "en"
 }
+
+/** "" for EN (served unprefixed at /), "/ja" for JA. */
+export function localePrefix(lang: Lang): "" | "/ja" {
+  return lang === "ja" ? "/ja" : ""
+}
+
+/** A site path in `lang`'s tree, e.g. localeHref("ja", "/posts") → "/ja/posts"; "/" → "/ja". */
+export function localeHref(lang: Lang, path: string): string {
+  const prefix = localePrefix(lang)
+  return path === "/" ? prefix || "/" : `${prefix}${path}`
+}
+
+/** The other language, e.g. for hreflang alternates. */
+export function otherLang(lang: Lang): Lang {
+  return lang === "ja" ? "en" : "ja"
+}

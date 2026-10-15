@@ -4,6 +4,7 @@ import {
   groupProjects,
 } from "@/lib/content"
 import { baseUrl } from "@/lib/site"
+import { localePrefix } from "@/lib/i18n/config"
 
 export default async function sitemap() {
   const writingsList = getAllSortedWritings()
@@ -13,7 +14,7 @@ export default async function sitemap() {
 
   // Every post, including projects, is canonical under /posts.
   const writingUrl = (writing: (typeof writingsList)[number], lang: "en" | "ja") => {
-    const prefix = lang === "ja" ? "/ja" : ""
+    const prefix = localePrefix(lang)
     const collection = primaryCollectionSlug(writing.metadata)
     return collection
       ? `${baseUrl}${prefix}/posts/${collection}/${writing.slug}`
@@ -52,7 +53,7 @@ export default async function sitemap() {
       dates.push(w.metadata.updatedAt ?? w.metadata.publishedAt)
       byCollection.set(w.metadata.series, dates)
     }
-    const prefix = lang === "ja" ? "/ja" : ""
+    const prefix = localePrefix(lang)
     return Array.from(byCollection.entries()).map(([slug, dates]) => ({
       url: `${baseUrl}${prefix}/posts/${slug}`,
       lastModified: maxPublishedAt(dates),
