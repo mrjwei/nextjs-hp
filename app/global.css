@@ -377,6 +377,40 @@
   @apply m-0 mx-auto;
 }
 
+/* Images shown side by side: stacked one per line below the tablet
+   breakpoint, a row from 768px. `--row-flex` on a child sets its share
+   of the row (default 1); `max-width` on a child caps it when stacked. */
+.figure-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.figure-row > * {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .figure-row {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .figure-row > * {
+    flex: var(--row-flex, 1) 1 0;
+    min-width: 0;
+  }
+}
+
+/* Screen recordings (.webm): full width, played like a GIF. */
+.prose video {
+  @apply m-0 mx-auto;
+  width: 100%;
+}
+
 .prose p {
   @apply my-4;
   color: var(--text-body);
