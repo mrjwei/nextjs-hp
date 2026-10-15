@@ -57,7 +57,8 @@ const features = {
 // no match in a language (e.g. an untranslated post) is skipped there.
 export const highlights: { projects: string[]; posts: string[] } = {
   // Project IDs, as in a post's `project` frontmatter, e.g. "LingoBun".
-  // "UIUX" is the WAmazing booking-form case study (JA only for now).
+  // "UIUX" is the WAmazing booking-form case study: JA only by design (its
+  // audience is Japan), so check-parity's "no EN version" warning for it is expected.
   projects: ["UIUX", "LingoBun", "AI+Sec", "Strobe"],
   // Post slugs (the file name without .mdx), e.g. "ai-design-guidelines".
   posts: [
