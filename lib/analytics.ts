@@ -4,9 +4,12 @@ declare global {
   }
 }
 
+// GA4 property, shared by the gtag snippet in the root layouts and pageview().
+export const GA_MEASUREMENT_ID = 'G-44FT4BDFH2';
+
 export const pageview = (url: string) => {
   if (typeof window.gtag !== 'function') return;
-  window.gtag('config', 'G-44FT4BDFH2', {
+  window.gtag('config', GA_MEASUREMENT_ID, {
     page_path: url,
   });
 };

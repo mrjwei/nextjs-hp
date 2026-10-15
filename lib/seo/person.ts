@@ -1,6 +1,6 @@
 import { profile } from "@/lib/content/profile"
 import { baseUrl } from "@/lib/site"
-import type { Lang } from "@/lib/i18n/config"
+import { localeHref, type Lang } from "@/lib/i18n/config"
 
 // Still finishing the Master of IT at time of writing. Switch
 // `affiliation` to `alumniOf` once the degree is conferred (docs/roadmap.md §3).
@@ -12,7 +12,7 @@ const university = {
 /** Person schema (no `@context`) shared by the standalone Person JSON-LD on Home and the ProfilePage's `mainEntity` on About. */
 export function personSchema(lang: Lang) {
   const p = profile[lang]
-  const aboutPath = lang === "ja" ? "/ja/about" : "/about"
+  const aboutPath = localeHref(lang, "/about")
 
   return {
     "@type": "Person",

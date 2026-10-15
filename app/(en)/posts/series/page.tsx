@@ -1,52 +1,9 @@
-import Link from "next/link"
-import { getAllSortedWritingCollections } from "@/lib/content"
-import { buildStandardMetadata } from "@/lib/seo/metadata"
-import { BackLink } from "@/components/layout/back-link"
-import { SeriesIndexView } from "@/components/posts/series-index.client"
+import { SeriesIndexPageView, seriesIndexMetadata } from "@/components/views/index-views"
 
-export const metadata = buildStandardMetadata({
-  title: "Series",
-  description: "Browse all post series.",
-  pathname: "/posts/series",
-  alternatePathname: "/ja/posts/series",
-  alternateLang: "ja",
-})
+export const metadata = seriesIndexMetadata("en")
 
 export const dynamic = "force-static"
 
-export default async function Page() {
-  const series = getAllSortedWritingCollections().map((s) => ({
-    slug: s.slug,
-    title: s.title,
-    count: s.items.length,
-  }))
-
-  return (
-    <div className="w-full max-w-[1024px] mx-auto px-6 md:px-8 py-24">
-      <nav aria-label="Breadcrumb" className="text-sm text-[var(--text-muted)] mb-4">
-        <Link href="/" className="hover:underline hover:text-[var(--text-strong)] transition-colors">
-          Home
-        </Link>
-        <span className="mx-2 text-[var(--text-subtle)]">/</span>
-        <Link href="/posts" className="hover:underline hover:text-[var(--text-strong)] transition-colors">
-          Posts
-        </Link>
-        <span className="mx-2 text-[var(--text-subtle)]">/</span>
-        <span className="text-[var(--text-strong)]">Series</span>
-      </nav>
-
-      <div className="flex items-center justify-between mb-3">
-        <span className="eyebrow">Series</span>
-        <BackLink href="/posts" label="Back to All Posts" />
-      </div>
-      <h1 className="mb-3 text-3xl md:text-4xl font-semibold tracking-tight text-[var(--text-strong)]">
-        Series
-      </h1>
-      <p className="text-lg text-[var(--text-muted)] mb-8">
-        {series.length} series of related writings.
-      </p>
-
-      <SeriesIndexView series={series} writingsRoot="/posts" />
-    </div>
-  )
+export default function Page() {
+  return <SeriesIndexPageView lang="en" />
 }

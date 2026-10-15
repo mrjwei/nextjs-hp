@@ -1,4 +1,4 @@
-import type { Lang } from "@/lib/i18n/config"
+import { localePrefix, type Lang } from "@/lib/i18n/config"
 
 // Kept apart from lib/content (which reads the fs) so client components such as
 // WorkCard can link to project pages too.
@@ -12,7 +12,7 @@ export function getProjectSlug(project: string) {
 }
 
 export function getProjectHref(project: string, lang: Lang = "en") {
-  const prefix = lang === "ja" ? "/ja" : ""
+  const prefix = localePrefix(lang)
   return `${prefix}/projects/${getProjectSlug(project)}`
 }
 

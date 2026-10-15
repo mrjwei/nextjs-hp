@@ -26,6 +26,7 @@ Quality gates for every change: `npm run lint && npm run typecheck && npm run bu
 
 - `app/`: routes only, plus the content the pipeline writes: `app/writings/posts{,-ja}/`, `app/data/*.json` and `app/pages-content/`
 - `components/`: `ui/` (shadcn primitives), `layout/` (shell, header, footer, search), `home/`, `posts/`, `projects/`
+- `components/views/`: one view per page, taking `lang`. The route files in `app/(en)` (served unprefixed) and `app/ja` only declare static params and metadata and render the view. UI strings live in `lib/i18n/dictionaries.ts`
 - `lib/`: non-route modules: `content/` (content loading, profile and config), `seo/`, `i18n/`, plus `site.ts`, `fonts.ts`, `icons.tsx`, `analytics.ts` and `utils.ts`
 - `scripts/`: index generators and the parity check, run by `prebuild` / `predev`
 - Imports always use the `@/` alias

@@ -6,7 +6,7 @@ import { SearchIcon, Loader2Icon } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import clsx from "clsx";
 import MiniSearch from "minisearch";
-import { getLangFromPathname } from "@/lib/i18n/config";
+import { localePrefix, getLangFromPathname } from "@/lib/i18n/config";
 
 type SearchResultItem = {
   id: string;
@@ -108,7 +108,7 @@ export function SearchPalette({ isLight }: { isLight: boolean }) {
   }, []);
 
   const getPath = (type: string, slug: string, collection?: string) => {
-    const prefix = lang === "ja" ? "/ja" : "";
+    const prefix = localePrefix(lang);
     if (collection) return `${prefix}/posts/${collection}/${slug}`;
     return `${prefix}/posts/${slug}`; // Assume writing by default
   };

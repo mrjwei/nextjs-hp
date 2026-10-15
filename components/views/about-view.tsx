@@ -1,0 +1,93 @@
+import Image from "next/image"
+import Link from "next/link"
+import { CustomMDX } from "@/components/posts/mdx"
+import { ExtLink } from "@/components/layout/ext-link"
+import { JsonLd } from "@/components/layout/json-ld"
+import { buildStandardMetadata } from "@/lib/seo/metadata"
+import { personSchema } from "@/lib/seo/person"
+import { getPageContent } from "@/app/pages-content"
+import { profile } from "@/lib/content/profile"
+import { dictionaries } from "@/lib/i18n/dictionaries"
+import { localeHref, otherLang, type Lang } from "@/lib/i18n/config"
+
+export function aboutMetadata(lang: Lang) {
+  return buildStandardMetadata({
+    title: dictionaries[lang].about.title,
+    description: getPageContent("about", lang).metadata.description,
+    pathname: localeHref(lang, "/about"),
+    alternatePathname: localeHref(otherLang(lang), "/about"),
+    alternateLang: otherLang(lang),
+  })
+}
+
+const strong = "text-[var(--text-strong)]"
+const h2 =
+  "mt-10 mb-4 text-2xl font-semibold tracking-tight text-[var(--text-strong)]"
+
+const aboutComponents = {
+  h2: ({ children }: { children: React.ReactNode }) => (
+    <h2 className={h2}>{children}</h2>
+  ),
+  p: ({ children }: { children: React.ReactNode }) => (
+    <p className="mb-4">{children}</p>
+  ),
+  strong: ({ children }: { children: React.ReactNode }) => (
+    <strong className={strong}>{children}</strong>
+  ),
+  // Markdown links in About point at posts on this site; external links use
+  // <ExtLink>.
+  a: ({ href, children }: { href: string; children: React.ReactNode }) => (
+    <Link href={href} className="text-[var(--accent-text)] hover:underline">
+      {children}
+    </Link>
+  ),
+  ul: ({ children }: { children: React.ReactNode }) => (
+    <ul className="mb-4 list-disc space-y-2 pl-5">{children}</ul>
+  ),
+  ExtLink,
+}
+
+export function AboutView({ lang }: { lang: Lang }) {
+  const t = dictionaries[lang].about
+  const about = getPageContent("about", lang)
+  const profilePageJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    mainEntity: personSchema(lang),
+  }
+
+  return (
+    <section className="py-24 w-full px-8 md:px-16 max-w-[1024px] mx-auto">
+      <JsonLd data={profilePageJsonLd} />
+      <span className="eyebrow">{t.eyebrow}</span>
+      <h1 className="mt-3 mb-10 text-4xl md:text-5xl font-semibold tracking-tight text-[var(--text-strong)]">
+        {t.heading}
+      </h1>
+      <div className="grid grid-cols-12 gap-y-8 md:gap-16">
+        <div className="text-[var(--text-body)] col-span-12 order-2 md:col-span-8 md:order-1">
+          <CustomMDX source={about.content} components={aboutComponents} />
+          {profile[lang].features.cv && (
+            <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+              {t.cvLinks.map((link) => (
+                <ExtLink key={link.href} href={link.href}>
+                  {link.label}
+                </ExtLink>
+              ))}
+            </p>
+          )}
+        </div>
+        <div className="col-12 order-1 md:col-span-4 md:order-2">
+          <Image
+            src="/avatar.png"
+            alt={t.avatarAlt}
+            width={563}
+            height={517}
+            className="max-w-[160px] h-auto rounded-lg"
+            sizes="160px"
+            priority
+          />
+        </div>
+      </div>
+    </section>
+  )
+}

@@ -7,7 +7,7 @@ import Image from "next/image"
 import { Menu } from "lucide-react"
 import { icons } from "@/lib/icons"
 import { SearchPalette } from "@/components/layout/search-palette"
-import { getLangFromPathname, toggleLangPath } from "@/lib/i18n/config"
+import { getLangFromPathname, toggleLangPath, localeHref } from "@/lib/i18n/config"
 import { profile } from "@/lib/content/profile"
 import {
   Sheet,
@@ -115,7 +115,7 @@ export function Header() {
           </Sheet>
 
           <Link
-            href={lang === "ja" ? "/ja" : "/"}
+            href={localeHref(lang, "/")}
             aria-label="Jesse Wei — home"
             className="flex items-center hover:opacity-80 transition-opacity"
           >

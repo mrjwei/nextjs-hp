@@ -4,7 +4,7 @@ import { Tags } from "@/components/posts/tags"
 import { ProjectBadge } from "@/components/projects/project-badge"
 import { ComingSoonBadge } from "@/components/posts/coming-soon-badge"
 import { formatDate, getProjectHref } from "@/lib/content"
-import type { Lang } from "@/lib/i18n/config"
+import { localePrefix, type Lang } from "@/lib/i18n/config"
 
 const copy: Record<Lang, { published: string }> = {
   en: { published: "Published:" },
@@ -45,7 +45,7 @@ export function WritingCard({
     : undefined
 
   const writingCollection = path === "writings" ? article?.metadata?.series : null
-  const prefix = lang === "ja" ? "/ja" : ""
+  const prefix = localePrefix(lang)
 
   const href =
     hrefOverride ??

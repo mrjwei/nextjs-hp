@@ -7,7 +7,7 @@ import { ProjectBadge } from "@/components/projects/project-badge"
 import { Badge } from "@/components/ui/badge"
 import type { TContentMeta } from "@/lib/content"
 import { getProjectHref } from "@/lib/content/project-href"
-import type { Lang } from "@/lib/i18n/config"
+import { localePrefix, type Lang } from "@/lib/i18n/config"
 
 const articleCountLabel: Record<Lang, (n: number) => string> = {
   en: (n) => `${n} articles`,
@@ -33,7 +33,7 @@ export function WorkCard({
     [key: `data-${string}`]: string | undefined
   }
 }) {
-  const prefix = lang === "ja" ? "/ja" : ""
+  const prefix = localePrefix(lang)
   const { title, summary, result, industry, publishedAt, stack, series, project } =
     work.metadata
   // Projects are canonical under /posts (mirrors getWritingHref, which can't
