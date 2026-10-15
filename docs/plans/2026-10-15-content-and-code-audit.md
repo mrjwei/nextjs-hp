@@ -57,7 +57,7 @@ To retire a post: delete its MDX (git history and the vault keep a copy), add a 
 - JA About: KOD is the client; the manuals belong to its manufacturer customer (match the EN wording).
 - C6 fix in *Prototyping Made Easy* (EN and JA).
 - Tags: propose a canonical list (≤ ~20, aligned with the work tracks) and apply it only after Jesse's OK.
-- Not written by Claude (Jesse's to-dos): the JA translations of `designing-infrastructure-not-assets` and `from-requirements-to-assumptions`.
+- JA translations of `designing-infrastructure-not-assets` and `from-requirements-to-assumptions`: published 16 Oct.
 
 ### Phase 4 — `refactor/dead-code-and-config`
 
