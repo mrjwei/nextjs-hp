@@ -1,0 +1,420 @@
+---
+title: "1つの仕様、2つのツール:実際のプロジェクトで比べるClaude DesignとGoogle Stitch"
+slug: "one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project"
+publishedAt: "2026-10-16"
+summary: "同じデザインシステムと同じ詳細なプロンプトを、実際のプロジェクトでClaude DesignとGoogle Stitchに渡しました。デザインのスタイルは一つに収束しましたが、要件をどこまで満たしたか、デザインシステムにどれだけ忠実だったかは、ツールによって大きく異なりました。"
+tags: ["design", "ai", "uiux", "casestudy"]
+---
+
+- [背景](#背景)
+- [実験](#実験)
+- [出てきたもの](#出てきたもの)
+- [観察](#観察)
+  - [要件の充足](#要件の充足)
+  - [デザインシステムの適用](#デザインシステムの適用)
+  - [デザイン内の一貫性](#デザイン内の一貫性)
+  - [ビジュアルの品質](#ビジュアルの品質)
+  - [効率](#効率)
+  - [ツールのインターフェース](#ツールのインターフェース)
+- [今回のタスクでの選択](#今回のタスクでの選択)
+- [主な学び](#主な学び)
+  - [より予測可能なデザイン生成に向けて](#より予測可能なデザイン生成に向けて)
+  - [今後の課題:MCP経由のStitch](#今後の課題mcp経由のstitch)
+- [付録:全画面ギャラリー](#付録全画面ギャラリー)
+
+前回[Google Stitch](https://stitch.withgoogle.com/)を試したときは、言語が変わってしまい、さらにコンテキストも失われてしまいました([Google Stitchを初めて試してみました](/ja/posts/ai-and-design/lost-in-translation-lost-in-context-my-first-try-at-google-stitch)を参照)。今回は、より公平なテストをしたいと考えました。実際のプロジェクト、明確な要件、既存のデザインシステム、そしてすべてのツールに同じプロンプト。そのうえで、2つのAIデザインツールが同じデザインを、少なくとも同じ*種類*のデザインを出してくるかを確かめることにしました。
+
+比べたツールは、Anthropic Labsのデザインツールで Claude Opus 5.5 を使う Claude Design と、Gemini 3.8 Flash(2026年9月からのデフォルトモデル)を使う Google Stitch の2つです。
+
+## 背景
+
+対象のプロジェクトは、クラウドコンピューティングの課題として開発していたWebアプリ *Interview Synthesis* のUIです。リサーチャーがインタビューやユーザビリティテストの録音をアップロードすると、非同期のパイプラインがそれを文字起こしし、個人情報を伏せ字にし、構造化されたリサーチドキュメントにまとめます。
+
+下準備はすでに終わっていました。要件とシステム設計は書き上げてあり、デザインシステム「Base」も `DESIGN.md` ファイルにまとめてありました。shadcn/ui のトークンをベースに、GeistフォントとLucideアイコンを使った、ニュートラルなグレースケールのB2B向けシステムです。私の仮説はシンプルでした。**入力が十分に精密であれば(明確な要件、固定されたデザインシステム、詳細なプロンプト)、AIが生成するデザインはより予測可能になるはずだ。つまり、1つのツールの中では一貫し、ツール間でも比較できるものになるはずだ。**
+
+## 実験
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/ai-design-experiment-setup.svg" alt="実験の構成。同じDESIGN.mdと、Claudeが書いた同じプロンプトを3つの実行(Claude Design、1つのプロンプトで生成したGoogle Stitch E1、画面ごとにプロンプトを分けたGoogle Stitch E2)に渡し、それぞれの出力をまとめた図" style={{ marginBottom: "8px" }} />
+</figure>
+
+1. **デザインシステムの抽出。** まずClaude DesignでBaseデザインシステムを作り、Claudeにそれを `DESIGN.md` ファイルとして抽出してもらいました。この形式はGoogle自身のものです。Stitchが2026年に、AIエージェントが読み取れる持ち運び可能なデザインルールのファイルとして導入したもので、どちらのツールも読めるはずです。
+2. **プロンプトの生成。** このタスクに適したデザインプロンプトには、プロジェクトのコンテキストが大量に必要でしたが、どちらのデザインツールもそれを持っていません。そこで、プロジェクトのコンテキストをすべて持っているClaude Coworkにプロンプトの作成を任せ、別途添付すべきコンテキストファイルがあれば挙げてもらいました。出来上がったのは約2,000語のプロンプトで、11の画面セクション、アプリシェル、サンプルデータ、成果物のリスト(主要4画面のダークモード、390pxのモバイル版、コンポーネントシートを含む)を網羅していました。
+3. **デザインの生成。** 同じプロンプトを3通りの方法で実行しました。
+
+| 実行 | モデル / 設定 | プロンプトの渡し方 | 出力 | 時間 |
+| --- | --- | --- | --- | --- |
+| Claude Design | Opus 5.5、medium effort | プロンプト全体を一度に貼り付け | 41フレーム:メイン画面13、状態や遷移を示す追加画面27、コンポーネントシート1 | 約15分 |
+| Stitch E1 | Gemini 3.8 Flash、Balanced | プロンプト全体を一度に貼り付け | 6画面 | 約5分 |
+| Stitch E2 | Gemini 3.8 Flash、Balanced | 最初にトーンを決めるコンテキストを渡し、その後は画面ごとに1プロンプト(計12プロンプト) | 11画面+コンポーネントシート | 約12分 |
+
+最初に一つ注意点があります。プロンプトはClaudeが書いたものです。ツール固有の構文を含まないプレーンなMarkdownなので、どちらかのツールに有利だったとは思いませんが、知っておく価値はあります。
+
+## 出てきたもの
+
+3つの実行から、同じ画面 *Project overview*(プロジェクト概要)を並べました。すべての画面は最後の付録にあります。
+
+<figure style={{ textAlign: "center" }}>
+  <div className="figure-row">
+    <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/compare-project-overview-stitch-e1.png" alt="Google Stitch E1(1つのプロンプトですべて):プロジェクト概要画面" />
+    <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/compare-project-overview-stitch-e2.png" alt="Google Stitch E2(画面ごとに1つのプロンプト):プロジェクト概要画面" />
+    <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/compare-project-overview-claude-design.png" alt="Claude Design(1つのプロンプトですべて):プロジェクト概要画面" />
+  </div>
+</figure>
+
+ぱっと見では兄弟のようです。グレースケール、インクのような黒のプライマリボタン、プロジェクトツリーのある左サイドバー、ステータスバッジ付きのドキュメント一覧テーブル。しかしよく見ると違いが見えてきて、その違いが話のほとんどを語っています。
+
+## 観察
+
+### 要件の充足
+
+各実行を、プロンプトに挙げた成果物と照らし合わせました。
+
+| プロンプトの成果物 | Stitch E1 | Stitch E2 | Claude Design |
+| --- | --- | --- | --- |
+| 11の画面セクション | 11のうち6 | すべて(トーストはコンポーネントシートに統合) | すべて |
+| 追加の状態と遷移 | わずか | 1つの画面に詰め込み | 専用画面27 |
+| 画面4、5、7、10のダークモード | なし | なし | あり、4画面すべて |
+| 390pxのモバイル版 | なし | なし | あり |
+| コンポーネントシート | なし | あり | あり(ライトとダーク) |
+| プロンプトのサンプルデータを使用 | はい | いいえ、独自に作成 | はい |
+
+**Stitch E1** は大きく不足していました。11の画面セクションのうち5つ(ログイン、サインアップ、空の状態、履歴、トースト)には専用の画面がなく、作られた画面も主要なインタラクションや状態をカバーしていませんでした。
+
+**Stitch E2** は、画面ごとに1つのプロンプトで依頼したため、ずっと網羅的でした。主要な画面はすべて揃っていますが、状態は別々に示されず、1つの画面に詰め込まれていることが多くありました。たとえば *Schemas*(スキーマ)画面は「Add schema」フォームを開いた状態しかなく、デフォルトの状態がありません。ドキュメント画面には、上部に「Quick state switcher」バーまで付いています。また、E2は必要最低限に厳密にとどまりました。遷移画面もダークモードもモバイル版もありません。さらに、私のサンプルデータを黙って無視し、「Onboarding Usability Study」というプロジェクト、Sarah Chenというユーザー、そしてアプリが「Whisper + Claude 3.5 Sonnet」で動いていると書かれたフッターを勝手に作っていました。
+
+**Claude Design** は、一度ですべてを出してきました。すべての画面セクション、読み込み中・入力中・遷移の状態を示す追加画面、プロンプトで指定した4画面のダークモード、そしてモバイル版とコンポーネントシート(どちらもダーク版あり)です。ダークモードやモバイル版はおまけのように見えがちですが、これらは追加要素ではありませんでした。プロンプトで求めていたもので、それを出してきたのはClaude Designだけでした。出力は、そのまま開発に入れる一歩手前の状態です。
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-04c.png" alt="ダークモードのClaude Designのプロジェクト概要画面" style={{ marginBottom: "8px" }} />
+  <figcaption>Claude Designのダークモードのプロジェクト概要。プロンプトで求めた4つのダーク画面の一つです。</figcaption>
+</figure>
+
+### デザインシステムの適用
+
+遠目に見れば、3つの実行すべてがデザインシステムの影響をはっきり受けています。互いに一貫していて、同じ(あるいはよく似た)デザインシステムから生まれたことがすぐに分かります。しかし、エクスポートされたコードを見ると、もっと詳しいことが分かります。
+
+- **Stitch E1は、実は私のデザインシステムをほとんど使っていませんでした。** エクスポートされたプロジェクトには、私のBaseの `DESIGN.md` とは別に、Stitchが自分で生成した「Lumina Luxury Living」という2つ目のデザインシステムが含まれていました。画面が使っていたのは*そちら*です。見出しはPlayfair Displayのセリフ体、本文はPlus Jakarta Sans、背景はニュートラルなグレーの上のGeistではなく、温かみのあるオフホワイトでした。E1のタイポグラフィと色がずれているのはそのためです。
+- **Stitch E2はずっと近いものでした。** 全体でGeistを使っていますが、ところどころにセリフ体のラベルが紛れ込んでいます(上の概要画面のスキーマバッジを見てください)。
+- **Stitchの2つの実行は、どちらもGoogleのMaterial Symbolsアイコンを使っていました。** デザインシステムとプロンプトの両方でLucideを指定していたにもかかわらずです。
+- **Claude Design** はGeist、Geist Mono、Lucideアイコンを使い、私が確認したすべての点でデザインシステムに一致していました。
+
+つまり、見た目が最も似ているのはE2とClaude Designで、デザイン仕様もこの2つでより一貫して適用されていました。E1だけが異質です。
+
+### デザイン内の一貫性
+
+Stitchの画面は、画面の*中*でもずれています。E1のドキュメント画面では、メインのコンテンツ列が上のカードと揃っておらず、タイポグラフィもブロックごとにばらばらです。Claude Designの同じ画面では、デザインシステムが一貫して適用されていて、ずれはほとんどありません。
+
+<figure style={{ textAlign: "center" }}>
+  <div className="figure-row">
+    <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/stitch-e1-inconsistency.png" alt="Stitch E1のドキュメント画面の切り抜き。メインのコンテンツ列が上のカードと揃っていない" style={{ "--row-flex": "289" }} />
+    <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-07a.png" alt="Claude Designのドキュメント画面" style={{ "--row-flex": "365" }} />
+  </div>
+  <figcaption>ドキュメント画面:Stitch E1(左)はコンテンツの幅が揃っていない。右はClaude Design。</figcaption>
+</figure>
+
+E2はE1よりすっきりしてモダンに見え、一貫性と全体の雰囲気ではClaude Designにかなり近いものでした。精密なデザインシステムと、画面ごとに1つのプロンプトがあれば、Stitchでもすっきりとしたデザインシステムどおりの画面を作れます。
+
+ただし、代償がありました。E2の画面同士の一貫性を保つために、毎回のプロンプトの冒頭で同じガードレールを繰り返す必要があったのです。
+
+> Make this screen using the established design system and design principles, and align its design with the already generated screens:
+> Project overview
+> Header: project name (H1), created date, document count; actions: "New upload" (primary), "⋯" menu (Rename, Delete project).
+> Body: a Card containing a table of documents/jobs: Title · Schema · Status (badge) · Stage detail ("Transcribing 2/3 chunks") · Created ("2h ago") · row "⋯" menu. Include rows in every state: Done, Synthesising, Transcribing 2/3, Queued, Failed (with an inline Retry ghost button). Rows open the document view. Show a loading version with Skeleton rows.
+
+(和訳:*確立済みのデザインシステムとデザイン原則を使ってこの画面を作り、すでに生成された画面とデザインを揃えてください。Project overview。ヘッダー:プロジェクト名(H1)、作成日、ドキュメント数。アクション:「New upload」(プライマリ)、「⋯」メニュー(名前の変更、プロジェクトの削除)。本文:ドキュメント/ジョブのテーブルを含むCard。タイトル・スキーマ・ステータス(バッジ)・ステージの詳細(「Transcribing 2/3 chunks」)・作成日時(「2h ago」)・行の「⋯」メニュー。すべての状態の行を含める:Done、Synthesising、Transcribing 2/3、Queued、Failed(インラインのRetryゴーストボタン付き)。行をクリックするとドキュメント画面が開く。Skeleton行を使った読み込み中の版も示す。*)
+
+前回と同じ教訓です。ユーザーから見れば同じセッションのように見えても、Stitchはプロンプトをまたいでコンテキストを保つのが苦手です。
+
+### ビジュアルの品質
+
+ビジュアルの品質だけで見ると、大きな差はありませんでした。3つの実行はどれも同程度の完成度に達していて、色、タイポグラフィ、余白、コンポーネントに一貫性があります。どれも読みやすく操作しやすく、情報の階層、コントラスト、近接といった確立された原則を適用していて、モダンなUIに見えます。スクリーンショット1枚で判断するなら、はっきりした勝者を選ぶのは難しいでしょう。差は仕上がりの美しさではなく、網羅性と忠実さにあります。
+
+### 効率
+
+**時間。** E1は約5分と最速でしたが、出力は最も少ないものでした。E2は約12分に加えて、12個のプロンプトを手作業で入力する手間がかかりました。Claude Designは約15分で、出力は群を抜いて多いものでした。
+
+**使用量。** これは直接比べるのが難しい部分です。セッションの終わりに、Claude Designは「207k tokens of context」を節約するために新しいチャットを始めるよう提案してきました。これは会話のコンテキストの大きさであって請求額ではありませんが、規模の感覚はつかめます。なお、Claude Designの使用量はClaudeのプランの上限にカウントされます。
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-context-notice.png" alt="Claude Designの通知「Start a new chat to save 207k tokens of context」" style={{ marginBottom: "8px" }} />
+</figure>
+
+Stitchは、2つの実験を合わせて、1日あたり無料の400クレジットのうち38クレジットを使いました。Stitchのクレジットは生成ごとの複雑さに応じて増えますが、調べた限り、それがトークンにどう対応するかをGoogleは公開していません。
+
+**なぜE1は6画面で止まったのか。** 最初に思いついたのはモデルの出力上限でした。Opus 5.5は1回の応答で最大128Kの出力トークンを生成でき、Gemini 3.8 Flashは約64Kまでです。それも一因かもしれませんが、主な理由ではないと思います。Claude Designは15分かけて41フレームを作り、タスクを一歩ずつ進めていたので、1回の応答の上限が制約になっていたわけではありません。Stitch側では、最初の生成で作られるのは最大5つの初期画面で、それ以上は依頼に応じて追加されると言われています。E1の6画面は、ちょうどその上限あたりです。つまり、より有力な説明は、モデルそのものの上限ではなく、それぞれの*プロダクト*がモデルをどう動かしているかです。これは私の調査の限界も示しています。私が比べたのはプロダクトであってモデルではなく、両者を完全に切り分けることはできません。
+
+### ツールのインターフェース
+
+**Google Stitch** はAIファーストです。編集を含め、ほぼすべての操作がAIを通して行われます。
+
+<figure style={{ textAlign: "center" }}>
+  <video src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/google-stitch.webm" aria-label="Google Stitchがプロンプトからジョブの進行状況画面を一歩ずつ生成していく様子の画面録画" autoPlay loop muted playsInline controls preload="metadata" style={{ marginBottom: "8px" }} />
+</figure>
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/google-stitch-ui.png" alt="Google Stitchのインターフェース。左にチャットパネル、キャンバスに生成されたログイン画面、下部にプロンプト入力欄がある" style={{ marginBottom: "8px" }} />
+</figure>
+
+手動のツールもありますが、機能は限られていて、たどり着くのも面倒です。「Modify」→「Edit」を選んだうえで、さらに右側のツールバーで「Direct Edit」を選ばないと、手で何かを変えることはできませんでした。
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/google-stitch-ui-edit.png" alt="Google Stitchのダイレクト編集モード。Edit Text、Edit With AI、Deleteを選べるEdit Elementメニューが表示されている" style={{ marginBottom: "8px" }} />
+</figure>
+
+**Claude Design** のキャンバスは、よりインタラクティブです。ドラッグやズームができ、生成された画面はタブ付きのグリッドに並ぶので、画面間を移動してレビューするのが簡単です。
+
+<figure style={{ textAlign: "center" }}>
+  <video src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design.webm" aria-label="Claude Designのキャンバスで、生成されたログイン、サインアップ、空の状態の画面をズームしたりスクロールしたりする様子の画面録画" autoPlay loop muted playsInline controls preload="metadata" style={{ marginBottom: "8px" }} />
+</figure>
+
+左側のチャットパネルは、ほとんどのチャットインターフェースと同じように動きます。シンプルで馴染みのある作りです。
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-ui.png" alt="Claude Designのインターフェース。左にチャットパネル、右にセクションタブ付きの生成画面のキャンバスがある" style={{ marginBottom: "8px" }} />
+</figure>
+
+Claude Designにも手動編集があり、Stitchよりツールが多く、編集もより自然に感じられます。
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-ui-edit.png" alt="Claude Designの編集モード。レイヤーツリー、描画ツール、外観とサイズの設定がある" style={{ marginBottom: "8px" }} />
+</figure>
+
+## 今回のタスクでの選択
+
+このプロジェクトでは、**Claude Design(Opus 5.5、medium effort)** を選びました。理由は2つあります。
+
+1. **完成度の高い、洗練されたデザインを、一度で素早く手に入れたかったからです。** これはクラウドコンピューティングのプロジェクトで、UIデザインのプロジェクトではありませんでした。Flashモデルが得意とする素早い反復や安価なバリエーション作り(APIの料金では、Gemini 3.8 Flashのトークン単価はOpus 5.5のおよそ5分の1です)は、今回の目的ではありませんでした。
+2. **タスクが、Stitchが一度に扱える規模を超えていたからです。** 11の画面セクション、ダークモード、モバイル版、コンポーネントシートが必要でした。E1で、Stitchは1つのプロンプトからそのすべてを出さないことが分かりました。E2では主要な画面が揃いましたが、それはプロンプトを12に分けて1つずつ貼り付けた後のことで、実際のワークフローではとても非効率です。それでも、ダークモードとモバイル版は省かれていました。
+
+## 主な学び
+
+### より予測可能なデザイン生成に向けて
+
+デザインの判断、特にビジュアルの判断は、昔から決着をつけにくいものでした。UX、アクセシビリティ、心理学の原則は増え続けていますが、それをどう適用するかはプロジェクト、チーム、組織ごとにばらばらで、あるデザインが別のデザインより良いと主張するのは難しいことがよくあります。生成AIはそこにもう一つの層を加えます。LLMは確率的なので、同じデザインを2回頼んでも同じ結果になるとは限りません。
+
+今回の実験は、この状況が改善しつつあることを示しています。デザインシステムを構造化データ(`DESIGN.md`)にし、実際のプロジェクトのコンテキストを含む詳細なプロンプトを渡すと、どちらのツールもはっきりと同じデザイン言語に収束しました。要件とデザインシステムが、舵取りの多くを担っていたのです。
+
+それでも、「決定論的」という言葉を使うのは慎重でありたいと思います。各設定を1回ずつしか実行していないので、言えるのは出力が*ツール間で収束した*ということであって、どのツールも毎回同じ結果を出すということではありません。また、私のデザインシステムは意図的にニュートラルなもので(デザインシステム自身の説明によれば「boring on purpose」、つまりわざと退屈にしてあります)、ニュートラルなシステムほど収束しやすいものです。もっと個性の強いデザインシステムを使い、ツールごとに何回か実行すれば、より強いテストになるでしょう。私が見つけた最大の違いは、スタイルにはまったくありませんでした。違いは、**各ツールが要件をどこまで満たしたか、そして指定したデザインシステムにどれだけ忠実に従ったか**にありました。
+
+### 今後の課題:MCP経由のStitch
+
+StitchはMCPサーバーも提供しているので、ClaudeのようなAIエージェントが直接Stitchを操作できます。最初は、MCP経由でOpus 5.5を使えばGeminiの出力上限を回避できると考えました。調べてみると、最初に想像したようにはいきません。画面はあくまでStitch側で、Stitchのモデルによって生成されます。Claudeはデザイナーではなく、オーケストレーター(指揮役)になるわけです。
+
+とはいえ、そのほうが面白い問いになります。E2では、私自身がオーケストレーターでした。プロンプトを分割し、画面を1つずつ渡し、毎回ガードレールを言い直していました。それをAIエージェントが代わりにやってくれたらどうでしょう。そのときStitchは、E2の一貫性を保ったまま、手作業の手間なしに要件をすべて満たしてくれるのでしょうか。
+
+## 付録:全画面ギャラリー
+
+### Google Stitch E1
+
+プロジェクト概要:
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/stitch-e1-project-overview.png" alt="Google Stitch E1:プロジェクト概要画面" style={{ marginBottom: "8px" }} />
+</figure>
+
+新規アップロード:
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/stitch-e1-new-upload.png" alt="Google Stitch E1:新規アップロード画面" style={{ marginBottom: "8px" }} />
+</figure>
+
+ジョブの進行状況(処理中のドキュメント):
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/stitch-e1-job-progress.png" alt="Google Stitch E1:ジョブの進行状況画面" style={{ marginBottom: "8px" }} />
+</figure>
+
+スキーマ:
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/stitch-e1-schemas.png" alt="Google Stitch E1:スキーマ画面" style={{ marginBottom: "8px" }} />
+</figure>
+
+ドキュメント画面:
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/stitch-e1-document-view.png" alt="Google Stitch E1:ドキュメント画面" style={{ marginBottom: "8px" }} />
+</figure>
+
+AIチャットパネル:
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/stitch-e1-ai-chat-panel.png" alt="Google Stitch E1:AIチャットパネル画面" style={{ marginBottom: "8px" }} />
+</figure>
+
+### Google Stitch E2
+
+ログイン:
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/stitch-e2-log-in.png" alt="Google Stitch E2:ログイン画面" style={{ marginBottom: "8px" }} />
+</figure>
+
+サインアップ:
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/stitch-e2-sign-up.png" alt="Google Stitch E2:サインアップ画面" style={{ marginBottom: "8px" }} />
+</figure>
+
+空の状態(初回サインイン):
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/stitch-e2-empty-state.png" alt="Google Stitch E2:空の状態の画面" style={{ marginBottom: "8px" }} />
+</figure>
+
+プロジェクト概要:
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/stitch-e2-project-overview.png" alt="Google Stitch E2:プロジェクト概要画面" style={{ marginBottom: "8px" }} />
+</figure>
+
+新規アップロード:
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/stitch-e2-new-upload.png" alt="Google Stitch E2:新規アップロード画面" style={{ marginBottom: "8px" }} />
+</figure>
+
+ジョブの進行状況(処理中のドキュメント):
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/stitch-e2-job-progress.png" alt="Google Stitch E2:ジョブの進行状況画面" style={{ marginBottom: "8px" }} />
+</figure>
+
+ドキュメント画面:
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/stitch-e2-document-view.png" alt="Google Stitch E2:ドキュメント画面" style={{ marginBottom: "8px" }} />
+</figure>
+
+スキーマ:
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/stitch-e2-schemas.png" alt="Google Stitch E2:スキーマ画面" style={{ marginBottom: "8px" }} />
+</figure>
+
+履歴:
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/stitch-e2-history.png" alt="Google Stitch E2:履歴画面" style={{ marginBottom: "8px" }} />
+</figure>
+
+AIチャットパネル:
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/stitch-e2-ai-chat-panel.png" alt="Google Stitch E2:AIチャットパネル画面" style={{ marginBottom: "8px" }} />
+</figure>
+
+コンポーネントシート:
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/stitch-e2-component-sheet.png" alt="Google Stitch E2:コンポーネントシート" style={{ marginBottom: "8px" }} />
+</figure>
+
+### Claude Design
+
+Claude Designは画面を生成しすぎてすべては載せきれないため、代表的なものを紹介します。
+
+ログイン:
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-01a.png" alt="Claude Design:ログイン画面、フレーム01a" style={{ marginBottom: "8px" }} />
+</figure>
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-01b.png" alt="Claude Design:ログイン画面、フレーム01b" style={{ marginBottom: "8px" }} />
+</figure>
+
+サインアップ:
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-02a.png" alt="Claude Design:サインアップ画面、フレーム02a" style={{ marginBottom: "8px" }} />
+</figure>
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-02b.png" alt="Claude Design:サインアップ画面、フレーム02b" style={{ marginBottom: "8px" }} />
+</figure>
+
+空の状態(初回サインイン):
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-03a.png" alt="Claude Design:空の状態の画面、フレーム03a" style={{ marginBottom: "8px" }} />
+</figure>
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-03b.png" alt="Claude Design:空の状態の画面、フレーム03b" style={{ marginBottom: "8px" }} />
+</figure>
+
+プロジェクト概要:
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-04a.png" alt="Claude Design:プロジェクト概要画面、フレーム04a" style={{ marginBottom: "8px" }} />
+</figure>
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-04b.png" alt="Claude Design:プロジェクト概要画面、フレーム04b" style={{ marginBottom: "8px" }} />
+</figure>
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-04c.png" alt="Claude Design:プロジェクト概要画面、フレーム04c" style={{ marginBottom: "8px" }} />
+</figure>
+
+新規アップロード:
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-05b.png" alt="Claude Design:新規アップロード画面、フレーム05b" style={{ marginBottom: "8px" }} />
+</figure>
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-05c.png" alt="Claude Design:新規アップロード画面、フレーム05c" style={{ marginBottom: "8px" }} />
+</figure>
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-05d.png" alt="Claude Design:新規アップロード画面、フレーム05d" style={{ marginBottom: "8px" }} />
+</figure>
+
+ジョブの進行状況(処理中のドキュメント):
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-06a.png" alt="Claude Design:ジョブの進行状況画面、フレーム06a" style={{ marginBottom: "8px" }} />
+</figure>
+
+ドキュメント画面:
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-07a.png" alt="Claude Design:ドキュメント画面、フレーム07a" style={{ marginBottom: "8px" }} />
+</figure>
+
+スキーマ:
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-08a.png" alt="Claude Design:スキーマ画面、フレーム08a" style={{ marginBottom: "8px" }} />
+</figure>
+
+履歴:
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-09a.png" alt="Claude Design:履歴画面、フレーム09a" style={{ marginBottom: "8px" }} />
+</figure>
+
+AIチャットパネル:
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-10a.png" alt="Claude Design:AIチャットパネル画面、フレーム10a" style={{ marginBottom: "8px" }} />
+</figure>
+
+モバイル:
+
+<figure style={{ textAlign: "center" }}>
+  <div className="figure-row">
+    <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-12a.png" alt="Claude Design:390pxのモバイル画面、フレーム12a" style={{ maxWidth: "390px" }} />
+    <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-12b.png" alt="Claude Design:390pxのモバイル画面、フレーム12b" style={{ maxWidth: "390px" }} />
+    <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-12c.png" alt="Claude Design:390pxのモバイル画面、フレーム12c" style={{ maxWidth: "390px" }} />
+  </div>
+</figure>
+
+コンポーネントシート:
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-13a.png" alt="Claude Design:コンポーネントシート" style={{ marginBottom: "8px" }} />
+</figure>
