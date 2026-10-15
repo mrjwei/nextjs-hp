@@ -2,7 +2,7 @@
 
 > **Implemented 10 Oct 2026** (P0–P3, P5, P6, and the in-repo part of P4). Decisions in §8 are answered below the table, and they override the draft copy where the two differ. Still open: the EN WAmazing case study, the JA essay translations, and the §7 content backlog (all vault work).
 
-*Prepared 10 Oct 2026 for implementation by Claude Code inside `nextjs-hp`. Written from an audit of the live site (jessewei.net, 10 Oct), the repo (`app/content/profile.ts`, About MDX, content index: 94 entries), the vault's `Posts.base` queue, and the career notes in `Notes/Career/` (pivot doc, career profiles, Japan openings, DEN and GoNOW evidence docs).*
+*Prepared 10 Oct 2026 for implementation by Claude Code inside `nextjs-hp`. Written from an audit of the live site (jessewei.net, 10 Oct), the repo (`lib/content/profile.ts`, About MDX, content index: 94 entries), the vault's `Posts.base` queue, and the career notes in `Notes/Career/` (pivot doc, career profiles, Japan openings, DEN and GoNOW evidence docs).*
 
 **This plan supersedes the positioning in `docs/roadmap.md` §1 (audience, one-line positioning, vocabulary) and the 23 Sep "AI repositioning brush-up".** The site architecture, content model and design principles in `docs/roadmap.md` stay. Only the story the site tells changes, plus a few small model and Home changes.
 
@@ -194,9 +194,9 @@ The `description` frontmatter mirrors `meta.description`.
 
 ### P1 — Positioning data · branch `content/positioning-rebalance-profile`
 
-- [ ] Replace the EN/JA values in `app/content/profile.ts` with §5.3 (headline option per D1).
-- [ ] `components/how-i-work.tsx`: support 4 items (icons array, `md:grid-cols-2 lg:grid-cols-4` or 2×2). Keep the stroke weight.
-- [ ] Check what reads `role` and `meta`: `app/seo/person.ts` (`jobTitle`, `knowsLanguage` per D2), both layouts' metadata, `app/og/route.tsx`, `components/footer.tsx` newsletter copy (rewrite it if it says "applied AI"). Grep for leftovers: `rg -n "Applied AI|アプライドAI|applied AI" app components` should only hit post content.
+- [ ] Replace the EN/JA values in `lib/content/profile.ts` with §5.3 (headline option per D1).
+- [ ] `components/home/how-i-work.tsx`: support 4 items (icons array, `md:grid-cols-2 lg:grid-cols-4` or 2×2). Keep the stroke weight.
+- [ ] Check what reads `role` and `meta`: `lib/seo/person.ts` (`jobTitle`, `knowsLanguage` per D2), both layouts' metadata, `app/og/route.tsx`, `components/layout/footer.tsx` newsletter copy (rewrite it if it says "applied AI"). Grep for leftovers: `rg -n "Applied AI|アプライドAI|applied AI" app components` should only hit post content.
 - **Acceptance:** the grep is clean outside posts; screenshots of `/` and `/ja` before and after are attached to the PR for Jesse.
 
 ### P2 — About rewrite · branch `content/about-rebalance`
@@ -207,7 +207,7 @@ The `description` frontmatter mirrors `meta.description`.
 
 ### P3 — Tracks and pins as data · branch `feat/tracks-rebalance`
 
-- [ ] **Tracks.** Add `design-systems` (EN "Design systems & ops" / JA 「デザインシステム・デザインOps」) and `transformation` (EN "Digital transformation" / JA 「業務DX」) to `WorkTrack`, the zod enum in `app/utils/index.ts`, the parser in `scripts/generate-content-index.mjs`, and the labels in `components/work-track-filter.client.tsx`. Relabel `ai-engineering` as "AI systems" / 「AIシステム」 (keep the slug).
+- [ ] **Tracks.** Add `design-systems` (EN "Design systems & ops" / JA 「デザインシステム・デザインOps」) and `transformation` (EN "Digital transformation" / JA 「業務DX」) to `WorkTrack`, the zod enum in `lib/content/index.ts`, the parser in `scripts/generate-content-index.mjs`, and the labels in `components/projects/work-track-filter.client.tsx`. Relabel `ai-engineering` as "AI systems" / 「AIシステム」 (keep the slug).
 - [ ] **Track order from config.** Move `WORK_TRACK_ORDER` into `profile.ts` (e.g. `export const trackOrder: WorkTrack[]`) so the lane emphasis is one edit. Initial order: `transformation, ai-engineering, product-design, design-systems, security, research`.
 - [ ] **Rename the WAmazing project ID** from `UIUX` to `WAmazing` in the post frontmatter (EN once it exists, and JA), plus a redirect `/projects/uiux` → `/projects/wamazing` (and `/ja/…`). Set `track: product-design`. Update the vault note's `project` property too, so the pipeline doesn't revert it.
 - [ ] **Pins in `highlights`** (`profile.ts`):

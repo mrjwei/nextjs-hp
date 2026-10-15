@@ -1,0 +1,133 @@
+import clsx from "clsx"
+import Link from "next/link"
+import { Tags } from "@/components/posts/tags"
+import { ProjectBadge } from "@/components/projects/project-badge"
+import { ComingSoonBadge } from "@/components/posts/coming-soon-badge"
+import { formatDate, getProjectHref } from "@/lib/content"
+import type { Lang } from "@/lib/i18n/config"
+
+const copy: Record<Lang, { published: string }> = {
+  en: { published: "Published:" },
+  ja: { published: "公開日:" },
+}
+
+export function WritingCard({
+  article,
+  className,
+  from,
+  path = "writings",
+  selectedTags,
+  wrapperProps,
+  lang = "en",
+  showProjectBadge = true,
+  href: hrefOverride,
+}: {
+  article: any
+  className?: string
+  from?: string
+  path?: string
+  selectedTags?: string[]
+  wrapperProps?:
+    | (React.HTMLAttributes<HTMLDivElement> & {
+        [key: `data-${string}`]: string | undefined
+      })
+    | undefined
+  lang?: Lang
+  // Off on a project's own page, where every card would carry the same badge.
+  showProjectBadge?: boolean
+  // Where the card links instead of the post's /posts URL (e.g. the project
+  // path on a project's own page).
+  href?: string
+}) {
+  const t = copy[lang]
+  const project: string | undefined = showProjectBadge
+    ? article?.metadata?.project
+    : undefined
+
+  const writingCollection = path === "writings" ? article?.metadata?.series : null
+  const prefix = lang === "ja" ? "/ja" : ""
+
+  const href =
+    hrefOverride ??
+    (path === "writings" && writingCollection
+      ? `${prefix}/posts/${writingCollection}/${article.slug}`
+      : `${prefix}/${path}/${article.slug}`)
+
+  return (
+    <div
+      {...wrapperProps}
+      className={clsx(
+        "relative col-span-12 md:col-span-6 h-full flex flex-col bg-[var(--surface-card)] transition-[box-shadow,border-color,transform] duration-200 ease-[var(--ease-out)] shadow-xs hover:shadow-lg hover:-translate-y-0.5 border border-[var(--border-subtle)] hover:border-[var(--border-default)] rounded-lg group",
+        className,
+        wrapperProps?.className
+      )}
+    >
+      {project && (
+        <ProjectBadge
+          project={project}
+          href={getProjectHref(project, lang)}
+          className="absolute top-3 -right-1 z-10 shadow-sm"
+        />
+      )}
+      <Link
+        key={article.slug}
+        href={`${href}${from ? `?from=${from}` : ""}`}
+        className="flex-1 flex flex-col"
+      >
+        <div className="p-6 pb-4 flex flex-col justify-between">
+          <div>
+            <div className="mb-4">
+              {article.metadata.placeholder && (
+                <ComingSoonBadge lang={lang} className="mb-3" />
+              )}
+              <h3
+                className={clsx(
+                  "text-lg leading-normal font-semibold mb-2 text-[var(--text-strong)] transition-colors group-hover:text-[var(--accent-text)]",
+                  {
+                    "break-all": article.metadata.shouldBreakWord,
+                    "pr-20": project,
+                  }
+                )}
+              >
+                {article.metadata.title}
+              </h3>
+              <p className="text-[var(--text-muted)] text-base leading-6 mb-4">
+                {article.metadata.summary.length > 100
+                  ? article.metadata.summary.slice(0, 100) + "..."
+                  : article.metadata.summary}
+              </p>
+            </div>
+          </div>
+          <small className="text-[var(--text-subtle)] text-sm">
+            {t.published} {formatDate(article.metadata.publishedAt, lang)}
+          </small>
+        </div>
+      </Link>
+
+      <div className="px-6 pb-6">
+        <Tags
+          tags={article.metadata.tags}
+          hrefForTag={
+            path === "writings"
+              ? (tag) => {
+                  const current = Array.isArray(selectedTags)
+                    ? selectedTags
+                    : []
+
+                  const next = current.includes(tag)
+                    ? current.filter((t) => t !== tag)
+                    : [...current, tag]
+
+                  const qs = next.length
+                    ? `?tags=${encodeURIComponent(next.join(","))}`
+                    : ""
+
+                  return `${prefix}/posts${qs}`
+                }
+              : undefined
+          }
+        />
+      </div>
+    </div>
+  )
+}

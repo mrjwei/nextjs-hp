@@ -39,7 +39,7 @@ Role label: **Product designer & engineer** / **プロダクトデザイナー�
 
 1. **Proof before prose.** Every section answers "how do I know?" with a number, a diagram, a repo or an eval result. No adjectives without evidence.
 2. **Outcome-first case studies.** Put the result on the first screen, then: constraint → system → evaluation → what I chose not to do → craft.
-3. **Positioning is data, not markup.** Role, headline, proof, socials, feature flags and Home `highlights` live in `app/content/profile.ts`. To change direction, edit that file (including what's pinned in `highlights`); don't rewrite pages.
+3. **Positioning is data, not markup.** Role, headline, proof, socials, feature flags and Home `highlights` live in `lib/content/profile.ts`. To change direction, edit that file (including what's pinned in `highlights`); don't rewrite pages.
 4. **Restraint.** Keep the existing tokens, type (Newsreader + Geist, Noto Sans JP on `/ja`) and the single accent. No dark mode, animation library, gradients, stock imagery, emoji, animated counters or employer logo walls.
 5. **Bilingual parity by construction.** Long prose lives in per-language MDX so the `publish-pipeline` skill's translate stage can keep EN and JA in sync.
 
@@ -64,7 +64,7 @@ EN                                   JA
 - **Home**: hero (from `profile.ts`, with a quiet Email me link) → proof strip (static) → selected projects (one card per project) → How I work (4 steps, static) → Selected writing. Both lists show `highlights` pins first, then the latest; `scripts/check-parity.mjs` warns at build time about pins missing in a language.
 - **Tracks** (`/projects` filter): transformation, ai-engineering (labelled "AI systems"), product-design, design-systems, security, research. Order comes from `trackOrder` in `profile.ts`.
 - **Projects** are a *view* over posts: any post with a `project` ID. `/posts` URLs are always canonical. `/writings/*`, `/work/*` and `/portfolio/*` 301 to the new paths. Full rules are in `docs/publish.md`.
-- **Content knobs**: `project`, `lead`, `track`, `draft`, `placeholder`, `archived`, plus the case-study fields (`role`, `client`, `industry`, `duration`, `stack`, `status`, `confidential`). They're validated in both `app/utils/index.ts` (zod) and `scripts/generate-content-index.mjs`.
+- **Content knobs**: `project`, `lead`, `track`, `draft`, `placeholder`, `archived`, plus the case-study fields (`role`, `client`, `industry`, `duration`, `stack`, `status`, `confidential`). They're validated in both `lib/content/index.ts` (zod) and `scripts/generate-content-index.mjs`.
 - **Drafts** live in the Obsidian vault, outside the repo. Publish with `/publish-pipeline`.
 
 ### Where the 23 Sep plan landed
@@ -86,10 +86,10 @@ EN                                   JA
 
 ### Code
 
-- [ ] **`<Figure>` MDX component** for architecture diagrams: `<Figure src alt caption />` on a light background, optional zoom-on-click with no library, registered in `components/mdx.tsx`. The case-study template's *System* section depends on it.
+- [ ] **`<Figure>` MDX component** for architecture diagrams: `<Figure src alt caption />` on a light background, optional zoom-on-click with no library, registered in `components/posts/mdx.tsx`. The case-study template's *System* section depends on it.
 - [ ] **CV PDFs**: add `public/cv/jesse-wei-cv-en.pdf` and `public/cv/jesse-wei-shokumukeirekisho-ja.pdf`, then set `features.cv = true`. Blocked on the files.
 - [ ] **Lighthouse baseline**: record mobile scores for `/`, `/about`, `/posts`, `/projects`, `/ja` per `docs/baseline.md`. Target LCP ≤ 2.5 s on throttled mobile.
-- [ ] **JSON-LD after graduation**: switch QUT from `affiliation` to `alumniOf` in `app/seo/person.ts`.
+- [ ] **JSON-LD after graduation**: switch QUT from `affiliation` to `alumniOf` in `lib/seo/person.ts`.
 - [ ] **Phase 7 advisory module** (optional, ships dark; see §5).
 
 ### Content (each becomes a project)

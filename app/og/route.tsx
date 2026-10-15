@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og'
-import { profile } from 'app/content/profile'
+import { profile } from "@/lib/content/profile"
 
 export const runtime = 'edge'
 

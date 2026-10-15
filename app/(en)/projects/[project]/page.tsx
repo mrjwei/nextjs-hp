@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
-import { ProjectView } from "@/components/project-view"
-import { getAllSortedWritings, groupProjects } from "app/utils"
-import { buildStandardMetadata } from "app/seo/metadata"
+import { ProjectView } from "@/components/projects/project-view"
+import { getAllSortedWritings, groupProjects } from "@/lib/content"
+import { buildStandardMetadata } from "@/lib/seo/metadata"
 
 export const dynamic = "force-static"
 export const dynamicParams = false

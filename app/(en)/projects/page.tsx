@@ -1,11 +1,11 @@
-import { ProjectCard } from "@/components/project-card"
-import { WorkTrackFilter } from "@/components/work-track-filter.client"
+import { ProjectCard } from "@/components/projects/project-card"
+import { WorkTrackFilter } from "@/components/projects/work-track-filter.client"
 import {
   getAllSortedWritings,
   getWorkTrackFacets,
   groupProjects,
-} from "app/utils"
-import { buildStandardMetadata } from "app/seo/metadata"
+} from "@/lib/content"
+import { buildStandardMetadata } from "@/lib/seo/metadata"
 
 export const metadata = buildStandardMetadata({
   title: "Projects",

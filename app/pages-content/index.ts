@@ -1,7 +1,7 @@
 import fs from "fs"
 import path from "path"
 import { cache } from "react"
-import type { Lang } from "app/i18n/config"
+import type { Lang } from "@/lib/i18n/config"
 
 export type TPageContent = {
   metadata: { description: string; updatedAt?: string }

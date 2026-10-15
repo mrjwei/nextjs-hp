@@ -1,11 +1,11 @@
-import { Grid } from "@/components/grid"
-import { getAllSortedWritings, getAllSortedWritingCollections } from "app/utils"
-import { normalizeTag, formatTagLabel } from "app/utils/tags"
-import { buildStandardMetadata } from "app/seo/metadata"
+import { Grid } from "@/components/posts/post-grid"
+import { getAllSortedWritings, getAllSortedWritingCollections } from "@/lib/content"
+import { normalizeTag, formatTagLabel } from "@/lib/content/tags"
+import { buildStandardMetadata } from "@/lib/seo/metadata"
 import Link from "next/link"
-import { WritingsTagFilter } from "app/writings/writings-tag-filter.client"
-import { JaEmptyNotice } from "@/components/ja-empty-notice"
-import tagsData from "app/data/tags.json"
+import { WritingsTagFilter } from "@/components/posts/writings-tag-filter.client"
+import { JaEmptyNotice } from "@/components/posts/ja-empty-notice"
+import tagsData from "@/app/data/tags.json"
 
 export const metadata = buildStandardMetadata({
   title: "記事",

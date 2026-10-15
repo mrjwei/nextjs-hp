@@ -1,5 +1,5 @@
-import { baseUrl } from "app/sitemap"
-import { getAllSortedWritings } from "app/utils"
+import { baseUrl } from "@/lib/site"
+import { getAllSortedWritings } from "@/lib/content"
 
 export const revalidate = 3600
 
