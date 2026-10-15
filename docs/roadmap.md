@@ -103,7 +103,7 @@ EN                                   JA
 Pinned now: projects UIUX (the WAmazing booking-form case study, JA only), LingoBun, AI+Sec, Strobe; posts are the four design × AI essays. DEN and KOD go to the front of `highlights.projects` when their case studies land.
 
 1. [ ] **DEN, JA-first**: 「紙とスプレッドシートの福祉事業所に、人の確認を前提とした生成AIを入れる」 — 業務DX + 要件定義 + ◎/○/★ gate + eval results; describe the AI system as a pilot. Needs 加納社長's written permission for screenshots (seed data only). Track: `transformation`.
-2. [ ] **WAmazing case study in EN** (the JA post is project `UIUX`, `track: product-design`, `lead: true`). Jesse drafts or approves the EN version in the vault; publish with the same `project: "UIUX"`. The project ID stays `UIUX` because the case study is written not to identify the organisation.
+2. [x] ~~WAmazing case study in EN~~ — not needed (16 Oct): the case study is for the Japanese market, so it stays JA-only (`requireTranslate: false`). Some posts are geo-specific like this; don't treat a missing translation of one as a gap.
 3. [ ] **Design infrastructure at Zerospec (GoNOW product)**: "Eleven versions of one yellow badge" teaser plus the case study. Track: `design-systems`.
 4. [ ] **KOD**: LLM document checking for a manufacturer, requirements in Japanese. KOD may be named. Track: `ai-engineering`.
 5. [ ] **Capstone evals**: "Most detection gaps were logging gaps", plus the scoring rule that inflated accuracy (75.0% → 97.9%). Needs the supervisor's OK. Track: `security` / `research`.

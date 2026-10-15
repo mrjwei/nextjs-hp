@@ -1,6 +1,6 @@
 # jessewei.net — content and code audit (Oct 2026)
 
-> **Implemented 15 Oct 2026** (Phases 0–7). Retired: the 20 archived posts plus 12 more (§2, Phase 1, and C2). Tags: 17 canonical. Not done by design: the `UIUX` → `WAmazing` rename (X1). Still open, as vault work: the EN WAmazing case study and the JA translations of `designing-infrastructure-not-assets` and `from-requirements-to-assumptions`.
+> **Implemented 15 Oct 2026** (Phases 0–7). Retired: the 20 archived posts plus 12 more (§2, Phase 1, and C2). Tags: 17 canonical. Not done by design: the `UIUX` → `WAmazing` rename (X1). Follow-up (16 Oct): no EN WAmazing case study (JA-only by design); JA translations of `designing-infrastructure-not-assets` and `from-requirements-to-assumptions`.
 
 *Prepared 15 Oct 2026 from an audit of the repo, the live site and the vault, for implementation by Claude Code inside `nextjs-hp`. Builds on `docs/plans/2026-10-10-positioning-rebalance.md`; the positioning there is unchanged.*
 
@@ -57,7 +57,7 @@ To retire a post: delete its MDX (git history and the vault keep a copy), add a 
 - JA About: KOD is the client; the manuals belong to its manufacturer customer (match the EN wording).
 - C6 fix in *Prototyping Made Easy* (EN and JA).
 - Tags: propose a canonical list (≤ ~20, aligned with the work tracks) and apply it only after Jesse's OK.
-- Not written by Claude (Jesse's to-dos): the EN WAmazing case study, and the JA translations of `designing-infrastructure-not-assets` and `from-requirements-to-assumptions`.
+- Not written by Claude (Jesse's to-dos): the JA translations of `designing-infrastructure-not-assets` and `from-requirements-to-assumptions`.
 
 ### Phase 4 — `refactor/dead-code-and-config`
 
