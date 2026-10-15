@@ -64,6 +64,8 @@ export function generateMetadata({ params }) {
       type: "article",
       publishedTime,
       image,
+      // "Coming soon" placeholders are thin pages: keep them out of search results.
+      noIndex: writing.metadata.placeholder,
     })
   }
 

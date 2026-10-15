@@ -21,7 +21,12 @@ export default async function sitemap() {
       : `${baseUrl}${prefix}/posts/${writing.slug}`
   }
 
-  let writings = writingsList.map((writing) => ({
+  // "Coming soon" placeholders are thin pages (noindex): leave them out.
+  // Series and project pages, where they're listed, stay in.
+  const isIndexable = (writing: (typeof writingsList)[number]) =>
+    !writing.metadata.placeholder
+
+  let writings = writingsList.filter(isIndexable).map((writing) => ({
     url: writingUrl(writing, "en"),
     lastModified: writing.metadata.updatedAt ?? writing.metadata.publishedAt,
   }))
@@ -69,7 +74,7 @@ export default async function sitemap() {
   ]
 
   const writingsJaList = getAllSortedWritings("ja")
-  const writingsJa = writingsJaList.map((writing) => ({
+  const writingsJa = writingsJaList.filter(isIndexable).map((writing) => ({
     url: writingUrl(writing, "ja"),
     lastModified: writing.metadata.updatedAt ?? writing.metadata.publishedAt,
   }))
