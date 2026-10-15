@@ -40,14 +40,31 @@ All optional; see `docs/templates/case-study.mdx` for the full skeleton and `Res
 - `lead?: boolean` — marks the post that represents its project on cards (one per project). It doesn't affect list order. See `groupProjects` in `lib/content/index.ts`.
 - `track?: "transformation" | "ai-engineering" | "product-design" | "design-systems" | "security" | "research"` — powers the track filter on `/projects`. Labels: Digital transformation / 業務DX, AI systems / AIシステム, Product design / プロダクトデザイン, Design systems & ops / デザインシステム・デザインOps, Security, Research. Filter order is `trackOrder` in `lib/content/profile.ts`.
 - `draft?: boolean` — excluded from all grids, search, sitemap, RSS, and direct URL access in production (`npm run build`/deploy); still fully visible in `npm run dev`. Unfinished drafts don't live in this repo: they stay outside it (e.g. in the Obsidian vault) until published with `/publish-pipeline`.
-- `placeholder?: boolean` — marks a "coming soon" stand-in for a post that's announced but not written yet (e.g. a later part of a series that an overview already links to). It is listed and reachable like any post, but cards and the post page show a "Coming soon" badge, and it is never picked as a project's lead. Replace the file (dropping the flag) when the real post is published.
-- `archived?: boolean` — excluded from all grids, search, sitemap and RSS, and its URL returns 404 (in dev too).
+- `placeholder?: boolean` — marks a "coming soon" stand-in for a post that's announced but not written yet (e.g. a later part of a series that an overview already links to). Cards and the post page show a "Coming soon" badge, and it is never picked as a project's lead. Where it shows: its series page, its project page, prev/next and "Part N of M" links, and its own URL (which serves `noindex, follow`). Where it doesn't: Home, the all-posts list and tag counts on `/posts` and `/ja/posts`, "You May Also Like", search, the sitemap and RSS. Replace the file (dropping the flag) when the real post is published.
+- `archived?: boolean` — legacy: excluded from all grids, search, sitemap and RSS, and its URL returns 404 (in dev too). Every archived post was deleted on 2026-10-15; retire a post instead (below).
 - `role`, `client`, `industry`, `duration`, `stack: string[]`, `status: "production" | "pilot" | "research" | "shipped" | "archived"`, `confidential?: boolean` — case-study fields. Do not add a `result` field; it has been retired. `client` should be a type, not a name, unless the client has agreed otherwise; set `confidential: true` instead of vague wording when a detail can't be named.
 
 Array-valued frontmatter (like `stack`) uses the same `[...]` JSON syntax as `tags`, e.g. `stack: ["Next.js", "Redis"]`.
+
+## Retiring a post
+
+To take a published post off the site for good (beginner-level, off-positioning or superseded):
+
+1. Delete its MDX (and its JA version, if any) with `git rm`. Git history and the vault keep a copy. Also delete its `public/<slug>/` assets if nothing else uses them.
+2. Add a permanent redirect for its URL, with and without its collection folder (and the `/ja` form, since the JA tree serves a "not translated yet" page for English-only slugs), to `/posts` (or `/ja/posts`) in `next.config.js`. The "Retired posts" rules there take a regex alternation, so usually it means adding the slug to them. If a collection is left empty, redirect its index page too and remove it from `app/data/series.json`.
+3. Mark its vault note with `retired: YYYY-MM-DD` (the pipeline ignores unknown properties; leave `status` as it is). A post with no vault note needs no step here.
+4. Repoint links to it: `node .claude/skills/publish-pipeline/refs.mjs move <key> <new key>` for a replacement post, or grep `app/writings` and the vault (`command grep`, see the pipeline skill) and edit by hand. Remove tags from `app/data/tags.json` that no longer have any posts.
+
+Retired on 2026-10-15: the 20 archived posts, `number-systems/*`, `multifunctional-ai-assistant/*`, `ai-powered-app-for-speaking-test-prep`, `ai-powered-speaking-tutor`, `how-to-reorder-and-squash-with-git`, `github-actions-ec2-deployment-troubleshooting-guide`, `how-i-made-my-program-140-times-faster`, `vibe-coding-as-learning-experience`, and the never-rendered `app/series/` (Perfmate).
+
+## Tags
+
+`app/data/tags.json` holds the canonical tags (17 since 2026-10-15) and their colours; the `/posts` filter shows exactly these. Use only these in posts: ai, llm, agents, evals, machine-learning, deep-learning, design, uiux, casestudy, process, productivity, dev, web, security, auth, aws, qut. Tags aren't vault properties and `/update-pipeline` keeps a post's tags, so change them in the MDX. A new tag needs an entry in `tags.json`.
 
 ## Publishing with Claude Code
 
 Drafts live outside this repo, in the Obsidian vault (`~/projects/Notes`), which is the single source of truth for every post, project write-up and translation. Run `/publish-pipeline` to work the queue, or `/publish-pipeline <note path>` for specific notes. It publishes Ready notes, writes their translations into the vault next to the originals (held for review when the self-check flags anything), publishes reviewed translations, and updates the notes' frontmatter. The pipeline is driven by the notes' frontmatter; see `.claude/skills/publish-pipeline/SKILL.md` for the properties and the review flow.
 
 To change a published post, edit its note and set its status to `Updated`, then run `/update-pipeline`. It writes each note's current content into its post as is (keeping the post's URL and frontmatter), sets `updatedAt` (shown as "Updated" next to the publish date: the deploy day, unless you set the note's `updatedAt` to another date), updates link text in other posts that quotes a changed title, deploys every queued update in one build and sets the notes back to Published. Each language's note is updated on its own. See `.claude/skills/update-pipeline/SKILL.md`.
+
+`public/search-index.json` and `app/data/content-index.json` are generated (by `prebuild` and `predev`) and gitignored, so the pipeline step that restores `public/search-index.json` before committing has nothing to do.
