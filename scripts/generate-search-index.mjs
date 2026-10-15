@@ -16,8 +16,9 @@ async function generateSearchIndex() {
   const contentIndexStr = await fs.readFile(CONTENT_INDEX_PATH, "utf-8");
   const contentIndex = JSON.parse(contentIndexStr);
 
-  // Archived and draft entries 404 on the site, so they must not be searchable.
-  const isListed = (p) => !p.metadata?.archived && !p.metadata?.draft;
+  // Archived and draft entries 404 on the site, and "coming soon" placeholders
+  // have no content yet, so none of them are searchable.
+  const isListed = (p) => !p.metadata?.archived && !p.metadata?.draft && !p.metadata?.placeholder;
   const allPosts = [
     ...(contentIndex.writings || []).map(p => ({ ...p, type: 'writing' }))
   ].filter(isListed);

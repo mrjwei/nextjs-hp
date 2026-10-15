@@ -19,7 +19,9 @@ export const metadata = buildStandardMetadata({
 export const dynamic = "force-static"
 
 export default async function Page() {
-  const writings = getAllSortedWritings("ja")
+  // "Coming soon" placeholders stay off the all-posts list and out of the tag
+  // counts; they're still listed on their series and project pages.
+  const writings = getAllSortedWritings("ja").filter((w) => !w.metadata.placeholder)
 
   const knownTags: Record<string, { color: string }> = tagsData
 
