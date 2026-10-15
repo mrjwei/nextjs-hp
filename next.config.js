@@ -128,6 +128,33 @@ module.exports = {
         destination: "/ja/posts/austride-overview",
         permanent: true,
       },
+      // Retired posts (2026-10-15): beginner-level, assignment-specific or
+      // off-positioning posts, deleted from the repo (git history and the
+      // vault keep a copy). Their URLs, with or without the old collection
+      // folder, the retired collection pages and the emptied /posts/git tag
+      // page go to the Posts index.
+      {
+        source: "/posts/:folder(number-systems|multifunctional-ai-assistant)/:slug",
+        destination: "/posts",
+        permanent: true,
+      },
+      {
+        source:
+          "/posts/:slug(git|number-systems|number-systems-1|number-systems-2|representing-negative-binary-numbers|multifunctional-ai-assistant|multifunctional-ai-assistant-1|multifunctional-ai-assistant-2|multifunctional-ai-assistant-3|ai-powered-app-for-speaking-test-prep|ai-powered-speaking-tutor|how-to-reorder-and-squash-with-git|github-actions-ec2-deployment-troubleshooting-guide|how-i-made-my-program-140-times-faster|vibe-coding-as-learning-experience)",
+        destination: "/posts",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/:folder(number-systems|multifunctional-ai-assistant)/:slug",
+        destination: "/ja/posts",
+        permanent: true,
+      },
+      {
+        source:
+          "/ja/posts/:slug(number-systems|number-systems-1|number-systems-2|representing-negative-binary-numbers|multifunctional-ai-assistant|multifunctional-ai-assistant-1|multifunctional-ai-assistant-2|multifunctional-ai-assistant-3|ai-powered-app-for-speaking-test-prep|ai-powered-speaking-tutor|how-to-reorder-and-squash-with-git|github-actions-ec2-deployment-troubleshooting-guide|how-i-made-my-program-140-times-faster|vibe-coding-as-learning-experience)",
+        destination: "/ja/posts",
+        permanent: true,
+      },
       // Old /portfolio section (retired 2026-09; case studies folded into
       // /posts). Specific slugs first, then a catch-all.
       {
