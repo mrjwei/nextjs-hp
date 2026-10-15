@@ -82,7 +82,7 @@ export const trackOrder: WorkTrack[] = [
 export const profile: Record<Lang, Profile> = {
   en: {
     role: "Product designer & engineer",
-    eyebrow: "Product designer & engineer · Design × frontend × AI · Japan",
+    eyebrow: "Product designer & engineer · Design × frontend × AI · Brisbane, Australia",
     headline: "Changing how people work, through design and AI.",
     subhead:
       "Ten years of B2B product design and 3+ years leading frontend. I've helped a paper-run welfare business onto digital workflows, cut a booking flow's peak-season inquiries from 200+ a week to about four, and built a first design system for a team that had none. Now I build LLM features into real operations, with a person at every decision that matters.",
@@ -90,7 +90,7 @@ export const profile: Record<Lang, Profile> = {
       title:
         "Jesse Wei — Product designer & engineer for digital and AI transformation",
       description:
-        "Product designer and frontend engineer with ten years in B2B, bringing digital and AI-assisted workflows into businesses that run on paper, spreadsheets and legacy code — from requirements to a system people adopt. Based in Japan; works in English, Japanese and Chinese.",
+        "Product designer and frontend engineer with ten years in B2B, bringing digital and AI-assisted workflows into businesses that run on paper, spreadsheets and legacy code — from requirements to a system people adopt. Based in Brisbane, Australia; works in Chinese, English, Japanese and Korean.",
     },
     proof: [
       { label: "10 yrs B2B product · 3+ yrs frontend lead" },
@@ -128,14 +128,14 @@ export const profile: Record<Lang, Profile> = {
   },
   ja: {
     role: "プロダクトデザイナー／エンジニア",
-    eyebrow: "プロダクトデザイナー／エンジニア・UX×フロントエンド×生成AI・日本",
+    eyebrow: "プロダクトデザイナー／エンジニア・UX×フロントエンド×生成AI・オーストラリア・ブリスベン",
     headline: "デザインとAIで、人の働き方を変える。",
     subhead:
       "B2Bプロダクトデザイン10年、フロントエンド開発リード3年以上。紙で回っていた福祉事業のDX、繁忙期の問い合わせを週200件超から約4件に減らした予約フロー改善、デザインの土台がなかった組織での初のデザインシステム構築。いまは、要所に人の確認を組み込んだ生成AI機能を、実際の業務に実装しています。",
     meta: {
       title: "Jesse Wei — 業務DX・生成AI実装を担うプロダクトデザイナー／エンジニア",
       description:
-        "B2Bプロダクトデザイン10年・フロントエンド開発リードの経験を持つプロダクトデザイナー／エンジニア。紙・スプレッドシート・レガシーシステムで回る業務に、デジタルと生成AIを組み込みます。要件定義から設計・開発・定着まで一貫して担当。拠点は日本、英語・日本語・中国語に対応。",
+        "B2Bプロダクトデザイン10年・フロントエンド開発リードの経験を持つプロダクトデザイナー／エンジニア。紙・スプレッドシート・レガシーシステムで回る業務に、デジタルと生成AIを組み込みます。要件定義から設計・開発・定着まで一貫して担当。拠点はオーストラリア・ブリスベン、中国語・英語・日本語・韓国語に対応。",
     },
     proof: [
       { label: "B2Bプロダクト10年・フロントエンドリード3年以上" },
