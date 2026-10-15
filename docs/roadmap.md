@@ -108,7 +108,7 @@ Pinned now: projects UIUX (the WAmazing booking-form case study, JA only), Lingo
 4. [ ] **KOD**: LLM document checking for a manufacturer, requirements in Japanese. KOD may be named. Track: `ai-engineering`.
 5. [ ] **Capstone evals**: "Most detection gaps were logging gaps", plus the scoring rule that inflated accuracy (75.0% → 97.9%). Needs the supervisor's OK. Track: `security` / `research`.
 6. [x] **LingoBun** reframed as AI product hardening.
-7. [ ] **JA translations of the pinned essays**: `ai-productivity-gains-not-evenly-shared` has `requireTranslate: true` on its vault note (run `/publish-pipeline`). `designing-infrastructure-not-assets` and `from-requirements-to-assumptions` have no vault note yet, so one must be created before the pipeline can translate them.
+7. [x] **JA translations of the pinned essays**: all three are published (`designing-infrastructure-not-assets` and `from-requirements-to-assumptions` on 16 Oct, via new vault notes in `Design/`).
 
 Keep publishing the coursework explainers (Strobe, VAE, Transformers); they show learning velocity but aren't pinned.
 
