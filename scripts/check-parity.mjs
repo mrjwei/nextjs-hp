@@ -2,12 +2,12 @@ import fs from "fs/promises";
 import path from "path";
 
 // Warns (never fails the build) when a Home pin in `highlights`
-// (app/content/profile.ts) has no match in a language, so EN/JA gaps are
+// (lib/content/profile.ts) has no match in a language, so EN/JA gaps are
 // visible at build time. Home skips such pins silently.
 
 const CWD = process.cwd();
 const CONTENT_INDEX_PATH = path.join(CWD, "app", "data", "content-index.json");
-const PROFILE_PATH = path.join(CWD, "app", "content", "profile.ts");
+const PROFILE_PATH = path.join(CWD, "lib", "content", "profile.ts");
 
 // Reads the string array assigned to `key` inside the `highlights` object.
 function readPins(source, key) {

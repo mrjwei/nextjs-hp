@@ -1,8 +1,8 @@
 import Link from "next/link"
-import { getAllSortedWritingCollections } from "app/utils"
-import { buildStandardMetadata } from "app/seo/metadata"
-import { BackLink } from "@/components/back-link"
-import { SeriesIndexView } from "app/writings/series-index.client"
+import { getAllSortedWritingCollections } from "@/lib/content"
+import { buildStandardMetadata } from "@/lib/seo/metadata"
+import { BackLink } from "@/components/layout/back-link"
+import { SeriesIndexView } from "@/components/posts/series-index.client"
 
 export const metadata = buildStandardMetadata({
   title: "Series",

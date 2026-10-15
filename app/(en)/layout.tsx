@@ -2,10 +2,10 @@ import "../global.css"
 
 import type { Metadata } from "next"
 import Script from "next/script"
-import { RootShell } from "@/components/root-shell"
-import { geistSans, geistMono, newsreader } from "app/data/fonts"
-import { baseUrl } from "../sitemap"
-import { profile } from "app/content/profile"
+import { RootShell } from "@/components/layout/root-shell"
+import { geistSans, geistMono, newsreader } from "@/lib/fonts"
+import { baseUrl } from "@/lib/site"
+import { profile } from "@/lib/content/profile"
 
 const { title: metaTitle, description: metaDescription } = profile.en.meta
 

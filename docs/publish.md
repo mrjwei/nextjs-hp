@@ -24,9 +24,9 @@ To add a new project: set `project: "<ID>"` (one word, at most 12 characters, e.
 
 Series and projects are mutually exclusive: a post is in one series or one project, never both. A project is not a folder: its posts live at the root of `app/writings/posts/` (and `posts-ja/`), each carrying the project ID, so their URLs are `/posts/<slug>` and the project is browsed at `/projects/<project-slug>`. A post in a topic series folder (e.g. `ai-agent`) has no `project`, even when it uses a project as its example. A project's own "Part N of M" sequence uses `partOf`/`partNumber` at the root, with no folder.
 
-`/projects` (and Home's "Selected projects") show **one card per project** (`groupProjects` in `app/utils/index.ts`). Projects are ordered newest first by each project's most recent post, the same as `/posts`. The card shows the project's lead post (the one with `lead: true`, else the most recent), so mark the overview post `lead: true`. When a project spans several posts, the card shows an "N articles" badge and links to `/projects/<project-slug>`, a page listing every post in the project. The slug is the lowercased ID with non-alphanumerics as hyphens, e.g. `AI+Sec` → `/projects/ai-sec`. A single-post project's card links straight to the post. The project badge on post pages links to the project page.
+`/projects` (and Home's "Selected projects") show **one card per project** (`groupProjects` in `lib/content/index.ts`). Projects are ordered newest first by each project's most recent post, the same as `/posts`. The card shows the project's lead post (the one with `lead: true`, else the most recent), so mark the overview post `lead: true`. When a project spans several posts, the card shows an "N articles" badge and links to `/projects/<project-slug>`, a page listing every post in the project. The slug is the lowercased ID with non-alphanumerics as hyphens, e.g. `AI+Sec` → `/projects/ai-sec`. A single-post project's card links straight to the post. The project badge on post pages links to the project page.
 
-Home shows 4 projects and 4 posts, newest first, skipping posts already shown as a project card. To pin something there regardless of date, add its project ID or post slug to `highlights` in `app/content/profile.ts`. Pins come first in the listed order and the remaining slots fill with the latest. One list covers EN and JA.
+Home shows 4 projects and 4 posts, newest first, skipping posts already shown as a project card. To pin something there regardless of date, add its project ID or post slug to `highlights` in `lib/content/profile.ts`. Pins come first in the listed order and the remaining slots fill with the latest. One list covers EN and JA.
 
 The `casestudy` tag is an ordinary tag; it has no effect on routing or on `/projects`.
 
@@ -34,11 +34,11 @@ Old URLs (`/writings/*`, `/work`, `/work/[slug]`, and the `/ja` equivalents) per
 
 ## Project frontmatter
 
-All optional; see `docs/templates/case-study.mdx` for the full skeleton and `ResultBlock`/`WorkCard` (`components/`) for how they render:
+All optional; see `docs/templates/case-study.mdx` for the full skeleton and `ResultBlock`/`WorkCard` (`components/projects/`) for how they render:
 
 - `project?: string` — see above.
-- `lead?: boolean` — marks the post that represents its project on cards (one per project). It doesn't affect list order. See `groupProjects` in `app/utils/index.ts`.
-- `track?: "transformation" | "ai-engineering" | "product-design" | "design-systems" | "security" | "research"` — powers the track filter on `/projects`. Labels: Digital transformation / 業務DX, AI systems / AIシステム, Product design / プロダクトデザイン, Design systems & ops / デザインシステム・デザインOps, Security, Research. Filter order is `trackOrder` in `app/content/profile.ts`.
+- `lead?: boolean` — marks the post that represents its project on cards (one per project). It doesn't affect list order. See `groupProjects` in `lib/content/index.ts`.
+- `track?: "transformation" | "ai-engineering" | "product-design" | "design-systems" | "security" | "research"` — powers the track filter on `/projects`. Labels: Digital transformation / 業務DX, AI systems / AIシステム, Product design / プロダクトデザイン, Design systems & ops / デザインシステム・デザインOps, Security, Research. Filter order is `trackOrder` in `lib/content/profile.ts`.
 - `draft?: boolean` — excluded from all grids, search, sitemap, RSS, and direct URL access in production (`npm run build`/deploy); still fully visible in `npm run dev`. Unfinished drafts don't live in this repo: they stay outside it (e.g. in the Obsidian vault) until published with `/publish-pipeline`.
 - `placeholder?: boolean` — marks a "coming soon" stand-in for a post that's announced but not written yet (e.g. a later part of a series that an overview already links to). It is listed and reachable like any post, but cards and the post page show a "Coming soon" badge, and it is never picked as a project's lead. Replace the file (dropping the flag) when the real post is published.
 - `archived?: boolean` — excluded from all grids, search, sitemap and RSS, and its URL returns 404 (in dev too).

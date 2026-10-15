@@ -22,13 +22,21 @@ Jesse Wei's personal site: a bilingual (EN/JA) portfolio and blog. EN is served 
 
 Quality gates for every change: `npm run lint && npm run typecheck && npm run build`. `scripts/check-parity.mjs` prints a warning (it never fails the build) when a Home pin is missing in one language.
 
+## Layout
+
+- `app/`: routes only, plus the content the pipeline writes: `app/writings/posts{,-ja}/`, `app/data/*.json` and `app/pages-content/`
+- `components/`: `ui/` (shadcn primitives), `layout/` (shell, header, footer, search), `home/`, `posts/`, `projects/`
+- `lib/`: non-route modules: `content/` (content loading, profile and config), `seo/`, `i18n/`, plus `site.ts`, `fonts.ts`, `icons.tsx`, `analytics.ts` and `utils.ts`
+- `scripts/`: index generators and the parity check, run by `prebuild` / `predev`
+- Imports always use the `@/` alias
+
 ## Content model
 
 - **Posts** are MDX files in `app/writings/posts/` (EN) and `app/writings/posts-ja/` (JA). A JA translation has the same path in the JA tree. A subfolder is a topic series; its display titles live in `app/data/series.json`.
 - **Projects** are a view over posts: any post with a `project` ID in its frontmatter is listed at `/projects`. `/posts/...` URLs are always canonical.
-- **Frontmatter** (`title`, `summary`, `tags`, `project`, `lead`, `track`, `placeholder`, `draft`, case-study fields, …) is validated in `app/utils/index.ts` and `scripts/generate-content-index.mjs`. Full rules: [`docs/publish.md`](docs/publish.md).
+- **Frontmatter** (`title`, `summary`, `tags`, `project`, `lead`, `track`, `placeholder`, `draft`, case-study fields, …) is validated in `lib/content/index.ts` and `scripts/generate-content-index.mjs`. Full rules: [`docs/publish.md`](docs/publish.md).
 - **Tags** and their colours: `app/data/tags.json` (the `/posts` filter shows exactly these).
-- **Positioning** (role, headline, proof strip, Home pins, track order) is data in `app/content/profile.ts`.
+- **Positioning** (role, headline, proof strip, Home pins, track order) is data in `lib/content/profile.ts`.
 - **About pages**: `app/pages-content/{en,ja}/about.mdx`.
 - **Generated, not committed**: `app/data/content-index.json` and `public/search-index.json`, rebuilt by `prebuild` / `predev`.
 - **Redirects** for moved and retired URLs: `next.config.js`.
@@ -46,7 +54,7 @@ The pipeline scripts read the vault from `$VAULT` (default `~/projects/Notes`). 
 
 Copy `.env.example` to `.env.local` and fill it in.
 
-- `BUTTONDOWN_USERNAME`: Buttondown account for the footer newsletter form (`components/newsletter-form.tsx` → `app/api/newsletter/subscribe/route.ts`). Without it, the API route answers that the newsletter isn't configured.
+- `BUTTONDOWN_USERNAME`: Buttondown account for the footer newsletter form (`components/layout/newsletter-form.tsx` → `app/api/newsletter/subscribe/route.ts`). Without it, the API route answers that the newsletter isn't configured.
 
 ## Docs
 

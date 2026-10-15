@@ -1,0 +1,27 @@
+import { Search, Workflow, PenTool, FlaskConical } from "lucide-react"
+import type { HowIWorkItem } from "@/lib/content/profile"
+
+const icons = [Search, Workflow, PenTool, FlaskConical]
+
+export function HowIWork({ items }: { items: HowIWorkItem[] }) {
+  if (!items.length) return null
+
+  return (
+    <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-10 lg:grid-cols-4">
+      {items.map((item, i) => {
+        const Icon = icons[i % icons.length]
+        return (
+          <div key={item.title}>
+            <Icon className="size-5 text-[var(--accent-text)]" strokeWidth={1.75} />
+            <h3 className="mt-4 text-base font-semibold text-[var(--text-strong)]">
+              {item.title}
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">
+              {item.body}
+            </p>
+          </div>
+        )
+      })}
+    </div>
+  )
+}

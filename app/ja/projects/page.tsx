@@ -1,12 +1,12 @@
-import { ProjectCard } from "@/components/project-card"
-import { WorkTrackFilter } from "@/components/work-track-filter.client"
+import { ProjectCard } from "@/components/projects/project-card"
+import { WorkTrackFilter } from "@/components/projects/work-track-filter.client"
 import {
   getAllSortedWritings,
   getWorkTrackFacets,
   groupProjects,
-} from "app/utils"
-import { buildStandardMetadata } from "app/seo/metadata"
-import { JaEmptyNotice } from "@/components/ja-empty-notice"
+} from "@/lib/content"
+import { buildStandardMetadata } from "@/lib/seo/metadata"
+import { JaEmptyNotice } from "@/components/posts/ja-empty-notice"
 
 export const metadata = buildStandardMetadata({
   title: "プロジェクト",

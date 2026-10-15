@@ -1,21 +1,21 @@
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Grid } from "@/components/grid"
-import { ProjectCard } from "@/components/project-card"
-import { JaEmptyNotice } from "@/components/ja-empty-notice"
-import { ProofStrip } from "@/components/proof-strip"
-import { HowIWork } from "@/components/how-i-work"
-import { TrackedLink } from "@/components/tracked-link"
-import { JsonLd } from "@/components/json-ld"
-import { buildPersonJsonLd } from "app/seo/person"
+import { Grid } from "@/components/posts/post-grid"
+import { ProjectCard } from "@/components/projects/project-card"
+import { JaEmptyNotice } from "@/components/posts/ja-empty-notice"
+import { ProofStrip } from "@/components/home/proof-strip"
+import { HowIWork } from "@/components/home/how-i-work"
+import { TrackedLink } from "@/components/layout/tracked-link"
+import { JsonLd } from "@/components/layout/json-ld"
+import { buildPersonJsonLd } from "@/lib/seo/person"
 import {
   getAllSortedWritings,
   groupProjects,
   isProject,
   pickHighlights,
-} from "app/utils"
-import { highlights, profile } from "app/content/profile"
+} from "@/lib/content"
+import { highlights, profile } from "@/lib/content/profile"
 
 export default function Page() {
   const writings = getAllSortedWritings("ja")

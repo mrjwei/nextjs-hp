@@ -2,9 +2,8 @@ import {
   getAllSortedWritings,
   getProjectHref,
   groupProjects,
-} from "app/utils"
-
-export const baseUrl = "https://jessewei.net"
+} from "@/lib/content"
+import { baseUrl } from "@/lib/site"
 
 export default async function sitemap() {
   const writingsList = getAllSortedWritings()

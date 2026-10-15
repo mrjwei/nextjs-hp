@@ -4,7 +4,7 @@ import path from "node:path";
 const CWD = process.cwd();
 const OUTPUT_PATH = path.join(CWD, "app", "data", "content-index.json");
 // Series display titles, keyed by folder slug then lang (see getSeriesTitle
-// in app/utils/index.ts).
+// in lib/content/index.ts).
 const SERIES_TITLES = JSON.parse(
   fs.readFileSync(path.join(CWD, "app", "data", "series.json"), "utf-8")
 );

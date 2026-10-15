@@ -1,12 +1,12 @@
 import Image from "next/image"
 import Link from "next/link"
-import { CustomMDX } from "@/components/mdx"
-import { ExtLink } from "@/components/ext-link"
-import { JsonLd } from "@/components/json-ld"
-import { buildStandardMetadata } from "app/seo/metadata"
-import { personSchema } from "app/seo/person"
-import { getPageContent } from "app/pages-content"
-import { profile } from "app/content/profile"
+import { CustomMDX } from "@/components/posts/mdx"
+import { ExtLink } from "@/components/layout/ext-link"
+import { JsonLd } from "@/components/layout/json-ld"
+import { buildStandardMetadata } from "@/lib/seo/metadata"
+import { personSchema } from "@/lib/seo/person"
+import { getPageContent } from "@/app/pages-content"
+import { profile } from "@/lib/content/profile"
 
 const about = getPageContent("about", "ja")
 

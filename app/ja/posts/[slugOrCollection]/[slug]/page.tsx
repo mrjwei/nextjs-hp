@@ -1,24 +1,24 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { CustomMDX } from "@/components/mdx"
-import { PrevNext } from "@/components/prev-next"
-import { BackToTop } from "@/components/back-to-top"
-import { WritingCard } from "@/components/article-card"
-import { Tags } from "@/components/tags"
-import { ResultBlock } from "@/components/result-block"
-import { ProjectBadge } from "@/components/project-badge"
-import { ComingSoonBadge } from "@/components/coming-soon-badge"
-import { ReadingSeriesBadge } from "@/components/reading-series"
-import { BackLink } from "@/components/back-link"
+import { CustomMDX } from "@/components/posts/mdx"
+import { PrevNext } from "@/components/posts/prev-next"
+import { BackToTop } from "@/components/layout/back-to-top"
+import { WritingCard } from "@/components/posts/article-card"
+import { Tags } from "@/components/posts/tags"
+import { ResultBlock } from "@/components/projects/result-block"
+import { ProjectBadge } from "@/components/projects/project-badge"
+import { ComingSoonBadge } from "@/components/posts/coming-soon-badge"
+import { ReadingSeriesBadge } from "@/components/posts/reading-series"
+import { BackLink } from "@/components/layout/back-link"
 import {
   formatDate,
   getAllSortedWritings,
   getWritingBySlug,
   getWritingHref,
   getProjectHref,
-} from "app/utils"
-import { baseUrl } from "app/sitemap"
-import { buildStandardMetadata } from "app/seo/metadata"
+} from "@/lib/content"
+import { baseUrl } from "@/lib/site"
+import { buildStandardMetadata } from "@/lib/seo/metadata"
 
 export const dynamic = "force-static"
 export const dynamicParams = true
