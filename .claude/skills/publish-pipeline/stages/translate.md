@@ -22,7 +22,7 @@ Write the translation of a Published original as a new vault note in the same fo
 
 ## 3. Write the note
 
-Write the body as ordinary Obsidian Markdown, as the original note is written: no table of contents (publish regenerates it) and no MDX wrappers. Each image becomes an embed with its translated alt text, `![[assets/<folder>/file.png|alt text]]`, with its caption, if any, as an italic line directly below. `<folder>/file.png` is the image's path under `public/`. If that file isn't in the vault's `assets/<folder>/` yet, copy it there. Frontmatter:
+Write the body as ordinary Obsidian Markdown, as the original note is written: no table of contents (publish regenerates it) and no MDX wrappers. Each image becomes an embed with its translated alt text, `![[assets/<folder>/file.png|alt text]]`, with its caption, if any, as an italic line directly below. `<folder>/file.png` is the image's path under `public/`. If that file isn't in the vault's `assets/<folder>/` yet, copy it there. A video is embedded the same way with its translated `aria-label` (`![[assets/<folder>/file.webm|description]]`). Images in a `figure-row` stay side by side on one line, each with its alt text. Frontmatter:
 
 ```yaml
 status:

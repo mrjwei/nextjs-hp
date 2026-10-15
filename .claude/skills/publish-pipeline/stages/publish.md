@@ -45,6 +45,26 @@ Skip whatever the note already satisfies. Check the house format with `head -n 4
   ```
 
   An image you can't find → blocked. In an embed, text after `|` is the alt text (a number is a width, so ignore it); without it, write the alt text yourself. An italic line directly below an image is its caption. Notes written by the translate stage use both.
+- Images side by side (several embeds on one line): one figure with a `figure-row` div, which stacks them one per line below 768px and shows a row from 768px (`app/global.css`). No `style` on the images, except a width from the note: those widths become each image's share of the row, as `--row-flex`. An image that would look oversized at full width when stacked (a phone screenshot) gets a `maxWidth` of its natural size. A single image that is itself several screens side by side: split it into one file per screen (crop at the gaps) and use a row.
+
+  ```mdx
+  <figure style={{ textAlign: "center" }}>
+    <div className="figure-row">
+      <img src="/<folder>/a.png" alt="…" style={{ "--row-flex": "289" }} />
+      <img src="/<folder>/b.png" alt="…" style={{ "--row-flex": "365" }} />
+    </div>
+    <figcaption>Caption, if there is one</figcaption>
+  </figure>
+  ```
+
+- Videos: screen recordings are `.webm` (`![[file.webm]]`, or `![[file.webm|description]]`), copied like images and played like a GIF: muted, looping, with controls. Text after `|` is the description for `aria-label`; without it, write one from the recording (check frames with `ffmpeg -i file.webm -vf "fps=1/2,scale=800:-1,tile=3x3" -frames:v 1 tile.png`, which is also the PII check). An italic line directly below is the caption. Another video format → convert it to `.webm` (VP9) first. Width comes from `app/global.css`.
+
+  ```mdx
+  <figure style={{ textAlign: "center" }}>
+    <video src="/<folder>/file.webm" aria-label="…" autoPlay loop muted playsInline controls preload="metadata" style={{ marginBottom: "8px" }} />
+    <figcaption>Caption, if there is one</figcaption>
+  </figure>
+  ```
 - Remove an H1 that only repeats the title. With several H2 sections, add a table of contents after the frontmatter in the format of existing posts (`- [Heading](#heading)`), with anchors from the headings as written.
 - Links to other posts: see step 4. Other wikilinks (images aside) → plain text. Callouts → a blockquote or a bold lead-in. Escape bare `<` and `{` outside code. Leave other standard Markdown as it is.
 

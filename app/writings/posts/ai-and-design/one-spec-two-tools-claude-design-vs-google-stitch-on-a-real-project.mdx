@@ -55,7 +55,11 @@ One caveat up front: the prompt was written by Claude. I don't think it favoured
 Here's the same screen, *Project overview*, from all three runs. The full set of screens is in the appendix at the end.
 
 <figure style={{ textAlign: "center" }}>
-  <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/compare-project-overview.png" alt="The project overview screen side by side from Google Stitch E1, Google Stitch E2 and Claude Design" style={{ marginBottom: "8px" }} />
+  <div className="figure-row">
+    <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/compare-project-overview-stitch-e1.png" alt="Google Stitch E1 (one prompt for everything): the project overview screen" />
+    <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/compare-project-overview-stitch-e2.png" alt="Google Stitch E2 (one prompt per screen): the project overview screen" />
+    <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/compare-project-overview-claude-design.png" alt="Claude Design (one prompt for everything): the project overview screen" />
+  </div>
 </figure>
 
 At a glance they look like siblings: greyscale, ink-black primary button, a left sidebar with a project tree, a table of documents with status badges. Look closer and the differences start to show, and they tell most of the story.
@@ -102,9 +106,9 @@ So E2 and Claude Design are the two that look most alike, and the design specs w
 Stitch's screens also drift *within* themselves. In E1's document view, the main content column doesn't line up with the card above it, and the typography varies from block to block. Claude Design's version of the same screen applies the system consistently, with little or no drift.
 
 <figure style={{ textAlign: "center" }}>
-  <div style={{ display: "flex", gap: "8px", justifyContent: "center", alignItems: "flex-start", flexWrap: "wrap" }}>
-    <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/stitch-e1-inconsistency.png" alt="Cropped Stitch E1 document view, where the main content column doesn't line up with the card above it" style={{ width: "289px", maxWidth: "100%", marginBottom: "8px" }} />
-    <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-07a.png" alt="Claude Design's document view" style={{ width: "365px", maxWidth: "100%", marginBottom: "8px" }} />
+  <div className="figure-row">
+    <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/stitch-e1-inconsistency.png" alt="Cropped Stitch E1 document view, where the main content column doesn't line up with the card above it" style={{ "--row-flex": "289" }} />
+    <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-07a.png" alt="Claude Design's document view" style={{ "--row-flex": "365" }} />
   </div>
   <figcaption>Document view: Stitch E1 (left), with misaligned content widths; Claude Design (right).</figcaption>
 </figure>
@@ -143,7 +147,7 @@ Stitch used 38 credits for both experiments together, out of a free daily allowa
 **Google Stitch** is AI-first: almost every action, including editing, goes through the AI.
 
 <figure style={{ textAlign: "center" }}>
-  <video src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/google-stitch.webm" autoPlay loop muted playsInline controls style={{ width: "100%", marginBottom: "8px" }} />
+  <video src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/google-stitch.webm" aria-label="Screen recording of Google Stitch generating the job progress screen from a prompt, step by step" autoPlay loop muted playsInline controls preload="metadata" style={{ marginBottom: "8px" }} />
 </figure>
 
 <figure style={{ textAlign: "center" }}>
@@ -159,7 +163,7 @@ Manual tools exist, but they're limited, and getting to them is awkward. After c
 **Claude Design's** canvas is more interactive. It supports dragging and zooming, and the generated screens are laid out in a grid with tabs, so it's easy to move between screens and review them.
 
 <figure style={{ textAlign: "center" }}>
-  <video src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design.webm" autoPlay loop muted playsInline controls style={{ width: "100%", marginBottom: "8px" }} />
+  <video src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design.webm" aria-label="Screen recording of Claude Design's canvas: zooming and scrolling through the generated log-in, sign-up and empty-state screens" autoPlay loop muted playsInline controls preload="metadata" style={{ marginBottom: "8px" }} />
 </figure>
 
 The chat panel on the left works like most chat interfaces: simple and familiar.
@@ -400,10 +404,10 @@ AI chat panel:
 Mobile:
 
 <figure style={{ textAlign: "center" }}>
-  <div style={{ display: "flex", gap: "8px", justifyContent: "center", alignItems: "flex-start", flexWrap: "wrap" }}>
-    <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-12a.png" alt="Claude Design: 390px mobile screen, frame 12a" style={{ width: "221px", maxWidth: "100%", marginBottom: "8px" }} />
-    <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-12b.png" alt="Claude Design: 390px mobile screen, frame 12b" style={{ width: "221px", maxWidth: "100%", marginBottom: "8px" }} />
-    <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-12c.png" alt="Claude Design: 390px mobile screen, frame 12c" style={{ width: "221px", maxWidth: "100%", marginBottom: "8px" }} />
+  <div className="figure-row">
+    <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-12a.png" alt="Claude Design: 390px mobile screen, frame 12a" style={{ maxWidth: "390px" }} />
+    <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-12b.png" alt="Claude Design: 390px mobile screen, frame 12b" style={{ maxWidth: "390px" }} />
+    <img src="/one-spec-two-tools-claude-design-vs-google-stitch-on-a-real-project/claude-design-12c.png" alt="Claude Design: 390px mobile screen, frame 12c" style={{ maxWidth: "390px" }} />
   </div>
 </figure>
 
