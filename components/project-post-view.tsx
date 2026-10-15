@@ -164,9 +164,9 @@ export function ProjectPostView({
         />
         <div className="flex justify-between items-center mt-2 mb-12 text-sm border-b border-[var(--border-subtle)] pb-6">
           <p className="text-sm text-[var(--text-muted)]">
-            {t.published} {formatDate(writing.metadata.publishedAt, false, lang)}
+            {t.published} {formatDate(writing.metadata.publishedAt, lang)}
             {writing.metadata.updatedAt && (
-              <> · {t.updated} {formatDate(writing.metadata.updatedAt, false, lang)}</>
+              <> · {t.updated} {formatDate(writing.metadata.updatedAt, lang)}</>
             )}
           </p>
         </div>

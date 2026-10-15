@@ -33,7 +33,7 @@ export type TMetadata = {
   partOfTitle?: string
   partNumber?: number
   lang?: Lang
-  // Positioning-as-data content knobs (see docs/roadmap/2026-09-ai-repositioning-brushup.md §4).
+  // Positioning-as-data content knobs (see docs/publish.md, "Project frontmatter").
   // Marks the post that represents its project on cards (see groupProjects).
   lead?: boolean
   track?: WorkTrack
@@ -612,45 +612,22 @@ export function getWritingBySlug(slug: string, lang: Lang = "en"): TContentItem 
 }
 
 // Japanese pages show dates as yyyy-mm-dd; English ones as dd/mm/yyyy (en-AU).
-export function formatDate(date: string, includeRelative = false, lang: Lang = "en") {
-  let currentDate = new Date()
+export function formatDate(date: string, lang: Lang = "en") {
   if (!date.includes("T")) {
     date = `${date}T00:00:00`
   }
-  let targetDate = new Date(date)
+  const targetDate = new Date(date)
 
   if (lang === "ja") {
     const pad = (n: number) => String(n).padStart(2, "0")
     return `${targetDate.getFullYear()}-${pad(targetDate.getMonth() + 1)}-${pad(targetDate.getDate())}`
   }
 
-  let yearsAgo = currentDate.getFullYear() - targetDate.getFullYear()
-  let monthsAgo = currentDate.getMonth() - targetDate.getMonth()
-  let daysAgo = currentDate.getDate() - targetDate.getDate()
-
-  let formattedDate = ""
-
-  if (yearsAgo > 0) {
-    formattedDate = `${yearsAgo}y ago`
-  } else if (monthsAgo > 0) {
-    formattedDate = `${monthsAgo}mo ago`
-  } else if (daysAgo > 0) {
-    formattedDate = `${daysAgo}d ago`
-  } else {
-    formattedDate = "Today"
-  }
-
-  let fullDate = targetDate.toLocaleString("en-AU", {
+  return targetDate.toLocaleString("en-AU", {
     month: "2-digit",
     day: "2-digit",
     year: "numeric",
   })
-
-  if (!includeRelative) {
-    return fullDate
-  }
-
-  return `${fullDate} (${formattedDate})`
 }
 
 export const capitalize = (s: string) => {

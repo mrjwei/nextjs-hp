@@ -2,9 +2,8 @@ import { profile } from "app/content/profile"
 import { baseUrl } from "app/sitemap"
 import type { Lang } from "app/i18n/config"
 
-// Still finishing the Master of IT at time of writing — see
-// docs/roadmap/2026-09-ai-repositioning-brushup.md §6.1. Switch
-// `affiliation` to `alumniOf` once the degree is conferred.
+// Still finishing the Master of IT at time of writing. Switch
+// `affiliation` to `alumniOf` once the degree is conferred (docs/roadmap.md §3).
 const university = {
   "@type": "CollegeOrUniversity",
   name: "Queensland University of Technology",

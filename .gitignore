@@ -44,8 +44,9 @@ _*
 
 /logs
 
-# generated content index
+# generated indexes (rebuilt by `prebuild` and `predev`)
 app/data/content-index.json
+public/search-index.json
 
 tsconfig.tsbuildinfo
 .DS_Store

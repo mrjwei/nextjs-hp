@@ -99,7 +99,7 @@ export function WritingCard({
             </div>
           </div>
           <small className="text-[var(--text-subtle)] text-sm">
-            {t.published} {formatDate(article.metadata.publishedAt, false, lang)}
+            {t.published} {formatDate(article.metadata.publishedAt, lang)}
           </small>
         </div>
       </Link>
