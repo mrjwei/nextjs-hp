@@ -155,6 +155,19 @@ module.exports = {
         destination: "/ja/posts",
         permanent: true,
       },
+      // Misspelt slugs fixed (2026-10-15): understaning-jwts-* became
+      // understanding-jwts-*. The JA routes only ever showed the
+      // "not translated yet" page for them.
+      {
+        source: "/posts/:folder(authentication)?/understaning-jwts-:part(part-1|part-2)",
+        destination: "/posts/authentication/understanding-jwts-:part",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/:folder(authentication)?/understaning-jwts-:part(part-1|part-2)",
+        destination: "/ja/posts/authentication/understanding-jwts-:part",
+        permanent: true,
+      },
       // Old /portfolio section (retired 2026-09; case studies folded into
       // /posts). Specific slugs first, then a catch-all.
       {

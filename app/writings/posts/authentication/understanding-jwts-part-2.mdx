@@ -1,7 +1,7 @@
 ---
 title: "Understanding JWTs: Part 2"
 publishedAt: "2025-03-16"
-summary: "A common feature in web development is closing a popup or menu when the user clicks outside of it."
+summary: "Symmetric vs asymmetric JWT signing, what a server checks when it verifies a token, the authentication flow in a typical web app, and how to store a JWT in an HTTPOnly cookie in Next.js."
 tags: ["nextjs", "reactjs", "javascript", "web", "dev", "auth", "jwt"]
 partOf: "understanding-jwts"
 partOfTitle: "Understanding JWTs"
@@ -30,7 +30,7 @@ In symmetric signing, both the authentication server and the application servers
 <br />
 <figure style={{ textAlign: "center" }}>
   <img
-    src="/understaning-jwts-part-2/symmetric.png"
+    src="/understanding-jwts-part-2/symmetric.png"
     alt="Symmetric signing"
     style={{ marginBottom: "8px", maxWidth: "500px" }}
   />
@@ -46,7 +46,7 @@ With asymmetric signing, only the authentication server holds the private key us
 <br />
 <figure style={{ textAlign: "center" }}>
   <img
-    src="/understaning-jwts-part-2/asymmetric.png"
+    src="/understanding-jwts-part-2/asymmetric.png"
     alt="Asymmetric signing"
     style={{ marginBottom: "8px", maxWidth: "500px" }}
   />
