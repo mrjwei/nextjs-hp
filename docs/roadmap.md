@@ -1,8 +1,10 @@
 # jessewei.net — roadmap
 
+> **15 Oct 2026:** the content and code audit (`docs/plans/2026-10-15-content-and-code-audit.md`) is done: 32 posts retired with redirects, placeholders kept out of search, the sitemap and `/posts`, a canonical 17-tag list, dead code removed, `app/` reduced to routes, and the EN/JA route trees sharing one set of views. Its decisions are in §4.
+>
 > **10 Oct 2026:** §1 now carries the hybrid positioning from `docs/plans/2026-10-10-positioning-rebalance.md` (implemented 10 Oct): product designer & engineer, with AI as the current edge rather than the title. That plan holds the audit, the lane analysis and the job-hunting strategy behind it.
 
-*This is the canonical plan for this repo. It replaces `docs/roadmap/2026-09-ai-repositioning-brushup.md` (23 Sep 2026) and `docs/roadmap/month-1-evidence-and-spine.md` (14 Sep 2026). Last updated 10 Oct 2026.*
+*This is the canonical plan for this repo. It replaces `docs/roadmap/2026-09-ai-repositioning-brushup.md` (23 Sep 2026) and `docs/roadmap/month-1-evidence-and-spine.md` (14 Sep 2026). Last updated 15 Oct 2026.*
 
 Positioning source of truth: §1 below, from `docs/plans/2026-10-10-positioning-rebalance.md`. It supersedes the positioning section of the vault's `Career/Job hunting/⭐️ai-engineering-pivot-2026Q4.md` (its 90-day plan still applies to Lane C prep) and the design-first framing of `⭐️portfolio-roadmap-2026Q4.md`.
 
@@ -66,6 +68,8 @@ EN                                   JA
 - **Projects** are a *view* over posts: any post with a `project` ID. `/posts` URLs are always canonical. `/writings/*`, `/work/*` and `/portfolio/*` 301 to the new paths. Full rules are in `docs/publish.md`.
 - **Content knobs**: `project`, `lead`, `track`, `draft`, `placeholder`, `archived`, plus the case-study fields (`role`, `client`, `industry`, `duration`, `stack`, `status`, `confidential`). They're validated in both `lib/content/index.ts` (zod) and `scripts/generate-content-index.mjs`.
 - **Drafts** live in the Obsidian vault, outside the repo. Publish with `/publish-pipeline`.
+- **Code layout** (15 Oct): `app/` holds routes plus the pipeline's content directories; each page's body is a view in `components/views/` taking `lang`, shared by `app/(en)` and `app/ja`; UI strings are in `lib/i18n/dictionaries.ts`; non-route modules live in `lib/`. See `README.md`.
+- **Retired posts** 301 to `/posts`; how to retire one is in `docs/publish.md`.
 
 ### Where the 23 Sep plan landed
 
@@ -91,6 +95,8 @@ EN                                   JA
 - [ ] **Lighthouse baseline**: record mobile scores for `/`, `/about`, `/posts`, `/projects`, `/ja` per `docs/baseline.md`. Target LCP ≤ 2.5 s on throttled mobile.
 - [ ] **JSON-LD after graduation**: switch QUT from `affiliation` to `alumniOf` in `lib/seo/person.ts`.
 - [ ] **Phase 7 advisory module** (optional, ships dark; see §5).
+- [ ] **Long unbroken text at 360 px**: a long URL in a post body (e.g. the references in *Autoencoders from the Inside Out*) and long breadcrumb titles push the page wider than the viewport. Needs a wrap rule for prose links and the breadcrumb (found in the 15 Oct audit; not changed there).
+- [ ] **Out of scope of the 15 Oct audit, each on its own branch:** upgrade Tailwind `4.0.0-alpha.13` to stable 4.x (needs a visual check of every page), and Next 14 → 15 (async `params`/`searchParams`, caching defaults).
 
 ### Content (each becomes a project)
 
@@ -122,6 +128,8 @@ Keep publishing the coursework explainers (Strobe, VAE, Transformers); they show
 2. **CV**: publish the PDFs on the site, or send them on request?
 
 **Resolved**
+
+- Content and code audit (15 Oct): C1 retire list as proposed. C2 the five 2024 AI tutor/assistant posts are retired, not grouped. C3 languages stay Chinese (native), English, Japanese and Korean, no French, now also in both `meta.description`s. C4 location is **Brisbane, Australia** everywhere, EN and JA (eyebrow, meta, About). C5 the legacy `scripts/publish.js` is deleted. C6 *Prototyping Made Easy* now says "ten years ago" (10年前), consistent with "ten years of B2B". The WAmazing project ID stays `UIUX` (the 10 Oct decision stands; the rename in that plan's P3 was not done). Canonical tags: the 17 in `app/data/tags.json`.
 
 - Positioning (10 Oct): hybrid product designer & engineer; headline *Changing how people work, through design and AI.*
 - Naming: DEN, KOD and Zerospec may be named; GoNOW is Zerospec's product. The WAmazing case study keeps project ID `UIUX` (it doesn't identify the organisation).

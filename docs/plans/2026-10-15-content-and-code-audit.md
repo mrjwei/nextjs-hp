@@ -1,5 +1,7 @@
 # jessewei.net — content and code audit (Oct 2026)
 
+> **Implemented 15 Oct 2026** (Phases 0–7). Retired: the 20 archived posts plus 12 more (§2, Phase 1, and C2). Tags: 17 canonical. Not done by design: the `UIUX` → `WAmazing` rename (X1). Still open, as vault work: the EN WAmazing case study and the JA translations of `designing-infrastructure-not-assets` and `from-requirements-to-assumptions`.
+
 *Prepared 15 Oct 2026 from an audit of the repo, the live site and the vault, for implementation by Claude Code inside `nextjs-hp`. Builds on `docs/plans/2026-10-10-positioning-rebalance.md`; the positioning there is unchanged.*
 
 ## 0. Ground rules
