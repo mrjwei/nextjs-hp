@@ -131,7 +131,8 @@ module.exports = {
       // Retired posts (2026-10-15): beginner-level, assignment-specific or
       // off-positioning posts, deleted from the repo (git history and the
       // vault keep a copy). Their URLs, with or without the old collection
-      // folder, and the retired collection pages go to the Posts index.
+      // folder, the retired collection pages and the emptied /posts/git tag
+      // page go to the Posts index.
       {
         source: "/posts/:folder(number-systems|multifunctional-ai-assistant)/:slug",
         destination: "/posts",
@@ -139,7 +140,7 @@ module.exports = {
       },
       {
         source:
-          "/posts/:slug(number-systems|number-systems-1|number-systems-2|representing-negative-binary-numbers|multifunctional-ai-assistant|multifunctional-ai-assistant-1|multifunctional-ai-assistant-2|multifunctional-ai-assistant-3|ai-powered-app-for-speaking-test-prep|ai-powered-speaking-tutor|how-to-reorder-and-squash-with-git|github-actions-ec2-deployment-troubleshooting-guide|how-i-made-my-program-140-times-faster|vibe-coding-as-learning-experience)",
+          "/posts/:slug(git|number-systems|number-systems-1|number-systems-2|representing-negative-binary-numbers|multifunctional-ai-assistant|multifunctional-ai-assistant-1|multifunctional-ai-assistant-2|multifunctional-ai-assistant-3|ai-powered-app-for-speaking-test-prep|ai-powered-speaking-tutor|how-to-reorder-and-squash-with-git|github-actions-ec2-deployment-troubleshooting-guide|how-i-made-my-program-140-times-faster|vibe-coding-as-learning-experience)",
         destination: "/posts",
         permanent: true,
       },
