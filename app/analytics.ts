@@ -11,7 +11,7 @@ export const pageview = (url: string) => {
   });
 };
 
-// GA4 custom events (see docs/roadmap/2026-09-ai-repositioning-brushup.md §6.3):
+// GA4 custom events (docs/roadmap.md §2, Phase 6 Trust & SEO):
 // cta_selected_work, cv_download, contact_click, work_card_click.
 export const event = (name: string, params?: Record<string, unknown>) => {
   if (typeof window.gtag !== 'function') return;

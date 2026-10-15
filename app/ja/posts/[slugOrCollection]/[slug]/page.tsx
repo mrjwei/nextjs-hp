@@ -233,9 +233,9 @@ export default async function WritingInCollection({ params, searchParams }) {
         />
         <div className="flex justify-between items-center mt-2 mb-12 text-sm border-b border-[var(--border-subtle)] pb-6">
           <p className="text-sm text-[var(--text-muted)]">
-            公開日: {formatDate(writing.metadata.publishedAt, false, "ja")}
+            公開日: {formatDate(writing.metadata.publishedAt, "ja")}
             {writing.metadata.updatedAt && (
-              <> · 更新日: {formatDate(writing.metadata.updatedAt, false, "ja")}</>
+              <> · 更新日: {formatDate(writing.metadata.updatedAt, "ja")}</>
             )}
           </p>
         </div>
