@@ -1,19 +1,308 @@
 ---
 title: "Strobe Assistant Part 4—How Cognito and Auth Fit In"
 slug: "strobe-assistant-part-4-how-cognito-and-auth-fit-in"
-publishedAt: "2026-10-05"
-summary: "Coming soon. How Cognito ID tokens are verified at each trust boundary in Strobe Assistant."
-tags: ["ai", "aws", "qut"]
+publishedAt: "2026-10-09"
+summary: "Following one Cognito ID token through Strobe Assistant, from the browser to the agent, the MCP server and back into the A1 API: three verifiers, why userId is never a tool argument, why the token rides inside ACP authenticate, and how identity works when nobody is clicking."
+tags: ["agents", "aws", "auth", "security", "qut"]
 project: "Strobe"
-placeholder: true
 seriesOrder: 4
 partOf: "strobe-assistant"
 partOfTitle: "Strobe Assistant"
 partNumber: 4
 ---
 
-{/* Placeholder page: replace this file when the full Part 4 is published. */}
+- [What A2 inherits from A1](#what-a2-inherits-from-a1)
+- [Three verifiers, one token](#three-verifiers-one-token)
+- [One chat turn, step by step](#one-chat-turn-step-by-step)
+- [The decisions that mattered most](#the-decisions-that-mattered-most)
+- [Identity when nobody is clicking](#identity-when-nobody-is-clicking)
+- [What's secret and what isn't](#whats-secret-and-what-isnt)
+- [Conclusion](#conclusion)
 
-This part of the Strobe Assistant series is still being written and will be published here soon.
+In [Sign In Once, Verify Anywhere](/posts/sign-in-once-verify-anywhere-how-cognito-tokens-work), I covered the foundations: what Cognito issues, how a service can verify a token on its own, and how the original Strobe app (A1) uses it. This post picks up where that one left off. It follows the same ID token through Strobe Assistant (A2), from the browser to the agent, on to the MCP server, and back into the A1 API, and looks at the few design decisions that keep it meaningful at every hop.
 
-In the meantime, the [project overview](/posts/strobe-assistant-extending-strobe-with-an-ai-agent) explains how Strobe Assistant fits together and where this part comes in.
+## What A2 inherits from A1
+
+A2 **reuses the A1 user pool and app client unchanged**. I didn't build a new identity system. Three things from A1 carry straight over:
+
+- **Sign-in goes through A1's auth Lambda.** `POST /v1/auth/login` returns `{ user, token }`, where `token` is the Cognito ID token.
+- **A1's API Gateway JWT authorizer** still guards every protected A1 route.
+- **`sub` is the user's identity everywhere.** It drives ownership checks (`post.userId == sub`) and the storage key prefix `{sub}/{postId}/{fileId}` for uploads.
+
+What's new in A2 is how far that token travels: browser → agent → MCP server → back into the A1 API.
+
+## Three verifiers, one token
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/strobe-assistant-part-4-how-cognito-and-auth-fit-in/auth-4-strobe-trust-map.svg"
+    alt="Where the token travels in Strobe Assistant: the browser signs in through the A1 login API, the ALB passes the token through untouched, the agent verifies it at ACP authenticate (V2), the MCP server verifies it on every /mcp request (V3) and forwards it to the A1 API Gateway authorizer (V1), while Bedrock, S3 Vectors, DynamoDB and S3 are reached with each service's IAM role"
+    style={{ marginBottom: "8px" }}
+  />
+</figure>
+
+The same token is checked in three places:
+
+| | Where | Library | When |
+|---|---|---|---|
+| **V1** | A1 API Gateway | managed JWT authorizer | every protected A1 route, including the MCP server's `get_post` / `get_comments` calls |
+| **V2** | Agent | `aws-jwt-verify` (`auth.ts`) | once, at ACP `authenticate`; `exp` re-checked on each `session/new` and `session/prompt` |
+| **V3** | MCP server | FastMCP `JWTVerifier` | every HTTP request to `/mcp` |
+
+The **ALB does no auth** at all. It terminates TLS, routes `/acp*` and `/mcp*`, and passes the token through untouched.
+
+Here's where auth shows up across the features, and why each check is there:
+
+| Feature / flow | What auth does there | Why it's needed |
+|---|---|---|
+| **WebUI sign-in** | Browser calls A1 `POST /v1/auth/login` and gets the ID token | The provided ACP client had no identity at all. Without one, "my photos" means nothing |
+| **ACP handshake** (`initialize` → `authenticate`) | Agent advertises `cognito-id-token`; client sends the token in `_meta.idToken`; V2 verifies it | The agent must know *who* it's serving before it opens tools or reads memory |
+| **`session/new`, `session/prompt`** | `requireIdentity()` refuses with `authRequired` if not signed in or expired | A WebSocket can outlive its token, so the expiry check stops a stale connection from carrying on |
+| **One agent per connection** | `identity` is a variable inside that connection's agent instance | Identity can't leak between users sharing the same process |
+| **MCP connection** | Agent's MCP client sends `Authorization: Bearer <user's ID token>`; V3 verifies it | The MCP server is reachable through the ALB on its own, so it can't trust the caller blindly |
+| **`search_my_content`, `find_similar_to_image`** | `user_id = TokenClaim("sub")` becomes the S3 Vectors filter | This is the actual data isolation. Without it, a valid token for Alice could still search everyone's vectors |
+| **`get_image`** | The classification row's `userId` must equal `sub`; otherwise "Unknown image." | `imageId` is a model-supplied argument, so ownership has to be re-checked against stored data |
+| **`get_post`, `get_comments`** | MCP forwards the **same** token to the A1 API (V1 again) | Reuses A1's authorisation rules instead of opening a second, weaker path into DynamoDB |
+| **Agent memory** (`get_recent_runs`, `save_run_summary`) | Runs are written and queried by `userId = sub` | Memory from one user's chats must never show up in another's prompt |
+| **Scheduled retrospective** | The retro Lambda signs in as an enrolled user and goes through the same ACP → MCP path | One auth path, so the `userId` filter still applies to an unattended job |
+| **Async ingestion** | No token; the owner is read from the S3 key or SQS message | The token was already checked at upload (V1); from there, identity travels as trusted data |
+| **`/healthz`** | Deliberately unauthenticated | ALB health checks can't present a token, and the route returns nothing sensitive |
+
+## One chat turn, step by step
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/strobe-assistant-part-4-how-cognito-and-auth-fit-in/auth-5-chat-turn-token-journey.svg"
+    alt="Sequence of one chat turn: sign in at the A1 API, initialize and authenticate over the ACP WebSocket with the ID token verified by the agent, session/new with requireIdentity, then a prompt where the agent calls search_my_content on the MCP server with the same Bearer token, verified again and filtered by the token's sub"
+    style={{ marginBottom: "8px" }}
+  />
+</figure>
+
+**1. Sign in (browser → A1 API).** `acp_client/web/main.ts`:
+
+```ts
+async function signIn(email: string, password: string): Promise<string> {
+  const response = await fetch(`${STROBE_API_BASE_URL}/v1/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+  ...
+  return body.token;            // the Cognito ID token
+}
+```
+
+The WebUI keeps the token in `sessionStorage` rather than `localStorage`, so it's cleared when the tab closes. It expires after an hour anyway.
+
+**2. The agent says how it wants to be authenticated (`initialize`).** `agent/src/agent.ts`:
+
+```ts
+authMethods: [
+  {
+    id: AUTH_METHOD_ID,                       // "cognito-id-token"
+    name: "Strobe sign-in",
+    description: "Pass the Cognito ID token from POST /v1/auth/login as _meta.idToken.",
+  },
+],
+```
+
+**3. The client proves who it is (`authenticate`).** On the client side (`main.ts`):
+
+```ts
+await nextConnection.agent.request(acp.methods.agent.authenticate, {
+  methodId: ACP_AUTH_METHOD_ID,
+  _meta: { idToken: token },
+});
+```
+
+On the agent side (`agent.ts`), this is where V2 happens:
+
+```ts
+.onRequest(acp.methods.agent.authenticate, async (context) => {
+  const { methodId, _meta } = context.params;
+  if (methodId !== AUTH_METHOD_ID) throw acp.RequestError.invalidParams(...);
+  const idToken = (_meta as { idToken?: unknown } | null | undefined)?.idToken;
+  if (typeof idToken !== "string" || !idToken) throw acp.RequestError.invalidParams(...);
+  try {
+    identity = await deps.verifier.verify(idToken);
+  } catch (error) {
+    throw acp.RequestError.authRequired(undefined, "Invalid or expired sign-in token.");
+  }
+  return {};
+})
+```
+
+The verifier (`agent/src/auth.ts`) is a thin wrapper around `aws-jwt-verify`, which runs the checks described in the [previous post](/posts/sign-in-once-verify-anywhere-how-cognito-tokens-work):
+
+```ts
+this.verifier = CognitoJwtVerifier.create({ userPoolId, clientId, tokenUse: "id" });
+
+async verify(idToken: string): Promise<Identity> {
+  const payload = await this.verifier.verify(idToken);
+  ...
+  return { sub: payload.sub, displayName, idToken, expiresAt: payload.exp };
+}
+```
+
+**4. Every later request re-checks expiry.** `agent.ts`:
+
+```ts
+const requireIdentity = (): Identity => {
+  if (!identity) throw acp.RequestError.authRequired(undefined, "Sign in first (authenticate with the Cognito ID token).");
+  if (isExpired(identity)) {
+    identity = null;
+    throw acp.RequestError.authRequired(undefined, "Your sign-in has expired; sign in again.");
+  }
+  return identity;
+};
+```
+
+**5. The agent calls MCP with the user's token, not its own.** `agent/src/mcp.ts`:
+
+```ts
+const transport = new StreamableHTTPClientTransport(new URL(this.mcpUrl), {
+  requestInit: { headers: { Authorization: `Bearer ${this.idToken}` } },
+});
+```
+
+The agent also **ignores any `mcpServers` list the client sends** on `session/new`. The browser is untrusted: if it could choose the tool server, it could point the agent, and the user's token along with it, at a server it controls.
+
+**6. The MCP server verifies again before any tool runs (V3).** FastMCP's `JWTVerifier` is configured with the pool's JWKS URL, issuer and app client id (the full setup is in [Part 3](/posts/strobe-assistant-part-3-acp-mcp-pipeline#the-mcp-server-its-own-component-its-own-auth-boundary)). A missing or bad token gets HTTP `401` from FastMCP's middleware before any tool code runs. That's one of the steps I show in the demo.
+
+**7. The verified `sub` becomes the data filter.** It's injected into the tool by the server, not passed in by the model:
+
+```python
+@mcp.tool(annotations={"readOnlyHint": True})
+async def search_my_content(
+    query: str,
+    media_type: Literal["all", "image", "text"] = "all",
+    limit: int = 10,
+    user_id: str = TokenClaim("sub"),          # from the verified token, not in the schema
+    token: AccessToken = CurrentAccessToken(), # raw token, forwarded to A1
+) -> dict:
+```
+
+Every vector query then carries `filter={"userId": user_id}`.
+
+**8. Calls back into A1 carry the same token (V1 again).**
+
+```python
+async def _api_get(path: str, bearer: str) -> dict:
+    """Call the A1 API. The caller's own token is forwarded so A1's authorisation
+    rules apply unchanged; ..."""
+    ...
+    response = await client.get(path, headers={"Authorization": f"Bearer {bearer}"})
+```
+
+## The decisions that mattered most
+
+### `userId` is never a tool argument
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/strobe-assistant-part-4-how-cognito-and-auth-fit-in/auth-6-why-sub-is-injected.svg"
+    alt="Side-by-side comparison of a prompt injection in a comment: if userId were a tool argument the model could pass another user's sub and leak their photos; in Strobe the user_id comes from the verified token's sub claim, so only the signed-in user's own content can come back"
+    style={{ marginBottom: "8px" }}
+  />
+</figure>
+
+If I had to pick one security decision in A2, it would be this one. Tool results are *untrusted text*. `get_comments` returns comments that **other users** wrote on your post, and models (smaller ones especially) will sometimes follow instructions they find there. If the tool schema had a `user_id` field, an injected comment could nudge the model into filling it with someone else's id. Every check would still pass: the token is valid and the tool runs normally. The data would leak anyway. This is a **confused deputy**: a trusted component acting on an untrusted party's instructions.
+
+With `TokenClaim("sub")`, the parameter isn't in the schema that `tools/list` returns, so the model simply has no slot to fill. The worst an injection can do is change *what* is searched, and only inside the user's own data. As I put it in the demo: *"The model reading an injection is expected; the design doesn't depend on it resisting."*
+
+The same principle explains `get_image`. There, `image_id` *is* a model-supplied argument, so the server checks ownership against the classification row written at ingest, never against anything the caller said:
+
+```python
+row = await asyncio.to_thread(
+    lambda: classifications_table.get_item(Key={"imageId": image_id}).get("Item")
+)
+if row is None or row.get("userId") != user_id:
+    raise ToolError("Unknown image.")
+```
+
+"Unknown image." is the same answer for "not yours" and "doesn't exist", so the error doesn't reveal which images exist.
+
+### The token rides inside ACP `authenticate`
+
+The usual `Authorization: Bearer` header isn't an option on this hop, because **the browser WebSocket API can't set request headers.** I weighed four options:
+
+| Option | Verdict |
+|---|---|
+| **ACP `authenticate` with `_meta.idToken`** ✅ chosen | Protocol-native, and the token never appears in a URL. It needed a small client change plus an agent handler |
+| Cookie | The browser sends it on the WebSocket handshake automatically, but it has to be issued for the agent's domain, and automatic sending brings cross-site WebSocket hijacking (a cousin of CSRF) into play |
+| Query string `wss://…/acp?id_token=…` | Easy, but the token lands in ALB access logs and browser history, and stays usable there until `exp` |
+| `Sec-WebSocket-Protocol` smuggling | Works, but it's a hack I'd have to defend |
+
+What about the ALB's built-in `authenticate-cognito` action? It's built for browser sessions: it redirects unauthenticated users to Cognito's hosted sign-in page and keeps its own session cookie. That doesn't fit the MCP server's Bearer calls or the retro Lambda. It would also move verification off the services and onto the load balancer, when the whole point was for each service to check for itself.
+
+### The MCP server verifies again
+
+The agent has already verified the token, so why does the MCP server check it too? I went into this in [Part 3](/posts/strobe-assistant-part-3-acp-mcp-pipeline#the-mcp-server-its-own-component-its-own-auth-boundary), so here's the short version:
+
+- **It's its own trust boundary.** Its URL is public (even the agent reaches it through the ALB), so "trust whatever the agent sends" would really mean "trust anyone who finds the URL". The ALB isn't the only way in, either: the Fargate tasks run in public subnets with public IPs, and the unit's preset security group opens port 8080 (where the MCP server listens) to the world. Anyone who learns a task's IP can skip the ALB entirely, and the token check is the only thing standing in their way.
+- **It stays reusable.** Another agent or a desktop MCP client could connect, and the server stays safe without knowing anything about the caller.
+- **Defence in depth.** The MCP server never takes the agent's word for who the user is; it derives `sub` from a signed token itself. Even a buggy or compromised agent couldn't just *claim* to be someone else.
+
+The cost is one more local signature check against cached keys per request, which is well under a millisecond next to the model's latency.
+
+## Identity when nobody is clicking
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/strobe-assistant-part-4-how-cognito-and-auth-fit-in/auth-7-identity-without-a-human.svg"
+    alt="Two flows with no person present: the scheduled retrospective Lambda logs in as an enrolled user from Secrets Manager and takes the same ACP and MCP path, while async ingestion carries the owner as data in the S3 key {sub}/{postId}/{fileId} written by a verified upload"
+    style={{ marginBottom: "8px" }}
+  />
+</figure>
+
+Two parts of A2 run without a person in the loop, and they handle identity in different ways.
+
+**Scheduled retrospective: a borrowed identity.** The Lambda signs in as an enrolled user, then uses the same WebSocket and `authenticate` call as the browser. In the retro Lambda:
+
+```python
+def _login(email: str, password: str) -> tuple[str, dict]:
+    body = _api("POST", "/v1/auth/login", body={"email": email, "password": password})
+    return body["token"], body["user"]
+
+# run_agent(): initialize -> authenticate -> session/new (trigger=schedule) -> session/prompt
+client.request("authenticate", {"methodId": AUTH_METHOD_ID, "_meta": {"idToken": token}})
+session = client.request("session/new", {"cwd": "/", "mcpServers": [], "_meta": {"trigger": "schedule"}})
+```
+
+Going through the agent, rather than calling Bedrock directly, keeps **one auth path**: the MCP `userId` filter still applies, the agent's memory sees the run, and the Moment is written as that user through A1 (V1).
+
+The honest limitation is that Cognito won't issue a user's token without that user's credentials, which is why the enrolled logins sit in Secrets Manager. Machine-to-machine *client-credentials* tokens do exist, but they're access tokens whose `sub` is the app client rather than a person, so they're no use for a per-user filter. The proper fix would be a Cognito custom-auth flow (Lambda triggers) that lets a trusted service obtain tokens on a user's behalf.
+
+**Async ingestion: identity as data.** The worker has no token at all. It trusts the owner it reads from the S3 key, because the client could only upload to the exact key the upload Lambda presigned, after V1:
+
+```python
+# SQS worker Lambda
+# Upload Lambda's convention: keys are always "{userId}/{postId}/{fileId}"
+parts = object_key.split("/")
+...
+user_id, post_id, file_id = parts
+```
+
+That `user_id` is stored as filterable vector metadata, and later V3's `sub` is matched against it. Text jobs work the same way: the post Lambda puts the verified `userId` into the SQS message.
+
+## What's secret and what isn't
+
+A comment in `agent/src/config.ts` sums it up:
+
+> The agent holds no secrets at all: it never has AWS keys (task role), never has a model API key (Bedrock is IAM-authorised) and never has a shared token with the WebUI — it borrows the *user's* Cognito identity for the life of the connection.
+
+- **Pool id and app client id → SSM Parameter Store (standard tier, free).** They're public identifiers: they appear in every token's `iss` and `aud`, and they're needed to *verify* tokens, not to *sign* them.
+- **Retro account logins → Secrets Manager.** These are real credentials, and the only secret A2 adds.
+- **No signing key anywhere in A2.** Only Cognito holds a private key, so none of the A2 services holds anything worth stealing.
+
+## Conclusion
+
+Looking back, the auth design in A2 comes down to a few ideas:
+
+- **One identity, checked at every boundary.** A2 added no new identity system. The A1 ID token travels the whole way, and each service that can be reached on its own (A1's API, the agent, the MCP server) verifies it for itself. The ALB in front just routes.
+- **Identity comes from the verified token, never from what someone says.** Not the browser, not the agent and, most importantly, not the model. Injecting `sub` instead of exposing a `user_id` argument is what turns prompt injection from a data leak into, at worst, a strange search over your own content.
+- **When there's no token, be explicit about where trust comes from.** Ingestion trusts a storage key that only a verified upload could have produced; the retrospective borrows an enrolled user's login and then takes the same path as everyone else.
+
+There are still rough edges I'd tackle next. The WebUI doesn't refresh tokens yet, so after an hour you're asked to sign in again. And, as I noted in Part 3, the boundary between the agent and the MCP server is enforced in code rather than IAM, because all three services share one task role.
+
+What I found most useful was the habit this project built: at every hop, asking *how does this component know who the user is?* If the answer is ever "because someone told it", that's the place to look first.
