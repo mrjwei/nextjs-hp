@@ -2,18 +2,307 @@
 title: "Strobe Assistant パート4:Cognitoと認証の位置づけ"
 slug: "strobe-assistant-part-4-how-cognito-and-auth-fit-in"
 publishedAt: "2026-10-09"
-summary: "近日公開。Strobe Assistantの各信頼境界で、CognitoのIDトークンがどのように検証されているのかについて。"
-tags: ["ai", "aws", "qut"]
+summary: "1つのCognito IDトークンを、Strobe Assistantの中でブラウザからエージェント、MCPサーバー、そしてA1 APIへと戻るまで追いかけます。3つの検証者、userIdを決してツールの引数にしない理由、トークンをACPのauthenticateの中で運ぶ理由、そして誰も操作していないときにアイデンティティがどう扱われるのかを解説します。"
+tags: ["agents", "aws", "auth", "security", "qut"]
 project: "Strobe"
-placeholder: true
 seriesOrder: 4
 partOf: "strobe-assistant"
 partOfTitle: "Strobe Assistant"
 partNumber: 4
 ---
 
-{/* Placeholder page: replace this file when the full Part 4 is published. */}
+- [A2がA1から引き継ぐもの](#a2がa1から引き継ぐもの)
+- [3つの検証者、1つのトークン](#3つの検証者1つのトークン)
+- [1回のチャットターンをステップごとに](#1回のチャットターンをステップごとに)
+- [最も重要だった設計判断](#最も重要だった設計判断)
+- [誰も操作していないときのアイデンティティ](#誰も操作していないときのアイデンティティ)
+- [何が秘密で、何が秘密でないか](#何が秘密で何が秘密でないか)
+- [まとめ](#まとめ)
 
-Strobe Assistantシリーズのこのパートは現在執筆中で、近日中にここで公開する予定です。
+[Sign In Once, Verify Anywhere](/ja/posts/sign-in-once-verify-anywhere-how-cognito-tokens-work)では、基礎を扱いました。Cognitoが何を発行するのか、サービスがトークンを単独でどのように検証できるのか、そして元のStrobeアプリ(A1)がそれをどのように使っているのかです。本稿はその続きです。同じIDトークンを、Strobe Assistant(A2)の中でブラウザからエージェントへ、さらにMCPサーバーへ、そしてA1 APIへと戻るまで追いかけ、すべての経路でトークンが意味を持ち続けるようにしているいくつかの設計判断を見ていきます。
 
-それまでの間は、[プロジェクトの概要](/ja/posts/strobe-assistant-extending-strobe-with-an-ai-agent)で、Strobe Assistantの全体像と、このパートがどこに位置づけられるのかを解説しています。
+## A2がA1から引き継ぐもの
+
+A2は**A1のユーザープールとアプリクライアントをそのまま再利用しています**。新しいアイデンティティの仕組みは作っていません。A1から次の3つをそのまま引き継いでいます:
+
+- **サインインはA1の認証Lambdaを経由します。** `POST /v1/auth/login`は`{ user, token }`を返し、この`token`がCognitoのIDトークンです。
+- **A1のAPI GatewayのJWTオーソライザー**が、引き続きA1の保護されたすべてのルートを守ります。
+- **どこでも`sub`がユーザーのアイデンティティです。** 所有者チェック(`post.userId == sub`)と、アップロードのストレージキーのプレフィックス`{sub}/{postId}/{fileId}`は、これをもとにしています。
+
+A2で新しくなったのは、そのトークンがどこまで移動するかです。ブラウザ → エージェント → MCPサーバー → A1 APIへ戻る、という流れです。
+
+## 3つの検証者、1つのトークン
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/strobe-assistant-part-4-how-cognito-and-auth-fit-in/auth-4-strobe-trust-map.svg"
+    alt="Strobe Assistantでトークンが移動する経路。ブラウザはA1のログインAPIでサインインし、ALBはトークンに手を付けずに渡す。エージェントはACPのauthenticateで検証し(V2)、MCPサーバーは/mcpへのすべてのリクエストで検証して(V3)A1のAPI Gatewayのオーソライザーへ転送する(V1)。Bedrock、S3 Vectors、DynamoDB、S3には各サービスのIAMロールでアクセスする"
+    style={{ marginBottom: "8px" }}
+  />
+</figure>
+
+同じトークンが3か所でチェックされます:
+
+| | 場所 | ライブラリ | タイミング |
+|---|---|---|---|
+| **V1** | A1のAPI Gateway | マネージドのJWTオーソライザー | A1の保護されたすべてのルート。MCPサーバーからの`get_post` / `get_comments`の呼び出しも含む |
+| **V2** | エージェント | `aws-jwt-verify`(`auth.ts`) | ACPの`authenticate`で一度だけ。`exp`は`session/new`と`session/prompt`のたびに再チェック |
+| **V3** | MCPサーバー | FastMCPの`JWTVerifier` | `/mcp`へのすべてのHTTPリクエスト |
+
+**ALBは認証を一切行いません**。TLSを終端し、`/acp*`と`/mcp*`を振り分け、トークンには手を付けずにそのまま渡します。
+
+機能ごとに、認証がどこに現れ、なぜそのチェックが必要なのかをまとめると次のようになります:
+
+| 機能 / フロー | そこで認証が行うこと | 必要な理由 |
+|---|---|---|
+| **WebUIのサインイン** | ブラウザがA1の`POST /v1/auth/login`を呼び出し、IDトークンを受け取る | 提供されたACPクライアントには、アイデンティティがまったくありませんでした。それがなければ「自分の写真」という言葉は意味を持ちません |
+| **ACPのハンドシェイク**(`initialize` → `authenticate`) | エージェントが`cognito-id-token`を提示し、クライアントが`_meta.idToken`でトークンを送り、V2が検証する | エージェントは、ツールを開いたりメモリを読んだりする前に、*誰に*サービスを提供しているのかを知る必要があります |
+| **`session/new`、`session/prompt`** | 未サインインまたは期限切れなら、`requireIdentity()`が`authRequired`で拒否する | WebSocketはトークンより長く生き続けることがあるので、有効期限のチェックで古くなった接続がそのまま続くのを防ぎます |
+| **接続ごとに1つのエージェント** | `identity`は、その接続のエージェントインスタンス内の変数 | 同じプロセスを共有するユーザー間で、アイデンティティが漏れることはありません |
+| **MCPの接続** | エージェントのMCPクライアントが`Authorization: Bearer <user's ID token>`を送り、V3が検証する | MCPサーバーはALB経由で単独でもアクセスできるため、呼び出し元を無条件に信頼することはできません |
+| **`search_my_content`、`find_similar_to_image`** | `user_id = TokenClaim("sub")`がS3 Vectorsのフィルターになる | これが実際のデータ分離です。これがなければ、Aliceの有効なトークンで全員のベクトルを検索できてしまいます |
+| **`get_image`** | 分類行の`userId`が`sub`と一致しなければならず、一致しなければ「Unknown image.」 | `imageId`はモデルが指定する引数なので、保存済みのデータに照らして所有者を改めてチェックする必要があります |
+| **`get_post`、`get_comments`** | MCPが**同じ**トークンをA1 APIへ転送する(再びV1) | DynamoDBへの2つ目の、より弱い経路を開く代わりに、A1の認可ルールを再利用します |
+| **エージェントのメモリ**(`get_recent_runs`、`save_run_summary`) | 実行記録は`userId = sub`で書き込まれ、クエリされる | あるユーザーのチャットのメモリが、別のユーザーのプロンプトに現れてはいけません |
+| **定期実行の振り返り** | 振り返りLambdaが登録済みユーザーとしてサインインし、同じACP → MCPの経路を通る | 認証の経路が1つなので、無人のジョブにも`userId`フィルターがそのまま適用されます |
+| **非同期の取り込み** | トークンはなく、所有者はS3キーまたはSQSメッセージから読み取る | トークンはアップロード時にすでにチェック済み(V1)で、そこから先はアイデンティティが信頼できるデータとして運ばれます |
+| **`/healthz`** | 意図的に認証なし | ALBのヘルスチェックはトークンを提示できず、このルートは機密情報を何も返しません |
+
+## 1回のチャットターンをステップごとに
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/strobe-assistant-part-4-how-cognito-and-auth-fit-in/auth-5-chat-turn-token-journey.svg"
+    alt="1回のチャットターンのシーケンス。A1 APIでサインインし、ACPのWebSocket上でinitializeとauthenticateを行ってエージェントがIDトークンを検証し、session/newでrequireIdentityを確認する。続くプロンプトでは、エージェントが同じBearerトークンでMCPサーバーのsearch_my_contentを呼び出し、トークンは再び検証され、そのsubで絞り込まれる"
+    style={{ marginBottom: "8px" }}
+  />
+</figure>
+
+**1. サインイン(ブラウザ → A1 API)。** `acp_client/web/main.ts`:
+
+```ts
+async function signIn(email: string, password: string): Promise<string> {
+  const response = await fetch(`${STROBE_API_BASE_URL}/v1/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+  ...
+  return body.token;            // the Cognito ID token
+}
+```
+
+WebUIはトークンを`localStorage`ではなく`sessionStorage`に保存するので、タブを閉じると消去されます。いずれにせよ、トークンは1時間で期限切れになります。
+
+**2. エージェントが、どのように認証してほしいかを伝える(`initialize`)。** `agent/src/agent.ts`:
+
+```ts
+authMethods: [
+  {
+    id: AUTH_METHOD_ID,                       // "cognito-id-token"
+    name: "Strobe sign-in",
+    description: "Pass the Cognito ID token from POST /v1/auth/login as _meta.idToken.",
+  },
+],
+```
+
+**3. クライアントが自分が誰なのかを証明する(`authenticate`)。** クライアント側(`main.ts`):
+
+```ts
+await nextConnection.agent.request(acp.methods.agent.authenticate, {
+  methodId: ACP_AUTH_METHOD_ID,
+  _meta: { idToken: token },
+});
+```
+
+エージェント側(`agent.ts`)では、ここでV2が行われます:
+
+```ts
+.onRequest(acp.methods.agent.authenticate, async (context) => {
+  const { methodId, _meta } = context.params;
+  if (methodId !== AUTH_METHOD_ID) throw acp.RequestError.invalidParams(...);
+  const idToken = (_meta as { idToken?: unknown } | null | undefined)?.idToken;
+  if (typeof idToken !== "string" || !idToken) throw acp.RequestError.invalidParams(...);
+  try {
+    identity = await deps.verifier.verify(idToken);
+  } catch (error) {
+    throw acp.RequestError.authRequired(undefined, "Invalid or expired sign-in token.");
+  }
+  return {};
+})
+```
+
+検証器(`agent/src/auth.ts`)は`aws-jwt-verify`を薄くラップしたもので、[前回の記事](/ja/posts/sign-in-once-verify-anywhere-how-cognito-tokens-work)で説明したチェックを実行します:
+
+```ts
+this.verifier = CognitoJwtVerifier.create({ userPoolId, clientId, tokenUse: "id" });
+
+async verify(idToken: string): Promise<Identity> {
+  const payload = await this.verifier.verify(idToken);
+  ...
+  return { sub: payload.sub, displayName, idToken, expiresAt: payload.exp };
+}
+```
+
+**4. 以降のすべてのリクエストで有効期限を再チェックする。** `agent.ts`:
+
+```ts
+const requireIdentity = (): Identity => {
+  if (!identity) throw acp.RequestError.authRequired(undefined, "Sign in first (authenticate with the Cognito ID token).");
+  if (isExpired(identity)) {
+    identity = null;
+    throw acp.RequestError.authRequired(undefined, "Your sign-in has expired; sign in again.");
+  }
+  return identity;
+};
+```
+
+**5. エージェントは、自分のトークンではなくユーザーのトークンでMCPを呼び出す。** `agent/src/mcp.ts`:
+
+```ts
+const transport = new StreamableHTTPClientTransport(new URL(this.mcpUrl), {
+  requestInit: { headers: { Authorization: `Bearer ${this.idToken}` } },
+});
+```
+
+また、エージェントは`session/new`でクライアントが送ってくる**`mcpServers`のリストを無視します**。ブラウザは信頼できません。もしブラウザがツールサーバーを選べるなら、エージェントを、そしてそれと一緒にユーザーのトークンを、自分が管理するサーバーへ向けさせることができてしまいます。
+
+**6. MCPサーバーは、どのツールを実行する前にも再び検証する(V3)。** FastMCPの`JWTVerifier`には、ユーザープールのJWKSのURL、発行者、アプリクライアントIDを設定しています(設定の全体は[パート3](/ja/posts/strobe-assistant-part-3-acp-mcp-pipeline#mcpサーバー独立したコンポーネント独立した認証境界)にあります)。トークンがない、または不正な場合は、ツールのコードが実行される前に、FastMCPのミドルウェアがHTTP `401`を返します。これはデモで見せているステップの1つです。
+
+**7. 検証済みの`sub`がデータのフィルターになる。** これはモデルから渡されるのではなく、サーバーがツールに注入します:
+
+```python
+@mcp.tool(annotations={"readOnlyHint": True})
+async def search_my_content(
+    query: str,
+    media_type: Literal["all", "image", "text"] = "all",
+    limit: int = 10,
+    user_id: str = TokenClaim("sub"),          # from the verified token, not in the schema
+    token: AccessToken = CurrentAccessToken(), # raw token, forwarded to A1
+) -> dict:
+```
+
+その後のすべてのベクトルクエリには`filter={"userId": user_id}`が付きます。
+
+**8. A1への呼び出しにも同じトークンを付ける(再びV1)。**
+
+```python
+async def _api_get(path: str, bearer: str) -> dict:
+    """Call the A1 API. The caller's own token is forwarded so A1's authorisation
+    rules apply unchanged; ..."""
+    ...
+    response = await client.get(path, headers={"Authorization": f"Bearer {bearer}"})
+```
+
+## 最も重要だった設計判断
+
+### `userId`は決してツールの引数にしない
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/strobe-assistant-part-4-how-cognito-and-auth-fit-in/auth-6-why-sub-is-injected.svg"
+    alt="コメントに仕込まれたプロンプトインジェクションの比較。userIdがツールの引数なら、モデルが他人のsubを渡して写真が漏洩しうる。Strobeではuser_idが検証後のトークンのsubクレームから得られるので、返ってくるのはサインインしているユーザー自身のコンテンツだけ"
+    style={{ marginBottom: "8px" }}
+  />
+</figure>
+
+A2のセキュリティ上の決定を1つだけ選ぶなら、これです。ツールの結果は*信頼できないテキスト*です。`get_comments`は、**ほかのユーザー**があなたの投稿に書いたコメントを返します。そしてモデル(特に小さいモデル)は、そこで見つけた指示に従ってしまうことがあります。もしツールのスキーマに`user_id`フィールドがあれば、注入されたコメントによって、モデルがそこに他人のIDを入れるよう誘導される可能性があります。それでもすべてのチェックは通ります。トークンは有効で、ツールも普通に動きます。それでもデータは漏れてしまいます。これは、信頼されたコンポーネントが、信頼できない相手の指示に従って動いてしまう問題です。
+
+`TokenClaim("sub")`を使えば、このパラメーターは`tools/list`が返すスキーマに含まれないので、モデルには埋めるべき枠そのものがありません。インジェクションにできることは、せいぜい*何を*検索するかを変えることだけで、それもユーザー自身のデータの中に限られます。デモで私が述べたとおりです:*「モデルがインジェクションを読んでしまうのは想定内です。設計は、モデルがそれに抵抗することに依存していません。」*
+
+`get_image`も同じ原則で説明できます。こちらでは`image_id`がモデルの指定する引数*そのもの*なので、サーバーは呼び出し元が言ったことではなく、取り込み時に書き込まれた分類行に照らして所有者をチェックします:
+
+```python
+row = await asyncio.to_thread(
+    lambda: classifications_table.get_item(Key={"imageId": image_id}).get("Item")
+)
+if row is None or row.get("userId") != user_id:
+    raise ToolError("Unknown image.")
+```
+
+「Unknown image.」は「あなたのものではない」場合と「存在しない」場合で同じ答えなので、このエラーからどの画像が存在するのかはわかりません。
+
+### トークンはACPの`authenticate`の中で運ぶ
+
+この経路では、通常の`Authorization: Bearer`ヘッダーは使えません。**ブラウザのWebSocket APIはリクエストヘッダーを設定できない**からです。私は4つの選択肢を比較しました:
+
+| 選択肢 | 評価 |
+|---|---|
+| **ACPの`authenticate`で`_meta.idToken`を使う** ✅ 採用 | プロトコルに沿ったやり方で、トークンがURLに現れることもありません。クライアントの小さな変更と、エージェントのハンドラーが必要でした |
+| Cookie | WebSocketのハンドシェイクでブラウザが自動的に送ってくれますが、エージェントのドメイン向けに発行する必要があります。また、自動送信されることで、クロスサイトWebSocketハイジャック(CSRFの親戚)が問題になります |
+| クエリ文字列 `wss://…/acp?id_token=…` | 簡単ですが、トークンがALBのアクセスログとブラウザの履歴に残り、`exp`まではそこから使えてしまいます |
+| `Sec-WebSocket-Protocol`に紛れ込ませる | 動きますが、正当性を説明しなければならないハックです |
+
+ALBに組み込まれている`authenticate-cognito`アクションはどうでしょうか。これはブラウザのセッション向けに作られています。未認証のユーザーをCognitoのホストされたサインインページへリダイレクトし、独自のセッションCookieを保持します。これはMCPサーバーへのBearerでの呼び出しにも、振り返りLambdaにも合いません。さらに、検証をサービスからロードバランサーへ移すことになりますが、そもそもの狙いは各サービスが自分でチェックすることでした。
+
+### MCPサーバーでもう一度検証する
+
+エージェントがすでにトークンを検証しているのに、なぜMCPサーバーでもチェックするのでしょうか。これは[パート3](/ja/posts/strobe-assistant-part-3-acp-mcp-pipeline#mcpサーバー独立したコンポーネント独立した認証境界)で詳しく扱ったので、ここでは要点だけを挙げます:
+
+- **MCPサーバーはそれ自体が1つの信頼境界です。** URLは公開されています(エージェントでさえALB経由でアクセスします)。そのため「エージェントが送ってくるものは何でも信頼する」は、実際には「URLを見つけた人なら誰でも信頼する」という意味になります。しかも、入り口はALBだけではありません。FargateのタスクはパブリックサブネットでパブリックIPを持って動いており、科目で用意されたセキュリティグループは、MCPサーバーが待ち受けるポート8080を全世界に開いています。タスクのIPを知った人は誰でもALBを完全に迂回でき、そのとき行く手を阻むのはトークンのチェックだけです。
+- **再利用できる状態を保てます。** ほかのエージェントやデスクトップのMCPクライアントが接続することもありえますが、サーバーは呼び出し元について何も知らなくても安全なままです。
+- **多層防御です。** MCPサーバーは、ユーザーが誰なのかについてエージェントの言い分を鵜呑みにしません。署名付きトークンから自分で`sub`を取り出します。たとえエージェントにバグがあったり、エージェントが侵害されたりしても、別人だと*主張する*だけでは済みません。
+
+コストは、リクエストごとにキャッシュ済みの鍵でローカルの署名チェックが1回増えることです。モデルのレイテンシに比べれば、1ミリ秒にもはるかに満たない時間です。
+
+## 誰も操作していないときのアイデンティティ
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/strobe-assistant-part-4-how-cognito-and-auth-fit-in/auth-7-identity-without-a-human.svg"
+    alt="人が介在しない2つのフロー。定期実行の振り返りLambdaはSecrets Managerの登録済みユーザーとしてログインし、同じACPとMCPの経路を通る。非同期の取り込みでは、検証済みのアップロードが書き込んだS3キー{sub}/{postId}/{fileId}に所有者がデータとして含まれる"
+    style={{ marginBottom: "8px" }}
+  />
+</figure>
+
+A2には人が介在せずに動く部分が2つあり、それぞれアイデンティティの扱い方が異なります。
+
+**定期実行の振り返り:借りたアイデンティティ。** Lambdaは登録済みユーザーとしてサインインし、その後はブラウザと同じWebSocketと`authenticate`の呼び出しを使います。振り返りLambdaでは:
+
+```python
+def _login(email: str, password: str) -> tuple[str, dict]:
+    body = _api("POST", "/v1/auth/login", body={"email": email, "password": password})
+    return body["token"], body["user"]
+
+# run_agent(): initialize -> authenticate -> session/new (trigger=schedule) -> session/prompt
+client.request("authenticate", {"methodId": AUTH_METHOD_ID, "_meta": {"idToken": token}})
+session = client.request("session/new", {"cwd": "/", "mcpServers": [], "_meta": {"trigger": "schedule"}})
+```
+
+Bedrockを直接呼び出すのではなくエージェントを経由することで、**認証の経路が1つ**に保たれます。MCPの`userId`フィルターはそのまま適用され、エージェントのメモリにもその実行が記録され、MomentはA1を通してそのユーザーとして書き込まれます(V1)。
+
+正直に言うと限界もあります。Cognitoは、ユーザー本人の認証情報がなければそのユーザーのトークンを発行しません。登録済みアカウントのログイン情報をSecrets Managerに置いているのはそのためです。マシン間通信用の*クライアントクレデンシャル*のトークンも存在しますが、それは`sub`が人ではなくアプリクライアントになるアクセストークンなので、ユーザーごとのフィルターには使えません。本来の解決策は、信頼されたサービスがユーザーに代わってトークンを取得できる、Cognitoのカスタム認証フロー(Lambdaトリガー)でしょう。
+
+**非同期の取り込み:データとしてのアイデンティティ。** ワーカーはトークンをまったく持っていません。ワーカーはS3キーから読み取った所有者を信頼します。クライアントがアップロードできるのは、V1を通過したあとにアップロードLambdaが署名付きURLを発行した、まさにそのキーだけだからです:
+
+```python
+# SQS worker Lambda
+# Upload Lambda's convention: keys are always "{userId}/{postId}/{fileId}"
+parts = object_key.split("/")
+...
+user_id, post_id, file_id = parts
+```
+
+この`user_id`はフィルター可能なベクトルのメタデータとして保存され、のちにV3の`sub`と照合されます。テキストのジョブも同じ仕組みで、投稿Lambdaが検証済みの`userId`をSQSメッセージに入れます。
+
+## 何が秘密で、何が秘密でないか
+
+`agent/src/config.ts`のコメントが、これをうまく要約しています:
+
+> エージェントは秘密情報を一切持たない。AWSの鍵は持たず(タスクロール)、モデルのAPIキーも持たず(BedrockはIAMで認可される)、WebUIと共有するトークンも持たない。接続が続く間、*ユーザーの*Cognitoのアイデンティティを借りるだけだ。
+
+- **ユーザープールIDとアプリクライアントID → SSM Parameter Store(標準階層、無料)。** これらは公開の識別子です。すべてのトークンの`iss`と`aud`に現れ、トークンを*署名*するためではなく*検証*するために必要なものです。
+- **振り返り用アカウントのログイン情報 → Secrets Manager。** これは本物の認証情報で、A2が追加した唯一の秘密情報です。
+- **A2には署名鍵がどこにもありません。** 秘密鍵を持っているのはCognitoだけなので、A2のどのサービスも、盗む価値のあるものを何も持っていません。
+
+## まとめ
+
+振り返ってみると、A2の認証設計はいくつかの考え方に集約されます:
+
+- **1つのアイデンティティを、すべての境界でチェックする。** A2は新しいアイデンティティの仕組みを追加していません。A1のIDトークンが最後まで移動し、単独でアクセスできる各サービス(A1のAPI、エージェント、MCPサーバー)がそれぞれ自分で検証します。前段のALBは振り分けるだけです。
+- **アイデンティティは検証済みのトークンから得るものであり、誰かの言い分から得るものでは決してない。** ブラウザからでも、エージェントからでもなく、そして最も重要なことに、モデルからでもありません。`user_id`引数を公開する代わりに`sub`を注入することで、プロンプトインジェクションはデータ漏洩から、最悪でも自分のコンテンツに対する奇妙な検索に変わります。
+- **トークンがないときは、信頼がどこから来るのかを明示する。** 取り込みは、検証済みのアップロードからしか生まれえないストレージキーを信頼します。振り返りは登録済みユーザーのログインを借り、その後はほかの全員と同じ経路を通ります。
+
+次に取り組みたい粗い部分もまだ残っています。WebUIはまだトークンを更新しないので、1時間たつと再びサインインを求められます。また、パート3で触れたとおり、3つのサービスすべてが1つのタスクロールを共有しているため、エージェントとMCPサーバーの間の境界はIAMではなくコードで強制されています。
+
+私にとって最も役に立ったのは、このプロジェクトを通じて身についた習慣です。すべての経路で、*このコンポーネントは、ユーザーが誰なのかをどうやって知っているのか?*と問うことです。その答えが「誰かがそう言ったから」であれば、そこが最初に見るべき場所です。
