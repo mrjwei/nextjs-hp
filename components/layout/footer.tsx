@@ -6,16 +6,12 @@ import { TrackedLink } from "@/components/layout/tracked-link"
 import type { Lang } from "@/lib/i18n/config"
 import { profile, type SocialId } from "@/lib/content/profile"
 
-const copy: Record<Lang, { heading: string; subtext: string }> = {
+const copy: Record<Lang, { heading: string }> = {
   en: {
-    heading: "New writing, occasionally",
-    subtext:
-      "Product design, engineering and AI in real operations — plus the odd security deep-dive. No spam.",
+    heading: "Subscribe to the newsletter (free)"
   },
   ja: {
-    heading: "たまに、新しい記事を",
-    subtext:
-      "プロダクトデザイン、開発、業務への生成AI実装。時々セキュリティの深掘りも。スパムはありません。",
+    heading: "メルマガ登録はこちらから（無料）"
   },
 }
 
@@ -66,7 +62,6 @@ export default function Footer({ lang = "en" }: { lang?: Lang }) {
           <h2 className="font-serif text-xl font-medium text-[var(--text-strong)]">
             {t.heading}
           </h2>
-          <p className="mt-1 text-sm text-[var(--text-muted)]">{t.subtext}</p>
           <div className="mt-4 w-full flex justify-center">
             <NewsletterForm className="max-w-[420px]" lang={lang} />
           </div>
