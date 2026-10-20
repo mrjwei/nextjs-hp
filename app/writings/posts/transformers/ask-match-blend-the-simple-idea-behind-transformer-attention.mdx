@@ -1,0 +1,299 @@
+---
+title: "Ask, Match, Blend: The Simple Idea Behind Transformer Attention"
+slug: "ask-match-blend-the-simple-idea-behind-transformer-attention"
+publishedAt: "2026-10-20"
+summary: "Building attention up from Query, Key and Value: how similarity scores become weights that blend values, why the scores are scaled by √d_k, and how self-, cross- and multi-head attention differ, with the maths and PyTorch code side by side."
+tags: ["ai", "machine-learning", "deep-learning"]
+---
+
+- [Part 1: Query (Q), Key (K), and Value (V) for similarities](#part-1-query-q-key-k-and-value-v-for-similarities)
+  - [Where do Q, K, and V come from?](#where-do-q-k-and-v-come-from)
+  - [From similarity scores to attention](#from-similarity-scores-to-attention)
+  - [What does that look like in practice?](#what-does-that-look-like-in-practice)
+  - [Show me the code](#show-me-the-code)
+  - [Unpacking the maths, one position at a time](#unpacking-the-maths-one-position-at-a-time)
+  - [Wait, why divide by √d_k?](#wait-why-divide-by-d_k)
+- [Part 2: The different kinds of attention](#part-2-the-different-kinds-of-attention)
+  - [Self-attention](#self-attention)
+  - [Cross-attention](#cross-attention)
+  - [Multi-head attention](#multi-head-attention)
+- [Wrapping up](#wrapping-up)
+- [Further reading](#further-reading)
+
+Transformers may feel overwhelming to learn, but the underlying concept is surprisingly straightforward. The key, I've found, is understanding what *attention* really is, because, as the canonical paper puts it, ["Attention is all you need"](https://arxiv.org/abs/1706.03762).
+
+That said, I found I needed a bit of maths to really grasp it. Specifically, it helps to be comfortable with vector and matrix operations: once I could multiply two matrices and keep track of their shapes, the rest fell into place.
+
+In this post, I'll first build up attention from scratch with Query, Key, and Value, then untangle the different *kinds* of attention I kept bumping into: self-attention, cross-attention, and multi-head attention.
+
+## Part 1: Query (Q), Key (K), and Value (V) for similarities
+
+At its core, attention is about **similarity**, whether it's between words in the same sequence or across different sequences. Query (Q), Key (K), and Value (V) are the matrices used to calculate it, and each one plays a distinct role:
+
+- **Query (Q)**: "what am I looking for?" One per token: the question that token is asking of the rest of the sequence.
+- **Key (K)**: "what do I offer, as a label for matching?" One per token: how that token advertises itself so others can find it.
+- **Value (V)**: "what information do I actually give you if you pick me?" One per token: the content that gets passed along once a match is made.
+
+The way I like to picture it is a library. My **query** is the topic I walk in with, the **keys** are the labels on the spines, and the **values** are what's actually inside the books. I compare my topic against every label, then read the books that match best.
+
+### Where do Q, K, and V come from?
+
+They all come from the same place: $X$, the token embedding matrix of the whole sequence, where $n$ is the sequence length:
+
+$$X \in \mathbb{R}^{n \times d_{model}}$$
+
+Each of $Q$, $K$, and $V$ is a linear transformation of $X$ by its own learned weight matrix:
+
+$$W_Q \in \mathbb{R}^{d_{model} \times d_k} \qquad W_K \in \mathbb{R}^{d_{model} \times d_k} \qquad W_V \in \mathbb{R}^{d_{model} \times d_v}$$
+
+($d_v$ often equals $d_k$, but it doesn't have to.)
+
+$$
+\begin{aligned}
+Q &= X W_Q &\quad (n \times d_{model}) \cdot (d_{model} \times d_k) &= (n \times d_k) \\
+K &= X W_K &\quad (n \times d_{model}) \cdot (d_{model} \times d_k) &= (n \times d_k) \\
+V &= X W_V &\quad (n \times d_{model}) \cdot (d_{model} \times d_v) &= (n \times d_v)
+\end{aligned}
+$$
+
+So the *same* tokens get projected three different ways: once as questions, once as labels, and once as content.
+
+### From similarity scores to attention
+
+Before walking through it step by step, here's the whole pipeline at a glance:
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/ask-match-blend-the-simple-idea-behind-transformer-attention/attention-pipeline.svg" alt="Scaled dot-product attention: X is projected into Q, K and V; Q and K are compared, softmax turns the scores into weights, and the weights blend V into the output" style={{ marginBottom: "8px" }} />
+</figure>
+
+**Step 1: raw scores.** We compare every query against every key:
+
+$$\text{scores} = \frac{QK^T}{\sqrt{d_k}} \qquad (n \times n)$$
+
+This is just dot-product similarity, and it essentially answers: *given my query, which word in the sequence seems to be the best match?* Row $i$ holds token $i$'s scores against every token in the sequence (including itself).
+
+**Step 2: attention weights.** We softmax each row of the scores, turning them into weights between 0 and 1 that sum to 1:
+
+$$A = \text{softmax}(\text{scores}) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right) \qquad (n \times n)$$
+
+**Step 3: weighted values.** Finally, we multiply the weights by $V$:
+
+$$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V \qquad (n \times d_v)$$
+
+These weighted attention values are what the transformer carries forward to eventually generate tokens. Every token now has a new representation that's been "informed" by the tokens it found most relevant.
+
+### What does that look like in practice?
+
+Take the sentence *"The cat sat because it was tired."* When the model processes **"it"**, its row in $A$ might look something like this (numbers made up for illustration):
+
+| "it" attends to → | The | cat | sat | because | it | was | tired |
+|---|---|---|---|---|---|---|---|
+| weight | 0.03 | **0.62** | 0.08 | 0.05 | 0.14 | 0.03 | 0.05 |
+
+Most of the weight lands on "cat", so the new representation of "it" is mostly built out of the value of "cat". That's how the model works out what "it" refers to. What struck me is that it's a *soft* lookup: rather than picking one exact match, "it" gets a blend of everyone's values, weighted by how well each key matched its query.
+
+### Show me the code
+
+The whole thing is only a few lines. Here it is in PyTorch, with the shapes tracked in the comments:
+
+```python
+import math
+import torch
+
+torch.manual_seed(0)
+n, d_model, d_k, d_v = 4, 8, 8, 8  # 4 tokens, tiny dims so we can eyeball things
+
+X = torch.randn(n, d_model)        # [n, d_model] token embeddings
+
+W_Q = torch.randn(d_model, d_k)    # [d_model, d_k]
+W_K = torch.randn(d_model, d_k)    # [d_model, d_k]
+W_V = torch.randn(d_model, d_v)    # [d_model, d_v]
+
+Q = X @ W_Q                        # [n, d_k]
+K = X @ W_K                        # [n, d_k]
+V = X @ W_V                        # [n, d_v]
+
+scores = Q @ K.T / math.sqrt(d_k)  # [n, n]   every query vs every key
+A = scores.softmax(dim=-1)         # [n, n]   each row sums to 1
+output = A @ V                     # [n, d_v] one blended value per token
+
+print(A.sum(dim=-1))               # tensor([1.0000, 1.0000, 1.0000, 1.0000])
+print(output.shape)                # torch.Size([4, 8])
+```
+
+As a sanity check, PyTorch's built-in [`scaled_dot_product_attention`](https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention.html) gives the same result.
+
+### Unpacking the maths, one position at a time
+
+The matrix form is compact, but I found it much easier to see what's going on by zooming in on a single position.
+
+- Let the current position be $i$ and another position be $j$. The attention score of query $i$ and key $j$ is a single number (a scalar):
+  $$\text{score}_{ij} = \frac{Q_i K_j^T}{\sqrt{d_k}}$$
+- After softmax across all the keys (where $n$ is the sequence length):
+  $$a_{ij} = \text{softmax}_j(\text{score}_{ij}) = \frac{\exp(\text{score}_{ij})}{\sum_{m=1}^{n} \exp(\text{score}_{im})}$$
+- The output at position $i$ is a weighted combination of the values at every position $j$ it's allowed to see. That's all positions in plain self-attention, or only the earlier ones with a causal mask (more on that below):
+  $$\text{output}_i = \sum_{j} a_{ij} V_j \qquad (1 \times d_v)$$
+- Stacking the output at each position gives us the attention value matrix of the whole sequence:
+  $$\mathbf{output} = \begin{bmatrix} \text{output}_1 \\ \text{output}_2 \\ \vdots \\ \text{output}_n \end{bmatrix} \qquad (n \times d_v)$$
+- In reality, there's no computing-and-then-stacking. The whole $\mathbf{output}$ comes out of a single matrix multiplication, $A \cdot V$, which is exactly why transformers are so GPU-friendly.
+
+### Wait, why divide by √d_k?
+
+This little term is easy to skip over, but it matters. If the entries of $Q$ and $K$ are roughly zero-mean with unit variance, their dot product is a sum of $d_k$ terms, so its variance grows to about $d_k$ and its spread to about $\sqrt{d_k}$. A quick experiment shows it:
+
+```python
+for d_k in [4, 64, 512]:
+    q, k = torch.randn(10_000, d_k), torch.randn(10_000, d_k)
+    print(d_k, (q * k).sum(dim=-1).std())
+# 4    ≈ 2.0
+# 64   ≈ 8.0
+# 512  ≈ 22.6
+```
+
+Big scores are bad news for softmax: it saturates, putting nearly all the weight on one token and leaving almost zero gradient for everything else.
+
+```python
+s = torch.tensor([2.0, 1.0, 0.5])
+s.softmax(-1)        # tensor([0.63, 0.23, 0.14])     nice and spread out
+(s * 8).softmax(-1)  # tensor([0.9997, 0.0003, 0.0000]) basically one-hot
+```
+
+Dividing by $\sqrt{d_k}$ brings the scores back to a sensible scale, no matter how wide the vectors are. Hence the name *scaled* dot-product attention.
+
+## Part 2: The different kinds of attention
+
+The term *attention* gets used everywhere in transformers, and I kept running into different types of it. They can refer to very different things, despite being built on the same basic concept from Part 1, so it's worth clarifying what each one actually does.
+
+The good news: the formula never changes. What changes is **where Q, K, and V come from**, and **how the computation is organised**.
+
+### Self-attention
+
+- Attention weights are computed **within the same sequence** only.
+- Q, K, and V are all projected from the same $X$, exactly as in Part 1.
+- There's no context being considered outside of the current sequence.
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/ask-match-blend-the-simple-idea-behind-transformer-attention/self-attention.svg" alt="Self-attention: Q, K and V are all projected from the same sequence" style={{ marginBottom: "8px" }} />
+</figure>
+
+A common variant is **causal (masked) self-attention**, used in decoder-only models like GPT. Since the model generates text left to right, a token mustn't peek at the future. We enforce that by setting the scores above the diagonal to $-\infty$ before the softmax, so they become 0:
+
+```
+           The    cat    sat    on
+The       1.00     –      –      –
+cat       0.30   0.70     –      –
+sat       0.10   0.60   0.30     –
+on        0.05   0.20   0.45   0.30
+```
+
+```python
+mask = torch.tril(torch.ones(n, n, dtype=torch.bool))  # lower-triangular [n, n]
+scores = (Q @ K.T / math.sqrt(d_k)).masked_fill(~mask, float("-inf"))
+A = scores.softmax(dim=-1)  # zeros above the diagonal
+```
+
+### Cross-attention
+
+- Attention weights are computed **between different sequences**.
+- It's most commonly used in the encoder–decoder architecture, where the decoder **queries (Q)** the encoder's output (**K and V**) for the information it needs to generate the next token.
+- Think translation: while writing the French sentence, the decoder keeps "looking back" at the English one.
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/ask-match-blend-the-simple-idea-behind-transformer-attention/cross-attention.svg" alt="Cross-attention: Q comes from the decoder, while K and V come from the encoder's output" style={{ marginBottom: "8px" }} />
+</figure>
+
+The only real change from self-attention is the input to each projection. One fun side effect: the score matrix is no longer square. It's $(n_{dec} \times n_{enc})$, since every decoder token is scored against every encoder token.
+
+```python
+def attention(Q, K, V, mask=None):
+    scores = Q @ K.transpose(-2, -1) / math.sqrt(Q.size(-1))
+    if mask is not None:
+        scores = scores.masked_fill(~mask, float("-inf"))
+    return scores.softmax(dim=-1) @ V
+
+n_dec, n_enc = 3, 5
+dec_x   = torch.randn(n_dec, d_model)  # [n_dec, d_model] what the decoder has so far
+enc_out = torch.randn(n_enc, d_model)  # [n_enc, d_model] the encoder's output
+
+Q = dec_x @ W_Q    # [n_dec, d_k]  questions come from the decoder
+K = enc_out @ W_K  # [n_enc, d_k]  labels come from the encoder
+V = enc_out @ W_V  # [n_enc, d_v]  content comes from the encoder
+
+out = attention(Q, K, V)  # scores: [n_dec, n_enc] -> out: [n_dec, d_v]
+```
+
+### Multi-head attention
+
+This is where I got tripped up for a while. Multi-head attention is **independent of both self-attention and cross-attention**. It's an architecture design pattern, not a specification of attention boundaries. You can have multi-head *self*-attention or multi-head *cross*-attention.
+
+The idea: instead of one big attention computation over the full $d_{model}$, we split it into $h$ smaller **heads**, each with its own $W_Q$, $W_K$, $W_V$ working in $d_k = d_{model} / h$ dimensions. Each head runs attention on its own, then we concatenate the results and mix them with one more linear layer, $W_O$:
+
+$$\text{head}_i = \text{Attention}(XW_Q^{(i)},\; XW_K^{(i)},\; XW_V^{(i)})$$
+
+$$\text{MultiHead}(X) = \text{Concat}(\text{head}_1, \dots, \text{head}_h)\, W_O$$
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/ask-match-blend-the-simple-idea-behind-transformer-attention/multi-head-attention.svg" alt="Multi-head attention: the input fans out to h parallel heads, which are concatenated and mixed by W_O" style={{ marginBottom: "8px" }} />
+</figure>
+
+Why bother? As far as I can tell, there are three main benefits:
+
+- **Computational performance through parallelism.** The heads don't depend on each other, so they're computed all at once as one batched matrix multiplication rather than one after another. And because each head works in a smaller $d_k$, the total cost ends up about the same as a single full-sized head.
+- **More expressive power.** Each head can learn to focus on a different language feature: one might track which noun a pronoun refers to, another might focus on neighbouring words. (In practice, heads don't always split the work this neatly, but the extra capacity is there.)
+- **Projecting back is cheap.** Getting back to the expected shape is just a concatenation along the feature axis, followed by a multiplication with one linear layer ($W_O$) that combines the heads.
+
+Here's a minimal version. What I like about it is how the "multiple heads" turn out to be just an extra tensor dimension:
+
+```python
+class MultiHeadAttention(torch.nn.Module):
+    def __init__(self, d_model, n_heads):
+        super().__init__()
+        assert d_model % n_heads == 0
+        self.h, self.d_k = n_heads, d_model // n_heads
+        self.W_Q = torch.nn.Linear(d_model, d_model, bias=False)
+        self.W_K = torch.nn.Linear(d_model, d_model, bias=False)
+        self.W_V = torch.nn.Linear(d_model, d_model, bias=False)
+        self.W_O = torch.nn.Linear(d_model, d_model, bias=False)  # combines the heads
+
+    def split(self, t):                    # [n, d_model] -> [h, n, d_k]
+        n = t.size(0)
+        return t.view(n, self.h, self.d_k).transpose(0, 1)
+
+    def forward(self, x_q, x_kv, mask=None):
+        Q = self.split(self.W_Q(x_q))      # [h, n_q, d_k]
+        K = self.split(self.W_K(x_kv))     # [h, n_kv, d_k]
+        V = self.split(self.W_V(x_kv))     # [h, n_kv, d_k]
+
+        heads = attention(Q, K, V, mask)   # [h, n_q, d_k]  all heads in one go
+
+        n_q = x_q.size(0)
+        concat = heads.transpose(0, 1).reshape(n_q, -1)  # [n_q, h * d_k] = [n_q, d_model]
+        return self.W_O(concat)            # [n_q, d_model]
+
+mha = MultiHeadAttention(d_model=8, n_heads=2)
+mha(X, X).shape            # self-attention:  torch.Size([4, 8])
+mha(dec_x, enc_out).shape  # cross-attention: torch.Size([3, 8])
+```
+
+The same module does both self- and cross-attention. The only difference is what gets passed in as `x_q` and `x_kv`, which is the whole point: multi-head is about *how* attention is computed, not *between what*.
+
+For a real-world implementation, I found the quantizable [`MultiheadAttention` in PyTorch's source](https://github.com/pytorch/pytorch/blob/main/torch/ao/nn/quantizable/modules/activation.py#L13) worth a read, since it spells out the projections and the head reshaping in plain Python.
+
+## Wrapping up
+
+Strip away the jargon and attention is just this: compare what each token is looking for (Q) against what every token offers (K), turn those comparisons into weights, and use them to blend everyone's content (V). Everything else is a variation on where those three matrices come from and how the work is split up.
+
+| | Q comes from | K, V come from | What it's for |
+|---|---|---|---|
+| **Self-attention** | the sequence | the same sequence | relating tokens within one sequence |
+| **Causal self-attention** | the sequence | the same sequence, earlier tokens only | generating text left to right |
+| **Cross-attention** | the decoder | the encoder's output | pulling in context from another sequence |
+| **Multi-head attention** | — | — | running any of the above as $h$ parallel heads |
+
+Once that clicked for me, the rest of the transformer started to feel a lot less overwhelming.
+
+## Further reading
+
+- [Attention Is All You Need](https://arxiv.org/abs/1706.03762) (Vaswani et al., 2017): the paper that started it all. Section 3.2 covers everything in this post.
+- [The Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/) by Jay Alammar: a very visual walkthrough of the full architecture.
+- [Let's build GPT: from scratch, in code, spelled out](https://www.youtube.com/watch?v=kCc8FmEb1nY) by Andrej Karpathy, which builds causal self-attention and multi-head attention line by line.
