@@ -8,5 +8,6 @@
   "radio-buttons": { "en": "UX Insight: Radio Buttons", "ja": "UXインサイト:ラジオボタン" },
   "AWS": { "en": "AWS", "ja": "AWS" },
   "ai-agent": { "en": "AI Agent", "ja": "AIエージェント" },
-  "workflows": { "en": "Workflows", "ja": "ワークフロー" }
+  "workflows": { "en": "Workflows", "ja": "ワークフロー" },
+  "transformers": { "en": "Transformers", "ja": "Transformer" }
 }
