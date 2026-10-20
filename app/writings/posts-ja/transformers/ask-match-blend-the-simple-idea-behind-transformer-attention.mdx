@@ -1,0 +1,299 @@
+---
+title: "問いかけ、照合し、混ぜ合わせる:Transformerのアテンションを支えるシンプルな考え方"
+slug: "ask-match-blend-the-simple-idea-behind-transformer-attention"
+publishedAt: "2026-10-20"
+summary: "Query、Key、Valueからアテンションを組み立てていきます。類似度スコアがどのように重みになって値を混ぜ合わせるのか、なぜスコアを√d_kでスケーリングするのか、そしてセルフアテンション、クロスアテンション、マルチヘッドアテンションの違いを、数式とPyTorchのコードを並べて解説します。"
+tags: ["ai", "machine-learning", "deep-learning"]
+---
+
+- [パート1:類似度のためのQuery(Q)、Key(K)、Value(V)](#パート1類似度のためのqueryqkeykvaluev)
+  - [Q、K、Vはどこから来るのか?](#qkvはどこから来るのか)
+  - [類似度スコアからアテンションへ](#類似度スコアからアテンションへ)
+  - [実際にはどう見えるのか?](#実際にはどう見えるのか)
+  - [コードで見てみる](#コードで見てみる)
+  - [数式をひとつの位置ずつ紐解く](#数式をひとつの位置ずつ紐解く)
+  - [ところで、なぜ√d_kで割るのか?](#ところでなぜd_kで割るのか)
+- [パート2:さまざまな種類のアテンション](#パート2さまざまな種類のアテンション)
+  - [セルフアテンション](#セルフアテンション)
+  - [クロスアテンション](#クロスアテンション)
+  - [マルチヘッドアテンション](#マルチヘッドアテンション)
+- [まとめ](#まとめ)
+- [参考文献](#参考文献)
+
+Transformerの学習は圧倒されるように感じるかもしれませんが、その根底にある考え方は意外なほどシンプルです。私が思うに、鍵になるのは*アテンション*が本当は何なのかを理解することです。なにしろ、元祖となった論文のタイトルにあるとおり、["Attention is all you need"](https://arxiv.org/abs/1706.03762)なのですから。
+
+とはいえ、本当に理解するには少し数学が必要でした。具体的には、ベクトルと行列の演算に慣れておくと助けになります。私の場合、2つの行列を掛け合わせ、その形状を追えるようになったところで、残りがすっと腑に落ちました。
+
+この記事ではまず、Query、Key、Valueを使ってアテンションをゼロから組み立てます。そのうえで、私が何度も出くわしたさまざまな*種類*のアテンション、つまりセルフアテンション、クロスアテンション、マルチヘッドアテンションを整理していきます。
+
+## パート1:類似度のためのQuery(Q)、Key(K)、Value(V)
+
+アテンションの核心は**類似度**です。同じ系列内の単語どうしであれ、異なる系列間であれ、それは変わりません。Query(Q)、Key(K)、Value(V)はその類似度を計算するための行列で、それぞれがはっきり異なる役割を担っています。
+
+- **Query(Q)**:「自分は何を探しているのか?」トークンごとに1つ。そのトークンが系列の残りの部分に投げかける問いです。
+- **Key(K)**:「照合用のラベルとして、自分は何を差し出せるのか?」トークンごとに1つ。他のトークンに見つけてもらうために、そのトークンが自分をどう示すかです。
+- **Value(V)**:「選んでもらえたら、実際にどんな情報を渡すのか?」トークンごとに1つ。照合が成立したときに受け渡される中身です。
+
+私は図書館にたとえて考えるのが気に入っています。私の**クエリ**は図書館に持ち込むテーマ、**キー**は本の背に貼られたラベル、**バリュー**は本の実際の中身です。自分のテーマをすべてのラベルと見比べ、いちばんよく合う本を読むわけです。
+
+### Q、K、Vはどこから来るのか?
+
+どれも同じところから来ます。$X$、つまり系列全体のトークン埋め込み行列です。ここで$n$は系列長です。
+
+$$X \in \mathbb{R}^{n \times d_{model}}$$
+
+$Q$、$K$、$V$はそれぞれ、$X$をそれぞれ専用の学習済み重み行列で線形変換したものです。
+
+$$W_Q \in \mathbb{R}^{d_{model} \times d_k} \qquad W_K \in \mathbb{R}^{d_{model} \times d_k} \qquad W_V \in \mathbb{R}^{d_{model} \times d_v}$$
+
+($d_v$は$d_k$と等しいことが多いですが、必ずしもそうである必要はありません。)
+
+$$
+\begin{aligned}
+Q &= X W_Q &\quad (n \times d_{model}) \cdot (d_{model} \times d_k) &= (n \times d_k) \\
+K &= X W_K &\quad (n \times d_{model}) \cdot (d_{model} \times d_k) &= (n \times d_k) \\
+V &= X W_V &\quad (n \times d_{model}) \cdot (d_{model} \times d_v) &= (n \times d_v)
+\end{aligned}
+$$
+
+つまり、*同じ*トークンが3通りに射影されるということです。問いとして1回、ラベルとして1回、中身として1回です。
+
+### 類似度スコアからアテンションへ
+
+順を追って見ていく前に、まずはパイプライン全体を一目で確認しておきましょう。
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/ask-match-blend-the-simple-idea-behind-transformer-attention/attention-pipeline.svg" alt="スケールド・ドット積アテンション:XがQ、K、Vに射影され、QとKが比較され、softmaxがスコアを重みに変え、その重みでVを混ぜ合わせて出力を得る" style={{ marginBottom: "8px" }} />
+</figure>
+
+**ステップ1:生のスコア。** すべてのクエリをすべてのキーと比較します。
+
+$$\text{scores} = \frac{QK^T}{\sqrt{d_k}} \qquad (n \times n)$$
+
+これはただのドット積による類似度で、本質的には*「自分のクエリからすると、系列内のどの単語がいちばんよく合いそうか?」*という問いに答えるものです。$i$行目には、トークン$i$の、系列内のすべてのトークン(自分自身を含む)に対するスコアが入ります。
+
+**ステップ2:アテンションの重み。** スコアの各行にsoftmaxをかけ、0から1の間の値で合計が1になる重みに変換します。
+
+$$A = \text{softmax}(\text{scores}) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right) \qquad (n \times n)$$
+
+**ステップ3:重み付けされた値。** 最後に、重みを$V$に掛けます。
+
+$$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V \qquad (n \times d_v)$$
+
+この重み付けされたアテンションの値こそが、Transformerが最終的にトークンを生成するために先へ受け渡していくものです。どのトークンも、自分が最も関連が深いと判断したトークンから「情報を得た」新しい表現を持つことになります。
+
+### 実際にはどう見えるのか?
+
+*"The cat sat because it was tired."*(猫は疲れていたので座った)という文を例にとりましょう。モデルが**"it"**を処理するとき、$A$におけるその行は、たとえば次のようになるかもしれません(数値は説明のための架空のものです)。
+
+| "it" の注目先 → | The | cat | sat | because | it | was | tired |
+|---|---|---|---|---|---|---|---|
+| 重み | 0.03 | **0.62** | 0.08 | 0.05 | 0.14 | 0.03 | 0.05 |
+
+重みの大部分が"cat"に集まっているので、"it"の新しい表現は、ほとんどが"cat"のバリューから作られます。こうしてモデルは"it"が何を指しているのかを突き止めるのです。私が印象的だと感じたのは、これが*ソフトな*検索だという点です。完全に一致するものを1つ選ぶのではなく、"it"は全員のバリューを、それぞれのキーが自分のクエリにどれだけよく合ったかに応じて重み付けして混ぜ合わせたものを受け取ります。
+
+### コードで見てみる
+
+全体はほんの数行で書けます。PyTorchで書くとこうなります。形状はコメントで追っています。
+
+```python
+import math
+import torch
+
+torch.manual_seed(0)
+n, d_model, d_k, d_v = 4, 8, 8, 8  # 4 tokens, tiny dims so we can eyeball things
+
+X = torch.randn(n, d_model)        # [n, d_model] token embeddings
+
+W_Q = torch.randn(d_model, d_k)    # [d_model, d_k]
+W_K = torch.randn(d_model, d_k)    # [d_model, d_k]
+W_V = torch.randn(d_model, d_v)    # [d_model, d_v]
+
+Q = X @ W_Q                        # [n, d_k]
+K = X @ W_K                        # [n, d_k]
+V = X @ W_V                        # [n, d_v]
+
+scores = Q @ K.T / math.sqrt(d_k)  # [n, n]   every query vs every key
+A = scores.softmax(dim=-1)         # [n, n]   each row sums to 1
+output = A @ V                     # [n, d_v] one blended value per token
+
+print(A.sum(dim=-1))               # tensor([1.0000, 1.0000, 1.0000, 1.0000])
+print(output.shape)                # torch.Size([4, 8])
+```
+
+検算として、PyTorch組み込みの[`scaled_dot_product_attention`](https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention.html)を使っても同じ結果になります。
+
+### 数式をひとつの位置ずつ紐解く
+
+行列の形は簡潔ですが、私はひとつの位置に絞って見たほうが、何が起きているのかずっとわかりやすいと感じました。
+
+- 現在の位置を$i$、別の位置を$j$とします。クエリ$i$とキー$j$のアテンションスコアは、1つの数値(スカラー)です。
+  $$\text{score}_{ij} = \frac{Q_i K_j^T}{\sqrt{d_k}}$$
+- すべてのキーにわたってsoftmaxをかけると、次のようになります($n$は系列長)。
+  $$a_{ij} = \text{softmax}_j(\text{score}_{ij}) = \frac{\exp(\text{score}_{ij})}{\sum_{m=1}^{n} \exp(\text{score}_{im})}$$
+- 位置$i$の出力は、参照が許されているすべての位置$j$のバリューを重み付けして組み合わせたものです。通常のセルフアテンションならすべての位置、因果マスクがあればそれより前の位置だけです(これについては後述します)。
+  $$\text{output}_i = \sum_{j} a_{ij} V_j \qquad (1 \times d_v)$$
+- 各位置の出力を積み重ねると、系列全体のアテンション値の行列が得られます。
+  $$\mathbf{output} = \begin{bmatrix} \text{output}_1 \\ \text{output}_2 \\ \vdots \\ \text{output}_n \end{bmatrix} \qquad (n \times d_v)$$
+- 実際には、計算してから積み重ねるということはしません。$\mathbf{output}$全体が$A \cdot V$という1回の行列積で得られます。Transformerが非常にGPU向きなのは、まさにこのためです。
+
+### ところで、なぜ√d_kで割るのか?
+
+この小さな項は見落としがちですが、重要です。$Q$と$K$の要素がおおよそ平均0、分散1だとすると、それらのドット積は$d_k$個の項の和になるので、分散はおよそ$d_k$、ばらつき(標準偏差)はおよそ$\sqrt{d_k}$まで大きくなります。簡単な実験で確かめられます。
+
+```python
+for d_k in [4, 64, 512]:
+    q, k = torch.randn(10_000, d_k), torch.randn(10_000, d_k)
+    print(d_k, (q * k).sum(dim=-1).std())
+# 4    ≈ 2.0
+# 64   ≈ 8.0
+# 512  ≈ 22.6
+```
+
+スコアが大きいとsoftmaxにとっては厄介です。softmaxが飽和して、ほぼすべての重みが1つのトークンに乗り、それ以外のすべてにはほとんど勾配が残らなくなってしまいます。
+
+```python
+s = torch.tensor([2.0, 1.0, 0.5])
+s.softmax(-1)        # tensor([0.63, 0.23, 0.14])     nice and spread out
+(s * 8).softmax(-1)  # tensor([0.9997, 0.0003, 0.0000]) basically one-hot
+```
+
+$\sqrt{d_k}$で割ることで、ベクトルの次元がどれだけ大きくても、スコアを適切なスケールに戻せます。これが*スケールド*・ドット積アテンションという名前の由来です。
+
+## パート2:さまざまな種類のアテンション
+
+*アテンション*という言葉はTransformerのあらゆるところで使われていて、私もいろいろな種類のアテンションに出くわしました。パート1と同じ基本的な考え方の上に成り立っているにもかかわらず、それぞれがまったく異なるものを指すことがあるので、どれが実際に何をしているのかを整理しておく価値があります。
+
+うれしいことに、式そのものは決して変わりません。変わるのは、**Q、K、Vがどこから来るのか**と、**計算がどう組み立てられているのか**です。
+
+### セルフアテンション
+
+- アテンションの重みは**同じ系列の中だけ**で計算されます。
+- Q、K、Vはすべて、パート1とまったく同じように、同じ$X$から射影されます。
+- 現在の系列の外にある文脈は考慮されません。
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/ask-match-blend-the-simple-idea-behind-transformer-attention/self-attention.svg" alt="セルフアテンション:Q、K、Vはすべて同じ系列から射影される" style={{ marginBottom: "8px" }} />
+</figure>
+
+よく使われる派生形が、GPTのようなデコーダのみのモデルで使われる**因果的(マスク付き)セルフアテンション**です。モデルはテキストを左から右へ生成するので、トークンが未来を覗き見してはいけません。そこで、softmaxの前に対角線より上のスコアを$-\infty$に設定し、それらが0になるようにします。
+
+```
+           The    cat    sat    on
+The       1.00     –      –      –
+cat       0.30   0.70     –      –
+sat       0.10   0.60   0.30     –
+on        0.05   0.20   0.45   0.30
+```
+
+```python
+mask = torch.tril(torch.ones(n, n, dtype=torch.bool))  # lower-triangular [n, n]
+scores = (Q @ K.T / math.sqrt(d_k)).masked_fill(~mask, float("-inf"))
+A = scores.softmax(dim=-1)  # zeros above the diagonal
+```
+
+### クロスアテンション
+
+- アテンションの重みは**異なる系列の間**で計算されます。
+- 最もよく使われるのはエンコーダ・デコーダ構成で、デコーダが次のトークンを生成するのに必要な情報を求めて、エンコーダの出力(**KとV**)に**クエリ(Q)**を投げかけます。
+- 翻訳を思い浮かべてください。フランス語の文を書きながら、デコーダは英語の文を何度も「振り返って」見ています。
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/ask-match-blend-the-simple-idea-behind-transformer-attention/cross-attention.svg" alt="クロスアテンション:Qはデコーダから、KとVはエンコーダの出力から来る" style={{ marginBottom: "8px" }} />
+</figure>
+
+セルフアテンションとの実質的な違いは、各射影への入力だけです。ちょっと面白い副作用として、スコア行列はもう正方行列ではなくなります。デコーダのすべてのトークンがエンコーダのすべてのトークンに対してスコア付けされるので、$(n_{dec} \times n_{enc})$になるのです。
+
+```python
+def attention(Q, K, V, mask=None):
+    scores = Q @ K.transpose(-2, -1) / math.sqrt(Q.size(-1))
+    if mask is not None:
+        scores = scores.masked_fill(~mask, float("-inf"))
+    return scores.softmax(dim=-1) @ V
+
+n_dec, n_enc = 3, 5
+dec_x   = torch.randn(n_dec, d_model)  # [n_dec, d_model] what the decoder has so far
+enc_out = torch.randn(n_enc, d_model)  # [n_enc, d_model] the encoder's output
+
+Q = dec_x @ W_Q    # [n_dec, d_k]  questions come from the decoder
+K = enc_out @ W_K  # [n_enc, d_k]  labels come from the encoder
+V = enc_out @ W_V  # [n_enc, d_v]  content comes from the encoder
+
+out = attention(Q, K, V)  # scores: [n_dec, n_enc] -> out: [n_dec, d_v]
+```
+
+### マルチヘッドアテンション
+
+私がしばらくつまずいていたのがここです。マルチヘッドアテンションは、**セルフアテンションともクロスアテンションとも独立したもの**です。アーキテクチャの設計パターンであって、アテンションの範囲を指定するものではありません。マルチヘッドの*セルフ*アテンションもあれば、マルチヘッドの*クロス*アテンションもあります。
+
+考え方はこうです。$d_{model}$全体に対して大きなアテンション計算を1回行う代わりに、それを$h$個の小さな**ヘッド**に分割します。各ヘッドはそれぞれ専用の$W_Q$、$W_K$、$W_V$を持ち、$d_k = d_{model} / h$次元で計算します。各ヘッドが独立にアテンションを実行したら、その結果を連結し、もう1つの線形層$W_O$で混ぜ合わせます。
+
+$$\text{head}_i = \text{Attention}(XW_Q^{(i)},\; XW_K^{(i)},\; XW_V^{(i)})$$
+
+$$\text{MultiHead}(X) = \text{Concat}(\text{head}_1, \dots, \text{head}_h)\, W_O$$
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/ask-match-blend-the-simple-idea-behind-transformer-attention/multi-head-attention.svg" alt="マルチヘッドアテンション:入力がh個の並列ヘッドに分岐し、それらが連結されてW_Oで混ぜ合わされる" style={{ marginBottom: "8px" }} />
+</figure>
+
+なぜわざわざそうするのでしょうか?私の理解では、主な利点は3つあります。
+
+- **並列化による計算性能。** ヘッドどうしは互いに依存しないので、1つずつ順番にではなく、1回のバッチ行列積としてまとめて計算できます。しかも各ヘッドはより小さな$d_k$で計算するので、全体のコストは、フルサイズのヘッド1つの場合とほぼ同じに収まります。
+- **表現力の向上。** 各ヘッドは、それぞれ異なる言語的特徴に注目するよう学習できます。あるヘッドは代名詞がどの名詞を指すかを追い、別のヘッドは隣接する単語に注目する、といった具合です。(実際には、ヘッドがいつもこれほどきれいに役割分担するとは限りませんが、そのための余分な表現力は備わっています。)
+- **元の形状に戻すのが安上がり。** 期待される形状に戻すには、特徴量の軸に沿って連結し、ヘッドをまとめる1つの線形層($W_O$)を掛けるだけです。
+
+最小限の実装は次のとおりです。私が気に入っているのは、「複数のヘッド」が、実はテンソルの次元が1つ増えただけにすぎないとわかるところです。
+
+```python
+class MultiHeadAttention(torch.nn.Module):
+    def __init__(self, d_model, n_heads):
+        super().__init__()
+        assert d_model % n_heads == 0
+        self.h, self.d_k = n_heads, d_model // n_heads
+        self.W_Q = torch.nn.Linear(d_model, d_model, bias=False)
+        self.W_K = torch.nn.Linear(d_model, d_model, bias=False)
+        self.W_V = torch.nn.Linear(d_model, d_model, bias=False)
+        self.W_O = torch.nn.Linear(d_model, d_model, bias=False)  # combines the heads
+
+    def split(self, t):                    # [n, d_model] -> [h, n, d_k]
+        n = t.size(0)
+        return t.view(n, self.h, self.d_k).transpose(0, 1)
+
+    def forward(self, x_q, x_kv, mask=None):
+        Q = self.split(self.W_Q(x_q))      # [h, n_q, d_k]
+        K = self.split(self.W_K(x_kv))     # [h, n_kv, d_k]
+        V = self.split(self.W_V(x_kv))     # [h, n_kv, d_k]
+
+        heads = attention(Q, K, V, mask)   # [h, n_q, d_k]  all heads in one go
+
+        n_q = x_q.size(0)
+        concat = heads.transpose(0, 1).reshape(n_q, -1)  # [n_q, h * d_k] = [n_q, d_model]
+        return self.W_O(concat)            # [n_q, d_model]
+
+mha = MultiHeadAttention(d_model=8, n_heads=2)
+mha(X, X).shape            # self-attention:  torch.Size([4, 8])
+mha(dec_x, enc_out).shape  # cross-attention: torch.Size([3, 8])
+```
+
+同じモジュールで、セルフアテンションとクロスアテンションの両方をこなせます。違いは`x_q`と`x_kv`に何を渡すかだけで、まさにそこが要点です。マルチヘッドとは、アテンションを*どう*計算するかの話であって、*何と何の間で*計算するかの話ではありません。
+
+実際の実装としては、PyTorchのソースにある量子化対応版の[`MultiheadAttention`](https://github.com/pytorch/pytorch/blob/main/torch/ao/nn/quantizable/modules/activation.py#L13)が読む価値がありました。射影とヘッドの形状変換が素のPythonで書き下されているからです。
+
+## まとめ
+
+専門用語を取り払えば、アテンションとは結局こういうことです。各トークンが探しているもの(Q)を、すべてのトークンが差し出しているもの(K)と比較し、その比較結果を重みに変え、その重みで全員の中身(V)を混ぜ合わせる。それ以外はすべて、この3つの行列がどこから来るのか、そして計算をどう分割するのかのバリエーションにすぎません。
+
+| | Qの出どころ | K、Vの出どころ | 用途 |
+|---|---|---|---|
+| **セルフアテンション** | 系列 | 同じ系列 | 1つの系列内のトークンどうしを関連付ける |
+| **因果的セルフアテンション** | 系列 | 同じ系列(それより前のトークンのみ) | テキストを左から右へ生成する |
+| **クロスアテンション** | デコーダ | エンコーダの出力 | 別の系列から文脈を取り込む |
+| **マルチヘッドアテンション** | — | — | 上記のいずれかを$h$個の並列ヘッドで実行する |
+
+これが腑に落ちてからは、Transformerの残りの部分もずっと怖くなくなりました。
+
+## 参考文献
+
+- [Attention Is All You Need](https://arxiv.org/abs/1706.03762)(Vaswani et al., 2017):すべての始まりとなった論文です。この記事の内容はすべて3.2節で扱われています。
+- Jay Alammarによる[The Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/):アーキテクチャ全体をとても視覚的に解説しています。
+- Andrej Karpathyによる[Let's build GPT: from scratch, in code, spelled out](https://www.youtube.com/watch?v=kCc8FmEb1nY):因果的セルフアテンションとマルチヘッドアテンションを1行ずつ実装していきます。
