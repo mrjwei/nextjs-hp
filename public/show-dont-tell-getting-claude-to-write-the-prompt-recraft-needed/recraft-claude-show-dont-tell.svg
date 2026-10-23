@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="590" viewBox="0 0 1400 590">
+  <rect x="0" y="0" width="1400" height="590" fill="#fff" />
+  <text x="40" y="56" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#1E293B" font-size="28" font-weight="700">Showing worked better than telling</text>
+  <text x="40" y="84" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="15">Recraft missed when I described the product. It hit when Claude turned my reference logos into a precise prompt.</text>
+
+  
+  <text x="40" y="132" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="11.5" font-weight="600" letter-spacing=".12em">ATTEMPT 1 · DESCRIBE THE PRODUCT</text>
+  <rect x="40" y="146" width="300" height="110" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="60" y="180" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#1E293B" font-size="15.5" font-weight="600">My first prompt</text>
+  <text x="60" y="206" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">What the product does, plus</text>
+  <text x="60" y="226" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">a few style constraints</text>
+
+  <path d="M340,201 L718,201" fill="none" stroke="#23395B" stroke-width="1.5" />
+  <polygon points="719.05,201.00 708.55,206.25 708.55,195.75" fill="#23395B" /><text x="530" y="191" text-anchor="middle" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="12">words only</text>
+
+  <rect x="720" y="146" width="300" height="110" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="740" y="180" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#1E293B" font-size="15.5" font-weight="600">Recraft</text>
+  <text x="740" y="206" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">Generates logos from</text>
+  <text x="740" y="226" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">a text prompt</text>
+
+  <path d="M1020,201 L1058,201" fill="none" stroke="#23395B" stroke-width="1.5" />
+
+  <polygon points="1059.05,201.00 1048.55,206.25 1048.55,195.75" fill="#23395B" /><rect x="1060" y="146" width="300" height="110" rx="6" fill="#FBEEEE" stroke="#C98080" stroke-width="1" stroke-dasharray="5 4" />
+  <text x="1080" y="180" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#A33A3A" font-size="15.5" font-weight="600">Off-target marks</text>
+  <text x="1080" y="206" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">Generic shapes that missed</text>
+  <text x="1080" y="226" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">the style I had in mind</text>
+
+  
+  <path d="M1210,256 L1210,292 L320,292 L320,352" fill="none" stroke="#5B6675" stroke-width="1.5" stroke-dasharray="6 4" />
+  <polygon points="320.00,353.05 314.75,342.55 325.25,342.55" fill="#5B6675" /><text x="765" y="282" text-anchor="middle" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="12">the first results go back in, as an example of what I didn't want</text>
+
+  
+  <text x="40" y="338" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="11.5" font-weight="600" letter-spacing=".12em">ATTEMPT 2 · SHOW, DON'T TELL</text>
+  <rect x="40" y="354" width="300" height="140" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="60" y="388" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#1E293B" font-size="15.5" font-weight="600">What I gave Claude</text>
+  <text x="60" y="414" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">· my original prompt</text>
+  <text x="60" y="436" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">· Recraft's first results</text>
+  <text x="60" y="458" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">· logos close to what I wanted</text>
+
+  <path d="M340,424 L378,424" fill="none" stroke="#23395B" stroke-width="1.5" />
+
+  <polygon points="379.05,424.00 368.55,429.25 368.55,418.75" fill="#23395B" /><rect x="380" y="354" width="300" height="140" rx="6" fill="#E8EEF6" stroke="#3A5F8A" stroke-width="1.25" />
+  <text x="400" y="388" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#2F5D8A" font-size="15.5" font-weight="600">Claude</text>
+  <text x="400" y="414" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">Finds what the references</text>
+  <text x="400" y="436" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">have in common and writes</text>
+  <text x="400" y="458" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">it up as a precise prompt</text>
+
+  <path d="M680,424 L718,424" fill="none" stroke="#23395B" stroke-width="1.5" />
+
+  <polygon points="719.05,424.00 708.55,429.25 708.55,418.75" fill="#23395B" /><rect x="720" y="354" width="300" height="140" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="740" y="388" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#1E293B" font-size="15.5" font-weight="600">Recraft</text>
+  <text x="740" y="414" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">Same tool, new prompt:</text>
+  <text x="740" y="436" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">shape language instead</text>
+  <text x="740" y="458" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">of product features</text>
+
+  <path d="M1020,424 L1058,424" fill="none" stroke="#23395B" stroke-width="1.5" />
+
+  <polygon points="1059.05,424.00 1048.55,429.25 1048.55,418.75" fill="#23395B" /><rect x="1060" y="354" width="300" height="140" rx="6" fill="#EAF3EC" stroke="#6A9C7C" stroke-width="1" />
+  <text x="1080" y="388" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#2F6B4A" font-size="15.5" font-weight="600">On-target marks</text>
+  <text x="1080" y="414" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">Two designs in the style</text>
+  <text x="1080" y="436" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">I wanted, on the first go</text>
+
+  
+  <path d="M40,548 L88,548" fill="none" stroke="#23395B" stroke-width="1.5" />
+  <polygon points="89.05,548.00 78.55,553.25 78.55,542.75" fill="#23395B" /><text x="100" y="552" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="12">prompt or images passed on</text>
+  <path d="M300,548 L348,548" fill="none" stroke="#5B6675" stroke-width="1.5" stroke-dasharray="6 4" />
+  <polygon points="349.05,548.00 338.55,553.25 338.55,542.75" fill="#5B6675" /><text x="360" y="552" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="12">earlier output reused as an input</text>
+</svg>
