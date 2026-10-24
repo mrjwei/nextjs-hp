@@ -19,7 +19,6 @@ export function personSchema(lang: Lang) {
     name: "Jesse Wei",
     jobTitle: p.role,
     url: `${baseUrl}${aboutPath}`,
-    image: `${baseUrl}/avatar.png`,
     knowsLanguage: ["en", "ja", "zh", "ko"],
     sameAs: p.social
       .filter((s) => s.id === "linkedin" || s.id === "github")

@@ -76,17 +76,6 @@ export function AboutView({ lang }: { lang: Lang }) {
             </p>
           )}
         </div>
-        <div className="col-12 order-1 md:col-span-4 md:order-2">
-          <Image
-            src="/avatar.png"
-            alt={t.avatarAlt}
-            width={563}
-            height={517}
-            className="max-w-[160px] h-auto rounded-lg"
-            sizes="160px"
-            priority
-          />
-        </div>
       </div>
     </section>
   )
