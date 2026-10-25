@@ -9,5 +9,6 @@
   "AWS": { "en": "AWS", "ja": "AWS" },
   "ai-agent": { "en": "AI Agent", "ja": "AIエージェント" },
   "workflows": { "en": "Workflows", "ja": "ワークフロー" },
-  "transformers": { "en": "Transformers", "ja": "Transformer" }
+  "transformers": { "en": "Transformers", "ja": "Transformer" },
+  "reflection": { "en": "Reflection", "ja": "振り返り" }
 }
