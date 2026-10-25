@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="712" viewBox="0 0 1600 712">
+  <rect x="0" y="0" width="1600" height="712" fill="#fff" />
+  <text x="40" y="56" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#1E293B" font-size="28" font-weight="700">Each study task goes to the tool that suits it best</text>
+  <text x="40" y="84" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="15">My IFN680 toolkit, chosen by capability, environment, usage limit and the task at hand.</text>
+
+  
+  <rect x="690" y="112" width="220" height="48" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="800" y="142" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#1E293B" font-size="15.5" font-weight="600" text-anchor="middle">A study task</text>
+  <path d="M800,160 L800,194" fill="none" stroke="#23395B" stroke-width="1.5" />
+
+  
+  <polygon points="800.00,195.05 794.75,184.55 805.25,184.55" fill="#23395B" /><rect x="40" y="196" width="1520" height="72" rx="6" fill="#FAF3E6" stroke="#C2924E" stroke-width="1" stroke-dasharray="6 4" />
+  <text x="64" y="224" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#A8692A" font-size="11.5" font-weight="600" letter-spacing=".12em">BEFORE ANYTHING REACHES A CLOUD TOOL</text>
+  <text x="64" y="250" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#1E293B" font-size="13.5">No sensitive data shared directly · AI kept out of restricted zones in my repo · PII removed by hand or redacted with a local model</text>
+
+  
+  <path d="M800,268 C800,300 218,296 218,326" fill="none" stroke="#23395B" stroke-width="1.5" />
+  <polygon points="218.00,327.05 212.75,316.55 223.25,316.55" fill="#23395B" /><path d="M800,268 C800,300 606,296 606,326" fill="none" stroke="#23395B" stroke-width="1.5" />
+  <polygon points="606.00,327.05 600.75,316.55 611.25,316.55" fill="#23395B" /><path d="M800,268 C800,300 994,296 994,326" fill="none" stroke="#23395B" stroke-width="1.5" />
+  <polygon points="994.00,327.05 988.75,316.55 999.25,316.55" fill="#23395B" /><path d="M800,268 C800,300 1382,296 1382,326" fill="none" stroke="#23395B" stroke-width="1.5" />
+
+  
+  <polygon points="1382.00,327.05 1376.75,316.55 1387.25,316.55" fill="#23395B" /><rect x="40" y="330" width="356" height="300" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="64" y="362" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="11.5" font-weight="600" letter-spacing=".12em">LIGHTWEIGHT CODING</text>
+  <text x="64" y="392" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#1E293B" font-size="17" font-weight="600">GitHub Copilot</text>
+  <rect x="64" y="406" width="244" height="26" rx="4" fill="#EEF1F4" stroke="#CBD5E1" stroke-width="1" />
+  <text x="76" y="424" font-family="'IBM Plex Mono','JetBrains Mono',Menlo,Consolas,monospace" fill="#1E293B" font-size="12">Copilot Student · Auto model</text>
+  <line x1="64" y1="452" x2="372" y2="452" stroke="#EEF1F4" stroke-width="1" />
+  <text x="64" y="478" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="11.5" font-weight="600" letter-spacing=".12em">USE IT FOR</text>
+  <text x="64" y="500" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13">One-off coding tasks</text>
+  <text x="64" y="520" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13">Questions about implementation</text>
+  <text x="64" y="558" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="11.5" font-weight="600" letter-spacing=".12em">WHY</text>
+  <text x="64" y="580" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13">Light tasks use few tokens, so the</text>
+  <text x="64" y="600" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13">plan's allowance is more than enough</text>
+
+  
+  <rect x="428" y="330" width="356" height="300" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="452" y="362" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="11.5" font-weight="600" letter-spacing=".12em">IN-DEPTH TASKS</text>
+  <text x="452" y="392" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#1E293B" font-size="17" font-weight="600">Claude Code</text>
+  <rect x="452" y="406" width="140" height="26" rx="4" fill="#EEF1F4" stroke="#CBD5E1" stroke-width="1" />
+  <text x="464" y="424" font-family="'IBM Plex Mono','JetBrains Mono',Menlo,Consolas,monospace" fill="#1E293B" font-size="12">Claude Opus 5.5</text>
+  <line x1="452" y1="452" x2="760" y2="452" stroke="#EEF1F4" stroke-width="1" />
+  <text x="452" y="478" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="11.5" font-weight="600" letter-spacing=".12em">USE IT FOR</text>
+  <text x="452" y="500" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13">Complex, multi-step tasks</text>
+  <text x="452" y="520" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13">Advanced concepts that need depth</text>
+  <text x="452" y="558" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="11.5" font-weight="600" letter-spacing=".12em">WHY</text>
+  <text x="452" y="580" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13">Handles heavy tasks reliably, with</text>
+  <text x="452" y="600" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13">generous limits even on Opus</text>
+
+  
+  <rect x="816" y="330" width="356" height="300" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="840" y="362" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="11.5" font-weight="600" letter-spacing=".12em">EXPLAIN WITH VISUALS</text>
+  <text x="840" y="392" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#1E293B" font-size="17" font-weight="600">Claude Cowork</text>
+  <rect x="840" y="406" width="140" height="26" rx="4" fill="#EEF1F4" stroke="#CBD5E1" stroke-width="1" />
+  <text x="852" y="424" font-family="'IBM Plex Mono','JetBrains Mono',Menlo,Consolas,monospace" fill="#1E293B" font-size="12">Claude Opus 5.5</text>
+  <line x1="840" y1="452" x2="1148" y2="452" stroke="#EEF1F4" stroke-width="1" />
+  <text x="840" y="478" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="11.5" font-weight="600" letter-spacing=".12em">USE IT FOR</text>
+  <text x="840" y="500" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13">Questions that need a diagram</text>
+  <text x="840" y="520" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13">Answers saved outside the repo</text>
+  <text x="840" y="558" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="11.5" font-weight="600" letter-spacing=".12em">WHY</text>
+  <text x="840" y="580" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13">Draws diagrams in the conversation</text>
+  <text x="840" y="600" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13">and saves to a folder I choose</text>
+
+  
+  <rect x="1204" y="330" width="356" height="300" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="1228" y="362" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="11.5" font-weight="600" letter-spacing=".12em">SECOND REVIEWER</text>
+  <text x="1228" y="392" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#1E293B" font-size="17" font-weight="600">Microsoft Copilot</text>
+  <rect x="1228" y="406" width="236" height="26" rx="4" fill="#EEF1F4" stroke="#CBD5E1" stroke-width="1" />
+  <text x="1240" y="424" font-family="'IBM Plex Mono','JetBrains Mono',Menlo,Consolas,monospace" fill="#1E293B" font-size="12">University-managed account</text>
+  <line x1="1228" y1="452" x2="1536" y2="452" stroke="#EEF1F4" stroke-width="1" />
+  <text x="1228" y="478" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="11.5" font-weight="600" letter-spacing=".12em">USE IT FOR</text>
+  <text x="1228" y="500" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13">Double-checking academic work</text>
+  <text x="1228" y="520" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13">that Claude helped with</text>
+  <text x="1228" y="558" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="11.5" font-weight="600" letter-spacing=".12em">WHY</text>
+  <text x="1228" y="580" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13">A second AI catches what the first</text>
+  <text x="1228" y="600" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13">missed · academic tasks only</text>
+
+  <text x="40" y="676" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13.5" font-style="italic">Whatever the tool, I stay in the process as the final reviewer.</text>
+</svg>
