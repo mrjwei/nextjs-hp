@@ -10,5 +10,6 @@
   "ai-agent": { "en": "AI Agent", "ja": "AIエージェント" },
   "workflows": { "en": "Workflows", "ja": "ワークフロー" },
   "transformers": { "en": "Transformers", "ja": "Transformer" },
-  "reflection": { "en": "Reflection", "ja": "振り返り" }
+  "reflection": { "en": "Reflection", "ja": "振り返り" },
+  "design-in-git": { "en": "Design in Git", "ja": "Design in Git:Gitで回すデザイン" }
 }
