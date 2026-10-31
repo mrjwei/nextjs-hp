@@ -55,23 +55,21 @@ export function slugOrCollectionMetadata(lang: Lang, slugOrCollection: string) {
     })
   }
 
+  // A folder wins over a `partOf` sequence of the same slug (see the view below).
+  const collection = getAllSortedWritingCollections(lang).find((s) => s.slug === slugOrCollection)
+  if (collection) {
+    return buildStandardMetadata({
+      title: t.collectionTitle(collection.title),
+      description: t.collectionDescription(collection.title, collection.items.length),
+      pathname,
+    })
+  }
+
   const series = getAllSortedWritingSeries(lang).find((s) => s.slug === slugOrCollection)
   if (series) {
     return buildStandardMetadata({
       title: t.collectionTitle(series.title),
       description: t.seriesDescription(series.title, series.items.length),
-      pathname,
-    })
-  }
-
-  const collectionItems = getAllSortedWritings(lang).filter(
-    (w) => w.metadata.series === slugOrCollection
-  )
-  if (collectionItems.length) {
-    const title = collectionItems[0].metadata.seriesTitle ?? slugOrCollection
-    return buildStandardMetadata({
-      title: t.collectionTitle(title),
-      description: t.collectionDescription(title, collectionItems.length),
       pathname,
     })
   }
@@ -126,13 +124,31 @@ export function SlugOrCollectionView({ lang, slugOrCollection }: { lang: Lang; s
   // The sidebar always shows folder-based collections (the canonical
   // series, per the directory structure under app/writings/posts), regardless
   // of which kind of collection page is being rendered below.
-  const sidebarSeries = getAllSortedWritingCollections(lang).map((s) => ({
+  const collections = getAllSortedWritingCollections(lang)
+  const sidebarSeries = collections.map((s) => ({
     slug: s.slug,
     title: s.title,
     count: s.items.length,
   }))
 
-  // A reading series (posts sharing `partOf`).
+  // A folder-based collection (posts sharing `series`). Checked before
+  // `partOf` sequences because a sequence can share its folder's slug (e.g.
+  // "design-in-git") while the folder also holds posts outside the sequence,
+  // like its hub post; the folder is what the sidebar counts.
+  const collection = collections.find((s) => s.slug === slugOrCollection)
+  if (collection) {
+    return (
+      <SeriesView
+        seriesSlug={collection.slug}
+        seriesTitle={collection.title}
+        items={collection.items}
+        allSeries={sidebarSeries}
+        lang={lang}
+      />
+    )
+  }
+
+  // A reading series (posts sharing `partOf`) with no folder of its own.
   const activeSeries = getAllSortedWritingSeries(lang).find((s) => s.slug === slugOrCollection)
   if (activeSeries) {
     return (
@@ -140,20 +156,6 @@ export function SlugOrCollectionView({ lang, slugOrCollection }: { lang: Lang; s
         seriesSlug={activeSeries.slug}
         seriesTitle={activeSeries.title}
         items={activeSeries.items}
-        allSeries={sidebarSeries}
-        lang={lang}
-      />
-    )
-  }
-
-  // A folder-based collection (posts sharing `series`).
-  const collectionItems = writings.filter((w) => w.metadata.series === slugOrCollection)
-  if (collectionItems.length) {
-    return (
-      <SeriesView
-        seriesSlug={slugOrCollection}
-        seriesTitle={collectionItems[0].metadata.seriesTitle ?? slugOrCollection}
-        items={collectionItems}
         allSeries={sidebarSeries}
         lang={lang}
       />

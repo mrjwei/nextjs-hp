@@ -6,13 +6,13 @@ Collections (previously called “series” in the UI) are driven by frontmatter
 
 - `series`: collection slug (e.g. `ml-journey`)
 - `seriesTitle` (optional): display title override
-- `seriesOrder` (optional): non-negative integer used to order items within a collection
+- `seriesOrder` (optional): non-negative integer used to order items on the collection page (`/posts/<folder>`), e.g. `0` for a series hub post and `1`–`4` for its parts. Without it, a post whose `partOf` is the folder itself is placed by `partNumber`; other posts follow, newest first
 
 For convenience/back-compat, if a writing is inside a subfolder (e.g. `app/writings/posts/ml/...`), that folder name is treated as its `series` slug unless `series` is explicitly set.
 
 Folders are topic series at the level a reader would browse (e.g. `cnn`, `ml-metrics`, `cryptography`, `ai-and-design`), not broad categories like "AI" or "design" — tags cover those. Standalone posts live at the root of `app/writings/posts/`. Each folder's display title (EN and JA) lives in `app/data/series.json`; add an entry when creating a folder, otherwise the title falls back to the title-cased folder name. Moving a post to another folder changes its URL, so add a redirect in `next.config.js`.
 
-`partOf` / `partOfTitle` / `partNumber` mark an ordered multi-part sequence (shown as "Part N of M" with prev/next links). It can match the folder (e.g. `cnn`) or be a narrower sequence inside it (e.g. `understanding-jwts` inside `authentication`).
+`partOf` / `partOfTitle` / `partNumber` mark an ordered multi-part sequence (shown as "Part N of M" with prev/next links). It can match the folder (e.g. `cnn`) or be a narrower sequence inside it (e.g. `understanding-jwts` inside `authentication`). When a `partOf` slug matches a folder, `/posts/<slug>` shows the whole folder (so a hub post without `partOf` still appears there); a `partOf` sequence with no folder of its own gets its own page at `/posts/<slug>`.
 
 ## Posts vs Projects — canonical URL
 
@@ -26,7 +26,7 @@ Series and projects are mutually exclusive: a post is in one series or one proje
 
 `/projects` (and Home's "Selected projects") show **one card per project** (`groupProjects` in `lib/content/index.ts`). Projects are ordered newest first by each project's most recent post, the same as `/posts`. The card shows the project's lead post (the one with `lead: true`, else the most recent), so mark the overview post `lead: true`. When a project spans several posts, the card shows an "N articles" badge and links to `/projects/<project-slug>`, a page listing every post in the project. The slug is the lowercased ID with non-alphanumerics as hyphens, e.g. `AI+Sec` → `/projects/ai-sec`. A single-post project's card links straight to the post. The project badge on post pages links to the project page.
 
-Home shows 4 projects and 4 posts, newest first, skipping posts already shown as a project card. To pin something there regardless of date, add its project ID or post slug to `highlights` in `lib/content/profile.ts`. Pins come first in the listed order and the remaining slots fill with the latest. One list covers EN and JA.
+Home shows 4 projects and 4 posts, skipping posts already shown as a project card and "Coming soon" placeholders. Projects: pins (project IDs in `highlights` in `lib/content/profile.ts`) come first in the listed order and the remaining slots fill with the latest. Posts: the 2 newest posts always take the first two slots, so a new post shows up on Home as soon as it's published; the pins (post slugs in `highlights`) fill the rest in the listed order, skipping any already shown, then the latest if pins run out. One list covers EN and JA.
 
 The `casestudy` tag is an ordinary tag; it has no effect on routing or on `/projects`.
 

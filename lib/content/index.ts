@@ -472,17 +472,26 @@ export function hasProjectPage(project: TProject) {
   )
 }
 
-// Home highlights (see `highlights` in lib/content/profile.ts): the pinned
-// items first, in pin order, then the rest of `items` (already newest first)
-// up to `limit`. Pins with no match, e.g. an untranslated post, are skipped.
+// Home highlights (see `highlights` in lib/content/profile.ts): the `latest`
+// newest of `items` (already newest first), then the pinned items in pin
+// order, then the rest of `items`, without repeats, up to `limit`. Pins with
+// no match, e.g. an untranslated post, are skipped.
 export function pickHighlights<T extends object>(
   items: T[],
-  { pinned, keyOf, limit }: { pinned: string[]; keyOf: (item: T) => string; limit: number }
+  {
+    pinned,
+    keyOf,
+    limit,
+    latest = 0,
+  }: { pinned: string[]; keyOf: (item: T) => string; limit: number; latest?: number }
 ): T[] {
   const byKey = new Map(items.map((item) => [keyOf(item), item]))
-  const picked = pinned.flatMap((key) => byKey.get(key) ?? [])
-  const pickedSet = new Set(picked)
-  return [...picked, ...items.filter((item) => !pickedSet.has(item))].slice(0, limit)
+  const ordered = [
+    ...items.slice(0, latest),
+    ...pinned.flatMap((key) => byKey.get(key) ?? []),
+    ...items,
+  ]
+  return Array.from(new Set(ordered)).slice(0, limit)
 }
 
 export function getWorkTrackFacets(
@@ -518,6 +527,26 @@ export type TWritingSeries = {
 // explicit `partOf` field for narrower, multi-part reading sequences within
 // a collection (e.g. "cnn"). This is what the /posts sidebar and /posts/series
 // index show, since the directory tree is the canonical source of series.
+// A post's place within its folder collection: `seriesOrder`, else its
+// `partNumber` when its `partOf` sequence is the folder itself (e.g. "cnn").
+function collectionOrder({ metadata }: TContentMeta) {
+  if (metadata.seriesOrder !== undefined) return metadata.seriesOrder
+  if (metadata.partOf && metadata.partOf === metadata.series) return metadata.partNumber
+  return undefined
+}
+
+// Ordered posts first, by position; the rest keep their newest-first order.
+function sortCollectionItems(items: TContentMeta[]) {
+  return [...items].sort((a, b) => {
+    const ao = collectionOrder(a)
+    const bo = collectionOrder(b)
+    if (ao === undefined || bo === undefined) {
+      return (ao === undefined ? 1 : 0) - (bo === undefined ? 1 : 0)
+    }
+    return ao - bo
+  })
+}
+
 export const getAllSortedWritingCollections = cache((lang: Lang = "en"): TWritingSeries[] => {
   const bySlug = new Map<string, TContentMeta[]>()
 
@@ -530,7 +559,7 @@ export const getAllSortedWritingCollections = cache((lang: Lang = "en"): TWritin
 
   const result = Array.from(bySlug.entries()).map(([slug, items]) => {
     const title = items.find((i) => i.metadata.seriesTitle)?.metadata.seriesTitle ?? slug
-    return { slug, title, items }
+    return { slug, title, items: sortCollectionItems(items) }
   })
 
   result.sort(

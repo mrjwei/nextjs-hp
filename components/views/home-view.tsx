@@ -27,15 +27,15 @@ export function HomeView({ lang }: { lang: Lang }) {
     keyOf: (project) => project.id,
     limit: 4,
   })
-  // Selected writing: pinned posts first, then the latest. Project posts
-  // belong to "Selected projects" above, and unwritten "Coming soon"
-  // placeholders aren't ready, so neither is picked here.
+  // Selected writing: the 2 newest posts, so new writing always shows, then
+  // pinned posts. Project posts belong to "Selected projects" above, and
+  // unwritten "Coming soon" placeholders aren't ready, so neither is picked here.
   const selectedPosts = pickHighlights(
     writings.filter(
       (writing) =>
         !isProject(writing.metadata) && !writing.metadata.placeholder
     ),
-    { pinned: highlights.posts, keyOf: (writing) => writing.slug, limit: 4 }
+    { pinned: highlights.posts, keyOf: (writing) => writing.slug, limit: 4, latest: 2 }
   )
   const email = p.social.find((s) => s.id === "email")?.href
   const labels = dictionaries[lang]
