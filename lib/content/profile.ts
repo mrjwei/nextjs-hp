@@ -52,9 +52,11 @@ const features = {
   cv: false,
 }
 
-// Home highlights: pinned items show first on Home, in this order, and the
-// remaining slots fill with the most recent. Shared by EN and JA; a pin with
-// no match in a language (e.g. an untranslated post) is skipped there.
+// Home highlights. Projects: pinned items show first, in this order, and the
+// remaining slots fill with the most recent. Posts: the 2 newest posts show
+// first, then the pins in this order (skipping any already shown), so only the
+// first pins that fit are used. Shared by EN and JA; a pin with no match in a
+// language (e.g. an untranslated post) is skipped there.
 export const highlights: { projects: string[]; posts: string[] } = {
   // Project IDs, as in a post's `project` frontmatter, e.g. "LingoBun".
   // "UIUX" is the WAmazing booking-form case study: JA only by design (its
