@@ -150,12 +150,14 @@ export function PostArticle({
           hrefForTag={(tag) => `${localeHref(lang, "/posts")}?tags=${encodeURIComponent(tag)}`}
         />
         <div className="flex justify-between items-center mt-2 mb-12 text-sm border-b border-[var(--border-subtle)] pb-6">
-          <p className="text-sm text-[var(--text-muted)]">
-            {t.post.published} {formatDate(metadata.publishedAt, lang)}
-            {metadata.updatedAt && (
-              <> · {t.post.updated} {formatDate(metadata.updatedAt, lang)}</>
-            )}
-          </p>
+          {!metadata.placeholder && (
+            <p className="text-sm text-[var(--text-muted)]">
+              {t.post.published} {formatDate(metadata.publishedAt, lang)}
+              {metadata.updatedAt && (
+                <> · {t.post.updated} {formatDate(metadata.updatedAt, lang)}</>
+              )}
+            </p>
+          )}
         </div>
 
         <ResultBlock metadata={metadata} lang={lang} />
