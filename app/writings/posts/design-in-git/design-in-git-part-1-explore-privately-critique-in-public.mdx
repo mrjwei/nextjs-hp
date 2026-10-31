@@ -1,0 +1,207 @@
+---
+title: "Design in Git, Part 1: Explore Privately, Critique in Public"
+slug: "design-in-git-part-1-explore-privately-critique-in-public"
+publishedAt: "2026-10-29"
+summary: "The mental model I use for design work in a repo with Claude Code and GitHub: a private inner loop that works like your own exploration file, a public outer loop that works like a design crit with a permanent record, and a clear rule for what may run in the cloud. With a design-system change taken from issue to merge."
+tags: ["design", "dev", "ai", "process"]
+seriesOrder: 1
+partOf: "design-in-git"
+partOfTitle: "Design in Git"
+partNumber: 1
+---
+
+- [Two loops](#two-loops)
+- [Some vocabulary, mapped to design](#some-vocabulary-mapped-to-design)
+- [Three places Claude can work, and who pays](#three-places-claude-can-work-and-who-pays)
+- [The loop, step by step](#the-loop-step-by-step)
+- [Habits that matter more than tools](#habits-that-matter-more-than-tools)
+- [Variant: cloud-first, for work that doesn't touch Figma](#variant-cloud-first-for-work-that-doesnt-touch-figma)
+- [Two rules I write into every CLAUDE.md](#two-rules-i-write-into-every-claudemd)
+- [Conventions worth keeping, even solo](#conventions-worth-keeping-even-solo)
+- [Cheat sheet](#cheat-sheet)
+- [Sources](#sources)
+
+Every designer already works in two modes. There's the messy, private one: your own page in the file, twenty variations of a badge, half of them wrong. And there's the public one: the crit, where you show a proposal and other people decide whether it goes ahead.
+
+Software teams have the same two modes, and they've built a lot of tooling around the moment one turns into the other. Once design lives in a repository (see [why I moved mine there](/posts/design-in-git/i-was-reinventing-git-in-figma)), that tooling is yours too. This post is the mental model I use for it, with Claude Code and GitHub doing most of the heavy lifting.
+
+The series is written for designers who work in a repository, or are about to, and for the developers who work with them:
+
+- **Part 1 (this post):** the two loops, and a design change from issue to merge.
+- **Part 2:** [setting up a design-system repo with guardrails](/posts/design-in-git/design-in-git-part-2-a-design-system-repo-even-claude-cant-break).
+- **Part 3:** [choosing the right Claude review, and what a code review can't see](/posts/design-in-git/design-in-git-part-3-design-crit-with-a-paper-trail).
+- **Part 4:** [one real design decision, from issue to merge](/posts/design-in-git/design-in-git-part-4-one-line-height-change-from-issue-to-merge).
+
+The running example is the kind of repository I built for a startup product's design system: design tokens, a component library, a documentation site and a folder of decision records. The Claude Code and GitHub details were checked against the official docs on 26 October 2026. Claude Code changes fast, so if something behaves differently, check the version notes first.
+
+## Two loops
+
+**Inner loop:** private, quick, cheap to change. This is your exploration page. Edit a token or a component → look at it → `/code-review` → fix, all on my laptop. Nobody sees it until I push, so I can try things that are wrong.
+
+**Outer loop:** shared, slower, reviewed. This is the crit, with one big difference: everything said in it is written down next to the change. Pull request → automated checks → review → merge, all on GitHub.
+
+The point of the split is the same as in design: catch problems while they're still cheap. A wrong spacing value spotted on my laptop costs a minute. The same value spotted after it has shipped into three products costs a release.
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/design-in-git-part-1-explore-privately-critique-in-public/claude-gh-01-big-picture.png" alt="Three columns: my laptop running Claude Code, a git clone and the gh CLI; GitHub holding the repo, the pull request, Actions runners and the Claude GitHub App; and Anthropic's cloud running managed Code Review, the ultrareview sandbox and cloud sessions. Arrows show every tool meeting at the pull request" style={{ marginBottom: "8px" }} />
+  <figcaption>Three places, one source of truth. The pull request is where every tool, bot and person meets: the crit room.</figcaption>
+</figure>
+
+## Some vocabulary, mapped to design
+
+If you're new to Git, most of the words have a design equivalent:
+
+| Git / GitHub | What it is | The design habit it replaces |
+|---|---|---|
+| **Repository** | The project folder, with its full history | The design file, plus every past version of it |
+| **Commit** | A saved step with a message explaining it | A dated, frozen frame, with the reason attached |
+| **Branch** | A parallel line of work that doesn't touch the main one | Your own exploration page or a duplicated file |
+| **Pull request (PR)** | A proposal to merge a branch, with the diff and the discussion | The crit, and the notes you never wrote up after it |
+| **Check** | An automated test that runs on every PR | Auditing the file by eye before handoff |
+| **Merge** | Accepting the change into the main line | "Approved, ship it" |
+
+## Three places Claude can work, and who pays
+
+| Place | What runs there | What it can touch | Who pays |
+|---|---|---|---|
+| **My laptop** | Claude Code, `/code-review`, `/security-review`, git, `gh` | My files and my credentials | My Claude plan |
+| **GitHub Actions runner** | CI, plus `anthropics/claude-code-action` (`@claude` and the review workflow) | The checked-out repo and the secret I give it | GitHub Actions minutes, plus an API key *or* my plan (via a subscription token) |
+| **Anthropic infrastructure** | Managed Code Review (Team and Enterprise only) | Read access to the repo through the Claude GitHub App | Organisation billing, with a spend limit an Owner sets |
+| **Anthropic cloud session** | Cloud sessions, auto-fix, ultrareview | A clone from GitHub; pushes go through a GitHub proxy | My Claude plan (no separate charge for the VM); ultrareview has its own pricing |
+
+The **Claude GitHub App** is the permission bridge behind most of this. `CLAUDE.md` is the other constant: every Claude tool reads it, so it's where the design system's rules belong (Part 2 has mine).
+
+**One design-specific note: Figma stays on my laptop.** In my setup, Claude reads from and writes to Figma through the Figma MCP server, which talks to the Figma desktop app on my machine. Reading variables needs an open Figma file with a selection, which only an interactive session on my laptop can drive. So any step that touches Figma (pulling a component's spec, syncing tokens, pushing the finished component back to the Figma library) happens in the inner loop, never in a cloud session or on GitHub.
+
+## The loop, step by step
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/design-in-git-part-1-explore-privately-critique-in-public/claude-gh-02-pr-lifecycle.png" alt="Swimlane diagram of eleven steps across four lanes (me, Claude Code, GitHub and reviewers): pick issue, branch, build, self-review, push and open PR before the PR; checks, review, iterate and approve inside it; merge after it" style={{ marginBottom: "8px" }} />
+  <figcaption>Opening the PR is the checkpoint: before it, change anything freely; after it, every change is visible and reviewed. Exactly the line between exploring and presenting.</figcaption>
+</figure>
+
+The example: body text in Japanese reads as one dense block, and issue #12 asks for more line height. (Part 4 walks through the real version of this change in detail.)
+
+| # | Step | Who | What I type |
+|---|---|---|---|
+| 1 | Pick an issue: the *why*, and what "done" looks like | Me | — |
+| 2 | Branch: one branch per change | Me | `git switch main && git pull` then `git switch -c fix/body-line-height` |
+| 3 | Build: plan first for anything non-trivial | Claude Code | `/plan raise body line-height for Japanese prose, per issue #12` |
+| 4 | Look at it: compare with the Figma frame, in the browser, at real sizes | Me + Claude Code | Storybook or the docs site running locally |
+| 5 | Self-review: the last private moment | Claude Code | `/diff`, `/code-review high --fix` |
+| 6 | Commit and push | Me | `git add -p`, `git commit -m "fix(tokens): raise body line-height to 160%"`, `git push -u origin HEAD` |
+| 7 | Open the PR: what, why, how to check it, linked issue | Me | `gh pr create --fill` (add `--draft` if it isn't ready) |
+| 8 | Checks: CI plus Claude's review | GitHub | `gh pr checks --watch` |
+| 9 | Review: people judge intent, quality and trade-offs | Reviewers | — |
+| 10 | Iterate: fix, push, reply or resolve | Me + Claude | Fix locally, comment `@claude fix …` on the PR, or run `/autofix-pr` |
+| 11 | Merge, clean up, then bring Figma in line | Me | `gh pr merge --squash --delete-branch` then `git switch main && git pull`; sync Figma from a local session |
+
+Step 4 is the one engineering guides leave out, and it's the one designers are best at. A change can build cleanly, pass every check and still look wrong. Part 3 has the story of the time every button in my component library lost its background colour while the build stayed green.
+
+## Habits that matter more than tools
+
+- **Commit small and often.** This is the habit that slipped when I picked up vibe coding: my commits got bulky and messy, for two reasons. First, I stopped thinking as carefully about how to split the work. AI can do so much in so little time that I started putting tasks that should have been separate changes into one prompt. Second, Claude has usage limits, and a common tip for stretching them is to batch tasks. I can ask Claude to split the result into separate commits afterwards, but by then I can't meaningfully review each change before it's committed.
+
+  For design work the rule is simple: **one component, or one token decision, per commit.** If a commit message needs the word "and", it's probably two commits. That's what makes the history readable later, when someone asks why the badge changed.
+
+  Prompt caching takes care of most of the usage worry. Every prompt re-sends the conversation so far, but the part Claude Code has already processed is read from a cache, which costs a fraction of fresh input. On a Pro or Max plan, within the plan's usage, the main conversation's cache lasts an hour, and every prompt resets the timer. So as long as I send the next prompt within the hour, one small task per prompt doesn't cost much more than a batch. (Once a session draws on usage credits, Claude Code drops to a five-minute cache, so the gaps matter more.)
+- **`git add -p` is a review in disguise.** It shows me changes hunk by hunk instead of a whole file at once, so I read every change before it goes in, and I can split one messy working tree into separate commits.
+- **Draft PRs are a work-in-progress crit.** They run the checks and can collect comments before I ask anyone for a formal review.
+- **A green build isn't a finished design.** Before I call anything done, I look at it, or I have Claude take a screenshot and compare it with the Figma frame.
+- **Bots comment; people merge.** Claude can review, comment and push fixes, but approval and merging stay with a person. I keep that rule even when the only person is me.
+
+## Variant: cloud-first, for work that doesn't touch Figma
+
+Same loop, but the build step happens in a cloud session instead of on my laptop, so it keeps going while the laptop sleeps. It suits work that lives entirely in the repo: writing Storybook stories, porting documentation pages, translating decision records, adding a component variant that's already specified.
+
+1. **Plan:** write each task as a GitHub issue.
+2. **Build:** start a cloud session for it: from claude.ai/code, by choosing **Cloud** in the desktop app, or with `claude --cloud "Do issue #12"`. Claude works on its own branch and can open the PR.
+3. **Review:** read the diff in the session or on GitHub, leave comments, and turn on auto-fix (see Part 3) so Claude handles CI failures and my comments.
+4. **Merge:** squash-merge on GitHub, then `git switch main && git pull` locally.
+5. **Local-only steps:** anything involving Figma, and anything that needs credentials I don't give the cloud. `claude --teleport` pulls a cloud session and its branch down to my terminal when I want the conversation there.
+
+> **Tip: `--cloud` starts from GitHub, not from my working copy.** When the Claude GitHub App is installed on the repo, the cloud session clones my current branch *from GitHub*, so unpushed commits aren't in it. Push first. (Without the app, Claude Code uploads a bundle of the local repo instead.)
+
+```bash
+claude --cloud "Add Storybook stories for every Badge variant"   # start a new cloud session for this repo
+claude --teleport                                               # pull a cloud session and its branch into my terminal
+claude -p "also add the Japanese docs page" --cloud <session-id> # queue a follow-up into a running cloud session
+```
+
+The handoff from the CLI is one way: I can pull a cloud session down, but I can't push an existing terminal session up to the cloud.
+
+## Two rules I write into every CLAUDE.md
+
+**1. Credentials stay on my laptop.** Code, docs, stories and PRs can move to the cloud. Anything that needs production or cloud-provider access stays local, so cloud environments get no such credentials, and `CLAUDE.md` says so:
+
+```markdown
+Cloud sessions have no AWS access. List any step that needs AWS for me to run locally.
+```
+
+**2. Nothing changes the design silently.** For a design system, the equivalent risk isn't a leaked key; it's a token value that changed without anyone deciding it should. So syncing from Figma only *reports* differences unless I explicitly ask it to write them, and Claude has to flag, not decide, anything that touches tokens or accessibility:
+
+```markdown
+Figma sync is report-only unless explicitly run with --write. A silent auto-apply is how you get a token change nobody decided.
+```
+
+Both rules turn a vague worry ("what can that session do?") into a sentence every session reads.
+
+## Conventions worth keeping, even solo
+
+- **Branch names:** `type/short-description`, e.g. `feat/badge-day-shape`, `fix/body-line-height`, `docs/d-009`.
+- **Small PRs:** under about 400 changed lines get far better reviews, from people and from Claude. For a design system, one component or one decision per PR.
+- **Conventional Commits, with design scopes:** `feat(ui):`, `fix(tokens):`, `docs(decisions):`. The scope tells a reader at a glance whether a commit touched values, components or reasoning.
+- **Squash merge:** one commit per PR keeps `main` readable and easy to revert.
+- **AI disclosure:** Claude adds a `Co-Authored-By` line to its commits by default. Many teams expect it, so I leave it on.
+
+## Cheat sheet
+
+```bash
+# git: daily
+git switch -c feat/x
+git status
+git add -p
+git commit -m "feat(ui): …"
+git push -u origin HEAD
+git pull --rebase
+git restore <file>
+
+# gh: pull requests
+gh pr create --fill [--draft]
+gh pr view --web
+gh pr checks --watch
+gh pr checkout <n>
+gh pr diff
+gh pr merge --squash --delete-branch
+
+# Claude Code: inside a session
+/init
+/plan
+/diff
+/code-review [effort] [--fix|--comment] [target]
+/simplify
+/verify
+/autofix-pr
+/install-github-app
+
+# Claude Code: from the shell
+claude --cloud "task…"
+claude --teleport
+claude setup-token
+claude -p "follow-up…" --cloud <session-id>
+
+# On a PR (comments)
+@claude <request>
+@claude review
+@claude review always
+```
+
+Next: [Part 2, setting up a design-system repo with guardrails](/posts/design-in-git/design-in-git-part-2-a-design-system-repo-even-claude-cant-break).
+
+## Sources
+
+- [Claude Code in the cloud (cloud sessions, `--cloud`, `--teleport`, auto-fix)](https://code.claude.com/docs/en/claude-code-on-the-web)
+- [Commands reference](https://code.claude.com/docs/en/commands)
+- [Claude Code GitHub Actions](https://code.claude.com/docs/en/github-actions)
+- [How Claude Code uses prompt caching](https://code.claude.com/docs/en/prompt-caching)
+- [Conventional Commits](https://www.conventionalcommits.org/)
