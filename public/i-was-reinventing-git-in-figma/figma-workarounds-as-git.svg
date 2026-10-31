@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1300" height="610" viewBox="0 0 1300 610" role="img" aria-label="Four Figma workarounds and the Git concept each one reinvents">
+  <rect x="0" y="0" width="1300" height="610" fill="#fff" />
+  <text x="40" y="56" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#1E293B" font-size="28" font-weight="700">My Figma workarounds were Git, built by hand</text>
+  <text x="40" y="84" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="15">Each habit solved a real problem, but by convention. Software teams have had a tool for each one for decades.</text>
+  <text x="40" y="134" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="11.5" font-weight="600" letter-spacing=".12em">MY FIGMA WORKAROUND</text>
+  <text x="700" y="134" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="11.5" font-weight="600" letter-spacing=".12em">WHAT GIT ALREADY HAD</text>
+  <rect x="40" y="150" width="520" height="84" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="5 4" />
+  <text x="62" y="186" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#1E293B" font-size="15.5" font-weight="600">Date-stamped pages, frozen frames</text>
+  <text x="62" y="211" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">Frozen only by discipline</text>
+  <path d="M560,192 L698,192" fill="none" stroke="#23395B" stroke-width="1.5" />
+  <polygon points="698,192 687.5,186.75 687.5,197.25" fill="#23395B" />
+  <text x="629.0" y="182" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="12" text-anchor="middle">is really</text>
+  <rect x="700" y="150" width="560" height="84" rx="6" fill="#EEF3FA" stroke="#9FB3CF" stroke-width="1" />
+  <text x="722" y="186" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#23395B" font-size="15.5" font-weight="600">Commits</text>
+  <text x="722" y="211" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">Every change saved, with who, when and why</text>
+  <rect x="40" y="254" width="520" height="84" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="5 4" />
+  <text x="62" y="290" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#1E293B" font-size="15.5" font-weight="600">dev, stage and master pages</text>
+  <text x="62" y="315" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">Copied and kept in step by hand</text>
+  <path d="M560,296 L698,296" fill="none" stroke="#23395B" stroke-width="1.5" />
+  <polygon points="698,296 687.5,290.75 687.5,301.25" fill="#23395B" />
+  <text x="629.0" y="286" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="12" text-anchor="middle">is really</text>
+  <rect x="700" y="254" width="560" height="84" rx="6" fill="#EEF3FA" stroke="#9FB3CF" stroke-width="1" />
+  <text x="722" y="290" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#23395B" font-size="15.5" font-weight="600">Branches</text>
+  <text x="722" y="315" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">Parallel lines of work, merged once approved</text>
+  <rect x="40" y="358" width="520" height="84" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="5 4" />
+  <text x="62" y="394" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#1E293B" font-size="15.5" font-weight="600">A copy of the library in every file</text>
+  <text x="62" y="419" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">The copies drift apart</text>
+  <path d="M560,400 L698,400" fill="none" stroke="#23395B" stroke-width="1.5" />
+  <polygon points="698,400 687.5,394.75 687.5,405.25" fill="#23395B" />
+  <text x="629.0" y="390" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="12" text-anchor="middle">is really</text>
+  <rect x="700" y="358" width="560" height="84" rx="6" fill="#EEF3FA" stroke="#9FB3CF" stroke-width="1" />
+  <text x="722" y="394" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#23395B" font-size="15.5" font-weight="600">A versioned package</text>
+  <text x="722" y="419" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">Each product pins a version and upgrades when ready</text>
+  <rect x="40" y="462" width="520" height="84" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="5 4" />
+  <text x="62" y="498" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#1E293B" font-size="15.5" font-weight="600">The why, in meeting notes elsewhere</text>
+  <text x="62" y="523" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">Lost once the meeting is over</text>
+  <path d="M560,504 L698,504" fill="none" stroke="#23395B" stroke-width="1.5" />
+  <polygon points="698,504 687.5,498.75 687.5,509.25" fill="#23395B" />
+  <text x="629.0" y="494" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="12" text-anchor="middle">is really</text>
+  <rect x="700" y="462" width="560" height="84" rx="6" fill="#EEF3FA" stroke="#9FB3CF" stroke-width="1" />
+  <text x="722" y="498" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#23395B" font-size="15.5" font-weight="600">Pull requests and decision records</text>
+  <text x="722" y="523" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">The discussion and the reasoning sit next to the change</text>
+  <text x="40" y="586" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13" font-style="italic">Figma treats a design file as a document. Software teams treat their work as a package: history, versions, releases, dependants.</text>
+</svg>

@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1300" height="640" viewBox="0 0 1300 640" role="img" aria-label="A Git repository at the centre, built into Storybook, a design system site and Figma">
+  <rect x="0" y="0" width="1300" height="640" fill="#fff" />
+  <text x="40" y="56" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#1E293B" font-size="28" font-weight="700">Design lives in Git, with Figma kept in step</text>
+  <text x="40" y="84" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="15">One repository holds the tokens, components and decisions. Everything people look at is built from it.</text>
+  <rect x="470" y="150" width="360" height="300" rx="6" fill="#EEF3FA" stroke="#9FB3CF" stroke-width="1" />
+  <text x="492" y="186" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#23395B" font-size="17" font-weight="700">Git repository</text>
+  <text x="492" y="210" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">The place where design is versioned</text>
+  <rect x="492" y="242" width="316" height="42" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="508" y="268" font-family="'IBM Plex Mono',Menlo,monospace" fill="#1E293B" font-size="13.5" font-weight="600">tokens.json</text>
+  <text x="640" y="268" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="12">every token value</text>
+  <rect x="492" y="292" width="316" height="42" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="508" y="318" font-family="'IBM Plex Mono',Menlo,monospace" fill="#1E293B" font-size="13.5" font-weight="600">components/</text>
+  <text x="640" y="318" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="12">the coded components</text>
+  <rect x="492" y="342" width="316" height="42" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="508" y="368" font-family="'IBM Plex Mono',Menlo,monospace" fill="#1E293B" font-size="13.5" font-weight="600">decisions/</text>
+  <text x="640" y="368" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="12">D-001, D-002 …</text>
+  <rect x="492" y="392" width="316" height="42" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="508" y="418" font-family="'IBM Plex Mono',Menlo,monospace" fill="#1E293B" font-size="13.5" font-weight="600">history</text>
+  <text x="640" y="418" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="12">every reviewed change</text>
+  <rect x="40" y="230" width="300" height="140" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="60" y="264" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#1E293B" font-size="15.5" font-weight="600">Me + Claude Code</text>
+  <text x="60" y="290" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">Claude implements the change</text>
+  <text x="60" y="310" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">and drafts its decision record;</text>
+  <text x="60" y="330" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">I review both before they merge</text>
+  <path d="M340,300 L468,300" fill="none" stroke="#23395B" stroke-width="1.5" />
+  <polygon points="468,300 457.5,294.75 457.5,305.25" fill="#23395B" />
+  <text x="404.0" y="290" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="12" text-anchor="middle">pull request</text>
+  <rect x="960" y="150" width="300" height="96" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="980" y="184" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#1E293B" font-size="15.5" font-weight="600">Storybook</text>
+  <text x="980" y="208" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">Component inventory</text>
+  <text x="980" y="228" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">for the development team</text>
+  <rect x="960" y="270" width="300" height="96" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="980" y="304" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#1E293B" font-size="15.5" font-weight="600">Design system site</text>
+  <text x="980" y="328" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">Tokens, principles, specs and</text>
+  <text x="980" y="348" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">decisions, for everyone else</text>
+  <rect x="960" y="390" width="300" height="96" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="980" y="424" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#1E293B" font-size="15.5" font-weight="600">Figma</text>
+  <text x="980" y="448" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">Synced from code via Figma MCP:</text>
+  <text x="980" y="468" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13">the last step of every change</text>
+  <path d="M830,198 L958,198" fill="none" stroke="#23395B" stroke-width="1.5" />
+  <polygon points="958,198 947.5,192.75 947.5,203.25" fill="#23395B" />
+  <text x="894.0" y="188" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="12" text-anchor="middle">builds</text>
+  <path d="M830,318 L958,318" fill="none" stroke="#23395B" stroke-width="1.5" />
+  <polygon points="958,318 947.5,312.75 947.5,323.25" fill="#23395B" />
+  <text x="894.0" y="308" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="12" text-anchor="middle">generates</text>
+  <path d="M830,420 L958,420" fill="none" stroke="#23395B" stroke-width="1.5" />
+  <polygon points="958,420 947.5,414.75 947.5,425.25" fill="#23395B" />
+  <text x="894.0" y="410" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="12" text-anchor="middle">syncs back to</text>
+  <path d="M1110,486 L1110,540 L650,540 L650,452" fill="none" stroke="#5B6675" stroke-width="1.5" stroke-dasharray="6 4" />
+  <polygon points="650,452 644.75,462.5 655.25,462.5" fill="#5B6675" />
+  <text x="880" y="530" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="12" text-anchor="middle">on paper, Figma is still the spec</text>
+  <text x="40" y="600" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,sans-serif" fill="#5B6675" font-size="13" font-style="italic">Git gives me what Figma can't: one source for every value, a history of every change, a record of every decision, and review before it ships.</text>
+</svg>
