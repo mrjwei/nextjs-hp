@@ -1,6 +1,6 @@
 # Stage: publish
 
-Turn one Ready vault note into a post on the site, with placeholders for the posts it links to that don't exist yet, then merge and push. The note itself is never modified here: every change goes into its working copy (SKILL.md, "Note and post stay in sync"), and after-publish writes the copy's body and the note's frontmatter back. The only other vault writes here are a placeholder's note properties (step 4) and images copied into `assets/` (step 3).
+Turn one Ready vault note into a post on the site, with placeholders for the posts it links to that don't exist yet, then ship it to main through a pull request. The note itself is never modified here: every change goes into its working copy (SKILL.md, "Note and post stay in sync"), and after-publish writes the copy's body and the note's frontmatter back. The only other vault writes here are a placeholder's note properties (step 4) and images copied into `assets/` (step 3).
 
 ## 1. Read and check
 
@@ -28,7 +28,7 @@ Turn one Ready vault note into a post on the site, with placeholders for the pos
 - A folder that doesn't exist yet (a new series): create it, and add its EN and JA display titles to `app/data/series.json` (report them). Name new folders in lowercase with hyphens unless the series is a proper name (`LingoBun`, `AWS`).
 - If a file already exists at the path:
   - a `placeholder: true` stand-in → replace it, keeping its series and part fields. If the note is single-language (`requireTranslate: false`) and a placeholder for it exists in the other locale, delete that one too (step 6's link check then lists the links to repoint);
-  - already this note's post (an earlier run merged it but stopped before after-publish) → skip to after-publish;
+  - already this note's post (an earlier run's PR was merged but the run stopped before after-publish) → skip to after-publish;
   - anything else → blocked: don't overwrite.
 - The other locale's mirror path (`posts` ↔ `posts-ja`) holds a placeholder for this note (or one is moved there to follow a new series folder) → set its `publishedAt` to this post's (step 6), on this branch. A placeholder keeps the date of the post that first linked to it until then, and the translation will take this post's date.
 
@@ -115,14 +115,20 @@ tags: ["…"]
 - `project`: the ID chosen in step 2, for a project post only. A series post never has one, even when the note sets `project`. A post in a folder (or in a project's multi-part sequence) also takes `slug`, and `seriesOrder`/`partOf`/`partOfTitle`/`partNumber` when its siblings use them (follow the siblings' numbering, e.g. "Part 3" → 3).
 - Other fields (`lead`, `track`, case-study fields) come from `note` or a replaced placeholder. A translation takes every field except `title` and `summary` from the original post. See `docs/publish.md` and `docs/templates/case-study.mdx`. Never add `result`. The vault's pipeline properties (`status`, `scheduledAt`, `requireTranslate`, …) never go into the post.
 
-## 7. Build, merge, push
+## 7. Build, open a PR, merge
 
-1. Branch from main: `post/<slug>`, or `post/<slug>-ja` / `post/<slug>-en` for a translation.
+`main` is protected: never commit to it or push it. Every change reaches main through a pull request, merged with `gh`.
+
+1. Branch from an up-to-date main: `git switch -q main && git pull -q --ff-only origin main`, then `git switch -q -C post/<slug>` (or `post/<slug>-ja` / `post/<slug>-en` for a translation). `-C` resets a branch a failed run left behind; its open PR, if any, is reused in step 5.
 2. `node .claude/skills/publish-pipeline/links.mjs` prints nothing when every post link resolves. Otherwise fix each line on this branch, even in other posts, as step 4 says, and rerun until it's silent:
    - `placeholder <path>`: create it (its counterpart in the other locale is the model);
    - `relink <file> <url> <new url>`: change the link, and drop a language mark like `(英語)` if the link is now same-locale;
    - `broken <file> <url>`: a typo → fix it; else a missing post → placeholders per step 4.
-3. `npm run build > /tmp/publish-pipeline-build.log 2>&1; echo $?` (it regenerates the content index first). Non-zero → read only the errors: `command grep -n -i -m 20 -B2 -A8 'error' /tmp/publish-pipeline-build.log`. Fix failures the post causes (a fix to wording or images goes into the working copy too); one that isn't the post's → blocked: don't merge.
+3. `npm run build > /tmp/publish-pipeline-build.log 2>&1; echo $?` (it regenerates the content index first). Non-zero → read only the errors: `command grep -n -i -m 20 -B2 -A8 'error' /tmp/publish-pipeline-build.log`. Fix failures the post causes (a fix to wording or images goes into the working copy too); one that isn't the post's → blocked: don't open a PR.
 4. Check the post (and a translation's pairing) is indexed: `node -e 'for (const p of require("./app/data/content-index.json").writings) if (p.slug === process.argv[1]) console.log(p.metadata.lang, p.filePath)' <slug>` lists one line per locale version.
-5. Restore `public/search-index.json` (Vercel regenerates it), commit with a message like the earlier `post:` commits, merge `--no-ff` into main and push.
-6. Go on to after-publish only once the push has succeeded: it syncs the note from the working copy. A blocked note's working copy is never applied. The note's pipeline isn't finished there (see "Finish the row" in SKILL.md).
+5. Restore `public/search-index.json` (Vercel regenerates it), commit with a message like the earlier `post:` commits, then ship the branch:
+   1. `git push -q --force-with-lease -u origin <branch>` (the force only replaces this pipeline branch from a failed run, never main).
+   2. Open the PR, or reuse the one already open for the branch: `gh pr view <branch> --json number,state -q 'select(.state=="OPEN").number'`; nothing → `gh pr create --base main --head <branch> --title "<commit subject>" --body "<one line: the post's URL(s), plus any placeholders>"`.
+   3. Merge it with a merge commit (keeps main's `Merge …` history) and delete the branch: `gh pr merge <branch> --merge --delete-branch`. Refused because required checks are still running → `gh pr checks <branch> --watch --fail-fast`, then merge again. A failing check, or a refusal that waiting doesn't fix (e.g. a required review) → blocked: leave the PR open, report it with its URL, and don't go on to after-publish.
+   4. Bring local main up to date: `git switch -q main && git pull -q --ff-only origin main`.
+6. Go on to after-publish only once the PR is merged: it syncs the note from the working copy. A blocked note's working copy is never applied. The note's pipeline isn't finished there (see "Finish the row" in SKILL.md).

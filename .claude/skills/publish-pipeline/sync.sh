@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Keep a vault note's body in sync with its published post, through a working copy.
 # The pipeline never edits a note directly while publishing or updating: it edits the working copy, converts the post
-# from it, and only once the push has succeeded writes the copy's body back into the note.
+# from it, and only once its pull request is merged writes the copy's body back into the note.
 #
 #   copy <note>...    Make a fresh working copy of each note (and a snapshot of it as read).
 #                     Prints: copy <working copy> <note>   (edit the working copy, never the note)
@@ -9,7 +9,7 @@
 #                     Prints one line per note:
 #                       synced <note>              body written back
 #                       same <note>                nothing to write (the copy's body is the note's)
-#                       none <note>                no working copy (e.g. an earlier run stopped after its push)
+#                       none <note>                no working copy (e.g. an earlier run stopped after its PR was merged)
 #                       conflict <note> <copy>     the note's body changed since `copy` (the author edited it): left as it is
 #                     The working copy is removed after synced/same, and kept for a conflict.
 #
