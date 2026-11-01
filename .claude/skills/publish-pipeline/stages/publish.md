@@ -1,11 +1,12 @@
 # Stage: publish
 
-Turn one Ready vault note into a post on the site, with placeholders for the posts it links to that don't exist yet, then merge and push. The note itself is never modified here; after-publish updates its frontmatter. The only vault writes here are a placeholder's note properties (step 4).
+Turn one Ready vault note into a post on the site, with placeholders for the posts it links to that don't exist yet, then merge and push. The note itself is never modified here: every change goes into its working copy (SKILL.md, "Note and post stay in sync"), and after-publish writes the copy's body and the note's frontmatter back. The only other vault writes here are a placeholder's note properties (step 4) and images copied into `assets/` (step 3).
 
 ## 1. Read and check
 
 - `scheduledAt` after today (`date +%F`) → stop: don't publish, change nothing. A note is published only on or after its `scheduledAt`.
-- Read the note in full: frontmatter, body and every image reference (`![[image.png]]` or `![alt](path)`).
+- Make the working copy: `bash .claude/skills/publish-pipeline/sync.sh copy <note>`. From here on, read and edit the copy, never the note.
+- Read the copy in full: frontmatter, body and every image reference (`![[image.png]]` or `![alt](path)`).
 - It must be finished. Placeholder text ("TODO", "add example here"), sections that are only a heading, or a bullet skeleton where prose should be → blocked: report what's unfinished. Publishing doesn't write missing content.
 - **Translation note** (`translationOf` set): also run `fm.sh` on the original note and on the original's published post at its `sitePath`. Every site frontmatter field except `title` and `summary` comes from that post, unchanged.
 
@@ -45,6 +46,7 @@ Skip whatever the note already satisfies. Check the house format with `head -n 4
   ```
 
   An image you can't find → blocked. In an embed, text after `|` is the alt text (a number is a width, so ignore it); without it, write the alt text yourself. An italic line directly below an image is its caption. Notes written by the translate stage use both.
+- In the working copy, rewrite each image embed in the translate stage's format with the published file name and the alt text you used: `![[assets/<folder>/file.png|alt]]` (an embed with a width keeps `|<width>` instead), and copy the file into the vault's `assets/<folder>/` if it isn't there. Same for videos, with the `aria-label` text. Embeds that are side by side stay on one line; an image you split stays one embed per file.
 - Images side by side (several embeds on one line): one figure with a `figure-row` div, which stacks them one per line below 768px and shows a row from 768px (`app/global.css`). No `style` on the images, except a width from the note: those widths become each image's share of the row, as `--row-flex`. An image that would look oversized at full width when stacked (a phone screenshot) gets a `maxWidth` of its natural size. A single image that is itself several screens side by side: split it into one file per screen (crop at the gaps) and use a row.
 
   ```mdx
@@ -88,6 +90,8 @@ Older `note` instructions like "add placeholder pages for referenced pages that 
 
 ## 5. Edit
 
+Make every content change in the working copy first, then the same change in the post, so they read the same. That covers everything below except frontmatter-only `note` instructions (`lead: true`). An image you obfuscate: save the obfuscated file to `public/<folder>/` and `assets/<folder>/` and point the embed at it.
+
 - Proofread and lightly refine: clear typos, grammar, awkward phrasing. English in UK/AU spelling; Japanese in natural written style matching its neighbours. Don't change the argument, opinions or voice. Fix factual errors only when you're sure; keep a list of non-trivial edits for the report.
 - A translation note: proofread only. The author has approved its wording.
 - PII: find and obfuscate anything identifying (company names, real people's names, email addresses, phone numbers, internal URLs or hostnames, account IDs, including inside images and diagrams) before anything reaches the repo. Replace it with a neutral placeholder or remove it. Scheduled run and unsure → blocked; manual run and unsure → ask.
@@ -118,7 +122,7 @@ tags: ["…"]
    - `placeholder <path>`: create it (its counterpart in the other locale is the model);
    - `relink <file> <url> <new url>`: change the link, and drop a language mark like `(英語)` if the link is now same-locale;
    - `broken <file> <url>`: a typo → fix it; else a missing post → placeholders per step 4.
-3. `npm run build > /tmp/publish-pipeline-build.log 2>&1; echo $?` (it regenerates the content index first). Non-zero → read only the errors: `command grep -n -i -m 20 -B2 -A8 'error' /tmp/publish-pipeline-build.log`. Fix failures the post causes; one that isn't the post's → blocked: don't merge.
+3. `npm run build > /tmp/publish-pipeline-build.log 2>&1; echo $?` (it regenerates the content index first). Non-zero → read only the errors: `command grep -n -i -m 20 -B2 -A8 'error' /tmp/publish-pipeline-build.log`. Fix failures the post causes (a fix to wording or images goes into the working copy too); one that isn't the post's → blocked: don't merge.
 4. Check the post (and a translation's pairing) is indexed: `node -e 'for (const p of require("./app/data/content-index.json").writings) if (p.slug === process.argv[1]) console.log(p.metadata.lang, p.filePath)' <slug>` lists one line per locale version.
 5. Restore `public/search-index.json` (Vercel regenerates it), commit with a message like the earlier `post:` commits, merge `--no-ff` into main and push.
-6. Go on to after-publish only once the push has succeeded. The note's pipeline isn't finished there (see "Finish the row" in SKILL.md).
+6. Go on to after-publish only once the push has succeeded: it syncs the note from the working copy. A blocked note's working copy is never applied. The note's pipeline isn't finished there (see "Finish the row" in SKILL.md).

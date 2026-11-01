@@ -1,11 +1,24 @@
 ---
 name: publish-pipeline
-description: Publish posts from the Obsidian vault (~/projects/Notes) end to end — publish Ready notes, write their translations into the vault for review, publish reviewed translations, and update the vault notes afterwards. No arguments → work the queue; or pass note path(s).
+description: Publish posts from the Obsidian vault (~/projects/Notes) end to end — publish Ready notes, write their translations into the vault for review, publish reviewed translations, and update the vault notes afterwards (properties, and the body synced with what was published). No arguments → work the queue; or pass note path(s).
 ---
 
 # publish-pipeline
 
 The Obsidian vault `~/projects/Notes` (attachments in `/assets`) is the single source of truth for every post on the site and its translation. A translation is its own note, in the same folder as the original. The pipeline's state is the notes' frontmatter (shown as a kanban in `Posts.base`; don't read it).
+
+## Note and post stay in sync
+
+A published note always says what its post says, so the next `/update-pipeline` run (which copies the note as is) never undoes an edit. Every change the pipeline makes to a post's content (proofreading, PII removal, `note` or `updateNote` instructions, alt text it writes, an image it splits or obfuscates, a fix during the build) is made in a **working copy** of the note, and the post is converted from that copy. Once the push has succeeded, the copy's body replaces the note's body. Only the conversion stays in the post alone: MDX figure and video markup, links written for wikilinks, the table of contents, the removed title H1, escaping, callouts as blockquotes, and the frontmatter.
+
+```bash
+bash .claude/skills/publish-pipeline/sync.sh copy <note>...   # → copy <working copy> <note>: read and edit that file, never the note
+bash .claude/skills/publish-pipeline/sync.sh apply <note>...  # after the push → synced | same | none | conflict <working copy>
+```
+
+In the working copy, images use the translate stage's format (`stages/translate.md` step 3): `![[assets/<folder>/file.png|alt text]]`, where `<folder>/file.png` is the published file under `public/` (copied into the vault's `assets/<folder>/` if it isn't there yet), with its caption, if any, as an italic line directly below. An embed with a width keeps it (`|390`) and gets no alt text. Images the note embedded before stay in the vault untouched.
+
+`apply` keeps the note's current frontmatter, so run it before the stage's property edit. `conflict`: the author edited the note's body during the run, so it is left as it is. `none`: no working copy (an earlier run pushed but stopped before syncing). Either way, go on with the properties and report it under "Check".
 
 ## Stages
 
@@ -99,7 +112,7 @@ The translate stage lists in `reviewFocus` only the spots that need a human. The
 
 ## Rules
 
-- Vault writes: only the properties above, new translation notes, and images copied into `assets/`. Never edit a note's body (except the translation note being created), never rename or move a note.
+- Vault writes: only the properties above, new translation notes, images copied into `assets/`, and a published note's body from its working copy (`sync.sh apply`, after the push). Never edit a note in any other way (changes go into the working copy), never rename or move a note.
 - Never commit anything from the vault. Repo changes happen only in the publish stage, one branch per published note.
 - Run from Claude Code on the Mac (the Cowork VM can't push via SSH or clear git lock files).
 
@@ -115,5 +128,5 @@ Needs you
 - Review: <translation note>: "<quote>" (reason); …
 - Blocked: <note>: <why>
 - Invalid: <note>: <detail>
-- Check: <non-trivial edit, PII replacement, new tag or series title, a wikilink left as plain text, …>
+- Check: <non-trivial edit, PII replacement, new tag or series title, a wikilink left as plain text, a note whose body wasn't synced (conflict or none), …>
 ```
