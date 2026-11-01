@@ -9,22 +9,22 @@ The Obsidian vault `~/projects/Notes` (attachments in `/assets`) is the single s
 
 ## Note and post stay in sync
 
-A published note always says what its post says, so the next `/update-pipeline` run (which copies the note as is) never undoes an edit. Every change the pipeline makes to a post's content (proofreading, PII removal, `note` or `updateNote` instructions, alt text it writes, an image it splits or obfuscates, a fix during the build) is made in a **working copy** of the note, and the post is converted from that copy. Once the push has succeeded, the copy's body replaces the note's body. Only the conversion stays in the post alone: MDX figure and video markup, links written for wikilinks, the table of contents, the removed title H1, escaping, callouts as blockquotes, and the frontmatter.
+A published note always says what its post says, so the next `/update-pipeline` run (which copies the note as is) never undoes an edit. Every change the pipeline makes to a post's content (proofreading, PII removal, `note` or `updateNote` instructions, alt text it writes, an image it splits or obfuscates, a fix during the build) is made in a **working copy** of the note, and the post is converted from that copy. Once its pull request is merged, the copy's body replaces the note's body. Only the conversion stays in the post alone: MDX figure and video markup, links written for wikilinks, the table of contents, the removed title H1, escaping, callouts as blockquotes, and the frontmatter.
 
 ```bash
 bash .claude/skills/publish-pipeline/sync.sh copy <note>...   # → copy <working copy> <note>: read and edit that file, never the note
-bash .claude/skills/publish-pipeline/sync.sh apply <note>...  # after the push → synced | same | none | conflict <working copy>
+bash .claude/skills/publish-pipeline/sync.sh apply <note>...  # after the PR is merged → synced | same | none | conflict <working copy>
 ```
 
 In the working copy, images use the translate stage's format (`stages/translate.md` step 3): `![[assets/<folder>/file.png|alt text]]`, where `<folder>/file.png` is the published file under `public/` (copied into the vault's `assets/<folder>/` if it isn't there yet), with its caption, if any, as an italic line directly below. An embed with a width keeps it (`|390`) and gets no alt text. Images the note embedded before stay in the vault untouched.
 
-`apply` keeps the note's current frontmatter, so run it before the stage's property edit. `conflict`: the author edited the note's body during the run, so it is left as it is. `none`: no working copy (an earlier run pushed but stopped before syncing). Either way, go on with the properties and report it under "Check".
+`apply` keeps the note's current frontmatter, so run it before the stage's property edit. `conflict`: the author edited the note's body during the run, so it is left as it is. `none`: no working copy (an earlier run merged its PR but stopped before syncing). Either way, go on with the properties and report it under "Check".
 
 ## Stages
 
 | Stage | Runs on | Does | Instructions |
 | --- | --- | --- | --- |
-| publish | a Ready note (original or translation) | vault note → MDX post (plus placeholders for posts it links to), built, merged to main and pushed | `stages/publish.md` |
+| publish | a Ready note (original or translation) | vault note → MDX post (plus placeholders for posts it links to), built, then merged to main through a pull request | `stages/publish.md` |
 | after-publish | the note just published, or a `finish` note | writes the note's pipeline properties | `stages/after-publish.md` |
 | translate | a Published original with `requireTranslate: true` | writes the translation note next to it, as Review or Ready | `stages/translate.md` |
 
@@ -112,9 +112,10 @@ The translate stage lists in `reviewFocus` only the spots that need a human. The
 
 ## Rules
 
-- Vault writes: only the properties above, new translation notes, images copied into `assets/`, and a published note's body from its working copy (`sync.sh apply`, after the push). Never edit a note in any other way (changes go into the working copy), never rename or move a note.
-- Never commit anything from the vault. Repo changes happen only in the publish stage, one branch per published note.
-- Run from Claude Code on the Mac (the Cowork VM can't push via SSH or clear git lock files).
+- Vault writes: only the properties above, new translation notes, images copied into `assets/`, and a published note's body from its working copy (`sync.sh apply`, after the merge). Never edit a note in any other way (changes go into the working copy), never rename or move a note.
+- Never commit anything from the vault. Repo changes happen only in the publish stage, one branch and one pull request per published note.
+- `main` is protected: never commit to it, push to it or merge into it locally. Every change goes in through a PR merged with `gh pr merge` (`stages/publish.md` step 7).
+- Run from Claude Code on the Mac (the Cowork VM can't push via SSH or clear git lock files), with `gh` signed in (`gh auth status`); not signed in → blocked before any publish.
 
 ## Report
 
@@ -122,11 +123,11 @@ Only what the author needs to see or act on, one line per item, empty sections l
 
 ```
 Published
-- <title> (en) → /posts/<folder>/<slug>, <publishedAt>
+- <title> (en) → /posts/<folder>/<slug>, <publishedAt> (PR <url>)
 Placeholders: /posts/…, /ja/posts/… (note properties set: <note>: Drafting, requireTranslate; …)
 Needs you
 - Review: <translation note>: "<quote>" (reason); …
-- Blocked: <note>: <why>
+- Blocked: <note>: <why> (with the PR's URL when one is left open)
 - Invalid: <note>: <detail>
 - Check: <non-trivial edit, PII replacement, new tag or series title, a wikilink left as plain text, a note whose body wasn't synced (conflict or none), …>
 ```
