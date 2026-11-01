@@ -5,7 +5,7 @@ Write the translation of a Published original as a new vault note in the same fo
 ## 1. Source and target
 
 - Read the original's frontmatter (`fm.sh`) and its published post at `sitePath` (always set by now: a Published note without it goes through `finish` first). If `sitePath` is a list (one note published as several posts), translate each post into its own translation note, named with the post's slug: `<original's name without a ✅ prefix> (JA, <slug>).md`, and record them all in `translation` as a list.
-- **Translate from the published post, not the note's body.** The post has the publish stage's edits and PII removals; the note doesn't.
+- **Translate from the published post, not the note's body.** The post is what readers see; a note published before notes were synced, or one whose sync hit a `conflict`, may still lack the publish stage's edits and PII removals.
 - Direction from the post's locale: `posts/` (en) → ja, `posts-ja/` (ja) → en. Target path: the same path with `posts` ↔ `posts-ja` swapped, same subfolder and filename. The content index pairs translations by that path.
 - Translation note: `<original's name without a ✅ prefix> (JA).md` (or `(EN).md`), in the original's folder.
 - Something already exists:

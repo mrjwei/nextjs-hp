@@ -51,3 +51,5 @@ public/search-index.json
 tsconfig.tsbuildinfo
 .DS_Store
 logs/
+
+.claude/launch.json
