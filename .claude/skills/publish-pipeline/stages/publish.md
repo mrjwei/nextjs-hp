@@ -36,7 +36,7 @@ Turn one Ready vault note into a post on the site, with placeholders for the pos
 
 Skip whatever the note already satisfies. Check the house format with `head -n 40` of one sibling post in the target folder.
 
-- Images: find each one in the note's folder or the vault's `assets/`, copy it to `public/<slug>/`, and write it as below. An embed of `assets/<folder>/file` whose file is already at `public/<folder>/file` (a translation, or an imported post) points there instead, with no copy.
+- Images: find each one in the note's folder or the vault's `assets/`, copy it to `public/<slug>/`, and write it as below. An embed of `assets/<folder>/file` whose file is already at `public/<folder>/file` (a translation, or an imported post) points there instead, with no copy. For a `.gif`, that published file is `public/<folder>/<name>.webm` (see "Shrink the copies").
 
   ```mdx
   <figure style={{ textAlign: "center" }}>
@@ -46,7 +46,12 @@ Skip whatever the note already satisfies. Check the house format with `head -n 4
   ```
 
   An image you can't find → blocked. In an embed, text after `|` is the alt text (a number is a width, so ignore it); without it, write the alt text yourself. An italic line directly below an image is its caption. Notes written by the translate stage use both.
-- In the working copy, rewrite each image embed in the translate stage's format with the published file name and the alt text you used: `![[assets/<folder>/file.png|alt]]` (an embed with a width keeps `|<width>` instead), and copy the file into the vault's `assets/<folder>/` if it isn't there. Same for videos, with the `aria-label` text. Embeds that are side by side stay on one line; an image you split stays one embed per file.
+- **Shrink the copies**, once every image and video this run copied is in `public/` (and after any split or obfuscation), before writing their markup: `node .claude/skills/publish-pipeline/media.mjs <each file this run copied into public/>`. It changes only those repo copies, never the vault originals:
+  - images (`.png`, `.jpg`, `.webp`, a static `.gif`) are capped at 2000 px wide and recompressed in place, under the same file name;
+  - an animated `.gif` (or an `.mp4`/`.mov` recording) becomes `<name>.webm` (VP9, at most 2000 px wide), and the copy is deleted. Its output line's second column is the new file: write it with the video markup below, the alt text becoming its `aria-label`.
+
+  Pass only files this run copied: one already in `public/` was shrunk when it was first published, and shrinking it again only loses quality. A non-zero exit → fix and rerun (`Cannot find package 'sharp'` → `npm install`; no `ffmpeg` → `brew install ffmpeg`), else blocked.
+- In the working copy, rewrite each image embed in the translate stage's format with the published file name and the alt text you used: `![[assets/<folder>/file.png|alt]]` (an embed with a width keeps `|<width>` instead), and copy the file into the vault's `assets/<folder>/` if it isn't there, from the vault original the note embedded (never the shrunk copy in `public/`, unless the vault has no other copy). Same for videos, with the `aria-label` text. A GIF that became `.webm` keeps its `.gif` embed (`![[assets/<folder>/<name>.gif|description]]`): the vault holds the GIF, the post plays `<name>.webm`. Embeds that are side by side stay on one line; an image you split stays one embed per file.
 - Images side by side (several embeds on one line): one figure with a `figure-row` div, which stacks them one per line below 768px and shows a row from 768px (`app/global.css`). No `style` on the images, except a width from the note: those widths become each image's share of the row, as `--row-flex`. An image that would look oversized at full width when stacked (a phone screenshot) gets a `maxWidth` of its natural size. A single image that is itself several screens side by side: split it into one file per screen (crop at the gaps) and use a row.
 
   ```mdx
@@ -59,7 +64,7 @@ Skip whatever the note already satisfies. Check the house format with `head -n 4
   </figure>
   ```
 
-- Videos: screen recordings are `.webm` (`![[file.webm]]`, or `![[file.webm|description]]`), copied like images and played like a GIF: muted, looping, with controls. Text after `|` is the description for `aria-label`; without it, write one from the recording (check frames with `ffmpeg -i file.webm -vf "fps=1/2,scale=800:-1,tile=3x3" -frames:v 1 tile.png`, which is also the PII check). An italic line directly below is the caption. Another video format → convert it to `.webm` (VP9) first. Width comes from `app/global.css`.
+- Videos: screen recordings are `.webm` (`![[file.webm]]`, or `![[file.webm|description]]`), copied like images and played like a GIF: muted, looping, with controls. Text after `|` is the description for `aria-label`; without it, write one from the recording (check frames with `ffmpeg -i file.webm -vf "fps=1/2,scale=800:-1,tile=3x3" -frames:v 1 tile.png`, which is also the PII check). An italic line directly below is the caption. An animated GIF, or another video format, is converted to `.webm` by `media.mjs` ("Shrink the copies") and written the same way. Width comes from `app/global.css`.
 
   ```mdx
   <figure style={{ textAlign: "center" }}>
