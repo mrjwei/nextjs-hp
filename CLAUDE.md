@@ -1,4 +1,4 @@
 - Make a new branch for any block of work you are doing. This helps keep your changes organized and makes it easier to collaborate with others.
 - Commit your changes frequently with clear and descriptive commit messages. This allows you to track your progress and makes it easier to understand the history of your project.
 - If you are implementing based on a plan, implement one phase or task at a time rather than trying to do everything at once. Make a new branch for each phase or task, and merge it back into the main branch when it is complete. This helps keep your work organized and makes it easier to review and test your changes.
-- `main` is protected: never commit or push to it directly. Push the branch, open a pull request with `gh pr create --base main`, and merge it with `gh pr merge --merge --delete-branch`.
+- `main` is protected: never commit or push to it directly. Push the branch, open a pull request with `gh pr create --base main`, and squash-merge it with `gh pr merge --squash --delete-branch` (the repository allows squash merges only).
