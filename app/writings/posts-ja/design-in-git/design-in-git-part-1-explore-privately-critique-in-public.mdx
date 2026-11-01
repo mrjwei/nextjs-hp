@@ -2,17 +2,206 @@
 title: "Design in Git パート1:探索はひとりで、レビューはみんなの前で"
 slug: "design-in-git-part-1-explore-privately-critique-in-public"
 publishedAt: "2026-10-29"
-summary: "近日公開。Claude CodeとGitHubを使い、リポジトリでデザインの仕事をするときの私のメンタルモデル。自分だけの探索用ファイルのような非公開のインナーループと、記録が永久に残るデザインレビューのような公開のアウターループについて。"
+summary: "Claude CodeとGitHubを使い、リポジトリでデザインの仕事をするときの私のメンタルモデルです。自分だけの探索用ファイルのように使える非公開のインナーループ、記録が永久に残るデザインレビューのように働く公開のアウターループ、そしてクラウドで動かしてよいものの明確なルール。デザインシステムの変更をIssueからマージまで追う例つきです。"
 tags: ["design", "dev", "ai", "process"]
 seriesOrder: 1
 partOf: "design-in-git"
 partOfTitle: "Design in Git"
 partNumber: 1
-placeholder: true
 ---
 
-{/* Placeholder page: replace this file when the full post is published. */}
+- [二つのループ](#二つのループ)
+- [用語をデザインに置き換えると](#用語をデザインに置き換えると)
+- [Claudeが働ける3つの場所と、費用を払うのは誰か](#claudeが働ける3つの場所と費用を払うのは誰か)
+- [ループをステップごとに](#ループをステップごとに)
+- [ツールより大事な習慣](#ツールより大事な習慣)
+- [バリエーション:Figmaに触れない仕事はクラウドファーストで](#バリエーションfigmaに触れない仕事はクラウドファーストで)
+- [すべてのCLAUDE.mdに書いている二つのルール](#すべてのclaudemdに書いている二つのルール)
+- [一人でも守る価値のある慣習](#一人でも守る価値のある慣習)
+- [チートシート](#チートシート)
+- [参考資料](#参考資料)
 
-この記事は現在執筆中で、近日中にここで公開する予定です。
+デザイナーはみな、すでに二つのモードで仕事をしています。一つは散らかった、自分だけのモード。ファイルの中の自分用ページに、バッジのバリエーションが20個並んでいて、その半分は間違っている。もう一つは公開のモード。デザインレビューの場で提案を見せ、それを進めるかどうかをほかの人たちが決めます。
 
-それまでの間は、[「画面ではなく、仕組みをデザインする」](/ja/posts/ai-and-design/designing-infrastructure-not-assets)で、AIで画面づくりが安くなったいま、デザイナーの仕事がどこへ移っていくかについて書いています。
+ソフトウェアチームにも同じ二つのモードがあり、一方がもう一方に切り替わる瞬間のために、たくさんのツールを作り上げてきました。デザインがリポジトリに置かれるようになれば([私が自分のデザインをそこへ移した理由](/ja/posts/design-in-git/i-was-reinventing-git-in-figma)を参照)、そのツールはデザイナーのものにもなります。この記事では、Claude CodeとGitHubに面倒な作業のほとんどを任せながら、私がそれをどう捉えているかというメンタルモデルを紹介します。
+
+このシリーズは、リポジトリで仕事をしている、あるいはこれからするデザイナーと、一緒に働く開発者に向けて書いています。
+
+- **パート1(この記事):** 二つのループと、Issueからマージまでのデザイン変更。
+- **パート2:** [ガードレールつきのデザインシステムのリポジトリを用意する](/ja/posts/design-in-git/design-in-git-part-2-a-design-system-repo-even-claude-cant-break)。
+- **パート3:** [適切なClaudeのレビューの選び方と、コードレビューでは見えないもの](/ja/posts/design-in-git/design-in-git-part-3-design-crit-with-a-paper-trail)。
+- **パート4:** [実際のデザイン判断ひとつを、Issueからマージまで](/ja/posts/design-in-git/design-in-git-part-4-one-line-height-change-from-issue-to-merge)。
+
+全体を通した例は、あるスタートアップのプロダクトのデザインシステム用に私が作ったようなリポジトリです。デザイントークン、コンポーネントライブラリ、ドキュメントサイト、そしてデザイン判断の記録を集めたフォルダがあります。Claude CodeとGitHubに関する内容は、2026年10月26日に公式ドキュメントと照らし合わせて確認しました。Claude Codeは変化が速いので、動作が違う場合はまずバージョンノートを確認してください。
+
+## 二つのループ
+
+**インナーループ:** 非公開で、速く、変更のコストが低い。これは自分の探索用ページです。トークンやコンポーネントを編集する → 見る → `/code-review` → 直す。すべて自分のノートPCの上で完結します。pushするまで誰にも見えないので、間違ったことも試せます。
+
+**アウターループ:** 共有され、遅く、レビューを受ける。これはデザインレビューですが、大きな違いが一つあります。そこで話されたことはすべて、変更のすぐ隣に書き残されます。プルリクエスト → 自動チェック → レビュー → マージ。すべてGitHubの上で行います。
+
+この二つに分ける目的は、デザインと同じです。問題がまだ安く直せるうちに捕まえること。間違った余白の値も、ノートPCの上で気づけば1分で済みます。同じ値が3つのプロダクトに出荷されてから気づけば、リリース一回分のコストがかかります。
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/design-in-git-part-1-explore-privately-critique-in-public/claude-gh-01-big-picture.png" alt="3つの列。Claude Code、gitのクローン、gh CLIが動く私のノートPC。リポジトリ、プルリクエスト、Actionsのランナー、Claude GitHub Appを抱えるGitHub。マネージドのCode Review、ultrareviewのサンドボックス、クラウドセッションが動くAnthropicのクラウド。矢印は、すべてのツールがプルリクエストに集まることを示している" style={{ marginBottom: "8px" }} />
+  <figcaption>3つの場所と、ひとつの信頼できる情報源。プルリクエストは、すべてのツール、ボット、人が集まる場所、つまりデザインレビューの部屋です。</figcaption>
+</figure>
+
+## 用語をデザインに置き換えると
+
+Gitが初めてなら、ほとんどの用語にはデザインでの相当するものがあります。
+
+| Git / GitHub | それは何か | 置き換わるデザインの習慣 |
+|---|---|---|
+| **リポジトリ** | プロジェクトのフォルダと、その全履歴 | デザインファイルと、その過去のすべてのバージョン |
+| **コミット** | 理由を説明するメッセージつきで保存した一歩 | 日付を付けて凍結したフレームに、理由を添えたもの |
+| **ブランチ** | メインの流れに触れない、並行した作業の流れ | 自分用の探索ページや、複製したファイル |
+| **プルリクエスト(PR)** | ブランチをマージする提案。差分と議論つき | デザインレビューと、その後に結局まとめなかったメモ |
+| **チェック** | PRごとに走る自動テスト | 引き渡し前に目視でファイルを点検すること |
+| **マージ** | 変更をメインの流れに取り込むこと | 「承認、出していいよ」 |
+
+## Claudeが働ける3つの場所と、費用を払うのは誰か
+
+| 場所 | そこで動くもの | 触れられるもの | 費用を払うのは誰か |
+|---|---|---|---|
+| **私のノートPC** | Claude Code、`/code-review`、`/security-review`、git、`gh` | 私のファイルと私の認証情報 | 私のClaudeのプラン |
+| **GitHub Actionsのランナー** | CIと、`anthropics/claude-code-action`(`@claude` とレビューのワークフロー) | チェックアウトされたリポジトリと、私が渡したシークレット | GitHub Actionsの実行時間に加えて、APIキー*または*私のプラン(サブスクリプションのトークン経由) |
+| **Anthropicのインフラ** | マネージドのCode Review(TeamとEnterpriseのみ) | Claude GitHub App経由での、リポジトリの読み取り権限 | 組織の請求。上限額はOwnerが設定 |
+| **Anthropicのクラウドセッション** | クラウドセッション、自動修正(auto-fix)、ultrareview | GitHubからのクローン。pushはGitHubのプロキシを経由 | 私のClaudeのプラン(VMの追加料金なし)。ultrareviewは別料金 |
+
+**Claude GitHub App** は、これらのほとんどを支える権限の橋渡し役です。もう一つの定数が `CLAUDE.md` です。すべてのClaudeのツールがこれを読むので、デザインシステムのルールはここに書くべきです(私のものはパート2で紹介します)。
+
+**デザインならではの注意点が一つ。Figmaは私のノートPCから出しません。** 私の環境では、ClaudeはFigma MCPサーバーを通じてFigmaを読み書きし、そのサーバーは私のマシン上のFigmaデスクトップアプリとやり取りします。変数を読むには、Figmaのファイルを開いて何かを選択している必要があり、それを操作できるのは私のノートPC上の対話的なセッションだけです。そのため、Figmaに触れるステップ(コンポーネントの仕様を取ってくる、トークンを同期する、完成したコンポーネントをFigmaのライブラリに戻す)はすべてインナーループで行い、クラウドセッションやGitHubの上では決して行いません。
+
+## ループをステップごとに
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/design-in-git-part-1-explore-privately-critique-in-public/claude-gh-02-pr-lifecycle.png" alt="4つのレーン(私、Claude Code、GitHub、レビュアー)にまたがる11ステップのスイムレーン図。PRの前にIssueを選ぶ、ブランチを切る、作る、セルフレビュー、pushしてPRを開く。PRの中でチェック、レビュー、修正の繰り返し、承認。PRの後にマージ" style={{ marginBottom: "8px" }} />
+  <figcaption>PRを開くことがチェックポイントです。その前は何でも自由に変えられ、その後はすべての変更が見えるようになり、レビューを受けます。探索と発表の境目そのものです。</figcaption>
+</figure>
+
+例として、日本語の本文が一つの詰まった塊のように読めてしまい、Issue #12で行間を広げるよう求められているとします(パート4では、この変更の実際のバージョンを詳しく追います)。
+
+| # | ステップ | 誰が | 私が打つもの |
+|---|---|---|---|
+| 1 | Issueを選ぶ:*なぜ*と、「完了」がどういう状態か | 私 | — |
+| 2 | ブランチを切る:変更ごとに一つのブランチ | 私 | `git switch main && git pull` の後に `git switch -c fix/body-line-height` |
+| 3 | 作る:簡単でないものはまず計画から | Claude Code | `/plan raise body line-height for Japanese prose, per issue #12` |
+| 4 | 見る:Figmaのフレームと、ブラウザで、実際のサイズで比べる | 私 + Claude Code | ローカルで動かしたStorybookやドキュメントサイト |
+| 5 | セルフレビュー:非公開でいられる最後の瞬間 | Claude Code | `/diff`、`/code-review high --fix` |
+| 6 | コミットしてpushする | 私 | `git add -p`、`git commit -m "fix(tokens): raise body line-height to 160%"`、`git push -u origin HEAD` |
+| 7 | PRを開く:何を、なぜ、どう確認するか、紐づくIssue | 私 | `gh pr create --fill`(準備ができていなければ `--draft` を付ける) |
+| 8 | チェック:CIとClaudeのレビュー | GitHub | `gh pr checks --watch` |
+| 9 | レビュー:人が意図、品質、トレードオフを判断する | レビュアー | — |
+| 10 | 繰り返す:直す、pushする、返信するか解決済みにする | 私 + Claude | ローカルで直す、PRに `@claude fix …` とコメントする、または `/autofix-pr` を実行する |
+| 11 | マージして片付け、それからFigmaを合わせる | 私 | `gh pr merge --squash --delete-branch` の後に `git switch main && git pull`。ローカルのセッションからFigmaを同期する |
+
+ステップ4は、エンジニア向けのガイドでは抜け落ちているステップで、しかもデザイナーが一番得意なステップです。変更はきれいにビルドでき、すべてのチェックを通っても、見た目が間違っていることがあります。ビルドは通り続けているのに、コンポーネントライブラリのボタンがすべて背景色を失っていたときの話は、パート3で紹介します。
+
+## ツールより大事な習慣
+
+- **小さく、こまめにコミットする。** バイブコーディングを始めたときに崩れたのがこの習慣で、私のコミットは大きく、雑然としたものになりました。理由は二つあります。一つ目は、作業をどう分けるかを以前ほど注意深く考えなくなったこと。AIはごく短い時間で多くのことができるので、本来は別々の変更にすべきタスクを一つのプロンプトに詰め込むようになりました。二つ目は、Claudeには使用量の上限があり、それを長持ちさせるためのよくあるコツが、タスクをまとめて頼むことだという点です。結果を後から別々のコミットに分けるようClaudeに頼むことはできますが、その時点では、コミットする前に一つひとつの変更を意味のある形でレビューすることはもうできません。
+
+  デザインの仕事でのルールはシンプルです。**コミット一つにつき、コンポーネント一つ、またはトークンの判断一つ。** コミットメッセージに「と」が必要なら、たぶんそれは二つのコミットです。後から誰かに「なぜこのバッジは変わったの?」と聞かれたときに、履歴が読めるのはこのおかげです。
+
+  使用量の心配は、ほとんどプロンプトキャッシュが解消してくれます。プロンプトのたびにそれまでの会話全体が送り直されますが、Claude Codeがすでに処理した部分はキャッシュから読まれ、そのコストは新しい入力のごく一部です。ProやMaxのプランでは、プランの使用量の範囲内なら、メインの会話のキャッシュは1時間保たれ、プロンプトを送るたびにタイマーがリセットされます。つまり1時間以内に次のプロンプトを送る限り、一つのプロンプトで一つの小さなタスクを頼んでも、まとめて頼む場合とコストはあまり変わりません(セッションが使用量クレジットを消費するようになると、Claude Codeのキャッシュは5分に縮むので、間隔がより重要になります)。
+- **`git add -p` は、形を変えたレビューです。** ファイル全体を一度に見せるのではなく、変更を塊(ハンク)ごとに見せてくれるので、取り込む前にすべての変更を読めますし、散らかった作業ツリーを別々のコミットに分けることもできます。
+- **ドラフトPRは、作業途中のデザインレビューです。** 誰かに正式なレビューを頼む前から、チェックを走らせ、コメントを集められます。
+- **ビルドが通っても、デザインが完成したわけではありません。** 完了と言う前に、自分の目で見るか、Claudeにスクリーンショットを撮らせてFigmaのフレームと比べさせます。
+- **ボットはコメントし、人がマージする。** Claudeはレビューし、コメントし、修正をpushできますが、承認とマージは人の役目です。関わる人が私一人のときでも、このルールは守っています。
+
+## バリエーション:Figmaに触れない仕事はクラウドファーストで
+
+ループは同じですが、作るステップをノートPCではなくクラウドセッションで行うので、ノートPCがスリープしている間も作業が進みます。リポジトリの中だけで完結する仕事に向いています。Storybookのストーリーを書く、ドキュメントのページを移植する、デザイン判断の記録を翻訳する、すでに仕様が決まっているコンポーネントのバリアントを追加する、といった仕事です。
+
+1. **計画:** 各タスクをGitHubのIssueとして書く。
+2. **作る:** そのタスク用にクラウドセッションを始める。claude.ai/codeから、デスクトップアプリで **Cloud** を選んで、または `claude --cloud "Do issue #12"` で。Claudeは自分のブランチで作業し、PRを開くこともできます。
+3. **レビュー:** セッションの中かGitHubで差分を読み、コメントを残し、自動修正(パート3を参照)を有効にして、CIの失敗と私のコメントにClaudeが対応するようにする。
+4. **マージ:** GitHubでスカッシュマージし、ローカルで `git switch main && git pull`。
+5. **ローカル限定のステップ:** Figmaが関わるものすべてと、クラウドに渡していない認証情報が必要なものすべて。会話を手元に持ってきたいときは、`claude --teleport` でクラウドセッションとそのブランチを自分のターミナルに引き下ろします。
+
+> **ヒント:`--cloud` は作業コピーではなく、GitHubから始まります。** リポジトリにClaude GitHub Appがインストールされていると、クラウドセッションは現在のブランチを*GitHubから*クローンするので、pushしていないコミットは含まれません。先にpushしてください(アプリがない場合は、Claude Codeがローカルのリポジトリのバンドルをアップロードします)。
+
+```bash
+claude --cloud "Add Storybook stories for every Badge variant"   # start a new cloud session for this repo
+claude --teleport                                               # pull a cloud session and its branch into my terminal
+claude -p "also add the Japanese docs page" --cloud <session-id> # queue a follow-up into a running cloud session
+```
+
+CLIからの引き渡しは一方通行です。クラウドセッションを手元に引き下ろすことはできますが、既存のターミナルのセッションをクラウドに押し上げることはできません。
+
+## すべてのCLAUDE.mdに書いている二つのルール
+
+**1. 認証情報はノートPCから出さない。** コード、ドキュメント、ストーリー、PRはクラウドに移せます。本番環境やクラウドプロバイダーへのアクセスが必要なものはローカルに残すので、クラウド環境にはそうした認証情報を渡さず、`CLAUDE.md` にもそう書いています。
+
+```markdown
+Cloud sessions have no AWS access. List any step that needs AWS for me to run locally.
+```
+
+**2. デザインを黙って変えるものは何もない。** デザインシステムにとって、これに相当するリスクは鍵の漏洩ではありません。誰も決めていないのに変わってしまったトークンの値です。そのため、Figmaからの同期は、私が明示的に書き込みを頼まない限り差分を*報告*するだけにしてあり、トークンやアクセシビリティに関わることは、Claudeが決めるのではなく指摘しなければならないことにしています。
+
+```markdown
+Figma sync is report-only unless explicitly run with --write. A silent auto-apply is how you get a token change nobody decided.
+```
+
+どちらのルールも、「あのセッションは何ができるんだろう?」という漠然とした不安を、すべてのセッションが読む一文に変えてくれます。
+
+## 一人でも守る価値のある慣習
+
+- **ブランチ名:** `type/short-description`。例:`feat/badge-day-shape`、`fix/body-line-height`、`docs/d-009`。
+- **小さなPR:** 変更が400行程度に収まるPRは、人からもClaudeからも、はるかに良いレビューを受けられます。デザインシステムなら、PR一つにつきコンポーネント一つ、または判断一つ。
+- **デザイン用のスコープつきのConventional Commits:** `feat(ui):`、`fix(tokens):`、`docs(decisions):`。スコープを見れば、そのコミットが値、コンポーネント、理由のどれに触れたのかが一目でわかります。
+- **スカッシュマージ:** PR一つにつきコミット一つにすると、`main` が読みやすく、元に戻すのも簡単になります。
+- **AIの関与の開示:** Claudeはデフォルトで、自分のコミットに `Co-Authored-By` の行を加えます。多くのチームがそれを期待しているので、私はオンのままにしています。
+
+## チートシート
+
+```bash
+# git: daily
+git switch -c feat/x
+git status
+git add -p
+git commit -m "feat(ui): …"
+git push -u origin HEAD
+git pull --rebase
+git restore <file>
+
+# gh: pull requests
+gh pr create --fill [--draft]
+gh pr view --web
+gh pr checks --watch
+gh pr checkout <n>
+gh pr diff
+gh pr merge --squash --delete-branch
+
+# Claude Code: inside a session
+/init
+/plan
+/diff
+/code-review [effort] [--fix|--comment] [target]
+/simplify
+/verify
+/autofix-pr
+/install-github-app
+
+# Claude Code: from the shell
+claude --cloud "task…"
+claude --teleport
+claude setup-token
+claude -p "follow-up…" --cloud <session-id>
+
+# On a PR (comments)
+@claude <request>
+@claude review
+@claude review always
+```
+
+次回:[パート2、ガードレールつきのデザインシステムのリポジトリを用意する](/ja/posts/design-in-git/design-in-git-part-2-a-design-system-repo-even-claude-cant-break)。
+
+## 参考資料
+
+- [Claude Code in the cloud(クラウドセッション、`--cloud`、`--teleport`、自動修正)](https://code.claude.com/docs/en/claude-code-on-the-web)
+- [Commands reference](https://code.claude.com/docs/en/commands)
+- [Claude Code GitHub Actions](https://code.claude.com/docs/en/github-actions)
+- [How Claude Code uses prompt caching](https://code.claude.com/docs/en/prompt-caching)
+- [Conventional Commits](https://www.conventionalcommits.org/)
