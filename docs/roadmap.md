@@ -8,7 +8,7 @@
 
 Positioning source of truth: §1 below, from `docs/plans/2026-10-10-positioning-rebalance.md`. It supersedes the positioning section of the vault's `Career/Job hunting/⭐️ai-engineering-pivot-2026Q4.md` (its 90-day plan still applies to Lane C prep) and the design-first framing of `⭐️portfolio-roadmap-2026Q4.md`.
 
-Related docs: `docs/publish.md` (content model, frontmatter, publishing), `docs/baseline.md` (Lighthouse/build checks), `docs/templates/case-study.mdx` (case-study skeleton).
+Related docs: `docs/plans/2026-11-01-performance-seo-traffic.md` (performance, SEO and traffic), `docs/publish.md` (content model, frontmatter, publishing), `docs/baseline.md` (Lighthouse/build checks), `docs/templates/case-study.mdx` (case-study skeleton).
 
 ---
 
@@ -92,7 +92,8 @@ EN                                   JA
 
 - [ ] **`<Figure>` MDX component** for architecture diagrams: `<Figure src alt caption />` on a light background, optional zoom-on-click with no library, registered in `components/posts/mdx.tsx`. The case-study template's *System* section depends on it.
 - [ ] **CV PDFs**: add `public/cv/jesse-wei-cv-en.pdf` and `public/cv/jesse-wei-shokumukeirekisho-ja.pdf`, then set `features.cv = true`. Blocked on the files.
-- [ ] **Lighthouse baseline**: record mobile scores for `/`, `/about`, `/posts`, `/projects`, `/ja` per `docs/baseline.md`. Target LCP ≤ 2.5 s on throttled mobile.
+- [x] **Lighthouse baseline**: recorded 1 Nov 2026 in `docs/baseline.md` (mobile Performance 62–79 on index pages, LCP 3.4–4.4 s; image-heavy posts up to 22 MB). Target LCP ≤ 2.5 s on throttled mobile.
+- [ ] **Performance, SEO and traffic**: `docs/plans/2026-11-01-performance-seo-traffic.md` (Phases 0–7). Phase 0 (Search Console, Bing, GA4 and Speed Insights baselines) is Jesse's.
 - [ ] **JSON-LD after graduation**: switch QUT from `affiliation` to `alumniOf` in `lib/seo/person.ts`.
 - [ ] **Phase 7 advisory module** (optional, ships dark; see §5).
 - [ ] **Long unbroken text at 360 px**: a long URL in a post body (e.g. the references in *Autoencoders from the Inside Out*) and long breadcrumb titles push the page wider than the viewport. Needs a wrap rule for prose links and the breadcrumb (found in the 15 Oct audit; not changed there).
