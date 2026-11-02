@@ -7,7 +7,7 @@ description: Deploy edited, already-published posts from the Obsidian vault (~/p
 
 The companion of `publish-pipeline`. The vault note is the single source of truth: the author edits a published note in Obsidian and sets its `status` to `Updated` (a column in `Posts.base`). The note is final and clean, so its content goes into the post as is: no comparing, no proofreading. Anything else the run changes in a post's content (an `updateNote` instruction such as "refine the new part", alt text, an image, a build fix) is made in the note's working copy first and written back to the note after the merge, so the note keeps saying what its post says (publish-pipeline's SKILL.md, "Note and post stay in sync"). Each language's note is updated on its own; the other language changes only when `updateNote` asks for it (step 2), and then through its own note too.
 
-`P=.claude/skills/publish-pipeline` (shared scripts: `queue.sh`, `fm.sh`, `sync.sh`, `links.mjs`, `refs.mjs`).
+`P=.claude/skills/publish-pipeline` (shared scripts: `queue.sh`, `fm.sh`, `sync.sh`, `links.mjs`, `refs.mjs`, `media.mjs`).
 
 ## Frontmatter
 
@@ -40,6 +40,8 @@ bash .claude/skills/publish-pipeline/queue.sh | awk -F'\t' '$1 == "update" || $1
 1. **Plan.** One `bash $P/fm.sh` call for every note and every post at their `sitePath`s. No post there, or a `placeholder: true` one → blocked: never published, set it to Ready. Branch from an up-to-date main (`git switch -q main && git pull -q --ff-only origin main`): `update/<YYYY-MM-DD-HHMM>`. First clear what a failed run left (the vault still holds everything): close each open update PR and delete its branch (`gh pr list --state open --json headRefName -q '.[].headRefName | select(startswith("update/"))'`, then `gh pr close <branch> --delete-branch`), and delete leftover local `git branch --no-merged main --list 'update/*'`. Make the working copies: `bash $P/sync.sh copy <note>...` (a fresh copy, even if a failed run left one). From here on, read and edit the copies, never the notes.
 2. **Write each post.** Read the working copy, and once per run `sed -n '/^## 3\./,/^## 5\./p' $P/stages/publish.md` (conversion, links and placeholders). First apply to the copy any `updateNote` instruction that changes content ("check and refine the new part": edit that part in the copy, proofreading only it, and list non-trivial edits under "Check"), and rewrite new image embeds in it as publish.md step 3 says. The post's new body is the copy's body converted by those rules.
 
+   Images and videos the note embeds that aren't in `public/` yet (an embedded `<name>.gif` counts as there when `public/<folder>/<name>.webm` is) are copied in and shrunk as publish.md step 3 says, "Shrink the copies": `node $P/media.mjs <each file this run copied>`, before writing their markup (a GIF becomes `<name>.webm` with the video markup; the note keeps its `.gif` embed). Files already in `public/` are left as they are, and the vault originals are never touched.
+
    `updateNote` asks for the other language too ("update JA too"): that locale's note joins this run. Make its working copy, carry the change into it (translated and written as `stages/translate.md` steps 2–3 say), and write its post from it like any other note. Its `updatedAt` follows the same rule, it gets its own commit, and step 7 records it like the others.
 
    Don't read the old body: write the whole file through Bash (`cat > <post> <<'__MDX__'`), with the frontmatter from `fm.sh`, changed only as follows:
@@ -63,6 +65,7 @@ bash .claude/skills/publish-pipeline/queue.sh | awk -F'\t' '$1 == "update" || $1
 
 - Vault writes: only the properties above, images copied into `assets/`, and each note's body from its working copy (step 7). Never edit a note in any other way (changes go into the working copy); never rename or move a note.
 - Never commit anything from the vault.
+- Never run `media.mjs` on, or otherwise resize, recompress or convert, a file in the vault: it shrinks the copies in `public/` only.
 - `main` is protected: never commit to it, push to it or merge into it locally; the run's changes go in through its one PR.
 - Run from Claude Code on the Mac (the vault is local, and pushing needs its SSH key), with `gh` signed in (`gh auth status`).
 

@@ -16,7 +16,7 @@ bash .claude/skills/publish-pipeline/sync.sh copy <note>...   # → copy <workin
 bash .claude/skills/publish-pipeline/sync.sh apply <note>...  # after the PR is merged → synced | same | none | conflict <working copy>
 ```
 
-In the working copy, images use the translate stage's format (`stages/translate.md` step 3): `![[assets/<folder>/file.png|alt text]]`, where `<folder>/file.png` is the published file under `public/` (copied into the vault's `assets/<folder>/` if it isn't there yet), with its caption, if any, as an italic line directly below. An embed with a width keeps it (`|390`) and gets no alt text. Images the note embedded before stay in the vault untouched.
+In the working copy, images use the translate stage's format (`stages/translate.md` step 3): `![[assets/<folder>/file.png|alt text]]`, where `<folder>/file.png` is the published file under `public/` (copied into the vault's `assets/<folder>/` if it isn't there yet), with its caption, if any, as an italic line directly below. An embed with a width keeps it (`|390`) and gets no alt text. Images the note embedded before stay in the vault untouched. The copies in `public/` are shrunk by `media.mjs` (`stages/publish.md` step 3): an image keeps its file name, and an animated GIF is published as `<name>.webm` while the note keeps embedding the vault's `<name>.gif`.
 
 `apply` keeps the note's current frontmatter, so run it before the stage's property edit. `conflict`: the author edited the note's body during the run, so it is left as it is. `none`: no working copy (an earlier run merged its PR but stopped before syncing). Either way, go on with the properties and report it under "Check".
 
@@ -113,6 +113,7 @@ The translate stage lists in `reviewFocus` only the spots that need a human. The
 ## Rules
 
 - Vault writes: only the properties above, new translation notes, images copied into `assets/`, and a published note's body from its working copy (`sync.sh apply`, after the merge). Never edit a note in any other way (changes go into the working copy), never rename or move a note.
+- Never run `media.mjs` on, or otherwise resize, recompress or convert, a file in the vault: it shrinks the copies in `public/` only.
 - Never commit anything from the vault. Repo changes happen only in the publish stage, one branch and one pull request per published note.
 - `main` is protected: never commit to it, push to it or merge into it locally. Every change goes in through a PR merged with `gh pr merge` (`stages/publish.md` step 7).
 - Run from Claude Code on the Mac (the Cowork VM can't push via SSH or clear git lock files), with `gh` signed in (`gh auth status`); not signed in → blocked before any publish.
