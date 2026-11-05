@@ -1,0 +1,343 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:ns2="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:xlink="http://www.w3.org/1999/xlink" width="720pt" height="331.2pt" viewBox="0 0 720 331.2" version="1.1" stroke-linejoin="round" stroke-linecap="butt" xmlns:c2pa="http://c2pa.org/manifest">
+ <metadata stroke-linejoin="round" stroke-linecap="butt"><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYTpmOTA2ODgxOC1lMGI3LTRhZDEtYTk4My1mYmQwNWZlYThjZGUAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaOcUG+IV9sX0Ar/Tcz4u+lgAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDo5OWRhMDYyNC0zNWZiLTQwMTYtOTI3YS1iMWIyODRmYTgxMDFscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNo+GG3AKm83OKroO2kHnRBnAAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggmo9Dqn/PTZuapP2d96gtteOopwTv61h+oqwsPQUMu4GkZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaJV/UVv8ukdIOx0g/5Jy1L4AAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRMAAAAAAAAAAAAAAAAZGhhc2hYIMLPtywv2AXSxcYycLoFE/jHfbX2fDQtS5niT31qkwSXZG5hbWVuanVtYmYgbWFuaWZlc3RqZXhjbHVzaW9uc4GiZXN0YXJ0GQHrZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOmY5MDY4ODE4LWUwYjctNGFkMS1hOTgzLWZiZDA1ZmVhOGNkZS9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOjA5NmM5MmY2LTY3NGYtNGNlMi05NTI1LTNjNzFhNDczNzRjY3JjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCCaj0Oqf89Nm5qk/Z33qC2146inBO/rWH6irCw9BQy7gaJjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFggzsJfABK/7zhRn14Jw/OCmU5mM4DzjcHYyFtYezM95c+iY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggxVOfmmmlgsCuDJfYX7HrNUL66CghsydJ7mD+J6zrDDp0Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQJaeIcNSLC+/x/5JFVyPiP5i/mskC84hhUl3iWynTIlkKTEmFcMOVymG0vNK1FkN7C9lU1GmlFeN3JX2QWgAAIk=</c2pa:manifest>
+  <rdf:RDF stroke-linejoin="round" stroke-linecap="butt">
+   <ns2:Work stroke-linejoin="round" stroke-linecap="butt">
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" stroke-linejoin="round" stroke-linecap="butt" />
+    <dc:date stroke-linejoin="round" stroke-linecap="butt">2026-11-05T22:24:44.723350</dc:date>
+    <dc:format stroke-linejoin="round" stroke-linecap="butt">image/svg+xml</dc:format>
+    <dc:creator stroke-linejoin="round" stroke-linecap="butt">
+     <ns2:Agent stroke-linejoin="round" stroke-linecap="butt">
+      <dc:title stroke-linejoin="round" stroke-linecap="butt">Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </ns2:Agent>
+    </dc:creator>
+   </ns2:Work>
+  </rdf:RDF>
+ </metadata>
+ <g id="figure_1" stroke-linejoin="round" stroke-linecap="butt">
+  <g id="patch_1" stroke-linejoin="round" stroke-linecap="butt">
+   <path d="M 0 331.2  L 720 331.2  L 720 0  L 0 0  z " stroke-linejoin="round" stroke-linecap="butt" fill="#ffffff" />
+  </g>
+  <g id="axes_1" stroke-linejoin="round" stroke-linecap="butt">
+   <g id="patch_2" stroke-linejoin="round" stroke-linecap="butt">
+    <path d="M 57.6 298.08  L 330.280851 298.08  L 330.280851 86.112  L 57.6 86.112  z " stroke-linejoin="round" stroke-linecap="butt" fill="#ffffff" />
+   </g>
+   <g id="matplotlib.axis_1" stroke-linejoin="round" stroke-linecap="butt">
+    <g id="xtick_1" stroke-linejoin="round" stroke-linecap="butt">
+     <g id="line2d_1" stroke-linejoin="round" stroke-linecap="butt">
+      <defs stroke-linejoin="round" stroke-linecap="butt">
+       <path id="m483ba1a0ad" d="M 0 0  L 0 3.5  " stroke-linejoin="round" stroke-linecap="butt" stroke="#5b6675" stroke-width="0.8" />
+      </defs>
+      <g stroke-linejoin="round" stroke-linecap="butt">
+       <use xlink:href="#m483ba1a0ad" x="113.975367" y="298.08" stroke-linejoin="round" stroke-linecap="butt" fill="#5b6675" stroke="#5b6675" stroke-width="0.8" />
+      </g>
+     </g>
+     <g id="text_1" stroke-linejoin="round" stroke-linecap="butt">
+      <text transform="translate(94.470132 315.73625)" stroke-linejoin="round" stroke-linecap="butt" font-size="11" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" fill="#5b6675">Internal</text>
+      <text transform="translate(94.073101 329.04582)" stroke-linejoin="round" stroke-linecap="butt" font-size="11" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" fill="#5b6675">(studio)</text>
+     </g>
+    </g>
+    <g id="xtick_2" stroke-linejoin="round" stroke-linecap="butt">
+     <g id="line2d_2" stroke-linejoin="round" stroke-linecap="butt">
+      <g stroke-linejoin="round" stroke-linecap="butt">
+       <use xlink:href="#m483ba1a0ad" x="273.905484" y="298.08" stroke-linejoin="round" stroke-linecap="butt" fill="#5b6675" stroke="#5b6675" stroke-width="0.8" />
+      </g>
+     </g>
+     <g id="text_2" stroke-linejoin="round" stroke-linecap="butt">
+      <text transform="translate(252.710719 315.73625)" stroke-linejoin="round" stroke-linecap="butt" font-size="11" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" fill="#5b6675">External</text>
+      <text transform="translate(252.601578 329.04582)" stroke-linejoin="round" stroke-linecap="butt" font-size="11" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" fill="#5b6675">(mobile)</text>
+     </g>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2" stroke-linejoin="round" stroke-linecap="butt">
+    <g id="ytick_1" stroke-linejoin="round" stroke-linecap="butt">
+     <g id="line2d_3" stroke-linejoin="round" stroke-linecap="butt">
+      <path d="M 57.6 298.08  L 330.280851 298.08  " clip-path="url(#pc70478b208)" stroke-linejoin="round" stroke-linecap="square" fill="none" stroke="#eef1f4" />
+     </g>
+     <g id="line2d_4" stroke-linejoin="round" stroke-linecap="butt">
+      <defs stroke-linejoin="round" stroke-linecap="butt">
+       <path id="mf6930c91c7" d="M 0 0  L -3.5 0  " stroke-linejoin="round" stroke-linecap="butt" stroke="#5b6675" stroke-width="0.8" />
+      </defs>
+      <g stroke-linejoin="round" stroke-linecap="butt">
+       <use xlink:href="#mf6930c91c7" x="57.6" y="298.08" stroke-linejoin="round" stroke-linecap="butt" fill="#5b6675" stroke="#5b6675" stroke-width="0.8" />
+      </g>
+     </g>
+     <g id="text_3" stroke-linejoin="round" stroke-linecap="butt">
+      <text x="50.6" y="303.408125" transform="rotate(-0 50.6 303.408125)" stroke-linejoin="round" stroke-linecap="butt" font-size="11" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5b6675">0</text>
+     </g>
+    </g>
+    <g id="ytick_2" stroke-linejoin="round" stroke-linecap="butt">
+     <g id="line2d_5" stroke-linejoin="round" stroke-linecap="butt">
+      <path d="M 57.6 272.845714  L 330.280851 272.845714  " clip-path="url(#pc70478b208)" stroke-linejoin="round" stroke-linecap="square" fill="none" stroke="#eef1f4" />
+     </g>
+     <g id="line2d_6" stroke-linejoin="round" stroke-linecap="butt">
+      <g stroke-linejoin="round" stroke-linecap="butt">
+       <use xlink:href="#mf6930c91c7" x="57.6" y="272.845714" stroke-linejoin="round" stroke-linecap="butt" fill="#5b6675" stroke="#5b6675" stroke-width="0.8" />
+      </g>
+     </g>
+     <g id="text_4" stroke-linejoin="round" stroke-linecap="butt">
+      <text x="50.6" y="278.173839" transform="rotate(-0 50.6 278.173839)" stroke-linejoin="round" stroke-linecap="butt" font-size="11" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5b6675">50</text>
+     </g>
+    </g>
+    <g id="ytick_3" stroke-linejoin="round" stroke-linecap="butt">
+     <g id="line2d_7" stroke-linejoin="round" stroke-linecap="butt">
+      <path d="M 57.6 247.611429  L 330.280851 247.611429  " clip-path="url(#pc70478b208)" stroke-linejoin="round" stroke-linecap="square" fill="none" stroke="#eef1f4" />
+     </g>
+     <g id="line2d_8" stroke-linejoin="round" stroke-linecap="butt">
+      <g stroke-linejoin="round" stroke-linecap="butt">
+       <use xlink:href="#mf6930c91c7" x="57.6" y="247.611429" stroke-linejoin="round" stroke-linecap="butt" fill="#5b6675" stroke="#5b6675" stroke-width="0.8" />
+      </g>
+     </g>
+     <g id="text_5" stroke-linejoin="round" stroke-linecap="butt">
+      <text x="50.6" y="252.939554" transform="rotate(-0 50.6 252.939554)" stroke-linejoin="round" stroke-linecap="butt" font-size="11" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5b6675">100</text>
+     </g>
+    </g>
+    <g id="ytick_4" stroke-linejoin="round" stroke-linecap="butt">
+     <g id="line2d_9" stroke-linejoin="round" stroke-linecap="butt">
+      <path d="M 57.6 222.377143  L 330.280851 222.377143  " clip-path="url(#pc70478b208)" stroke-linejoin="round" stroke-linecap="square" fill="none" stroke="#eef1f4" />
+     </g>
+     <g id="line2d_10" stroke-linejoin="round" stroke-linecap="butt">
+      <g stroke-linejoin="round" stroke-linecap="butt">
+       <use xlink:href="#mf6930c91c7" x="57.6" y="222.377143" stroke-linejoin="round" stroke-linecap="butt" fill="#5b6675" stroke="#5b6675" stroke-width="0.8" />
+      </g>
+     </g>
+     <g id="text_6" stroke-linejoin="round" stroke-linecap="butt">
+      <text x="50.6" y="227.705268" transform="rotate(-0 50.6 227.705268)" stroke-linejoin="round" stroke-linecap="butt" font-size="11" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5b6675">150</text>
+     </g>
+    </g>
+    <g id="ytick_5" stroke-linejoin="round" stroke-linecap="butt">
+     <g id="line2d_11" stroke-linejoin="round" stroke-linecap="butt">
+      <path d="M 57.6 197.142857  L 330.280851 197.142857  " clip-path="url(#pc70478b208)" stroke-linejoin="round" stroke-linecap="square" fill="none" stroke="#eef1f4" />
+     </g>
+     <g id="line2d_12" stroke-linejoin="round" stroke-linecap="butt">
+      <g stroke-linejoin="round" stroke-linecap="butt">
+       <use xlink:href="#mf6930c91c7" x="57.6" y="197.142857" stroke-linejoin="round" stroke-linecap="butt" fill="#5b6675" stroke="#5b6675" stroke-width="0.8" />
+      </g>
+     </g>
+     <g id="text_7" stroke-linejoin="round" stroke-linecap="butt">
+      <text x="50.6" y="202.470982" transform="rotate(-0 50.6 202.470982)" stroke-linejoin="round" stroke-linecap="butt" font-size="11" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5b6675">200</text>
+     </g>
+    </g>
+    <g id="ytick_6" stroke-linejoin="round" stroke-linecap="butt">
+     <g id="line2d_13" stroke-linejoin="round" stroke-linecap="butt">
+      <path d="M 57.6 171.908571  L 330.280851 171.908571  " clip-path="url(#pc70478b208)" stroke-linejoin="round" stroke-linecap="square" fill="none" stroke="#eef1f4" />
+     </g>
+     <g id="line2d_14" stroke-linejoin="round" stroke-linecap="butt">
+      <g stroke-linejoin="round" stroke-linecap="butt">
+       <use xlink:href="#mf6930c91c7" x="57.6" y="171.908571" stroke-linejoin="round" stroke-linecap="butt" fill="#5b6675" stroke="#5b6675" stroke-width="0.8" />
+      </g>
+     </g>
+     <g id="text_8" stroke-linejoin="round" stroke-linecap="butt">
+      <text x="50.6" y="177.236696" transform="rotate(-0 50.6 177.236696)" stroke-linejoin="round" stroke-linecap="butt" font-size="11" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5b6675">250</text>
+     </g>
+    </g>
+    <g id="ytick_7" stroke-linejoin="round" stroke-linecap="butt">
+     <g id="line2d_15" stroke-linejoin="round" stroke-linecap="butt">
+      <path d="M 57.6 146.674286  L 330.280851 146.674286  " clip-path="url(#pc70478b208)" stroke-linejoin="round" stroke-linecap="square" fill="none" stroke="#eef1f4" />
+     </g>
+     <g id="line2d_16" stroke-linejoin="round" stroke-linecap="butt">
+      <g stroke-linejoin="round" stroke-linecap="butt">
+       <use xlink:href="#mf6930c91c7" x="57.6" y="146.674286" stroke-linejoin="round" stroke-linecap="butt" fill="#5b6675" stroke="#5b6675" stroke-width="0.8" />
+      </g>
+     </g>
+     <g id="text_9" stroke-linejoin="round" stroke-linecap="butt">
+      <text x="50.6" y="152.002411" transform="rotate(-0 50.6 152.002411)" stroke-linejoin="round" stroke-linecap="butt" font-size="11" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5b6675">300</text>
+     </g>
+    </g>
+    <g id="ytick_8" stroke-linejoin="round" stroke-linecap="butt">
+     <g id="line2d_17" stroke-linejoin="round" stroke-linecap="butt">
+      <path d="M 57.6 121.44  L 330.280851 121.44  " clip-path="url(#pc70478b208)" stroke-linejoin="round" stroke-linecap="square" fill="none" stroke="#eef1f4" />
+     </g>
+     <g id="line2d_18" stroke-linejoin="round" stroke-linecap="butt">
+      <g stroke-linejoin="round" stroke-linecap="butt">
+       <use xlink:href="#mf6930c91c7" x="57.6" y="121.44" stroke-linejoin="round" stroke-linecap="butt" fill="#5b6675" stroke="#5b6675" stroke-width="0.8" />
+      </g>
+     </g>
+     <g id="text_10" stroke-linejoin="round" stroke-linecap="butt">
+      <text x="50.6" y="126.768125" transform="rotate(-0 50.6 126.768125)" stroke-linejoin="round" stroke-linecap="butt" font-size="11" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5b6675">350</text>
+     </g>
+    </g>
+    <g id="ytick_9" stroke-linejoin="round" stroke-linecap="butt">
+     <g id="line2d_19" stroke-linejoin="round" stroke-linecap="butt">
+      <path d="M 57.6 96.205714  L 330.280851 96.205714  " clip-path="url(#pc70478b208)" stroke-linejoin="round" stroke-linecap="square" fill="none" stroke="#eef1f4" />
+     </g>
+     <g id="line2d_20" stroke-linejoin="round" stroke-linecap="butt">
+      <g stroke-linejoin="round" stroke-linecap="butt">
+       <use xlink:href="#mf6930c91c7" x="57.6" y="96.205714" stroke-linejoin="round" stroke-linecap="butt" fill="#5b6675" stroke="#5b6675" stroke-width="0.8" />
+      </g>
+     </g>
+     <g id="text_11" stroke-linejoin="round" stroke-linecap="butt">
+      <text x="50.6" y="101.533839" transform="rotate(-0 50.6 101.533839)" stroke-linejoin="round" stroke-linecap="butt" font-size="11" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5b6675">400</text>
+     </g>
+    </g>
+    <g id="text_12" stroke-linejoin="round" stroke-linecap="butt">
+     <text x="22.960742" y="192.096" transform="rotate(-90 22.960742 192.096)" stroke-linejoin="round" stroke-linecap="butt" font-size="11" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5b6675">higher = sharper</text>
+    </g>
+   </g>
+   <g id="patch_3" stroke-linejoin="round" stroke-linecap="butt">
+    <path d="M 69.994584 298.08  L 157.956149 298.08  L 157.956149 119.875474  L 69.994584 119.875474  z " clip-path="url(#pc70478b208)" stroke-linejoin="round" stroke-linecap="butt" fill="#5b6675" />
+   </g>
+   <g id="patch_4" stroke-linejoin="round" stroke-linecap="butt">
+    <path d="M 229.924702 298.08  L 317.886267 298.08  L 317.886267 273.855086  L 229.924702 273.855086  z " clip-path="url(#pc70478b208)" stroke-linejoin="round" stroke-linecap="butt" fill="#23395b" />
+   </g>
+   <g id="patch_5" stroke-linejoin="round" stroke-linecap="butt">
+    <path d="M 57.6 298.08  L 57.6 86.112  " stroke-linejoin="miter" stroke-linecap="square" fill="none" stroke="#cbd5e1" />
+   </g>
+   <g id="patch_6" stroke-linejoin="round" stroke-linecap="butt">
+    <path d="M 57.6 298.08  L 330.280851 298.08  " stroke-linejoin="miter" stroke-linecap="square" fill="none" stroke="#cbd5e1" />
+   </g>
+   <g id="text_13" stroke-linejoin="round" stroke-linecap="butt">
+    <text x="113.975367" y="114.828617" transform="rotate(-0 113.975367 114.828617)" stroke-linejoin="round" stroke-linecap="butt" font-weight="600" font-size="12" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#1e293b">353.1</text>
+   </g>
+   <g id="text_14" stroke-linejoin="round" stroke-linecap="butt">
+    <text x="273.905484" y="268.808229" transform="rotate(-0 273.905484 268.808229)" stroke-linejoin="round" stroke-linecap="butt" font-weight="600" font-size="12" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#1e293b">48.0</text>
+   </g>
+   <g id="text_15" stroke-linejoin="round" stroke-linecap="butt">
+    <text x="273.905484" y="227.424" transform="rotate(-0 273.905484 227.424)" stroke-linejoin="round" stroke-linecap="butt" font-style="italic" font-size="10.5" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5b6675">~7× lower</text>
+   </g>
+   <g id="text_16" stroke-linejoin="round" stroke-linecap="butt">
+    <text x="57.6" y="76.112" transform="rotate(-0 57.6 76.112)" stroke-linejoin="round" stroke-linecap="butt" font-weight="600" font-size="13" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#1e293b">Sharpness · variance of the Laplacian</text>
+   </g>
+  </g>
+  <g id="axes_2" stroke-linejoin="round" stroke-linecap="butt">
+   <g id="patch_7" stroke-linejoin="round" stroke-linecap="butt">
+    <path d="M 425.719149 298.08  L 698.4 298.08  L 698.4 86.112  L 425.719149 86.112  z " stroke-linejoin="round" stroke-linecap="butt" fill="#ffffff" />
+   </g>
+   <g id="matplotlib.axis_3" stroke-linejoin="round" stroke-linecap="butt">
+    <g id="xtick_3" stroke-linejoin="round" stroke-linecap="butt">
+     <g id="line2d_21" stroke-linejoin="round" stroke-linecap="butt">
+      <g stroke-linejoin="round" stroke-linecap="butt">
+       <use xlink:href="#m483ba1a0ad" x="482.094516" y="298.08" stroke-linejoin="round" stroke-linecap="butt" fill="#5b6675" stroke="#5b6675" stroke-width="0.8" />
+      </g>
+     </g>
+     <g id="text_17" stroke-linejoin="round" stroke-linecap="butt">
+      <text transform="translate(462.589281 315.73625)" stroke-linejoin="round" stroke-linecap="butt" font-size="11" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" fill="#5b6675">Internal</text>
+      <text transform="translate(462.19225 329.04582)" stroke-linejoin="round" stroke-linecap="butt" font-size="11" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" fill="#5b6675">(studio)</text>
+     </g>
+    </g>
+    <g id="xtick_4" stroke-linejoin="round" stroke-linecap="butt">
+     <g id="line2d_22" stroke-linejoin="round" stroke-linecap="butt">
+      <g stroke-linejoin="round" stroke-linecap="butt">
+       <use xlink:href="#m483ba1a0ad" x="642.024633" y="298.08" stroke-linejoin="round" stroke-linecap="butt" fill="#5b6675" stroke="#5b6675" stroke-width="0.8" />
+      </g>
+     </g>
+     <g id="text_18" stroke-linejoin="round" stroke-linecap="butt">
+      <text transform="translate(620.829868 315.73625)" stroke-linejoin="round" stroke-linecap="butt" font-size="11" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" fill="#5b6675">External</text>
+      <text transform="translate(620.720727 329.04582)" stroke-linejoin="round" stroke-linecap="butt" font-size="11" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" fill="#5b6675">(mobile)</text>
+     </g>
+    </g>
+   </g>
+   <g id="matplotlib.axis_4" stroke-linejoin="round" stroke-linecap="butt">
+    <g id="ytick_10" stroke-linejoin="round" stroke-linecap="butt">
+     <g id="line2d_23" stroke-linejoin="round" stroke-linecap="butt">
+      <path d="M 425.719149 298.08  L 698.4 298.08  " clip-path="url(#pe3d4ea1300)" stroke-linejoin="round" stroke-linecap="square" fill="none" stroke="#eef1f4" />
+     </g>
+     <g id="line2d_24" stroke-linejoin="round" stroke-linecap="butt">
+      <g stroke-linejoin="round" stroke-linecap="butt">
+       <use xlink:href="#mf6930c91c7" x="425.719149" y="298.08" stroke-linejoin="round" stroke-linecap="butt" fill="#5b6675" stroke="#5b6675" stroke-width="0.8" />
+      </g>
+     </g>
+     <g id="text_19" stroke-linejoin="round" stroke-linecap="butt">
+      <text x="418.719149" y="303.408125" transform="rotate(-0 418.719149 303.408125)" stroke-linejoin="round" stroke-linecap="butt" font-size="11" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5b6675">0</text>
+     </g>
+    </g>
+    <g id="ytick_11" stroke-linejoin="round" stroke-linecap="butt">
+     <g id="line2d_25" stroke-linejoin="round" stroke-linecap="butt">
+      <path d="M 425.719149 244.880188  L 698.4 244.880188  " clip-path="url(#pe3d4ea1300)" stroke-linejoin="round" stroke-linecap="square" fill="none" stroke="#eef1f4" />
+     </g>
+     <g id="line2d_26" stroke-linejoin="round" stroke-linecap="butt">
+      <g stroke-linejoin="round" stroke-linecap="butt">
+       <use xlink:href="#mf6930c91c7" x="425.719149" y="244.880188" stroke-linejoin="round" stroke-linecap="butt" fill="#5b6675" stroke="#5b6675" stroke-width="0.8" />
+      </g>
+     </g>
+     <g id="text_20" stroke-linejoin="round" stroke-linecap="butt">
+      <text x="418.719149" y="250.208313" transform="rotate(-0 418.719149 250.208313)" stroke-linejoin="round" stroke-linecap="butt" font-size="11" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5b6675">64</text>
+     </g>
+    </g>
+    <g id="ytick_12" stroke-linejoin="round" stroke-linecap="butt">
+     <g id="line2d_27" stroke-linejoin="round" stroke-linecap="butt">
+      <path d="M 425.719149 191.680376  L 698.4 191.680376  " clip-path="url(#pe3d4ea1300)" stroke-linejoin="round" stroke-linecap="square" fill="none" stroke="#eef1f4" />
+     </g>
+     <g id="line2d_28" stroke-linejoin="round" stroke-linecap="butt">
+      <g stroke-linejoin="round" stroke-linecap="butt">
+       <use xlink:href="#mf6930c91c7" x="425.719149" y="191.680376" stroke-linejoin="round" stroke-linecap="butt" fill="#5b6675" stroke="#5b6675" stroke-width="0.8" />
+      </g>
+     </g>
+     <g id="text_21" stroke-linejoin="round" stroke-linecap="butt">
+      <text x="418.719149" y="197.008501" transform="rotate(-0 418.719149 197.008501)" stroke-linejoin="round" stroke-linecap="butt" font-size="11" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5b6675">128</text>
+     </g>
+    </g>
+    <g id="ytick_13" stroke-linejoin="round" stroke-linecap="butt">
+     <g id="line2d_29" stroke-linejoin="round" stroke-linecap="butt">
+      <path d="M 425.719149 138.480565  L 698.4 138.480565  " clip-path="url(#pe3d4ea1300)" stroke-linejoin="round" stroke-linecap="square" fill="none" stroke="#eef1f4" />
+     </g>
+     <g id="line2d_30" stroke-linejoin="round" stroke-linecap="butt">
+      <g stroke-linejoin="round" stroke-linecap="butt">
+       <use xlink:href="#mf6930c91c7" x="425.719149" y="138.480565" stroke-linejoin="round" stroke-linecap="butt" fill="#5b6675" stroke="#5b6675" stroke-width="0.8" />
+      </g>
+     </g>
+     <g id="text_22" stroke-linejoin="round" stroke-linecap="butt">
+      <text x="418.719149" y="143.80869" transform="rotate(-0 418.719149 143.80869)" stroke-linejoin="round" stroke-linecap="butt" font-size="11" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5b6675">192</text>
+     </g>
+    </g>
+    <g id="ytick_14" stroke-linejoin="round" stroke-linecap="butt">
+     <g id="line2d_31" stroke-linejoin="round" stroke-linecap="butt">
+      <path d="M 425.719149 86.112  L 698.4 86.112  " clip-path="url(#pe3d4ea1300)" stroke-linejoin="round" stroke-linecap="square" fill="none" stroke="#eef1f4" />
+     </g>
+     <g id="line2d_32" stroke-linejoin="round" stroke-linecap="butt">
+      <g stroke-linejoin="round" stroke-linecap="butt">
+       <use xlink:href="#mf6930c91c7" x="425.719149" y="86.112" stroke-linejoin="round" stroke-linecap="butt" fill="#5b6675" stroke="#5b6675" stroke-width="0.8" />
+      </g>
+     </g>
+     <g id="text_23" stroke-linejoin="round" stroke-linecap="butt">
+      <text x="418.719149" y="91.440125" transform="rotate(-0 418.719149 91.440125)" stroke-linejoin="round" stroke-linecap="butt" font-size="11" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="end" fill="#5b6675">255</text>
+     </g>
+    </g>
+    <g id="text_24" stroke-linejoin="round" stroke-linecap="butt">
+     <text x="391.982235" y="192.096" transform="rotate(-90 391.982235 192.096)" stroke-linejoin="round" stroke-linecap="butt" font-size="11" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#5b6675">0 = black, 255 = white</text>
+    </g>
+   </g>
+   <g id="patch_8" stroke-linejoin="round" stroke-linecap="butt">
+    <path d="M 438.113733 298.08  L 526.075298 298.08  L 526.075298 205.229704  L 438.113733 205.229704  z " clip-path="url(#pe3d4ea1300)" stroke-linejoin="round" stroke-linecap="butt" fill="#5b6675" />
+   </g>
+   <g id="patch_9" stroke-linejoin="round" stroke-linecap="butt">
+    <path d="M 598.043851 298.08  L 686.005416 298.08  L 686.005416 148.538654  L 598.043851 148.538654  z " clip-path="url(#pe3d4ea1300)" stroke-linejoin="round" stroke-linecap="butt" fill="#23395b" />
+   </g>
+   <g id="line2d_33" stroke-linejoin="round" stroke-linecap="butt">
+    <path d="M 425.719149 191.680376  L 698.4 191.680376  " clip-path="url(#pe3d4ea1300)" stroke-linejoin="round" stroke-linecap="butt" fill="none" stroke-dasharray="4,3" stroke-dashoffset="0" stroke="#8a94a3" />
+   </g>
+   <g id="patch_10" stroke-linejoin="round" stroke-linecap="butt">
+    <path d="M 425.719149 298.08  L 425.719149 86.112  " stroke-linejoin="miter" stroke-linecap="square" fill="none" stroke="#cbd5e1" />
+   </g>
+   <g id="patch_11" stroke-linejoin="round" stroke-linecap="butt">
+    <path d="M 425.719149 298.08  L 698.4 298.08  " stroke-linejoin="miter" stroke-linecap="square" fill="none" stroke="#cbd5e1" />
+   </g>
+   <g id="text_25" stroke-linejoin="round" stroke-linecap="butt">
+    <text x="562.059574" y="186.063884" transform="rotate(-0 562.059574 186.063884)" stroke-linejoin="round" stroke-linecap="butt" font-size="9.5" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#8a94a3">mid-grey (128)</text>
+   </g>
+   <g id="text_26" stroke-linejoin="round" stroke-linecap="butt">
+    <text x="482.094516" y="201.073468" transform="rotate(-0 482.094516 201.073468)" stroke-linejoin="round" stroke-linecap="butt" font-weight="600" font-size="12" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#1e293b">111.7</text>
+   </g>
+   <g id="text_27" stroke-linejoin="round" stroke-linecap="butt">
+    <text x="642.024633" y="144.382419" transform="rotate(-0 642.024633 144.382419)" stroke-linejoin="round" stroke-linecap="butt" font-weight="600" font-size="12" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="middle" fill="#1e293b">179.9</text>
+   </g>
+   <g id="text_28" stroke-linejoin="round" stroke-linecap="butt">
+    <text x="425.719149" y="76.112" transform="rotate(-0 425.719149 76.112)" stroke-linejoin="round" stroke-linecap="butt" font-weight="600" font-size="13" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#1e293b">Exposure · mean grayscale intensity</text>
+   </g>
+  </g>
+  <g id="text_29" stroke-linejoin="round" stroke-linecap="butt">
+   <text x="14.4" y="24.74875" transform="rotate(-0 14.4 24.74875)" stroke-linejoin="round" stroke-linecap="butt" font-weight="700" font-size="17" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#1e293b">The field photos were far blurrier and much brighter</text>
+  </g>
+  <g id="text_30" stroke-linejoin="round" stroke-linecap="butt">
+   <text x="14.4" y="42.604625" transform="rotate(-0 14.4 42.604625)" stroke-linejoin="round" stroke-linecap="butt" font-size="11.5" font-family="'IBM Plex Sans', 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" text-anchor="start" fill="#5b6675">Mean per image across the internal (studio) and external (mobile) test sets.</text>
+  </g>
+ </g>
+ <defs stroke-linejoin="round" stroke-linecap="butt">
+  <clipPath id="pc70478b208" stroke-linejoin="round" stroke-linecap="butt">
+   <rect x="57.6" y="86.112" width="272.680851" height="211.968" stroke-linejoin="round" stroke-linecap="butt" />
+  </clipPath>
+  <clipPath id="pe3d4ea1300" stroke-linejoin="round" stroke-linecap="butt">
+   <rect x="425.719149" y="86.112" width="272.680851" height="211.968" stroke-linejoin="round" stroke-linecap="butt" />
+  </clipPath>
+ </defs>
+</svg>
