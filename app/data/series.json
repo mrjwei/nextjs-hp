@@ -11,5 +11,6 @@
   "workflows": { "en": "Workflows", "ja": "ワークフロー" },
   "transformers": { "en": "Transformers", "ja": "Transformer" },
   "reflection": { "en": "Reflection", "ja": "振り返り" },
-  "design-in-git": { "en": "Design in Git", "ja": "Design in Git:Gitで回すデザイン" }
+  "design-in-git": { "en": "Design in Git", "ja": "Design in Git:Gitで回すデザイン" },
+  "ml-lab": { "en": "ML Lab", "ja": "MLラボ" }
 }
