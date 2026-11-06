@@ -3,7 +3,6 @@
   "autoencoders": { "en": "Autoencoders", "ja": "オートエンコーダ" },
   "cnn": { "en": "CNN Fundamentals", "ja": "CNNの基礎" },
   "ml-metrics": { "en": "ML Metrics", "ja": "機械学習の評価指標" },
-  "cryptography": { "en": "Cryptography", "ja": "暗号技術" },
   "authentication": { "en": "Authentication", "ja": "認証" },
   "radio-buttons": { "en": "UX Insight: Radio Buttons", "ja": "UXインサイト:ラジオボタン" },
   "AWS": { "en": "AWS", "ja": "AWS" },

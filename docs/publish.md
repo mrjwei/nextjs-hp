@@ -10,7 +10,7 @@ Collections (previously called “series” in the UI) are driven by frontmatter
 
 For convenience/back-compat, if a writing is inside a subfolder (e.g. `app/writings/posts/ml/...`), that folder name is treated as its `series` slug unless `series` is explicitly set.
 
-Folders are topic series at the level a reader would browse (e.g. `cnn`, `ml-metrics`, `cryptography`, `ai-and-design`), not broad categories like "AI" or "design" — tags cover those. Standalone posts live at the root of `app/writings/posts/`. Each folder's display title (EN and JA) lives in `app/data/series.json`; add an entry when creating a folder, otherwise the title falls back to the title-cased folder name. Moving a post to another folder changes its URL, so add a redirect in `next.config.js`.
+Folders are topic series at the level a reader would browse (e.g. `cnn`, `ml-metrics`, `authentication`, `ai-and-design`), not broad categories like "AI" or "design" — tags cover those. Standalone posts live at the root of `app/writings/posts/`. Each folder's display title (EN and JA) lives in `app/data/series.json`; add an entry when creating a folder, otherwise the title falls back to the title-cased folder name. Moving a post to another folder changes its URL, so add a redirect in `next.config.js`.
 
 `partOf` / `partOfTitle` / `partNumber` mark an ordered multi-part sequence (shown as "Part N of M" with prev/next links). It can match the folder (e.g. `cnn`) or be a narrower sequence inside it (e.g. `understanding-jwts` inside `authentication`). When a `partOf` slug matches a folder, `/posts/<slug>` shows the whole folder (so a hub post without `partOf` still appears there); a `partOf` sequence with no folder of its own gets its own page at `/posts/<slug>`.
 
@@ -55,7 +55,7 @@ To take a published post off the site for good (beginner-level, off-positioning 
 3. Mark its vault note with `retired: YYYY-MM-DD` (the pipeline ignores unknown properties; leave `status` as it is). A post with no vault note needs no step here.
 4. Repoint links to it: `node .claude/skills/publish-pipeline/refs.mjs move <key> <new key>` for a replacement post, or grep `app/writings` and the vault (`command grep`, see the pipeline skill) and edit by hand. Remove tags from `app/data/tags.json` that no longer have any posts.
 
-Retired on 2026-10-15: the 20 archived posts, `number-systems/*`, `multifunctional-ai-assistant/*`, `ai-powered-app-for-speaking-test-prep`, `ai-powered-speaking-tutor`, `how-to-reorder-and-squash-with-git`, `github-actions-ec2-deployment-troubleshooting-guide`, `how-i-made-my-program-140-times-faster`, `vibe-coding-as-learning-experience`, and the never-rendered `app/series/` (Perfmate).
+Retired on 2026-10-15: the 20 archived posts, `number-systems/*`, `multifunctional-ai-assistant/*`, `ai-powered-app-for-speaking-test-prep`, `ai-powered-speaking-tutor`, `how-to-reorder-and-squash-with-git`, `github-actions-ec2-deployment-troubleshooting-guide`, `how-i-made-my-program-140-times-faster`, `vibe-coding-as-learning-experience`, and the never-rendered `app/series/` (Perfmate). Retired on 2026-11-06: the whole `cryptography` series (`symmetric-asymmetric-cryptography`, `common-asymmetric-algorithms-rsa`, `common-asymmetric-algorithms-ecc`).
 
 ## Tags
 
