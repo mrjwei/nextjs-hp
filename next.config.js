@@ -134,24 +134,24 @@ module.exports = {
       // folder, the retired collection pages and the emptied /posts/git tag
       // page go to the Posts index.
       {
-        source: "/posts/:folder(number-systems|multifunctional-ai-assistant)/:slug",
+        source: "/posts/:folder(number-systems|multifunctional-ai-assistant|cryptography)/:slug",
         destination: "/posts",
         permanent: true,
       },
       {
         source:
-          "/posts/:slug(git|number-systems|number-systems-1|number-systems-2|representing-negative-binary-numbers|multifunctional-ai-assistant|multifunctional-ai-assistant-1|multifunctional-ai-assistant-2|multifunctional-ai-assistant-3|ai-powered-app-for-speaking-test-prep|ai-powered-speaking-tutor|how-to-reorder-and-squash-with-git|github-actions-ec2-deployment-troubleshooting-guide|how-i-made-my-program-140-times-faster|vibe-coding-as-learning-experience)",
+          "/posts/:slug(git|number-systems|number-systems-1|number-systems-2|representing-negative-binary-numbers|multifunctional-ai-assistant|multifunctional-ai-assistant-1|multifunctional-ai-assistant-2|multifunctional-ai-assistant-3|ai-powered-app-for-speaking-test-prep|ai-powered-speaking-tutor|how-to-reorder-and-squash-with-git|github-actions-ec2-deployment-troubleshooting-guide|how-i-made-my-program-140-times-faster|vibe-coding-as-learning-experience|cryptography|symmetric-asymmetric-cryptography|common-asymmetric-algorithms|common-asymmetric-algorithms-rsa|common-asymmetric-algorithms-ecc)",
         destination: "/posts",
         permanent: true,
       },
       {
-        source: "/ja/posts/:folder(number-systems|multifunctional-ai-assistant)/:slug",
+        source: "/ja/posts/:folder(number-systems|multifunctional-ai-assistant|cryptography)/:slug",
         destination: "/ja/posts",
         permanent: true,
       },
       {
         source:
-          "/ja/posts/:slug(number-systems|number-systems-1|number-systems-2|representing-negative-binary-numbers|multifunctional-ai-assistant|multifunctional-ai-assistant-1|multifunctional-ai-assistant-2|multifunctional-ai-assistant-3|ai-powered-app-for-speaking-test-prep|ai-powered-speaking-tutor|how-to-reorder-and-squash-with-git|github-actions-ec2-deployment-troubleshooting-guide|how-i-made-my-program-140-times-faster|vibe-coding-as-learning-experience)",
+          "/ja/posts/:slug(number-systems|number-systems-1|number-systems-2|representing-negative-binary-numbers|multifunctional-ai-assistant|multifunctional-ai-assistant-1|multifunctional-ai-assistant-2|multifunctional-ai-assistant-3|ai-powered-app-for-speaking-test-prep|ai-powered-speaking-tutor|how-to-reorder-and-squash-with-git|github-actions-ec2-deployment-troubleshooting-guide|how-i-made-my-program-140-times-faster|vibe-coding-as-learning-experience|cryptography|symmetric-asymmetric-cryptography|common-asymmetric-algorithms|common-asymmetric-algorithms-rsa|common-asymmetric-algorithms-ecc)",
         destination: "/ja/posts",
         permanent: true,
       },
