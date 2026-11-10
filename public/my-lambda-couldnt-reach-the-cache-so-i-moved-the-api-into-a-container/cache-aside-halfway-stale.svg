@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 560" width="1280" height="560" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="ak" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748B"/></marker>
+  </defs>
+  <rect width="1280" height="560" fill="#F8FAFC"/>
+
+  <text x="40" y="46" font-size="26" font-weight="700" fill="#0F172A">Why the half-way option serves stale data</text>
+  <text x="40" y="74" font-size="15" fill="#475569">In cache-aside, the code that writes to DynamoDB must also invalidate the cached copy.</text>
+
+  <!-- ===== Row A ===== -->
+  <text x="40" y="124" font-size="17" font-weight="700" fill="#0F172A">Half-way option<tspan font-weight="400" fill="#475569">  writes in Lambda (outside the VPC), reads in Fargate</tspan></text>
+
+  <rect x="40" y="140" width="370" height="120" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+  <circle cx="68" cy="170" r="14" fill="#E2E8F0"/><text x="68" y="175" font-size="14" font-weight="700" fill="#0F172A" text-anchor="middle">1</text>
+  <text x="92" y="175" font-size="15" font-weight="700" fill="#0F172A">Write Lambda</text>
+  <text x="56" y="202" font-size="13" fill="#475569">Updates an item in DynamoDB</text>
+  <text x="56" y="222" font-size="13" fill="#475569">v1 → v2</text>
+  <text x="56" y="246" font-size="13" font-weight="700" fill="#15803D">✓ Saved</text>
+
+  <path d="M410,200 L451,200" stroke="#64748B" stroke-width="2" fill="none" marker-end="url(#ak)"/>
+
+  <rect x="455" y="140" width="370" height="120" rx="10" fill="#FFFFFF" stroke="#B91C1C" stroke-width="1.5"/>
+  <circle cx="483" cy="170" r="14" fill="#E2E8F0"/><text x="483" y="175" font-size="14" font-weight="700" fill="#0F172A" text-anchor="middle">2</text>
+  <text x="507" y="175" font-size="15" font-weight="700" fill="#0F172A">Invalidate the cache</text>
+  <text x="471" y="202" font-size="13" fill="#475569">Delete the item’s key in Memcached,</text>
+  <text x="471" y="222" font-size="13" fill="#475569">but the Lambda is outside the VPC</text>
+  <text x="471" y="246" font-size="13" font-weight="700" fill="#B91C1C">✗ Can’t reach the cache</text>
+
+  <path d="M825,200 L866,200" stroke="#64748B" stroke-width="2" fill="none" marker-end="url(#ak)"/>
+
+  <rect x="870" y="140" width="370" height="120" rx="10" fill="#FFFFFF" stroke="#B91C1C" stroke-width="1.5"/>
+  <circle cx="898" cy="170" r="14" fill="#E2E8F0"/><text x="898" y="175" font-size="14" font-weight="700" fill="#0F172A" text-anchor="middle">3</text>
+  <text x="922" y="175" font-size="15" font-weight="700" fill="#0F172A">Fargate reader</text>
+  <text x="886" y="202" font-size="13" fill="#475569">Reads the item: cache hit</text>
+  <text x="886" y="222" font-size="13" fill="#475569">returns the old v1</text>
+  <text x="886" y="246" font-size="13" font-weight="700" fill="#B91C1C">✗ Stale until the TTL runs out</text>
+
+  <!-- ===== Row B ===== -->
+  <text x="40" y="320" font-size="17" font-weight="700" fill="#0F172A">One Fargate service<tspan font-weight="400" fill="#475569">  reads and writes in the same process, inside the VPC</tspan></text>
+
+  <rect x="40" y="336" width="370" height="120" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+  <circle cx="68" cy="366" r="14" fill="#E2E8F0"/><text x="68" y="371" font-size="14" font-weight="700" fill="#0F172A" text-anchor="middle">1</text>
+  <text x="92" y="371" font-size="15" font-weight="700" fill="#0F172A">Write handler</text>
+  <text x="56" y="398" font-size="13" fill="#475569">Updates an item in DynamoDB</text>
+  <text x="56" y="418" font-size="13" fill="#475569">v1 → v2</text>
+  <text x="56" y="442" font-size="13" font-weight="700" fill="#15803D">✓ Saved</text>
+
+  <path d="M410,396 L451,396" stroke="#64748B" stroke-width="2" fill="none" marker-end="url(#ak)"/>
+
+  <rect x="455" y="336" width="370" height="120" rx="10" fill="#FFFFFF" stroke="#15803D" stroke-width="1.5"/>
+  <circle cx="483" cy="366" r="14" fill="#E2E8F0"/><text x="483" y="371" font-size="14" font-weight="700" fill="#0F172A" text-anchor="middle">2</text>
+  <text x="507" y="371" font-size="15" font-weight="700" fill="#0F172A">Invalidate the cache</text>
+  <text x="471" y="398" font-size="13" fill="#475569">Delete the item’s key in Memcached,</text>
+  <text x="471" y="418" font-size="13" fill="#475569">same process, same VPC</text>
+  <text x="471" y="442" font-size="13" font-weight="700" fill="#15803D">✓ Key deleted</text>
+
+  <path d="M825,396 L866,396" stroke="#64748B" stroke-width="2" fill="none" marker-end="url(#ak)"/>
+
+  <rect x="870" y="336" width="370" height="120" rx="10" fill="#FFFFFF" stroke="#15803D" stroke-width="1.5"/>
+  <circle cx="898" cy="366" r="14" fill="#E2E8F0"/><text x="898" y="371" font-size="14" font-weight="700" fill="#0F172A" text-anchor="middle">3</text>
+  <text x="922" y="371" font-size="15" font-weight="700" fill="#0F172A">Read handler</text>
+  <text x="886" y="398" font-size="13" fill="#475569">Reads the item: cache miss,</text>
+  <text x="886" y="418" font-size="13" fill="#475569">loads v2 from DynamoDB, refills the cache</text>
+  <text x="886" y="442" font-size="13" font-weight="700" fill="#15803D">✓ Fresh</text>
+
+  <!-- Footer -->
+  <text x="40" y="516" font-size="15" fill="#0F172A"><tspan font-weight="700">The writer has to reach the cache.</tspan> Keeping reads and writes in one service makes invalidation trivial.</text>
+</svg>
