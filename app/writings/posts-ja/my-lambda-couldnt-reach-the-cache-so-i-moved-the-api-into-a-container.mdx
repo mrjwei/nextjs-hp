@@ -1,0 +1,107 @@
+---
+title: "Lambdaがキャッシュに届かなかったので、APIをコンテナに移した"
+slug: "my-lambda-couldnt-reach-the-cache-so-i-moved-the-api-into-a-container"
+publishedAt: "2026-11-08"
+summary: "ElastiCache(Memcached)のキャッシュをLambdaの前段に置きたかったのに、授業用の共有AWSアカウントではLambdaからキャッシュに届きませんでした。3回の調べ直しを通じて、Lambda・VPCサブネット・NATゲートウェイ・IAMがどう組み合わさるのか、そしてなぜAPIをFargateで動かすことになったのかを学びました。"
+tags: ["dev", "aws", "qut"]
+project: "Interlixir"
+---
+
+- [LambdaをVPCに入れなければならない理由](#lambdaをvpcに入れなければならない理由)
+- [最初の焦り:「パブリック」サブネットはLambdaの助けにならない](#最初の焦りパブリックサブネットはlambdaの助けにならない)
+- [訂正:プライベートサブネットは最初からあった](#訂正プライベートサブネットは最初からあった)
+- [本当の障害:実行ロールがENIを作成できない](#本当の障害実行ロールがeniを作成できない)
+- [回避策:APIをコンテナに移す](#回避策apiをコンテナに移す)
+- [学んだこと](#学んだこと)
+
+[*Interlixir*](https://github.com/mrjwei/interlixir-public)プロジェクト(クラウドコンピューティング科目の課題の一つ)では、APIをLambdaで動かし、DynamoDBの前段にMemcachedのキャッシュ(ElastiCache)を置きたいと考えていました。理屈の上では簡単です。LambdaをVPCにアタッチして、キャッシュを参照させればよいだけです。ところが実際には「待てよ、実は…」を3回繰り返した末に、私たちの共有AWSアカウントではそれが不可能だとわかりました。そのたびに、LambdaとVPCがどう組み合わさるのかについて新しい発見がありました。
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/my-lambda-couldnt-reach-the-cache-so-i-moved-the-api-into-a-container/vpc-lambda-elasticache-reachability.svg" alt="共有VPC:プライベートサブネット内のFargateのAPIタスクは、キャッシュには直接、DynamoDBにはNATゲートウェイ経由で到達できる。一方、私が使いたかったVPCアタッチ型のLambdaは、実行される前にブロックされた" style={{ marginBottom: "8px" }} />
+  <figcaption>やりたかったことと、実際に採用したもの:キャッシュとDynamoDBの両方に届くのはFargateタスクだけ。</figcaption>
+</figure>
+
+## LambdaをVPCに入れなければならない理由
+
+**ElastiCacheは私のVPCの中にある。**  
+ElastiCacheは共有サブネット内のプライベートIPしか持たず、パブリックエンドポイントを設定する選択肢もありません。VPCの外からは何もアクセスできないのです。ElastiCacheのチュートリアルで、サンプルを自分のノートPCからではなくEC2インスタンスから実行するよう指示されたのはそのためです。
+
+**Lambdaはデフォルトでは私のVPCで動かない。**  
+LambdaはAWSが所有する、インターネットにアクセスできるVPCで動きます。公開されているAWSのAPI(S3、DynamoDB、SQSなど)は呼び出せますが、*私の*VPC内のプライベートIPは見えません。キャッシュに届くには、関数を自分のVPCにアタッチする必要があります。サブネットとセキュリティグループを選ぶと、Lambdaがそのサブネットに[ネットワークインターフェース(ENI)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html)を作成します。
+
+**落とし穴:** アタッチすると、関数のトラフィックはすべて私のVPCを通るようになります。キャッシュには届くようになりますが、それ以外のすべてに対して独自の出口が必要になります。cache-asideで読み込む処理には両方が必要です。ヒット時はキャッシュ、ミス時はDynamoDBです。
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/my-lambda-couldnt-reach-the-cache-so-i-moved-the-api-into-a-container/lambda-default-vs-vpc-attached.svg" alt="VPCの外にあるLambdaは公開されているAWSのAPIに届き、VPCにアタッチしたLambdaはキャッシュに届く、という比較" style={{ marginBottom: "8px" }} />
+  <figcaption>LambdaをVPCにアタッチすると、すべてのトラフィックの行き先が変わる。</figcaption>
+</figure>
+
+## 最初の焦り:「パブリック」サブネットはLambdaの助けにならない
+
+共有VPCを最初に確認したとき、見つかったのはパブリックサブネットとS3のゲートウェイエンドポイントだけで、DynamoDBのエンドポイントはありませんでした。この設計はもう駄目だと思いました。
+
+「パブリックサブネット」とは、サブネットのルートテーブルがインターネット向けのトラフィック(`0.0.0.0/0`)をインターネットゲートウェイに送るサブネットのことです。インターネットゲートウェイが機能するのは、**パブリックIP**を持つものに対してだけです。
+
+- パブリックIPを持つ**EC2インスタンスやFargateタスク**は外に出られます。
+- **VPCにアタッチしたLambda**が得るENIには**プライベートIPしかありません**。AWSはLambdaのENIにパブリックIPを決して割り当てません([Lambdaのドキュメント](https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc-internet.html)にもはっきり書かれています)。そのため、たとえパブリックサブネットにあっても、インターネット向けのトラフィックはどこにも届きません。
+
+つまり、そこでVPCにアタッチしたLambdaは、S3(エンドポイント経由)とキャッシュには届くものの、**DynamoDBには届きません**。選択肢は、教員チームに(無料の)DynamoDBゲートウェイエンドポイントを追加してもらうか、APIのLambdaはVPCの外に置いたまま、キャッシュを使う読み込みだけを小さなFargateの「クエリサービス」に移すかのどちらかでした。
+
+## 訂正:プライベートサブネットは最初からあった
+
+私が見ていたのはサブネットの名前とエンドポイントで、ルートテーブルではありませんでした。ルートテーブルをきちんと確認すると、VPCにはプライベートサブネットも3つあり、それぞれが`0.0.0.0/0`を自分のAZにあるNATゲートウェイへ送っていました。S3のエンドポイントもそれらのプライベートルートテーブルに関連付けられていました。
+
+NATゲートウェイは、送信元のプライベートIPを自分のパブリックIPに置き換えます。これこそLambdaのENIに必要なものです。つまり、プライベートサブネット内のLambdaならNAT経由でDynamoDBに届きます。DynamoDBのエンドポイントはNATのGB単位の料金を節約するだけで、必須ではありませんでした。
+
+> 教訓:VPCから何に届くかを判断する前に、サブネットの名前だけでなく**ルートテーブルとNATゲートウェイ**を確認すること。
+
+そこで問題は、*そもそもVPCにアタッチしたLambdaを動かすことが許されているのか*に変わりました。
+
+## 本当の障害:実行ロールがENIを作成できない
+
+VPCへのアタッチはネットワークの設定であるだけでなく、IAMの設定でもあります。LambdaはENIを関数の実行ロールで作成するため、そのロールには次の権限が必要です。
+
+- `ec2:CreateNetworkInterface`
+- `ec2:DescribeNetworkInterfaces`
+- `ec2:DeleteNetworkInterface`
+
+AWSマネージドポリシーの[`AWSLambdaVPCAccessExecutionRole`](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AWSLambdaVPCAccessExecutionRole.html)には、これらと関連するいくつかの権限がまとめられています。
+
+学生用の共有アカウントでは`CAB432-Lambda-Role`を使わなければならず、そのポリシーを私は読めません。しかしLambdaは関数の作成時にこれらの権限を確認するので、作成の呼び出しを1回行えば、見ることを許されていない権限を試せます。使い捨てのプローブを書いて実行すると、次の結果になりました。
+
+```
+InvalidParameterValueException: The provided execution role does not have permissions to call CreateNetworkInterface on EC2
+```
+
+`aws lambda list-functions`の結果もそれを裏付けていました。私たちのリージョンには、VPCにアタッチされた既存のLambdaが一つもありませんでした。**どのLambdaもVPCにアタッチできない以上、どのLambdaもMemcachedに届きません**。これで決まりです。
+
+## 回避策:APIをコンテナに移す
+
+`/a3`のAPI全体を、**プライベートサブネット内の一つのECS Fargateサービス**として動かしました。ECSはタスクのENIをLambdaのロールではなく[自身のサービスリンクロール](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using-service-linked-roles-for-clusters.html)で作成するため、足りない権限は問題になりません。最初のデプロイでそれが確認できました。タスクはパブリックIPなしでプライベートサブネットに起動し、1分以内にロードバランサーの背後で正常な状態になりました。
+
+現在のリクエストの経路は、API Gateway(JWTオーソライザー)→ HTTPプロキシ → ALB → Fargateタスクです。イベントパイプラインは引き続きLambdaで動いていますが、VPCの外にあり、キャッシュには一切触れません。
+
+**なぜ中間案(書き込みはLambda、キャッシュを使う読み込みは小さなFargateサービス)にしなかったのか?** cache-asideでは、書き込んだ後に*書き込み側*がキャッシュを無効化する必要があります。書き込み用のLambdaはキャッシュに届かないので、読み込み側はTTLが切れるまで古いデータを返し続けることになります。読み込みと書き込みを同じプロセスに置けば、無効化はごく簡単になります。
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/my-lambda-couldnt-reach-the-cache-so-i-moved-the-api-into-a-container/cache-aside-halfway-stale.svg" alt="書き込み用のLambdaはDynamoDBを更新するがキャッシュを無効化できないため、Fargateの読み込み側はTTLが切れるまで古い値を返し続ける" style={{ marginBottom: "8px" }} />
+  <figcaption>書き込み側がキャッシュに届かなければ、読み込み側はTTLが切れるまで古いデータを返す。</figcaption>
+</figure>
+
+**トレードオフ:** APIは常時稼働になるので、ゼロまでのスケールダウンはできません。また、タスクが一つだけだと、再起動のたびに短いダウンタイムが発生します。そのため、負荷テストとデモでは2つのAZで2つのタスクを動かしています。
+
+このアカウントで、どこから何に届くか:
+
+|コンピューティング|S3|DynamoDB|SQS / EventBridge / Bedrock|ElastiCache|
+|---|---|---|---|---|
+|Lambda(常にVPCの外。アタッチは拒否される)|可|可|可|**不可**|
+|プライベートサブネット内のLambda(許可されていれば使いたかった構成)|S3エンドポイント経由|NAT経由|NAT経由|可|
+|プライベートサブネット内、パブリックIPなしのFargateタスク(**APIサービス**)|S3エンドポイント経由|NAT経由|NAT経由|可|
+
+## 学んだこと
+
+LambdaからElastiCacheやRDSのようなプライベートなリソースを使う必要があるなら、LambdaをVPCにアタッチしなければなりません。そしてその時点から、それ以外のすべてに対してNATゲートウェイかVPCエンドポイントが必要になります。「パブリックサブネット」にしても状況は変わりません。LambdaのENIは決してパブリックIPを持たないので、インターネットゲートウェイは役に立たないのです。VPCから実際に何に届くかは、サブネットの名前ではなくルートテーブルに書かれています。
+
+VPCへのアタッチは、ネットワークだけでなくIAMの問題でもあります。権限が絞られたアカウントではロールのポリシーを読めませんでしたが、使い捨ての作成呼び出しを1回行うだけで、知る必要のあることがわかりました。次からは、設計がその答えに依存するようになる前に、初日にこの種のプローブを実行するつもりです。
+
+そして、Lambdaが行けない場所にも、コンテナなら行けることがよくあります。ゼロまでのスケールダウンを諦め、常時稼働のコンピューティングの費用がかかりましたが、キャッシュを設計に残すことができました。
