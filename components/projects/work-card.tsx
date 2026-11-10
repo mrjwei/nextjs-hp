@@ -6,8 +6,8 @@ import { TrackedLink } from "@/components/layout/tracked-link"
 import { ProjectBadge } from "@/components/projects/project-badge"
 import { Badge } from "@/components/ui/badge"
 import type { TContentMeta } from "@/lib/content"
-import { getProjectHref } from "@/lib/content/project-href"
-import { localePrefix, type Lang } from "@/lib/i18n/config"
+import { getPostHref, getProjectHref } from "@/lib/content/project-href"
+import type { Lang } from "@/lib/i18n/config"
 
 const articleCountLabel: Record<Lang, (n: number) => string> = {
   en: (n) => `${n} articles`,
@@ -33,14 +33,11 @@ export function WorkCard({
     [key: `data-${string}`]: string | undefined
   }
 }) {
-  const prefix = localePrefix(lang)
-  const { title, summary, result, industry, publishedAt, stack, series, project } =
+  const { title, summary, result, industry, publishedAt, stack, project } =
     work.metadata
-  // Projects are canonical under /posts (mirrors getWritingHref, which can't
-  // be imported into this client component because lib/content reads the fs).
-  const href =
-    hrefOverride ??
-    (series ? `${prefix}/posts/${series}/${work.slug}` : `${prefix}/posts/${work.slug}`)
+  // getPostHref is getWritingHref's pure core: lib/content reads the fs, so
+  // this client component can't import that one.
+  const href = hrefOverride ?? getPostHref({ slug: work.slug, ...work.metadata }, lang)
   const showArticleCount = !!articleCount && articleCount > 1
   const year = new Date(publishedAt).getFullYear()
   const eyebrow = industry ? `${industry} · ${year}` : `${year}`

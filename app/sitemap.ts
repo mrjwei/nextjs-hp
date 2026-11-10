@@ -1,6 +1,7 @@
 import {
   getAllSortedWritings,
   getProjectHref,
+  getWritingHref,
   groupProjects,
 } from "@/lib/content"
 import { baseUrl } from "@/lib/site"
@@ -9,17 +10,9 @@ import { localePrefix } from "@/lib/i18n/config"
 export default async function sitemap() {
   const writingsList = getAllSortedWritings()
 
-  const primaryCollectionSlug = (metadata: { series?: string }) =>
-    metadata.series
-
-  // Every post, including projects, is canonical under /posts.
-  const writingUrl = (writing: (typeof writingsList)[number], lang: "en" | "ja") => {
-    const prefix = localePrefix(lang)
-    const collection = primaryCollectionSlug(writing.metadata)
-    return collection
-      ? `${baseUrl}${prefix}/posts/${collection}/${writing.slug}`
-      : `${baseUrl}${prefix}/posts/${writing.slug}`
-  }
+  // The canonical URL: /projects/<project>/<slug> for a project post.
+  const writingUrl = (writing: (typeof writingsList)[number], lang: "en" | "ja") =>
+    `${baseUrl}${getWritingHref(writing, lang)}`
 
   // "Coming soon" placeholders are thin pages (noindex): leave them out.
   // Series and project pages, where they're listed, stay in.

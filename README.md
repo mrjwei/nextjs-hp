@@ -20,7 +20,7 @@ Jesse Wei's personal site: a bilingual (EN/JA) portfolio and blog. EN is served 
 | `npm run lint` | ESLint (`next lint`) |
 | `npm run typecheck` | `tsc --noEmit` |
 
-Quality gates for every change: `npm run lint && npm run typecheck && npm run build`. `scripts/check-parity.mjs` prints a warning (it never fails the build) when a Home pin is missing in one language.
+Quality gates for every change: `npm run lint && npm run typecheck && npm run build` (`build` ends with `postbuild`, which checks that project posts are canonical under `/projects`). `scripts/check-parity.mjs` prints a warning (it never fails the build) when a Home pin is missing in one language.
 
 ## Layout
 
@@ -34,7 +34,7 @@ Quality gates for every change: `npm run lint && npm run typecheck && npm run bu
 ## Content model
 
 - **Posts** are MDX files in `app/writings/posts/` (EN) and `app/writings/posts-ja/` (JA). A JA translation has the same path in the JA tree. A subfolder is a topic series; its display titles live in `app/data/series.json`.
-- **Projects** are a view over posts: any post with a `project` ID in its frontmatter is listed at `/projects`. `/posts/...` URLs are always canonical.
+- **Projects** are a view over posts: any post with a `project` ID in its frontmatter is listed at `/projects`. A project post's canonical URL is `/projects/<project>/<slug>` (`/posts/<slug>` redirects there); build post URLs with `getPostHref`/`getWritingHref`, never by hand.
 - **Frontmatter** (`title`, `summary`, `tags`, `project`, `lead`, `track`, `placeholder`, `draft`, case-study fields, …) is validated in `lib/content/index.ts` and `scripts/generate-content-index.mjs`. Full rules: [`docs/publish.md`](docs/publish.md).
 - **Tags** and their colours: `app/data/tags.json` (the `/posts` filter shows exactly these).
 - **Positioning** (role, headline, proof strip, Home pins, track order) is data in `lib/content/profile.ts`.

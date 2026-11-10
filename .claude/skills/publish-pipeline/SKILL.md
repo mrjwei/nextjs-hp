@@ -124,7 +124,7 @@ Only what the author needs to see or act on, one line per item, empty sections l
 
 ```
 Published
-- <title> (en) → /posts/<folder>/<slug>, <publishedAt> (PR <url>)
+- <title> (en) → <canonical URL>, <publishedAt> (PR <url>)   (project post: /projects/<project-slug>/<slug>; series post: /posts/<folder>/<slug>; else /posts/<slug>)
 Placeholders: /posts/…, /ja/posts/… (note properties set: <note>: Drafting, requireTranslate; …)
 Needs you
 - Review: <translation note>: "<quote>" (reason); …

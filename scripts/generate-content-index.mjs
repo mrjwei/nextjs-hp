@@ -265,6 +265,11 @@ function buildIndexSectionForLang(sectionKey, config, lang, baseDir) {
         `Invalid frontmatter in ${path.relative(CWD, absFilePath)}: project must be one word of at most 12 characters`
       );
     }
+    if (meta.project != null && series) {
+      throw new Error(
+        `Invalid frontmatter in ${path.relative(CWD, absFilePath)}: a post can't be in both a series ("${series}", set by its folder or \`series\`) and a project ("${meta.project}"). Move a project post to the root of the posts folder.`
+      );
+    }
     assertOptionalBoolean(meta.confidential, "confidential", absFilePath);
     for (const field of ["result", "role", "client", "industry", "duration"]) {
       if (meta[field] != null) assertString(meta[field], field, absFilePath);

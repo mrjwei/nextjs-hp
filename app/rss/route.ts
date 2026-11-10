@@ -1,11 +1,7 @@
 import { baseUrl } from "@/lib/site"
-import { getAllSortedWritings } from "@/lib/content"
+import { getAllSortedWritings, getWritingHref } from "@/lib/content"
 
 export const revalidate = 3600
-
-function primaryCollectionSlug(metadata: { series?: string }) {
-  return metadata.series
-}
 
 function escapeXml(input: string) {
   return input
@@ -25,8 +21,7 @@ export async function GET() {
   const itemsXml = allBlogs
     .map(
       (post) => {
-        const collection = primaryCollectionSlug(post.metadata)
-        const url = collection ? `${baseUrl}/posts/${collection}/${post.slug}` : `${baseUrl}/posts/${post.slug}`
+        const url = `${baseUrl}${getWritingHref(post)}`
         const title = escapeXml(post.metadata.title)
         const description = escapeXml(post.metadata.summary || "")
         const pubDate = new Date(post.metadata.publishedAt).toUTCString()

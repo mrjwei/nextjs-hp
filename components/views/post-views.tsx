@@ -40,13 +40,16 @@ export function slugOrCollectionMetadata(lang: Lang, slugOrCollection: string) {
   const pathname = localeHref(lang, `/posts/${slugOrCollection}`)
 
   const candidate = getWritingBySlug(slugOrCollection, lang)
-  const writing = candidate && !candidate.metadata.series ? candidate : undefined
+  const writing =
+    candidate && !candidate.metadata.series && !candidate.metadata.project
+      ? candidate
+      : undefined
   if (writing) {
     const { title, publishedAt: publishedTime, summary: description, image } = writing.metadata
     return buildStandardMetadata({
       title,
       description,
-      pathname: localeHref(lang, `/posts/${writing.slug}`),
+      pathname: getWritingHref(writing, lang),
       type: "article",
       publishedTime,
       image,
@@ -86,9 +89,10 @@ export function SlugOrCollectionView({ lang, slugOrCollection }: { lang: Lang; s
   const writings = getAllSortedWritings(lang)
   const writing = getWritingBySlug(slugOrCollection, lang)
 
-  // Posts inside a collection live at /posts/<collection>/<slug>; send the
-  // short /posts/<slug> form (and old /work/<slug> links) there.
-  if (writing?.metadata.series) {
+  // Posts inside a collection live at /posts/<collection>/<slug>, and project
+  // posts at /projects/<project>/<slug>; send the short /posts/<slug> form
+  // (and old /work/<slug> links) to the canonical URL.
+  if (writing?.metadata.series || writing?.metadata.project) {
     permanentRedirect(getWritingHref(writing, lang))
   }
 
@@ -110,10 +114,10 @@ export function SlugOrCollectionView({ lang, slugOrCollection }: { lang: Lang; s
         crumbs={crumbs}
         backHref={partOf ? localeHref(lang, `/posts/${partOf}`) : postsHref}
         backLabel={partOf ? t.nav.backToSeriesTop : t.nav.backToAllPosts}
-        canonicalPath={localeHref(lang, `/posts/${writing.slug}`)}
+        canonicalPath={getWritingHref(writing, lang)}
         prevNext={{
           items: writings.filter((w) => !w.metadata.series),
-          linkFor: (item) => localeHref(lang, `/posts/${item.slug}`),
+          linkFor: (item) => getWritingHref(item, lang),
         }}
         partHref={(item) => getWritingHref(item, lang)}
         headerSpacing="mb-6"

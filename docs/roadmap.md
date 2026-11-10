@@ -56,7 +56,7 @@ EN                                   JA
 /                    Home            /ja
 /projects            Projects        /ja/projects
 /projects/[project]  Project page    /ja/projects/[project]
-/projects/[project]/[slug]  Post in project  /ja/projects/[project]/[slug]   (canonical: /posts)
+/projects/[project]/[slug]  Post in project  /ja/projects/[project]/[slug]   (canonical for project posts)
 /posts               Posts           /ja/posts             記事
 /posts/[...]         Post            /ja/posts/[...]
 /about               About           /ja/about
