@@ -4,9 +4,13 @@ import { cache } from "react"
 import { z } from "zod"
 import { getContentBaseDir, type ContentLang } from "@/lib/content/config"
 import seriesTitles from "@/app/data/series.json"
-import { getProjectSlug, getProjectHref, getProjectPostHref } from "@/lib/content/project-href"
+import {
+  getPostHref,
+  getProjectSlug,
+  getProjectHref,
+  getProjectPostHref,
+} from "@/lib/content/project-href"
 import { trackOrder } from "@/lib/content/profile"
-import { localePrefix } from "@/lib/i18n/config"
 
 export type Lang = ContentLang
 
@@ -245,6 +249,14 @@ function parseFrontmatter(
       }
     }
 
+    // A post is in one series or one project, never both: the two have
+    // different canonical URLs (see getPostHref).
+    if (parsed.data.project && parsed.data.series) {
+      throw new Error(
+        `Invalid frontmatter in ${path.relative(process.cwd(), absFilePath)}: a post can't be in both a series ("${parsed.data.series}", set by its folder or \`series\`) and a project ("${parsed.data.project}"). Move a project post to the root of the posts folder.`
+      )
+    }
+
     if (parsed.data.series && !parsed.data.seriesTitle) {
       parsed.data.seriesTitle = getSeriesTitle(parsed.data.series, lang)
     }
@@ -403,16 +415,15 @@ export const getAllSortedWritings = cache((lang: Lang = "en") => {
   return writings
 })
 
+// The post's canonical URL (see getPostHref): under /projects for a project
+// post, else under /posts.
 export function getWritingHref(writing: TContentMeta, lang: Lang = "en") {
-  const prefix = localePrefix(lang)
-  return writing.metadata.series
-    ? `${prefix}/posts/${writing.metadata.series}/${writing.slug}`
-    : `${prefix}/posts/${writing.slug}`
+  return getPostHref({ slug: writing.slug, ...writing.metadata }, lang)
 }
 
 // Projects (`/projects`) are a *view* over posts, not a separate content
 // directory (see docs/publish.md): any post with a `project` ID is a project.
-// Its canonical URL stays under /posts.
+// Its canonical URL is /projects/<project>/<slug>.
 export function isProject(metadata: Pick<TMetadata, "project">) {
   return !!metadata.project
 }
@@ -423,7 +434,7 @@ function byNewest(a: TContentMeta, b: TContentMeta) {
     : 1
 }
 
-export { getProjectSlug, getProjectHref, getProjectPostHref }
+export { getPostHref, getProjectSlug, getProjectHref, getProjectPostHref }
 
 export type TProject = {
   id: string

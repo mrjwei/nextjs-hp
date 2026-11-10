@@ -75,7 +75,7 @@ Only what the author needs to see or act on, one line per item, empty sections l
 
 ```
 Updated
-- <title> (en) → /posts/<folder>/<slug>, updated <date> (or: minor)
+- <title> (en) → <canonical URL>, updated <date> (or: minor)   (project post: /projects/<project-slug>/<slug>; series post: /posts/<folder>/<slug>; else /posts/<slug>)
 PR: <url>
 Needs you
 - Blocked: <note>: <why> (with the PR's URL when one is left open)

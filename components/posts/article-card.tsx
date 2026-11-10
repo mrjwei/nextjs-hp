@@ -3,7 +3,7 @@ import Link from "next/link"
 import { Tags } from "@/components/posts/tags"
 import { ProjectBadge } from "@/components/projects/project-badge"
 import { ComingSoonBadge } from "@/components/posts/coming-soon-badge"
-import { formatDate, getProjectHref } from "@/lib/content"
+import { formatDate, getPostHref, getProjectHref } from "@/lib/content"
 import { localePrefix, type Lang } from "@/lib/i18n/config"
 
 const copy: Record<Lang, { published: string }> = {
@@ -35,8 +35,7 @@ export function WritingCard({
   lang?: Lang
   // Off on a project's own page, where every card would carry the same badge.
   showProjectBadge?: boolean
-  // Where the card links instead of the post's /posts URL (e.g. the project
-  // path on a project's own page).
+  // Where the card links instead of the post's canonical URL.
   href?: string
 }) {
   const t = copy[lang]
@@ -44,13 +43,12 @@ export function WritingCard({
     ? article?.metadata?.project
     : undefined
 
-  const writingCollection = path === "writings" ? article?.metadata?.series : null
   const prefix = localePrefix(lang)
 
   const href =
     hrefOverride ??
-    (path === "writings" && writingCollection
-      ? `${prefix}/posts/${writingCollection}/${article.slug}`
+    (path === "writings"
+      ? getPostHref({ slug: article.slug, ...article?.metadata }, lang)
       : `${prefix}/${path}/${article.slug}`)
 
   return (

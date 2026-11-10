@@ -9,6 +9,7 @@
     "lint": "next lint",
     "prebuild": "node scripts/generate-content-index.mjs && node scripts/generate-search-index.mjs && node scripts/check-parity.mjs",
     "build": "next build",
+    "postbuild": "node scripts/check-post-urls.mjs",
     "start": "next start",
     "typecheck": "rm -rf .next/types && tsc --noEmit"
   },

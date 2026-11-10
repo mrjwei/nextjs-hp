@@ -68,7 +68,7 @@ export function projectPostMetadata(lang: Lang, params: ProjectPostParams) {
   return buildStandardMetadata({
     title,
     description,
-    // Canonical stays on /posts; this path is a view over it.
+    // The project path is the canonical URL (/posts/<slug> redirects here).
     pathname: getWritingHref(writing, lang),
     type: "article",
     publishedTime,
@@ -83,8 +83,9 @@ export function ProjectPostPageView({ lang, params }: { lang: Lang; params: Proj
   if (!found) {
     // Only in the other language (e.g. after the language toggle): send it to
     // this language's /posts URL, which explains the post isn't translated.
+    // (Not the project URL, which is the page that just failed to resolve.)
     const other = getProjectPost(otherLang(lang), params)
-    if (other) redirect(getWritingHref(other.writing, lang))
+    if (other) redirect(localeHref(lang, `/posts/${other.writing.slug}`))
     notFound()
   }
 

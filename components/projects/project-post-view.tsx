@@ -1,7 +1,6 @@
 import { PostArticle } from "@/components/posts/post-article"
 import {
   getProjectHref,
-  getProjectPostHref,
   getWritingHref,
   type TContentItem,
   type TContentMeta,
@@ -11,8 +10,8 @@ import { dictionaries } from "@/lib/i18n/dictionaries"
 import { localeHref, type Lang } from "@/lib/i18n/config"
 
 // A post read from its project's page (/projects/[project]/[slug]). Same body
-// as the /posts page, but the breadcrumb, back link and prev/next stay inside
-// the project. The canonical URL is still the /posts one.
+// as any post page, but the breadcrumb, back link and prev/next stay inside
+// the project. This path is the post's canonical URL (getWritingHref).
 export function ProjectPostView({
   project,
   writing,
@@ -25,12 +24,7 @@ export function ProjectPostView({
   const t = dictionaries[lang]
   const projectHref = getProjectHref(project.id, lang)
 
-  // Sibling posts in this project stay on the project path; anything else
-  // goes to its canonical /posts URL.
-  const hrefFor = (w: TContentMeta) =>
-    w.metadata.project === project.id
-      ? getProjectPostHref(project.id, w.slug, lang)
-      : getWritingHref(w, lang)
+  const hrefFor = (w: TContentMeta) => getWritingHref(w, lang)
 
   return (
     <PostArticle

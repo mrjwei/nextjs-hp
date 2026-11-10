@@ -6,7 +6,8 @@ import { SearchIcon, Loader2Icon } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import clsx from "clsx";
 import MiniSearch from "minisearch";
-import { localePrefix, getLangFromPathname } from "@/lib/i18n/config";
+import { getLangFromPathname } from "@/lib/i18n/config";
+import { getPostHref } from "@/lib/content/project-href";
 
 type SearchResultItem = {
   id: string;
@@ -107,11 +108,11 @@ export function SearchPalette({ isLight }: { isLight: boolean }) {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
-  const getPath = (type: string, slug: string, collection?: string) => {
-    const prefix = localePrefix(lang);
-    if (collection) return `${prefix}/posts/${collection}/${slug}`;
-    return `${prefix}/posts/${slug}`; // Assume writing by default
-  };
+  const getPath = (result: SearchResultItem) =>
+    getPostHref(
+      { slug: result.slug, series: result.collection, project: result.project },
+      lang
+    );
 
   const getLabel = (result: SearchResultItem) => {
     if (result.project) return `${t.project} · ${result.project}`;
@@ -172,7 +173,7 @@ export function SearchPalette({ isLight }: { isLight: boolean }) {
                 value={result.slug}
                 onSelect={() => {
                   setOpen(false);
-                  router.push(getPath(result.type, result.slug, result.collection));
+                  router.push(getPath(result));
                 }}
                 className="px-4 py-3 cursor-pointer rounded-md hover:bg-[var(--surface-active)] aria-selected:bg-[var(--surface-active)] flex flex-col gap-1 text-left"
               >
