@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 650" width="1280" height="650" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#15803D"/></marker>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B91C1C"/></marker>
+    <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D4ED8"/></marker>
+  </defs>
+  <rect width="1280" height="650" fill="#F8FAFC"/>
+
+  <text x="40" y="46" font-size="26" font-weight="700" fill="#0F172A">Attaching a Lambda to the VPC changes where all of its traffic goes</text>
+  <text x="40" y="74" font-size="15" fill="#475569">Outside the VPC it reaches public AWS APIs but not the cache. Attached, it reaches the cache, but needs a NAT gateway or endpoint for everything else.</text>
+
+  <!-- ===== Left: default ===== -->
+  <rect x="40" y="100" width="580" height="470" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+  <text x="64" y="134" font-size="17" font-weight="700" fill="#0F172A">Default<tspan font-weight="400" fill="#475569">  Lambda runs outside my VPC</tspan></text>
+
+  <rect x="70" y="160" width="210" height="120" rx="10" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="86" y="182" font-size="12" font-weight="700" letter-spacing="1.2" fill="#64748B">AWS-OWNED VPC</text>
+  <rect x="90" y="198" width="170" height="60" rx="8" fill="#FFFFFF" stroke="#64748B" stroke-width="1.5"/>
+  <text x="175" y="233" font-size="15" font-weight="700" fill="#0F172A" text-anchor="middle">Lambda function</text>
+
+  <rect x="370" y="160" width="220" height="120" rx="10" fill="#FFFFFF" stroke="#64748B" stroke-width="1.5"/>
+  <text x="480" y="196" font-size="14" font-weight="700" fill="#0F172A" text-anchor="middle">Public AWS endpoints</text>
+  <text x="480" y="224" font-size="13" fill="#475569" text-anchor="middle">S3 · DynamoDB</text>
+  <text x="480" y="246" font-size="13" fill="#475569" text-anchor="middle">SQS · EventBridge · Bedrock</text>
+
+  <path d="M280,228 L366,228" stroke="#15803D" stroke-width="2" fill="none" marker-end="url(#ag)"/>
+  <text x="323" y="216" font-size="13" fill="#15803D" text-anchor="middle">✓ internet</text>
+
+  <rect x="70" y="320" width="520" height="230" rx="12" fill="#F8FAFC" stroke="#64748B" stroke-width="1.5"/>
+  <text x="86" y="536" font-size="12" font-weight="700" letter-spacing="1.2" fill="#475569">MY VPC</text>
+  <rect x="370" y="440" width="200" height="80" rx="10" fill="#FFFFFF" stroke="#64748B" stroke-width="1.5"/>
+  <text x="470" y="474" font-size="15" font-weight="700" fill="#0F172A" text-anchor="middle">ElastiCache</text>
+  <text x="470" y="496" font-size="13" fill="#475569" text-anchor="middle">private IPs only</text>
+
+  <path d="M175,280 L175,305" stroke="#B91C1C" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+  <circle cx="175" cy="320" r="13" fill="#FEE2E2" stroke="#B91C1C"/>
+  <text x="175" y="325" font-size="15" font-weight="700" fill="#B91C1C" text-anchor="middle">✗</text>
+  <text x="200" y="304" font-size="13" fill="#B91C1C">can’t see private IPs in my VPC</text>
+  <text x="90" y="384" font-size="13" fill="#64748B">No ENI in my subnets,</text>
+  <text x="90" y="402" font-size="13" fill="#64748B">so no route to the cache.</text>
+
+  <!-- ===== Right: VPC-attached ===== -->
+  <rect x="660" y="100" width="580" height="470" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+  <text x="684" y="134" font-size="17" font-weight="700" fill="#0F172A">VPC-attached<tspan font-weight="400" fill="#475569">  Lambda gets an ENI in my subnets</tspan></text>
+
+  <rect x="690" y="160" width="210" height="120" rx="10" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="706" y="182" font-size="12" font-weight="700" letter-spacing="1.2" fill="#64748B">AWS-OWNED VPC</text>
+  <rect x="710" y="198" width="170" height="60" rx="8" fill="#FFFFFF" stroke="#64748B" stroke-width="1.5"/>
+  <text x="795" y="233" font-size="15" font-weight="700" fill="#0F172A" text-anchor="middle">Lambda function</text>
+
+  <rect x="990" y="160" width="220" height="120" rx="10" fill="#FFFFFF" stroke="#64748B" stroke-width="1.5"/>
+  <text x="1100" y="196" font-size="14" font-weight="700" fill="#0F172A" text-anchor="middle">Public AWS endpoints</text>
+  <text x="1100" y="224" font-size="13" fill="#475569" text-anchor="middle">S3 · DynamoDB</text>
+  <text x="1100" y="246" font-size="13" fill="#475569" text-anchor="middle">SQS · EventBridge · Bedrock</text>
+
+  <path d="M900,228 L986,228" stroke="#B91C1C" stroke-width="2" stroke-dasharray="5 4" fill="none" marker-end="url(#ar)"/>
+  <circle cx="943" cy="228" r="13" fill="#FEE2E2" stroke="#B91C1C"/>
+  <text x="943" y="233" font-size="15" font-weight="700" fill="#B91C1C" text-anchor="middle">✗</text>
+  <text x="943" y="262" font-size="12" fill="#B91C1C" text-anchor="middle">no direct path</text>
+
+  <rect x="690" y="320" width="520" height="230" rx="12" fill="#F8FAFC" stroke="#64748B" stroke-width="1.5"/>
+  <text x="706" y="536" font-size="12" font-weight="700" letter-spacing="1.2" fill="#475569">MY VPC · PRIVATE SUBNET</text>
+
+  <path d="M795,258 L795,396" stroke="#1D4ED8" stroke-width="2" stroke-dasharray="4 4" fill="none" marker-end="url(#ab)"/>
+  <text x="810" y="346" font-size="13" fill="#1D4ED8">all traffic now</text>
+  <text x="810" y="363" font-size="13" fill="#1D4ED8">goes through the ENI</text>
+
+  <rect x="710" y="400" width="180" height="76" rx="10" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="1.5"/>
+  <text x="800" y="432" font-size="15" font-weight="700" fill="#0F172A" text-anchor="middle">ENI</text>
+  <text x="800" y="454" font-size="13" fill="#475569" text-anchor="middle">private IP only</text>
+
+  <rect x="990" y="344" width="200" height="66" rx="10" fill="#FFFBEB" stroke="#B45309" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="1090" y="372" font-size="15" font-weight="700" fill="#0F172A" text-anchor="middle">NAT gateway</text>
+  <text x="1090" y="394" font-size="12" fill="#92400E" text-anchor="middle">or VPC endpoint (you add it)</text>
+  <path d="M1090,344 L1090,284" stroke="#15803D" stroke-width="2" fill="none" marker-end="url(#ag)"/>
+  <text x="1080" y="306" font-size="13" fill="#15803D" text-anchor="end">✓ DynamoDB, SQS, …</text>
+
+  <rect x="990" y="450" width="200" height="76" rx="10" fill="#FFFFFF" stroke="#64748B" stroke-width="1.5"/>
+  <text x="1090" y="482" font-size="15" font-weight="700" fill="#0F172A" text-anchor="middle">ElastiCache</text>
+  <text x="1090" y="504" font-size="13" fill="#475569" text-anchor="middle">private IPs only</text>
+
+  <path d="M890,424 L940,424 L940,377 L986,377" stroke="#15803D" stroke-width="2" fill="none" marker-end="url(#ag)"/>
+  <path d="M890,452 L940,452 L940,488 L986,488" stroke="#15803D" stroke-width="2" fill="none" marker-end="url(#ag)"/>
+  <text x="946" y="508" font-size="12" fill="#15803D">✓ hits</text>
+
+  <!-- Footer -->
+  <text x="40" y="604" font-size="15" font-weight="700" fill="#0F172A">Attaching trades the default internet path for a route into my VPC.</text>
+  <text x="40" y="628" font-size="15" fill="#0F172A">A cache-aside reader needs both, so an attached Lambda also needs a NAT gateway or VPC endpoints.</text>
+</svg>
