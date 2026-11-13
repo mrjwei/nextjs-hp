@@ -1,0 +1,262 @@
+---
+title: "「なぜ」を副産物にする:AIを活用したデザインOpsパイプライン"
+slug: "making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline"
+publishedAt: "2026-11-13"
+summary: "デザインオペレーションのケーススタディです。Claude CodeとFigmaで私が構築し、運用を統制してきたパイプラインは、録画した週次ミーティングをレビュー済みでブランドに沿ったFigma画面に変え、その判断の理由を日付つきの記録として副産物のように残します。エージェントが飛ばせない、人によるレビューゲートつきです。"
+tags: ["design", "casestudy", "ai", "agents", "process"]
+---
+
+- [実際に解こうとしていた問題](#実際に解こうとしていた問題)
+- [パイプライン](#パイプライン)
+- [最初から最後まで、一巡の流れ](#最初から最後まで一巡の流れ)
+- [パイプラインが壁にぶつかるところと、そこから分かること](#パイプラインが壁にぶつかるところとそこから分かること)
+- [ガバナンスの層と、自分自身を律する必要があった場面](#ガバナンスの層と自分自身を律する必要があった場面)
+- [記録が実際に示していること](#記録が実際に示していること)
+- [まとめ](#まとめ)
+
+> **プライバシーについて:** このケーススタディは、厳格なプライバシーのルールに沿って書いています。会社名とプロダクト名は変更し、プロダクトの詳細は一般的な表現にとどめ、デザイン画像はすべて墨消しするか、ローファイのワイヤーフレームに描き直しています。個人情報や機密情報は含まれていません。画像の墨消しの方法は、それ自体が一つのプロジェクトです:[ケーススタディのスクリーンショットを、Macの外に出さずに墨消しする](/ja/projects/redactionist/redacting-case-study-screenshots-without-them-leaving-my-mac)。
+
+デザインの意図、つまり出荷された「何を」だけでなく、その判断の「なぜ」は、デザインのアウトプットそのものと同じくらい重要です。それを一貫して書き残している人は多くありません。小さなチームでは特にそうです。次の機能を出すことが優先されると、「理由を文書化する」は真っ先に省かれます。省かれ方があまりに静かなので、誰も気づきません。気づくのは1年半ほど経ってから、誰か(たいていは私)がある判断の理由を思い出せず、一から議論し直す羽目になったときです。
+
+このケーススタディは、そうならないために私が作ったパイプラインの話です。舞台は、燃料の配送計画を立て、タンクのセンサーを監視するB2B向けWebアプリの週次のデザイン業務で、作っているのは小さなエネルギーテック企業です。名前は変えてあり、プロダクトをTankwise、会社をNorthwindと呼びます。
+
+要点を言うと、私はAIエージェントを使ってFigmaでの作業を速くしただけではありません。録画した週次ミーティングを、レビュー済みでブランドに沿ったFigma画面に変え、その背後にある判断の理由を日付つきの記録として副産物のように残すパイプラインを構築し、その運用を統制してきました。AIが担うのは、もともと判断ではなかった部分です。判断そのもの(何を作るか、理由が筋の通ったものか、いつ「やらない」と言うか)は私の仕事のままです。
+
+## 実際に解こうとしていた問題
+
+AIは文書化の損得勘定を変えます。ミーティングのあとに座って、何を決めてなぜそうしたのかを手で書き起こさなければならないなら、それは本物の、そして嫌々こなすオーバーヘッドです。デザインの仕事の上に積み重なる余分な作業です。しかし、どうせ回すつもりだったワークフロー(ミーティング、文字起こし、計画、制作)の*副産物*として記録が残るなら、そのコストは大きく下がります。
+
+このパイプラインが賭けているのはそこです。AIとのセッションを、長く残り共有できる記録が自然に残るように組み立てる。覚えておいて別にこなさなければならない追加の手順にはしない、ということです。
+
+## パイプライン
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline/diagram-design-ops-pipeline-en.png" alt="6つのステップがループになった週次パイプライン:/transcribe、/make-plan、人によるレビューゲート、/build-plan、/consistencyと/component-creation、意思決定ログの記入、そして翌週のミーティングへ戻る" style={{ marginBottom: "8px", maxWidth: "589px" }} />
+  <figcaption>週次のループ:エージェントが実行する5つのステップと、人だけが行う1つのゲート。</figcaption>
+</figure>
+
+このパイプラインは、Figma MCP接続とローカルのWhisper文字起こしスクリプトを備えたClaude Code上で動き、私が書いた少数のカスタムスラッシュコマンドで駆動します。ステップは6つです。
+
+1. **`/transcribe`** は、ミーティングの録音をローカルの[Whisper](https://pypi.org/project/mlx-whisper/)で文字起こしし、ノートファイルにします。録音自体はどこにもアップロードされず、このステップはFigmaに触れることも、計画を書くこともしません。
+2. **`/make-plan`** は、`design-context.md`(トークン、コンポーネント、規約についての、常に更新される唯一の信頼できる情報源)とミーティングノートを読み、日付つきの計画 `design-plans/YYYY-MM-DD.md` を書きます。セクションはSource、Summary、Design Tasks、Open Questions、Out of Scopeで固定です。あえてFigmaには触れません。
+3. **人によるレビュー** が明示的なゲートです。私が計画を読んで手を入れ、曖昧な点を解消し、今週実際に何を扱うかを決めます。
+4. **`/build-plan`** は、承認された各タスクを、`CLAUDE.md` の自動化ルールに従ってFigmaで直接実行します。
+5. **`/consistency` と `/component-creation`** がガバナンスの層です。`/consistency` は画面やセクションを監査し、標準外のレイヤー名、グリッドから外れた余白、トークンに紐づいていない塗りを見つけて、何かを直す*前に*承認を求めます。`/component-creation` は新しいコンポーネントやバリアントを、使い方のルールを文書化したうえでライブラリに正式に加えます。単発のFigma作業が、管理されない負債として積み上がらないようにするためです。
+6. **意思決定ログの記入**。日付と経緯を添えたエントリを、制作セッションのたびに `design-context.md` へ追記します。何を作り、何を作らなかったか、その理由、途中でつまずいた点です。
+
+そして翌週、次のミーティングをもとにサイクルが繰り返されます。
+
+ほかの点より重要な細部が二つあります。
+
+**ゲートはコマンド自体に組み込まれています。** `/build-plan` は、計画に未解決の質問が残っていれば止まるように書かれているので、レビューは締め切りに追われたときに飛ばせる慣習ではありません。コマンドの全文はこれです。
+
+```markdown
+Generate the Figma designs for a reviewed design plan. $ARGUMENTS can contain:
+1. A date (YYYY-MM-DD); if omitted, use the most recent file in design-plans/.
+2. Additional instructions and/or context for the build process (e.g., "skip task 3", "use variant B for task 5", reference design links, etc.).
+
+Follow these steps:
+1. Read design-context.md to understand the design rules and conventions.
+2. Resolve and read the target design-plans/YYYY-MM-DD.md (by $ARGUMENTS date, or the most recent file in design-plans/ if omitted).
+3. If ## Open Questions has unresolved items, stop and ask the user before proceeding.
+4. For each item in ## Design Tasks, carry out the work directly in Figma, following the design-automation rules in CLAUDE.md (auto-layout, reuse/extend existing components and swap variants instead of detaching, use design tokens, duplicate the closest reference frame for new screens) — using the same approach as /new-screen, /batch-edit, and /component-creation as appropriate per task.
+5. Document any new components, variants, or tokens created along the way in design-context.md.
+6. Reply with a short summary of what was built vs. skipped, so the plan stays an accurate record.
+```
+
+**意思決定ログは変更履歴ではありません。** 変更履歴が教えてくれるのは、8月12日にボタンの余白が変わったということです。ログが教えてくれるのは、余白の候補が二つあり、実際の画面の三つの文脈で試されたこと、どちらが採用されたか、そしてその採用を必要以上に難しくしたFigma Plugin APIの具体的な制約です。半年後に私が本当に必要とするのは、こちらです。
+
+## 最初から最後まで、一巡の流れ
+
+ループ全体がうまく回った例として一番分かりやすいのは、要確認バッジの視認性の改善です。あるミーティングで、日本の道路標識の黄色を模した警告バッジが十分に読み取りやすくない、という指摘がチームから出ました。ミーティング中にその場で、文字色をオレンジから標準のダークネイビーに変えて試したところ「いけるかもしれない」という反応はありましたが、何も決まりませんでした。
+
+`/make-plan` はそれを具体的なタスクにしました。アイコンのスタイル×文字色の組み合わせを構造的に比較できるものを作る。それも、単独のスウォッチではなく実際のテーブル行に置いたバッジで作り、文脈の中で判断できるようにする、というものです。私は計画をレビューし、タスクを詰めてから `/build-plan` を実行しました。
+
+出てきたのは、画面全体を複製した7つのクローンでした。それぞれが、実際の画面にある3つの要確認行すべてに1つの組み合わせを適用したもので、並べて比較できるようラベルつきのセクションに配置されていました。同じセッションの後半、私がアイコンのバリアントを2つ追加したあとに、さらに4つが加わりました。
+
+<figure style={{ textAlign: "center" }}>
+  <div className="figure-row">
+    <img src="/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline/badge-combo-1.png" alt="組み合わせ1:枠つきの警告アイコンとオレンジの要確認テキストをテーブル行に適用したもの" style={{ "--row-flex": "338" }} />
+    <img src="/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline/badge-combo-2.png" alt="組み合わせ2:枠つきの警告アイコンとダークネイビーの要確認テキスト" style={{ "--row-flex": "332" }} />
+  </div>
+  <div className="figure-row">
+    <img src="/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline/badge-combo-3.png" alt="組み合わせ3:道路標識風の警告三角形とオレンジの要確認テキスト" style={{ "--row-flex": "329" }} />
+    <img src="/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline/badge-combo-4.png" alt="組み合わせ4:道路標識風の警告三角形とダークネイビーの要確認テキスト" style={{ "--row-flex": "323" }} />
+  </div>
+  <figcaption>組み合わせのうち4つを、ローファイで示したもの。どれも実際の画面を丸ごと複製し、要確認バッジだけを変えています。</figcaption>
+</figure>
+
+文脈の中で作ったからこそ、同じセッションで本物のバグも見つかりました。計画の次のタスクは、検索ボックスの下にフィルターチップを追加するものでした。すでに行選択のツールバーがあるバージョンの画面では、チップによってテーブルがフレームの固定の高さを超えて押し出され、最後の行が何の警告もなく切れてしまいました。これは、デザインファイルを眺めて見つけられるような仮定のリスクではありません。変更を現実的なレイアウトの中で実際に作り、確認したときに初めて表に出るもので、パイプラインは毎回それを強制します。修正(フレームを伸ばし、それに合わせてサイドバーとナビゲーションのハイライトもリサイズする。以前のセッションで文書化した手法です)は、日付つきのエントリとして、比較そのものの隣に `design-context.md` へ記録されました。
+
+バッジについての判断は、そのセッションでは決着しませんでした。どの組み合わせを採用するかは、その週の終わりの時点でもまだ未決のままでした。これは削らずに残しておく価値がある点です。パイプラインは判断を無理に完了させるわけではありません。強制するのは、判断の*状態*を、決着していてもいなくても、黙って忘れられるのではなく、見える形で日付つきで残すことです。
+
+決着したのは1週間後です。チームにデザインを共有して話し合った結果、右側のものを採用しました。
+
+<figure style={{ textAlign: "center" }}>
+  <div className="figure-row">
+    <img src="/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline/badge-before.png" alt="変更前:同じ画面で、塗りつぶしの警告三角形とオレンジの要確認テキスト" style={{ "--row-flex": "352" }} />
+    <img src="/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline/badge-after.png" alt="変更後:同じ画面で、塗りつぶしの警告三角形とダークネイビーの要確認テキスト" style={{ "--row-flex": "340" }} />
+  </div>
+  <figcaption>左:変更前。バッジの文字はオレンジ。右:変更後。標準のダークネイビーの文字。</figcaption>
+</figure>
+
+このデザインが、分かりやすさと一貫性のバランスが最も優れています。アイコンは視覚的にはっきり区別でき、文字はうるさくならずに明瞭です。
+
+## パイプラインが壁にぶつかるところと、そこから分かること
+
+すべてが自律的に動くわけではなく、自動化そのものよりもその境界のほうが興味深いものです。別の日、デザインシステム全体でボタンの最小余白を広げる検証が必要になりました。`/build-plan` は実際のボタンのコンポーネントセットを複製し、二つの余白候補を適用して、その両方を三つの実際の文脈(ダイアログ、ボタンペアのパターン、フィルターパネル)に配置しました。バッジの例と同じ「単独のスウォッチではなく実際のデザインで」という規律です。
+
+そこで、Figma Plugin APIの制限にぶつかりました。新しく作ったコンポーネントは、人がFigmaのUIからチームライブラリに公開するまで、`importComponentByKeyAsync` で別のファイルに読み込むことができません。私が調べた限り、Plugin APIには公開のための呼び出しがありません。回避策として、作業中のファイルの中にFigmaが保持している、公開済みボタンのローカルコピーを複製し、同じ余白の設定をそちらに適用しました。これで、私が制作の途中で手を出さなくても、文脈の中での比較を描画できるようになりました。
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline/figma-publish-wall-workaround.svg" alt="公開の壁の3つの段階:新しく作ったコンポーネントを別のファイルに読み込もうとして失敗し、エージェントが回避策としてローカルコピーを複製し、公開後はインスタンスを公開済みコンポーネントに差し替えてクローンを削除する" style={{ marginBottom: "8px" }} />
+  <figcaption>公開には人の手が必要なので、エージェントはそれを回避し、あとで片づけました。</figcaption>
+</figure>
+
+私が本来の候補コンポーネントを公開すると、次のセッションは回避策の名残をすべて(14個のボタンインスタンス)見つけ出し、それぞれを正しく公開されたコンポーネントに差し替え、回避策の6つのセットを削除しました。「出したら次へ」というやり方なら、まず間違いなく負債として残されていたはずの後始末です。
+
+これは、「人によるレビューゲートつきの自律運用」という売り文句がふだん聞こえるよりも、正直な姿だと思います。慎重さから自分がループに残ることを選んだ、という話ではありません。自動化しきれないものはあり、興味深いデザイン上の判断は、制約がないふりをせずに作業を前に進める回避策と、そのあとのフォローアップを明示的にフラグとして残すことでした。余白の値が決まったら、本来のセットを公開し、実験用のものを削除する、というフラグです。そのフラグ自体が意思決定ログのエントリであり、仕組みが意図どおりに働いている証拠です。
+
+そこから生まれた比較がこちらです。
+
+<figure style={{ textAlign: "center" }}>
+  <div className="figure-row">
+    <img src="/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline/action-row-comparison.png" alt="交換と撤去のボタンが並ぶダイアログのアクション行を、現行の余白と候補A・候補Bで比べたもの" style={{ "--row-flex": "204", maxWidth: "404px" }} />
+    <img src="/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline/filter-panel-candidate-a.png" alt="エラー種別のフィルターパネルで、リセットと適用のボタンを12pxの余白にしたもの" style={{ "--row-flex": "240" }} />
+    <img src="/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline/filter-panel-candidate-b.png" alt="同じフィルターパネルで、ボタンを16pxの余白にしたもの" style={{ "--row-flex": "241" }} />
+  </div>
+  <figcaption>左:ダイアログのアクション行での3つの余白の選択肢。中央:12px(基準)のフィルターパネル。右:16pxのフィルターパネル。</figcaption>
+</figure>
+
+<figure style={{ textAlign: "center" }}>
+  <div className="figure-row">
+    <img src="/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline/button-pair-pattern-1.png" alt="パターン1、セカンダリー+プライマリー:キャンセルと保存のボタンを、候補Aと候補BそれぞれのSmallとDefaultのサイズで示したもの" style={{ "--row-flex": "349" }} />
+    <img src="/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline/button-pair-pattern-2.png" alt="パターン2、ターシャリー+プライマリー:リセットと適用のボタンを、候補Aと候補BそれぞれのSmallとDefaultのサイズで示したもの" style={{ "--row-flex": "324" }} />
+  </div>
+  <figcaption>ボタンペアでの二つの候補。左:セカンダリー+プライマリー。右:ターシャリー+プライマリー。</figcaption>
+</figure>
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline/compare-baseline.png" alt="現行のボタン余白のセンサーダイアログ:交換と撤去のボタンが基準のサイズ" style={{ marginBottom: "8px" }} />
+  <img src="/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline/compare-small12-default16.png" alt="同じセンサーダイアログを候補Aの余白(Small 12px、Default 16px)にしたもの" style={{ marginBottom: "8px" }} />
+  <img src="/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline/compare-small16-default20.png" alt="同じセンサーダイアログを候補Bの余白(Small 16px、Default 20px)にしたもの" style={{ marginBottom: "8px" }} />
+  <figcaption>同じ実際のダイアログを3通りで:基準、候補A(Small 12px、Default 16px)、候補B(Small 16px、Default 20px)。</figcaption>
+</figure>
+
+### 採用したもの
+
+最上位のレイアウト(ページ)上のボタンは、余白を12pxから20pxにしました。
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline/page-button-before.png" alt="変更前のページレベルのボタンペア、余白12px" style={{ marginBottom: "8px" }} />
+  <img src="/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline/page-button-after.png" alt="変更後の同じページレベルのボタンペア、余白20px" style={{ marginBottom: "8px" }} />
+  <figcaption>上:変更前(12px)。下:変更後(20px)。</figcaption>
+</figure>
+
+第2階層のレイアウト(上のフィルターパネルのようなポップアップ)上のボタンは、12pxから16pxにしました。
+
+ボタンペアのパターンも二つ採用しました。
+
+<figure style={{ textAlign: "center" }}>
+  <div className="figure-row">
+    <img src="/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline/button-pair-primary-secondary.png" alt="プライマリーの交換ボタンの隣に、セカンダリーの撤去ボタン" style={{ "--row-flex": "205", maxWidth: "278px" }} />
+    <img src="/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline/button-pair-tertiary-primary.png" alt="コンテナの両端に配置した、ターシャリーのリセットボタンとプライマリーの適用ボタン" style={{ "--row-flex": "305" }} />
+  </div>
+  <figcaption>左:プライマリー+セカンダリーを横に並べたもの。優先度の異なる、破壊的でない操作に使います。右:ターシャリー+プライマリーを親コンテナの両端に揃えたもの。主要な操作と、破壊的な操作や取り消しの操作を組み合わせるときに使います。</figcaption>
+</figure>
+
+## ガバナンスの層と、自分自身を律する必要があった場面
+
+`/consistency` と `/component-creation` があるのは、「AIはFigmaで速く動ける」ということが、出力をシステム自身のルールに照らしてチェックする何かがなければ、むしろリスクになるからです。そのルールは二つのファイルにあります。`CLAUDE.md` には、エージェントがすべてのタスクで従う自動化ルールが書かれています。
+
+```markdown
+## Design automation rules
+
+- Always read design-context.md before making Figma changes
+- Prioritise auto-layout and avoid manual positioning; if auto-layout is missing, make it
+- Use the components specified in design-context.md wherever possible; if a component is missing, make it and document it in design-context.md
+- Never detach component instances — swap variants instead; if a component is missing, make it and document it in design-context.md
+- Match existing naming conventions specified in design-context.md
+- Before any task, always duplicate the closest existing frame as specified in design-context.md or if no close match exists, find one by yourself; if unsure, ask for clarification.
+- Always use tokens defined in design-context.md; if a token is missing, create it and document it in design-context.md
+- Do not ask for permissions to edit the Figma file or run commands; just go ahead and make the necessary changes, following the above rules
+- Use Japanese for any documentation
+```
+
+`design-context.md` には、それらのルールが参照する中身、つまりトークンの表、コンポーネントの一覧、レイアウトシステム、レイヤーの命名規則が入っています。一部を伏せた抜粋です。
+
+```markdown
+# Tankwise Design Context
+
+Token names follow [W3C DTCG](https://design-tokens.github.io/community-group/format/) dot-path convention. The `$type` column uses DTCG-specified types.
+
+[…]
+
+## Spacing Variables
+
+### Inner Spacing (padding / gap within components)
+
+| Token | `$type` | `$value` | Notes |
+|---|---|---|---|
+| `spacing.inner.smallest` | `dimension` | `4px` | Tightest inner padding |
+| `spacing.inner.small` | `dimension` | `8px` | Small inner padding |
+| `spacing.inner.medium` | `dimension` | `12px` | Medium inner padding |
+| `spacing.inner.large` | `dimension` | `16px` | Large inner padding |
+
+[…]
+
+## Layer Naming Conventions
+
+### Component Set Names (COMPONENT_SET)
+
+Format: **`Title-case`** — first word capitalised, subsequent words lowercase, separated by hyphens. No underscores, no spaces.
+
+| Pattern | Examples |
+|---|---|
+| Category prefix | `Button-primary`, `Button-secondary`, `Button-tertiary`, `Button-icon` |
+| Deprecated | `_deprecated-open-in-new` — prefix `_deprecated-` before the name |
+
+### Variant Node Names (COMPONENT inside a COMPONENT_SET)
+
+Format: `Key=Value` pairs, comma-separated for multiple properties.
+
+### Internal Layer Names (FRAME, GROUP)
+
+Format: **`kebab-case`** — all lowercase, hyphens only, descriptive.
+```
+
+`/consistency` の「直す前に監査する」というステップは、このパイプラインのあらゆるところに表れているのと同じ考え方です。まず作る。ただし、レビューされないまま何かが直される前に、理由と逸脱を見える形にする。
+
+その規律を自分自身に当てはめなければならなかったのが `design-context.md` です。8月末の時点で、このファイルは1,289行、約280KBになっていました。トークンシステム、コンポーネントの完全な一覧、そして7月初めから追記されてきた50件ほどの日付つきの制作・意思決定のエントリが、一つのファイルに収まっていたのです。私自身が読みにくいと感じるほど長くなっていて、それは単なる不便では済みません。コンテキストファイルが長くなるほど、AIのセッションをそれに基づかせるたびに消費するトークンも増えます。このパイプラインがなくすはずだったコストを、別の場所で再び持ち込むことになるわけです。
+
+解決策は「文書化をやめる」ことではありません。際限なく大きくなる一つのファイルは、この種の記録には合わない形なのです。私のやり方は三つの部分からなります。
+
+1. **ファイルを定期的に見直し、** 未解決の質問に答えて閉じていく。
+2. 適切な場合は **編集ではなく置き換え** を行い、新しいエントリが古いものに取って代わり、古いものは履歴として残るようにする。
+3. **デザインの判断を外に出し、** 一つのファイルから、それぞれ専用の別ドキュメントに移す。
+
+ファイルがどんな形になっても、一つのルールは守り続けてきました。AIが書きたいものを、レビューなしで追記させないことです。どのエントリも、私が読み、訂正しないことで正確な記録だと認めたものです。このレビューの手順は「勝手に書かせておく」より時間がかかりますが、それでも続けてきました。レビューされていない意思決定ログは、手間が増えただけの長い変更履歴にすぎないからです。
+
+## 記録が実際に示していること
+
+ここは話を盛らずに、正確に書いておく価値があります。リポジトリのgit履歴には、7月2日から8月14日までのあいだに7つのコミットがあります。
+
+```text
+cb5456e 2026-08-14 Add design plans for meetings on 2026-08-07 and 2026-08-12
+949dad2 2026-08-05 Add design plans for sensor feedback meetings and updates
+4558e76 2026-07-09 Add design plan for 2026-07-02, including status display updates and design tasks
+22ca54e 2026-07-09 Update build and make plan documentation for clarity; add transcribe command for meeting recordings
+14893e3 2026-07-09 Add sensor table and dialog updates with design adjustments and variant properties
+31fb37e 2026-07-02 Add build and make plan commands with detailed steps and documentation
+65e0753 2026-07-02 Add initial command documentation and settings for Figma automation
+```
+
+ツールそのもの(コマンド、自動化ルール、計画のテンプレート)は早い段階で変わらなくなりました。7月9日以降、コマンドのファイルには一度も手が入っていません。一方、週次の作業はそのあともずっと続きました。`design-plans/` には日付つきの計画が14件あり、6月25日から9月16日までのミーティングをカバーしています。最後の5件と、8月中旬以降の意思決定ログのエントリは、ローカルのファイルとしてだけ存在します。
+
+つまり正直に言えば、ツールは最初の数週間で作られてバージョン管理され、その後はほとんど手を加えられないまま、実際のクライアントワークの週次計画11件分にわたって使われました。「すべてgitに入っている」よりも、むしろこちらのほうが良い話だと言えるかもしれません。一度作ってしまえば、パイプラインは使い続けるためにツールに手を入れ続ける必要がないほど安定していたのです。
+
+## まとめ
+
+この記事は、1年半後に誰も説明できない判断の話から始めました。このパイプラインは、その判断を私の代わりに下すわけではありませんし、文書化をタダにしてくれるわけでもありません。私は今もすべての計画とすべてのログのエントリをレビューしています。変わったのは、記録がどこから生まれるかです。記録はすでにこなしていた週次の仕事から自然に生まれるので、もうその仕事と時間を奪い合うことはありません。
+
+これは、インターフェースだけでなく、デザインの*オペレーション*にシステム思考を当てはめたものです。要確認バッジの文字がなぜネイビーなのか、ページレベルのボタンの余白がなぜ20pxなのかと聞かれたら、その答えは記憶から組み立て直すものではなく、開けばそこにある日付つきのエントリです。
