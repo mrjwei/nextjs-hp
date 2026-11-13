@@ -8,7 +8,7 @@
 
 Positioning source of truth: §1 below, from `docs/plans/2026-10-10-positioning-rebalance.md`. It supersedes the positioning section of the vault's `Career/Job hunting/⭐️ai-engineering-pivot-2026Q4.md` (its 90-day plan still applies to Lane C prep) and the design-first framing of `⭐️portfolio-roadmap-2026Q4.md`.
 
-Related docs: `docs/plans/2026-11-01-performance-seo-traffic.md` (performance, SEO and traffic), `docs/publish.md` (content model, frontmatter, publishing), `docs/baseline.md` (Lighthouse/build checks), `docs/templates/case-study.mdx` (case-study skeleton).
+Related docs: `docs/plans/2026-11-01-performance-seo-traffic.md` (performance, SEO and traffic), `docs/plans/2026-11-10-3d-motion-brushup.md` (3D and motion brush-up; proposed, needs a §1 principle 4 decision first), `docs/publish.md` (content model, frontmatter, publishing), `docs/baseline.md` (Lighthouse/build checks), `docs/templates/case-study.mdx` (case-study skeleton).
 
 ---
 
