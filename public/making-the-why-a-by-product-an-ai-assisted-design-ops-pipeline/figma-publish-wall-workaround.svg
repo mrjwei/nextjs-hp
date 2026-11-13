@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="660" viewBox="0 0 1200 660">
+  <rect x="0" y="0" width="1200" height="660" fill="#fff" />
+  <text x="40" y="54" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#1E293B" font-size="26" font-weight="700">A component the agent has just created can't cross files until I publish it</text>
+  <text x="40" y="82" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="15">The agent kept the build moving with local clones, then removed them once the real components were published.</text>
+
+  <text x="240" y="126" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="11.5" font-weight="600" letter-spacing=".12em">DESIGN-SYSTEM LIBRARY FILE</text>
+  <text x="700" y="126" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="11.5" font-weight="600" letter-spacing=".12em">EXPERIMENT FILE · WHERE THE SCREENS ARE BUILT</text>
+
+  
+  <circle cx="56" cy="204" r="14" fill="#23395B" />
+  <text x="56" y="209" text-anchor="middle" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#FFFFFF" font-size="14" font-weight="700">1</text>
+  <text x="82" y="203" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#1E293B" font-size="15.5" font-weight="600">The wall</text>
+  <text x="82" y="223" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="12">mid-build</text>
+  <rect x="240" y="140" width="330" height="128" rx="8" fill="#F1F4F7" stroke="#CBD5E1" stroke-width="1" />
+  <rect x="260" y="172" width="290" height="64" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="276" y="199" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#1E293B" font-size="15.5" font-weight="600">New [EXP] button sets</text>
+  <text x="276" y="220" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13">created by the agent, not published</text>
+  <rect x="700" y="140" width="460" height="128" rx="8" fill="#F1F4F7" stroke="#CBD5E1" stroke-width="1" />
+  <rect x="720" y="172" width="420" height="64" rx="6" fill="#FBEEEE" stroke="#C98080" stroke-dasharray="5 4" />
+  <text x="736" y="199" font-family="'IBM Plex Mono','JetBrains Mono',Menlo,Consolas,monospace" fill="#1E293B" font-size="15.5" font-weight="600">importComponentByKeyAsync(key)</text>
+  <text x="736" y="221" font-size="13" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#A33A3A" font-weight="600">fails: component not found</text>
+  <path d="M550,204 L716,204" fill="none" stroke="#5B6675" stroke-width="1.5" stroke-dasharray="6 4" />
+  <polygon points="717.05,204.00 706.55,209.25 706.55,198.75" fill="#5B6675" /><text x="635" y="194" text-anchor="middle" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="12">import by key</text>
+
+  
+  <circle cx="56" cy="360" r="14" fill="#23395B" />
+  <text x="56" y="365" text-anchor="middle" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#FFFFFF" font-size="14" font-weight="700">2</text>
+  <text x="82" y="359" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#1E293B" font-size="15.5" font-weight="600">The workaround</text>
+  <text x="82" y="379" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="12">same session</text>
+  <rect x="240" y="296" width="330" height="128" rx="8" fill="#F1F4F7" stroke="#CBD5E1" stroke-width="1" />
+  <rect x="260" y="328" width="290" height="64" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="276" y="355" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#1E293B" font-size="15.5" font-weight="600">New [EXP] button sets</text>
+  <text x="276" y="376" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13">still unpublished, left untouched</text>
+  <rect x="700" y="296" width="460" height="128" rx="8" fill="#F1F4F7" stroke="#CBD5E1" stroke-width="1" />
+  <rect x="720" y="328" width="190" height="64" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="734" y="355" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#1E293B" font-size="15.5" font-weight="600">Cached buttons</text>
+  <text x="734" y="376" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13">copies of published sets</text>
+  <rect x="950" y="328" width="190" height="64" rx="6" fill="#E8EEF6" stroke="#3A5F8A" stroke-width="1.25" />
+  <text x="964" y="355" fill="#2F5D8A" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" font-size="15.5" font-weight="600">[EXP-local] sets</text>
+  <text x="964" y="376" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13">clones, padding applied</text>
+  <path d="M910,360 L946,360" fill="none" stroke="#23395B" stroke-width="1.5" />
+  <polygon points="947.05,360.00 936.55,365.25 936.55,354.75" fill="#23395B" /><text x="930" y="318" text-anchor="middle" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="12">clone inside the file</text>
+
+  
+  <circle cx="56" cy="516" r="14" fill="#23395B" />
+  <text x="56" y="521" text-anchor="middle" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#FFFFFF" font-size="14" font-weight="700">3</text>
+  <text x="82" y="515" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#1E293B" font-size="15.5" font-weight="600">After I publish</text>
+  <text x="82" y="535" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="12">follow-up session</text>
+  <rect x="240" y="452" width="330" height="128" rx="8" fill="#F1F4F7" stroke="#CBD5E1" stroke-width="1" />
+  <rect x="260" y="484" width="290" height="64" rx="6" fill="#EAF3EC" stroke="#6A9C7C" />
+  <text x="276" y="511" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#2F6B4A" font-size="15.5" font-weight="600">[EXP] button sets, published</text>
+  <text x="276" y="532" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13">by me, in Figma's own UI</text>
+  <rect x="700" y="452" width="460" height="128" rx="8" fill="#F1F4F7" stroke="#CBD5E1" stroke-width="1" />
+  <rect x="720" y="484" width="190" height="64" rx="6" fill="#EAF3EC" stroke="#6A9C7C" />
+  <text x="734" y="511" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#2F6B4A" font-size="15.5" font-weight="600">14 button instances</text>
+  <text x="734" y="532" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13">swapped to published sets</text>
+  <rect x="950" y="484" width="190" height="64" rx="6" fill="#FBEEEE" stroke="#C98080" stroke-dasharray="5 4" />
+  <text x="964" y="511" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#A33A3A" font-size="15.5" font-weight="600">[EXP-local] sets</text>
+  <text x="964" y="532" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13">all 6 deleted</text>
+  <path d="M550,516 L716,516" fill="none" stroke="#23395B" stroke-width="1.5" />
+  <polygon points="717.05,516.00 706.55,521.25 706.55,510.75" fill="#23395B" /><text x="635" y="506" text-anchor="middle" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="12">import by key works</text>
+
+  <text x="40" y="624" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP',sans-serif" fill="#5B6675" font-size="13" font-style="italic">Publishing is the one step that needs a person: the Plugin API can import published components, but it has no publish call.</text>
+</svg>
