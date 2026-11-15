@@ -128,6 +128,29 @@ module.exports = {
         destination: "/ja/posts/austride-overview",
         permanent: true,
       },
+      // The design-ops case study left the one-post design-case-studies
+      // folder for the FuelDelivery project (2026-11-15). Its old folder URL
+      // goes to its project URL, and the emptied folder page to the project.
+      {
+        source: "/posts/design-case-studies/:slug",
+        destination: "/projects/fueldelivery/:slug",
+        permanent: true,
+      },
+      {
+        source: "/posts/design-case-studies",
+        destination: "/projects/fueldelivery",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/design-case-studies/:slug",
+        destination: "/ja/projects/fueldelivery/:slug",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/design-case-studies",
+        destination: "/ja/projects/fueldelivery",
+        permanent: true,
+      },
       // Retired posts (2026-10-15): beginner-level, assignment-specific or
       // off-positioning posts, deleted from the repo (git history and the
       // vault keep a copy). Their URLs, with or without the old collection
