@@ -14,13 +14,13 @@ lead: true
 - [What I'd do differently](#what-id-do-differently)
 - [Wrapping up](#wrapping-up)
 
-> **A note on privacy:** As in [my design-ops case study](/posts/design-case-studies/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline), I keep the company and product anonymous, product details general, and every image redacted or redrawn.
+> **A note on privacy:** As in [my design-ops case study](/projects/fueldelivery/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline), I keep the company and product anonymous, product details general, and every image redacted or redrawn.
 
 When I joined a small energy-tech company at the end of 2022, design didn't exist there yet. Its product, a B2B web app that plans fuel deliveries and monitors tank sensors, had shipped its core features without anyone deliberately designing the interface. There was no design process, no design system, and not even a Figma account. I was the design team, and I was starting from zero.
 
 Over the nearly four years that followed, the most important thing I built wasn't any particular screen. It was a shared design language: a common way for a small team to talk about what we were building and why. I ended up building it twice. In the first half, before AI, it was carried by design assets: Figma screens and a design system that grew with them. In the second half, with AI taking over more of the asset-making, it moved to design intent: the written reasons behind each decision, which the team and an AI agent could both read.
 
-This post is the overview of that work. The deep dives hang off it, starting with [the design-ops pipeline](/posts/design-case-studies/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline).
+This post is the overview of that work. The deep dives hang off it, starting with [the design-ops pipeline](/projects/fueldelivery/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline).
 
 | | |
 |---|---|
@@ -117,7 +117,7 @@ AI changed what was scarce. Our first experiments with Figma's AI generation pro
 
 So I shifted my effort from making design assets to building design workflows. There were three pieces:
 
-1. **A design-ops pipeline.** It turns a recorded weekly meeting into a reviewed plan, builds the approved tasks in Figma through Claude Code, and leaves a dated decision log behind as a by-product. A human review gate sits in the middle, and nothing gets built while open questions remain. I wrote it up in full in [Making the Why a By-Product](/posts/design-case-studies/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline).
+1. **A design-ops pipeline.** It turns a recorded weekly meeting into a reviewed plan, builds the approved tasks in Figma through Claude Code, and leaves a dated decision log behind as a by-product. A human review gate sits in the middle, and nothing gets built while open questions remain. I wrote it up in full in [Making the Why a By-Product](/projects/fueldelivery/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline).
 2. **Design system v2 on shadcn/ui.** I ported the Figma designs onto shadcn/ui and built the second version of the design system on top of it. shadcn/ui gives a team the component source code itself rather than a package to override, so it's easier to extend and maintain. The same openness makes it easy for an AI agent to read and change; [shadcn/ui's own documentation](https://ui.shadcn.com/docs) lists being AI-ready among its principles.
 3. **A documentation site** in the spirit of the public [SmartHR Design System](https://smarthr.design/), pulling its tokens from Figma, so that people and AI could look up the same rules in one place. I demoed it to the team, but it ran only locally and never reached production before my engagement ended.
 
