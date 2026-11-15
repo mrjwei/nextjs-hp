@@ -14,9 +14,9 @@ lead: true
 - [What I'd do differently](#what-id-do-differently)
 - [Wrapping up](#wrapping-up)
 
-> **A note on privacy:** As in [my design-ops case study](/posts/design-case-studies/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline), the company and product names are changed, product details are kept general, and every image is redacted or redrawn. I'll call the product Tankwise and the company Northwind.
+> **A note on privacy:** As in [my design-ops case study](/posts/design-case-studies/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline), I keep the company and product anonymous, product details general, and every image redacted or redrawn.
 
-When I joined Northwind at the end of 2022, design didn't exist there yet. Tankwise, a B2B web app that plans fuel deliveries and monitors tank sensors, had shipped its core features without anyone deliberately designing the interface. There was no design process, no design system, and not even a Figma account. I was the design team, and I was starting from zero.
+When I joined a small energy-tech company at the end of 2022, design didn't exist there yet. Its product, a B2B web app that plans fuel deliveries and monitors tank sensors, had shipped its core features without anyone deliberately designing the interface. There was no design process, no design system, and not even a Figma account. I was the design team, and I was starting from zero.
 
 Over the nearly four years that followed, the most important thing I built wasn't any particular screen. It was a shared design language: a common way for a small team to talk about what we were building and why. I ended up building it twice. In the first half, before AI, it was carried by design assets: Figma screens and a design system that grew with them. In the second half, with AI taking over more of the asset-making, it moved to design intent: the written reasons behind each decision, which the team and an AI agent could both read.
 
@@ -39,7 +39,7 @@ This post is the overview of that work. The deep dives hang off it, starting wit
 
 ### The revamp nobody shipped
 
-My first mistake was ambition. Tankwise needed a design sweep, so I planned a big one: a custom design system based on MUI, then dozens of polished Figma screens with the system applied. I spent about a month on the design system alone, before a single screen existed in Figma. When the screens came, the system didn't fit them, and I kept adding the tokens and components they needed and removing the ones they didn't.
+My first mistake was ambition. The product needed a design sweep, so I planned a big one: a custom design system based on MUI, then dozens of polished Figma screens with the system applied. I spent about a month on the design system alone, before a single screen existed in Figma. When the screens came, the system didn't fit them, and I kept adding the tokens and components they needed and removing the ones they didn't.
 
 The polish was the wrong investment. Some of the screens didn't support the features our enterprise customers actually wanted, and the engineering team couldn't keep up with my pace. When it came to building the revamp, they were reluctant, with good reason: a full redesign risked disrupting a live service and introducing regressions, it rested on little user evidence, and they didn't have the capacity. Most of that work was never built.
 
@@ -132,7 +132,7 @@ Before AI, I made the assets and the assets carried the decisions. With AI, the 
 
 That record turned out to be good design communication in its own right. Colleagues could follow a decision without having been in the room, and the comparisons settled arguments that a single polished screen would have started. The same record served the AI: give the agent the intent and the rules, and it makes the assets for us. The intent became the shared design language, for the team and for the AI working alongside it.
 
-In one of our last design meetings, the team sketched where this could go: anyone at Northwind prompting Claude against the design system, reusing existing parts wherever they could and creating new ones only when the product truly needed them. That only works if the system's reasons are written down where both people and AI can read them.
+In one of our last design meetings, the team sketched where this could go: anyone in the company prompting Claude against the design system, reusing existing parts wherever they could and creating new ones only when the product truly needed them. That only works if the system's reasons are written down where both people and AI can read them.
 
 ## What shipped, and what didn't
 
@@ -176,4 +176,4 @@ The last two rows never reached users, but they're where the second half's inten
 
 ## Wrapping up
 
-When I started, Northwind had no shared design language, and that was the real gap, more than any missing screen. In the first half, I built one out of assets, because a team needs something to look at before it can talk about design. In the second half, AI made the assets cheap and showed what had been doing the work all along: the reasons. Written down, they outlast the screens they produced, and the next designer, engineer or AI agent can pick them up without me in the room.
+When I started, the company had no shared design language, and that was the real gap, more than any missing screen. In the first half, I built one out of assets, because a team needs something to look at before it can talk about design. In the second half, AI made the assets cheap and showed what had been doing the work all along: the reasons. Written down, they outlast the screens they produced, and the next designer, engineer or AI agent can pick them up without me in the room.
