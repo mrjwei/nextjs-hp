@@ -14,11 +14,11 @@ tags: ["design", "casestudy", "ai", "agents", "process"]
 - [What the evidence trail actually shows](#what-the-evidence-trail-actually-shows)
 - [Wrapping up](#wrapping-up)
 
-> **A note on privacy:** I follow strict privacy rules in this case study. The company and product names are changed, product details are kept general, and every design image has been redacted or redrawn as a low-fidelity wireframe, so no personal or confidential information appears here. How I redact the images is a project of its own: [redacting case-study screenshots without them leaving my Mac](/projects/redactionist/redacting-case-study-screenshots-without-them-leaving-my-mac).
+> **A note on privacy:** I follow strict privacy rules in this case study. The company and product aren't named, product details are kept general, and every design image has been redacted or redrawn as a low-fidelity wireframe, so no personal or confidential information appears here. How I redact the images is a project of its own: [redacting case-study screenshots without them leaving my Mac](/projects/redactionist/redacting-case-study-screenshots-without-them-leaving-my-mac).
 
 Design intent, the *why* behind a decision and not just the *what* that shipped, is as important as the design output itself. Few people write it down consistently, and this is especially true for smaller teams: when the priority is shipping the next feature, "document the reasoning" is the first thing that gets skipped. It gets skipped quietly enough that nobody notices until eighteen months in, when someone (usually me) can't remember why a decision was made and has to re-litigate it from scratch.
 
-This case study is about a pipeline I built to stop that happening. The setting was weekly design work on a B2B web app that plans fuel deliveries and monitors tank sensors, made by a small energy-tech company. I've changed the names: I'll call the product Tankwise and the company Northwind.
+This case study is about a pipeline I built to stop that happening. The setting was weekly design work on a B2B web app that plans fuel deliveries and monitors tank sensors, made by a small energy-tech company.
 
 The short version: I didn't just use an AI agent to move faster in Figma. I built and governed a pipeline that turns a recorded weekly meeting into reviewed, on-brand Figma screens, and leaves a dated record of the reasoning behind as a by-product. The AI does the parts of the job that were never the judgement in the first place. The parts that are (what to build, whether the reasoning holds up, when to say no) stay mine.
 
@@ -186,7 +186,7 @@ We also adopted two button-pair patterns:
 `design-context.md` holds what those rules point to: the token tables, the component inventory, the layout system and the layer-naming conventions. A redacted excerpt:
 
 ```markdown
-# Tankwise Design Context
+# Design Context
 
 Token names follow [W3C DTCG](https://design-tokens.github.io/community-group/format/) dot-path convention. The `$type` column uses DTCG-specified types.
 
