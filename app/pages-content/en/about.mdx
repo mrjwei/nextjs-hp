@@ -2,47 +2,64 @@
 description: "Product designer and frontend engineer with ten years in B2B, bringing digital and AI-assisted workflows into businesses that run on paper, spreadsheets and legacy code — from requirements to a system people adopt. Based in Brisbane, Australia; works in Chinese, English, Japanese and Korean."
 ---
 
-I'm Jesse, a **product designer and engineer** currently based in Brisbane, Australia. I turn how a business really works into software people keep using: product design and frontend engineering in one head, ten years of B2B, and now **LLM features with a person at every decision that matters**.
+I'm Jesse, a product designer and engineer currently based in Brisbane, Australia. I turn how a business really works into software people keep using: product design and frontend engineering in one head, ten years of B2B, and now LLM features with a person at every decision that matters.
 
-Most of my work starts somewhere that runs on paper, spreadsheets or habit. I work out with the people there what should change, then design and build the system and stay until it's actually used. I'm currently finishing a Master of IT at QUT in Brisbane, and I work in **Chinese (native), English, Japanese and Korean** — which matters more than it sounds, because most of this work is translation of one kind or another.
+Most of my work starts somewhere that runs on paper, spreadsheets or habit. I work out with the people there what should change, then design and build the system and stay until it's actually used. I complete a Master of IT at QUT in Brisbane this December, and I work in Chinese (native), English, Japanese and Korean — which matters more than it sounds, because most of this work is translation of one kind or another.
 
 ## What I do
 
-**Digital and AI transformation in legacy operations.** Helping a paper-run welfare operator onto digital workflows at DEN, and building LLM document checking for KOD, with requirements worked out in Japanese, directly with the people who'll use the system, and a clear line between what code decides, what a model drafts and what a person signs off.
+**Digital and AI transformation in legacy operations.** Eight years moving a paper-run welfare operator onto digital workflows at DEN, where an AI-drafted records system is now in pilot, and five weeks evaluating and improving an LLM proofreader for a Japanese manufacturer. Both ran in Japanese, directly with the client, with a clear line between what code decides, what a model drafts and what a person signs off.
 
 **Product design and frontend engineering.** A redesigned booking flow at WAmazing that cut peak-season inquiries from over 200 a week to around four, frontend leadership on enterprise HR SaaS at Money Forward, and LingoBun, my own AI product, built and tested like production software.
 
-**Design infrastructure in low-maturity teams.** As the first designer at Zerospec, I set up the process and the design system for its GoNOW product, so that design held together after the first screens shipped.
+**Design infrastructure in low-maturity teams.** As the first designer at Zerospec, I set up the process and the design system for its GoNOW product, then rebuilt that system in code on shadcn/ui, so that design held together after the first screens shipped.
+
+**Coding agents under rules.** I build with coding agents and design the process around them: who may propose, who may change, what counts as done, and what an agent can never touch.
 
 ## Where I come from
 
-**DEN Inc. — social welfare, eight years.** I helped a 20-person facility running on paper become a multi-facility business of nearly 100 employees on digital workflows. Employee productivity and profit both moved, and several thousand dollars of monthly revenue now runs without anyone touching it. Social welfare is among the least digitised sectors in Japan — none of this was the default outcome.
+**DEN Inc. — social welfare, eight years and counting.** I helped a 20-person facility running on paper become a multi-facility business of about 80 employees on digital workflows. Employee productivity and profit both moved, and several thousand dollars of monthly revenue now runs without anyone touching it. Social welfare is among the least digitised sectors in Japan — none of this was the default outcome.
 
 **Money Forward Inc. — HR Cloud, frontend lead.** I led frontend development on an enterprise HR SaaS product and held the team to one rule: a change to the code had to be justified by a better experience for the user, never the other way around.
 
 **WAmazing Inc. — ski-pass booking, design and delivery.** Legacy code and a peak season with no room for downtime meant every change had to be priced in engineering risk first. I did that pricing, and a redesigned booking flow cut peak-season customer inquiries from over 200 a week to around four.
 
-**Zerospec Inc. — energy, first designer on the team.** On its GoNOW product, I introduced a prototype-driven, implementation-aligned process and the design system to hold it together, and moved a company where no one took design seriously into one that plans around it.
+**Zerospec Inc. — energy, first designer on the team, 2022–2026.** On its GoNOW product, I introduced a prototype-driven, implementation-aligned process and the design system to hold it together, and moved a company where no one took design seriously into one that plans around it. Before I left, I ported the system onto shadcn/ui as a second version, and the frontend team had started migrating to it.
+
+**An LLM proofreader for technical manuals — client engagement, 2026.** Five weeks inside a small team building an AI proofreader for a Japanese manufacturer's manuals, with client reviews in Japanese. I evaluated its checks on real pages, found that a class of the model's "errors" was created before the model ever saw the text, and fixed it at the source. I also built the first human-review flow in the console and set up the team's coding-agent workflow.
 
 ## What I'm building now
 
-**LLM document checking for KOD — client work.** I built a pipeline that reviews long industrial manuals for a Japanese manufacturer: text and vector-drawn warning-symbol extraction from PDF, a rule engine the client can maintain themselves, and agent orchestration with LangGraph. Requirements were scoped and negotiated in Japanese, directly with the client.
+**<ExtLink href="https://github.com/mrjwei/agent-loop">agent-loop</ExtLink> — coding agents under rules.** An open-source loop that turns GitHub issues into pull requests with headless Claude Code. A read-only triage agent keeps the issues in line with the plan, work agents build in parallel in their own worktrees, and an independent review checks every acceptance criterion. The loop, never an agent, merges low-risk changes, judged from the diff. Plans, high-risk changes and anything that alters the agents' own instructions wait for me. It grew out of my DEN build. I'm now hardening the review step as the autonomy goes up, and closing the outer loop: from an empty directory to a plan, issues, pull requests and merges, then back to planning.
 
-**AI-drafted compliance records at DEN — pilot.** A system, now in pilot, to replace spreadsheet workflows across multiple welfare sites. An LLM drafts regulatory activity records under a three-tier model — deterministic checks in code, LLM self-assessment, and mandatory human sign-off — so nothing is issued that a person hasn't confirmed.
+**AI-drafted compliance records at DEN — pilot, moving onto AWS.** A system that turns daily work reports into audit-ready records, to replace spreadsheet workflows across the operator's welfare sites. An LLM drafts the records under a three-tier model — deterministic checks in code, LLM self-assessment, and mandatory human sign-off — so nothing is issued that a person hasn't confirmed. The pilot runs at one facility and is moving onto AWS ahead of a wider rollout.
 
-**Evaluating LLM security triage — QUT capstone.** An evaluation harness over 146 labelled attacks across 14 techniques on a Wazuh SIEM. The most useful findings weren't about the model: logging design explained most detection gaps, and a lenient scoring rule had been inflating accuracy by more than 20 points.
+**<ExtLink href="https://github.com/mrjwei/yuho-rag">yuho-rag</ExtLink> — retrieval over Japanese financial filings.** A RAG service over securities reports (有価証券報告書) pulled from the EDINET API, built in the open. It's early: the spec and the first filings are in, and retrieval and an evaluation suite in CI come next.
 
-**LingoBun — my own AI product.** A vocabulary app built and hardened like production software: rate limits and cost caps on AI and text-to-speech calls, validated configuration, and 180 automated tests, shaped by rounds of user testing.
+**Design in Git — design that lives where the code lives.** I'm moving design-system work into a repository, so tokens, components and the decisions behind them sit under version control and review, whether a person or a model made the change. The series starts with [I Was Reinventing Git in Figma](/posts/design-in-git/i-was-reinventing-git-in-figma).
+
+**Writing, weekly.** Case studies from four years as a sole designer, starting with [From design assets to design intent](/projects/fueldelivery/from-design-assets-to-design-intent-building-a-shared-design-language-as-a-team-of-one), and an AI auditing series.
+
+## Recently finished
+
+**[Interlixir](/projects/interlixir) — research recordings to structured documents.** A cloud service that turns interview and usability-test recordings into structured Markdown research documents. An event-driven AWS pipeline chunks and transcribes the audio with self-hosted Whisper on Fargate, scaling on queue backlog, then redacts personal information and synthesises the document on Amazon Bedrock. A tool-using chat agent answers questions over your own data. Built for a QUT cloud-computing unit; the <ExtLink href="https://github.com/mrjwei/interlixir-public">code is public</ExtLink>.
+
+**[Evaluating LLM security triage](/projects/ai-sec) — QUT capstone.** An evaluation harness over 146 labelled attacks across 14 techniques on a Wazuh SIEM. The most useful findings weren't about the model: logging design explained most detection gaps, and a lenient scoring rule had been inflating accuracy by more than 20 points.
+
+**[LingoBun](/projects/lingobun) — my own AI product.** A vocabulary app built and hardened like production software: rate limits and cost caps on AI and text-to-speech calls, validated configuration, and 180 automated tests, shaped by rounds of user testing.
+
+**[Strobe Assistant](/projects/strobe) — agents on AWS.** A conversational agent, an async pipeline that makes photos searchable and a daily autonomous agent, added to a photo-sharing app on Amazon Bedrock and ECS Fargate.
 
 ## How I think
 
 - [Designing the system, not the screen](/posts/ai-and-design/designing-infrastructure-not-assets) — why design effort belongs in the infrastructure behind the assets.
+- [Making the why a by-product](/projects/fueldelivery/making-the-why-a-by-product-an-ai-assisted-design-ops-pipeline) — that argument in practice: a pipeline from meeting to reviewed screens, with a human gate it can't skip.
+- [I was reinventing Git in Figma](/posts/design-in-git/i-was-reinventing-git-in-figma) — the version-control problems designers solve by hand, and the tools that already solve them.
+- [AI Auditing, Part 1: A clean-shaven classifier](/posts/ml-lab/ai-auditing-part-1-a-clean-shaven-classifier) — finding out why a model fails before deciding how to fix it.
 - [From requirements to assumptions](/posts/from-requirements-to-assumptions) — building to learn instead of specifying up front.
-- [How Claude, ChatGPT and Google AI Mode handle the Guidelines for Human-AI Interaction](/posts/ai-and-design/ai-design-guidelines) — where AI product design still owes its users an answer.
-- [AI's productivity gains aren't evenly shared](/posts/ai-and-design/ai-productivity-gains-not-evenly-shared) — a designer's view of who actually benefits.
 
 ## What I'm looking for
 
-Senior IC roles where design, engineering and AI meet inside real operations — design or UX engineer, AI product engineer, technical director, forward-deployed engineer — in Tokyo, from early 2027. I'm also always glad to talk with teams bringing digital and AI tools into Japanese businesses.
+Senior IC roles where design, engineering and AI meet inside real operations — AI solutions or forward-deployed engineer, AI product engineer, design or UX engineer — in Tokyo, from early 2027. I'm also always glad to talk with teams bringing digital and AI tools into Japanese businesses.
 
 Find me on <ExtLink href="https://www.linkedin.com/in/jesse-wei-profile/">LinkedIn</ExtLink> or <ExtLink href="https://github.com/mrjwei">GitHub</ExtLink>, or email <ExtLink href="mailto:jesseweijapan@gmail.com">jesseweijapan@gmail.com</ExtLink>.
