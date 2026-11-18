@@ -1,0 +1,174 @@
+---
+title: "「username」と呼ばれる4つのもの:Amazon Cognitoで起きた、メールアドレスとユーザー名をめぐるログインバグ"
+publishedAt: "2026-09-26"
+summary: "StrobeをAWSへ移行する途中で入れた1行のログイン修正と、それが安全だった理由について。1人のユーザーに「username」と呼ばれるものが4つありました。それを解きほぐすと、後から変更できないCognitoの設計上の選択、ユーザー名属性とエイリアス属性の違いに行き着きます。"
+tags: ["dev", "security", "aws", "qut"]
+project: "Strobe"
+---
+
+- [バグの正体:JSONキーが1つ足りなかった](#バグの正体jsonキーが1つ足りなかった)
+- [1人のユーザーに、4つの「username」](#1人のユーザーに4つのusername)
+- [ユーザー名属性とエイリアス属性](#ユーザー名属性とエイリアス属性)
+  - [エイリアス方式がStrobeに課すコスト](#エイリアス方式がstrobeに課すコスト)
+- [どちらのモードを選ぶべきか](#どちらのモードを選ぶべきか)
+- [ログイン識別子、ハンドル名、アイデンティティは別物](#ログイン識別子ハンドル名アイデンティティは別物)
+- [まとめ](#まとめ)
+
+小さなソーシャルアプリであるStrobeを、モノリシックなPythonバックエンドからAWS Lambda、API Gateway、Cognito、DynamoDBへ移行している途中で、ログインのバグに遭遇しました。正しい認証情報を送っても`401 Unauthorised`が返り、投稿、コメント、いいね、アップロード、フィードと、認証が必要な機能のほぼすべてがそのせいで動かなくなっていました。
+
+修正は1行で済みました。ただ、その修正が*なぜ*安全なのかを理解するには時間がかかりました。同じシステムの中で「username」という言葉が4つの異なるものを指していたからです。この記事ではそれを解きほぐし、その奥にあるCognitoの設計上の選択、**ユーザー名属性とエイリアス属性**について見ていきます。
+
+## バグの正体:JSONキーが1つ足りなかった
+
+ベアラートークンが必要な機能が、すべて同時に失敗していました。互いに関係のない不具合がたくさん起きているように見えましたが、実はどれも上流にある1つの依存先、つまりログインを共有していました。関係なさそうな機能が一斉に壊れたときは、1つずつデバッグする前に、それらが共有している依存先を探すべきです。
+
+クライアントのログインリクエストには、`email`キーが含まれていませんでした。
+
+```
+POST /v1/auth/register  {"username": "...", "email": "...", "password": "..."}
+POST /v1/auth/login     {"username": "...", "password": "..."}      ← no "email" key
+```
+
+ところが、Lambdaの`login()`ハンドラーは`email`しか読んでいませんでした。
+
+```python
+# before
+email = (payload.get("email") or "").strip()
+if not email or not password:
+    raise unauthorised_error("Invalid email or password")
+```
+
+`payload.get("email")`は`None`を返すので`email`は`""`になり、ハンドラーは最初のチェックの時点で401を返していました。DynamoDBにもCognitoにも一度も到達していなかったので、メールアドレスの確認や結果整合性にまつわるもっともらしい仮説は、どれも関係がありませんでした。決め手になったのは、APIドキュメントではなく実際のリクエストボディを読んだことです。
+
+```python
+# after
+email = (payload.get("email") or payload.get("username") or "").strip()
+```
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/four-things-called-username-an-email-vs-username-login-bug-in-amazon-cognito/cognito-2-login-before-after.png"
+    alt="修正前のログインは入力チェックの段階で止まり401を返す。修正後はリクエストがDynamoDBとCognitoまで届き、200 OKを返す"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>修正前と修正後のログイン</figcaption>
+</figure>
+
+このフォールバックが安全なのは、元のアプリの仕様として、登録時に必ず`username = email`が設定され、両方のキーに同じ文字列が入るからにすぎません。もしユーザーがメールアドレスとは別のハンドル名を選べるのであれば、この修正は誤りです。その場合は、値をまずメールアドレスとして検索し、次にユーザー名として検索する必要があります。
+
+## 1人のユーザーに、4つの「username」
+
+ややこしいのは、1つの言葉が4つの異なるものを指していることです。
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/four-things-called-username-an-email-vs-username-login-bug-in-amazon-cognito/cognito-1-four-usernames.png"
+    alt="1人のユーザーのリクエストボディ、DynamoDBの行、Cognitoのユーザーオブジェクトに、「username」と呼ばれる4つの異なるものが1から4の番号つきで示されている"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>1人のユーザーに、「username」と呼ばれるものが4つ</figcaption>
+</figure>
+
+| # | 何か | 値の例 | ある場所 |
+|---|---|---|---|
+| ① | リクエストボディの**JSONキー** | `"username": "alex@example.com"` | HTTPリクエスト |
+| ② | **アプリ独自の属性** | `alex@example.com`(常にemailと同じ) | DynamoDBの行、APIレスポンス |
+| ③ | **Cognitoの`Username`**。ユーザープール内の変更できない内部キー | `7f3c9e10-…`(UUID) | Cognitoのユーザーオブジェクト。DynamoDBには`cognitoUsername`としてコピー |
+| ④ | `InitiateAuth`の**`AuthParameters.USERNAME`** | ③、*または*メールアドレスなどの検証済みエイリアス | 認証の呼び出し |
+
+このほかに`sub`もあります。これはCognitoが生成する、別の変更できないUUIDです。ユーザー名ではありませんが、StrobeのDynamoDBのパーティションキーであり、トークンに含まれるアイデンティティでもあります。
+
+バグは完全に①の中にありました。この記事の残りでは③と④を説明し、なぜStrobeが覚えておかなければならないUUIDを必要とするのかを見ていきます。
+
+## ユーザー名属性とエイリアス属性
+
+Cognitoには「メールアドレスでサインインする」方法が2つあります。どちらを使うかはユーザープールの作成時に選び、[後から変更することはできません](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html)。
+
+- **ユーザー名属性**(`UsernameAttributes = ["email"]`)。メールアドレスそのものがサインイン名*になります*。`SignUp`にメールアドレスを渡すと、Cognitoは本当の`Username`を、`sub`と同じ値のUUIDに設定します。コンソールでは**Email**にチェックを入れ、**User name**にはチェックを入れません。
+- **エイリアス属性**(`AliasAttributes = ["email"]`)。どのユーザーにも本当の`Username`があり、メールアドレスはそれを指す追加のハンドルです。コンソールでは**User name**に*加えて***Email**にもチェックを入れます。
+
+ユーザーオブジェクトは、どちらのモードでもほとんど同じに見えます。見分けるには、`aws cognito-idp describe-user-pool`が`UsernameAttributes`と`AliasAttributes`のどちらを返すかを確認するか、`Username`と`sub`を比べます。ユーザー名属性モードでは、この2つは同じUUIDです。
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/four-things-called-username-an-email-vs-username-login-bug-in-amazon-cognito/cognito-3-username-vs-alias.png"
+    alt="Cognitoのユーザー名属性とエイリアス属性の比較、エイリアス方式のユーザープールがメールアドレス形式のユーザー名を禁止する理由、そして登録処理の中でStrobeのメールエイリアスが有効になるタイミング"
+    style={{ marginBottom: "8px" }}
+  />
+  <figcaption>Cognito:ユーザー名属性とエイリアス属性</figcaption>
+</figure>
+
+### エイリアス方式がStrobeに課すコスト
+
+Strobeのユーザープールは**エイリアス属性**を使っています。この1つの選択で、コードにある3つのことが説明できます。
+
+**1. ユーザー名をメールアドレスの形にできないので、アプリがUUIDを生成する。** エイリアス方式のユーザープールでは、Cognitoはメールアドレス形式の`Username`をすべて拒否します。そうしないと、ある文字列がユーザーXの`Username`であり、同時にユーザーYのメールエイリアスでもある、という状態が起こりえて、ログインが曖昧になるからです。そこでStrobeは、ランダムなUUIDでサインアップし、メールアドレスを属性として付け加えます。
+
+```python
+cognito_username = str(uuid.uuid4())
+signup_resp = cognito.sign_up(
+    ClientId=APP_CLIENT_ID,
+    Username=cognito_username,
+    Password=password,
+    SecretHash=_secret_hash(cognito_username),
+    UserAttributes=[{"Name": "email", "Value": email}],
+)
+sub = signup_resp["UserSub"]  # immutable identity -> DynamoDB partition key
+```
+
+このUUIDはほかのどこにも記録されないので、アプリはそれを`cognitoUsername`として保存し、グループへの追加や削除など、後から呼び出す管理用APIで使います。
+
+**2. エイリアスは検証済みになって初めて機能する。** Strobeには確認コードを受け付けるエンドポイントがないため、ユーザーの確認はサーバー側で行います。ところが`AdminConfirmSignUp`が変えるのはユーザーの**ステータス**を`CONFIRMED`にすることだけで、**email属性**を検証済みにはしません。それには2回目の呼び出しが必要です。
+
+```python
+cognito.admin_confirm_sign_up(UserPoolId=USER_POOL_ID, Username=cognito_username)
+cognito.admin_update_user_attributes(
+    UserPoolId=USER_POOL_ID,
+    Username=cognito_username,
+    UserAttributes=[{"Name": "email_verified", "Value": "true"}],
+)
+```
+
+どちらの呼び出しもUUIDを使う必要があります。2回目が終わるまで、メールアドレスはエイリアスになっておらず、誰も特定できないからです。
+
+**3. サインアップの時点ではメールアドレスの一意性が保証されない。** ユーザー名属性モードでは、サインアップ時にメールアドレスが重複していると`UsernameExistsException`が発生します。エイリアスモードでは、重複したメールアドレスでもサインアップ*できてしまい*、Cognitoがその衝突を解決するのは検証のときです。そのとき、使うAPIによっては、エイリアスが新しいほうのアカウントに移ることがあります。すると、エイリアスのインデックスを使って「メールアドレス → ユーザー」を解決すると、間違ったアイデンティティにたどり着くおそれがあります。そこでStrobeは、一意性を自前のテーブルで担保し、メールアドレスで行を検索して、正確なUUIDで認証しています。
+
+```python
+matched_user = _find_user_by_email(email)  # DynamoDB, not Cognito's alias index
+if matched_user is None or "cognitoUsername" not in matched_user:
+    raise unauthorised_error("Invalid email or password")
+
+tokens = _authenticate(matched_user["cognitoUsername"], password)
+```
+
+これはAWS自身のガイダンスとも一致しています。ユーザープールでエイリアスを使う場合は、サインイン用の属性ではなく、`sub`でユーザーを識別すべきだということです。
+
+## どちらのモードを選ぶべきか
+
+| **ユーザー名属性**を選ぶのは… | **エイリアス属性**を選ぶのは… |
+|---|---|
+| B2B、SaaS、社内ツールの多くのように、メールアドレス(または電話番号)そのものがアカウントであるとき | ソーシャルアプリ、フォーラム、ゲームのようにユーザーがハンドル名を持ち、それでサインインすることもあるとき |
+| サインイン用の識別子を1つにして、アプリ側の管理を減らしたいとき | すでにユーザー名を持っていて、それを引き続き使えるようにする必要があるユーザーを移行するとき |
+| サインアップ時に重複したメールアドレスをCognitoに拒否させたいとき | ユーザーが変更できるハンドル名を使いたいとき。本当の`Username`は固定したまま、`preferred_username`をエイリアスとして追加する |
+| ユーザーがメールアドレスを検証する前にサインインできてもよいとき | メールアドレスでのサインインの前に検証を必須にするのが、フローに合っているとき |
+
+ユーザーが入力する識別子がメールアドレスだけのStrobeには、ユーザー名属性のほうがシンプルで合っていたはずです。保存すべきUUIDもなく、追加の検証の呼び出しも要らず、メールアドレスの一意性もCognitoが担保してくれます。エイリアス方式が間違いだったわけではありませんが、ユーザーが気づくことのない手間を増やしていました。
+
+## ログイン識別子、ハンドル名、アイデンティティは別物
+
+Strobeは、元のAPIの仕様を守るために`username = email`のままにしています。移行としては妥当ですが、設計としては弱いものです。
+
+- **メールアドレスが漏れる。** StrobeのAPIは投稿やコメントに`author.username`を返し、ユーザー検索もこの値で照合します。そのため、すべての投稿者のメールアドレスが公開され、検索もできてしまいます。
+- **3つの役割が1つのフィールドにまとめられている。** *ログイン識別子*(非公開で、変わることがある)、*公開ハンドル名*(誰にでも見え、ユーザーが選ぶ)、*内部のアイデンティティ*(変わらない)は、それぞれ要件が異なります。1つのフィールドで3つすべてを満たすことはできません。
+- **重複したフィールドはずれていく。** 常に同じ値でなければならない2つのフィールドは、まさに今回のようなバグを招きます。システムのある部分は`email`を読み、別の部分は`username`を送る、というものです。
+
+もっときれいなモデルでは、役割を分けます。**アイデンティティ**は`sub`で、すべての外部キーと認可のチェックに使います。**ログイン識別子**はメールアドレスで、できればユーザー名属性を使います。**表示名**は別の任意のハンドル名で、メールアドレスにはせず、ユーザーがそれでログインしたい場合に限って、サインイン識別子(エイリアスとしての`preferred_username`)にします。
+
+同じことはサインインフォームにも当てはまります。入力欄に「メールアドレスまたはユーザー名」と書くなら、バックエンドは本当に両方を受け付けなければなりません。2回検索するか、単一の`identifier`フィールドにするかであって、値が同じ間しか機能しないフィールド名のエイリアスではいけません。
+
+## まとめ
+
+- 仮説を立てる前に、**実際のリクエストの中身を読む**。バグはJSONキーが1つ足りないことであって、Cognitoの問題ではありませんでした。
+- **ものごとを正確に名づける**。「username」は、JSONキー、アプリの属性、Cognitoの内部キー、認証パラメータを意味していました。混乱のほとんどは、コードではなく言葉から生まれていました。
+- **Cognitoのサインイン方式は意図して選ぶ**。後から変更できず、エイリアス方式には、メールアドレス形式の禁止、検証という関門、弱い一意性がついてきます。
+- **ユーザーは`sub`で識別し**、ログイン識別子は非公開にし、メールアドレスを公開のハンドル名として使わない。
