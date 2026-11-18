@@ -1,6 +1,6 @@
 {
   "ai-and-design": { "en": "AI + Design", "ja": "AIとデザイン" },
   "design-in-git": { "en": "Design in Git", "ja": "Design in Git:Gitで回すデザイン" },
-  "ml-lab": { "en": "ML Lab: Learning by Building", "ja": "MLラボ:作って学ぶ機械学習" },
+  "ml-lab": { "en": "ML Lab", "ja": "MLラボ" },
   "ai-agent": { "en": "AI Agents", "ja": "AIエージェント" }
 }
