@@ -11,7 +11,6 @@
   "process": { "color": "#b89414" },
   "productivity": { "color": "#0891b2" },
   "dev": { "color": "#d60fbc" },
-  "web": { "color": "#14b894" },
   "security": { "color": "#70276d" },
   "auth": { "color": "#4d7c0f" },
   "aws": { "color": "#b81463" },

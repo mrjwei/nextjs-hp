@@ -14,4 +14,5 @@ Record a published post in its vault note. It runs after the publish stage's pul
    - `status`: Published
 
    When `series` or `project` is now a property, remove the matching item (e.g. `project: Strobe`) from `note`, and remove `note` if nothing is left.
-5. Next, in the same run, unless this was a `finish` line: an original with `requireTranslate: true` and no published translation → `stages/translate.md` now, even when the request only said "publish". A translation note → done.
+5. **File the note** where the vault mirrors the site (`Posts/`, see the vault's `Vault Guide.md`), unless it's already there: a series post's note goes to `Posts/Series/<the folder's EN title in app/data/series.json>/`, a project post's to `Posts/Projects/<project ID>/`, any other to `Posts/Standalone/`; a translation goes next to its original. Create the folder if it's missing and move the note with `mv` under its current name (never rename it; wikilinks find it by name). Images embedded as `assets/...` resolve from the vault root, so nothing else moves.
+6. Next, in the same run, unless this was a `finish` line: an original with `requireTranslate: true` and no published translation → `stages/translate.md` now, even when the request only said "publish". A translation note → done.

@@ -4,7 +4,7 @@ slug: "ai-auditing-part-1-a-clean-shaven-classifier"
 publishedAt: "2026-11-06"
 summary: "A beard classifier that scored 93.7% on studio photos fell to 61.9% on phone photos. How we measured the image-quality gap, proved blur was the cause by degrading sharp photos one variable at a time, and won back 20 points by fine-tuning on phone-like images."
 tags: ["ai", "machine-learning", "deep-learning", "evals", "qut"]
-seriesOrder: 1
+seriesOrder: 8
 partOf: "ai-auditing"
 partOfTitle: "AI Auditing"
 partNumber: 1
@@ -76,7 +76,7 @@ That makes sense once you think about what a beard is to a CNN: a high-frequency
 Three more checks pointed the same way:
 
 - **Within the external set, the misclassified bearded faces were blurrier** than the ones the model got right (mean LV 50.1 vs 61.1), so blur tracked the errors even inside a single dataset.
-- **The ROC AUC fell from 0.985 to 0.846.** The model's scores themselves had become worse at separating the two classes, so this wasn't something a different decision threshold could fix (more on reading AUC in [Understanding the ROC Curve](/posts/ml-metrics/understanding-the-roc-curve)).
+- **The ROC AUC fell from 0.985 to 0.846.** The model's scores themselves had become worse at separating the two classes, so this wasn't something a different decision threshold could fix (more on reading AUC in [Understanding the ROC Curve](/posts/ml-lab/understanding-the-roc-curve)).
 - **[Grad-CAM](https://arxiv.org/abs/1610.02391) showed where the model was looking.** On sharp faces, the heat sat squarely on the jaw and chin, exactly where a beard would be. On blurred copies of the same faces, it drifted away from the chin towards the cheek, the eyes or even the background, as if the model no longer knew where to look.
 
 <figure style={{ textAlign: "center" }}>

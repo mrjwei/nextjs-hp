@@ -56,14 +56,14 @@ bash .claude/skills/publish-pipeline/queue.sh | awk -F'\t' '$1 == "update" || $1
    - a new folder → register it in `app/data/series.json` as publish.md step 2 says;
    - `node $P/refs.mjs move <old key> <new key>` repoints every link in both locales;
    - add permanent redirects for `/posts/<old key>` and `/ja/posts/<old key>` to `next.config.js`, next to the existing ones;
-   - in step 7, set `sitePath` (and `series`) on both locales' notes.
+   - in step 7, set `sitePath` (and `series`) on both locales' notes, and move both notes to the new series' folder under `Posts/` (publish-pipeline's `stages/after-publish.md` step 5).
 5. **Commit** each note's changes: `update: <title> (<lang>)`.
 6. **Build, open a PR, merge** as publish.md step 7.2–7.5 (`links.mjs` silent, build with the log filter, restore `public/search-index.json`, push the branch, one PR titled `update: <titles>` listing each post's URL, `gh pr merge --squash --delete-branch`, pull main), logging to `/tmp/update-pipeline-build.log`. A fix to a post's wording or images goes into its working copy too. A failure one note causes and you can't fix → drop its commit (`git rebase -q --onto <c>^ <c>`), mark it blocked (its working copy is never applied), rebuild. A failure no update caused → all blocked; don't open a PR. A failing check or a merge `gh` refuses → all blocked; leave the PR open and report its URL.
 7. **Record**, only once the PR is merged, for the notes in it. First the bodies: `bash $P/sync.sh apply <note>...`; `conflict` (the author edited the note during the run) or `none` → leave the body, report under "Check", and go on. Then one property edit per note, `status` last: `updatedAt` = the post's, added if the note has none (skip only when the post has none, i.e. `minor` on a never-updated post); `sitePath`/`series` after a URL change; remove `updateNote`; `status: Published`.
 
 ## Rules
 
-- Vault writes: only the properties above, images copied into `assets/`, and each note's body from its working copy (step 7). Never edit a note in any other way (changes go into the working copy); never rename or move a note.
+- Vault writes: only the properties above, images copied into `assets/`, and each note's body from its working copy (step 7). Never edit a note in any other way (changes go into the working copy); never rename a note, and move one only after a URL change (step 4).
 - Never commit anything from the vault.
 - Never run `media.mjs` on, or otherwise resize, recompress or convert, a file in the vault: it shrinks the copies in `public/` only.
 - `main` is protected: never commit to it, push to it or merge into it locally; the run's changes go in through its one PR.

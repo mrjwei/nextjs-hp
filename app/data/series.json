@@ -1,15 +1,6 @@
 {
   "ai-and-design": { "en": "AI + Design", "ja": "AIとデザイン" },
-  "autoencoders": { "en": "Autoencoders", "ja": "オートエンコーダ" },
-  "cnn": { "en": "CNN Fundamentals", "ja": "CNNの基礎" },
-  "ml-metrics": { "en": "ML Metrics", "ja": "機械学習の評価指標" },
-  "authentication": { "en": "Authentication", "ja": "認証" },
-  "radio-buttons": { "en": "UX Insight: Radio Buttons", "ja": "UXインサイト:ラジオボタン" },
-  "AWS": { "en": "AWS", "ja": "AWS" },
-  "ai-agent": { "en": "AI Agent", "ja": "AIエージェント" },
-  "workflows": { "en": "Workflows", "ja": "ワークフロー" },
-  "transformers": { "en": "Transformers", "ja": "Transformer" },
-  "reflection": { "en": "Reflection", "ja": "振り返り" },
   "design-in-git": { "en": "Design in Git", "ja": "Design in Git:Gitで回すデザイン" },
-  "ml-lab": { "en": "ML Lab", "ja": "MLラボ" }
+  "ml-lab": { "en": "ML Lab", "ja": "MLラボ" },
+  "ai-agent": { "en": "AI Agents", "ja": "AIエージェント" }
 }

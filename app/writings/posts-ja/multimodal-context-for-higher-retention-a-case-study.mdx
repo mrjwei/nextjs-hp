@@ -1,0 +1,164 @@
+---
+title: "マルチモーダルなコンテキストで記憶の定着を高める:ケーススタディ"
+publishedAt: "2026-01-26"
+summary: "LingoBunにメディアのアップロード機能とメモ機能を実装した経緯を紹介します。きっかけはユーザーリサーチと、語学学習におけるマルチモーダルなコンテキストの重要性を示す理論的な裏づけでした。"
+tags: ["casestudy", "productivity", "dev"]
+project: "LingoBun"
+---
+
+- [ユーザーリサーチから見えたこと](#ユーザーリサーチから見えたこと)
+- [理論的な裏づけ:なぜコンテキストが効くのか](#理論的な裏づけなぜコンテキストが効くのか)
+  - [1. 単独で覚えるより、文脈の中で覚えるほうがよい](#1-単独で覚えるより文脈の中で覚えるほうがよい)
+  - [2. マルチモーダルな入力は記憶を強める](#2-マルチモーダルな入力は記憶を強める)
+  - [3. 自分なりのコンテキストが、より深い処理を促す](#3-自分なりのコンテキストがより深い処理を促す)
+- [リサーチからプロダクトの判断へ](#リサーチからプロダクトの判断へ)
+- [LingoBunのメディアとメモ](#lingobunのメディアとメモ)
+  - [メディア:制約が大事](#メディア制約が大事)
+  - [メモ:一石二鳥](#メモ一石二鳥)
+- [まとめ](#まとめ)
+- [参考文献](#参考文献)
+
+最近、LingoBunにメディアのアップロード機能(今のところは画像のみ)とメモ機能を追加しました。この判断は、ユーザーテストから直接生まれたものです。複数の参加者から、*自分なりのコンテキスト*があれば、語彙をもっと覚えやすく、使いやすくなるはずだという指摘がありました。
+
+この記事では、次のことを紹介します。
+
+- 語学学習におけるマルチモーダルなコンテキストとは何か
+- ユーザーリサーチからこのニーズがどのように見えてきたか
+- そして、全体としてシンプルさを重視しているにもかかわらず、なぜこの機能を実装すると決めたのか
+
+## ユーザーリサーチから見えたこと
+
+何度かのユーザーテストを通じて、繰り返し出てくるテーマがありました。学習者は、語彙の項目に*自分自身のコンテキスト*を添える方法を求めていたのです。
+
+ある参加者はこう話していました。
+
+> 例えば、食べ物とかだったら、イラストなり写真がついでについてきたら、分かりやすいかも。
+
+別の参加者からは、メモを使う方法が提案されました。
+
+> (提案された機能)単語ごとにメモを書けるメモ機能。
+> クイズのときのヒントとして使える。たとえば、その単語をどこで聞いたか、どこで読んだかを書いておくなど。
+
+私自身の語学学習の経験からも、このフィードバックには強く共感しました。それでも、すぐには実装しませんでした。
+
+LingoBunの中核にある原則の1つがシンプルさです。新しい機能はどれも、アプリの中心にある学習ループを薄めるのではなく、はっきりと強めるものでなければなりません。そこで何かをつくる前に、1つの問いに答えておきたいと考えました。
+
+*自分なりのコンテキストを加えることは、本当に記憶の定着を高めるのか。それとも、役に立ちそうに感じられるだけなのか。*
+
+## 理論的な裏づけ:なぜコンテキストが効くのか
+
+このアイデアを検証するために、語彙の習得、文脈の中での学習、マルチモーダルな記憶について二次調査を行いました。一貫して見られる知見がいくつかありました。
+
+### 1. 単独で覚えるより、文脈の中で覚えるほうがよい
+
+文脈の中で学んだ語彙は、単独で学んだ語彙よりも定着しやすいことが、繰り返し示されています(Nation, 2001; Webb, 2007; Huckin & Coady, 1999)。
+
+Nation(2001)とWebb(2007)は、意味のある文の中で単語に出会うほうが、丸暗記よりも深い語彙知識につながると述べています。文脈から意味を推測する学習者は、定義を直接調べるだけの学習者よりも語彙を定着させやすい傾向があります(Huckin & Coady, 1999; Pellicer-Sánchez, 2016)。
+
+つまり、意味のある場面の一部として学んだ単語は、長く記憶に残るということです。
+
+### 2. マルチモーダルな入力は記憶を強める
+
+記憶の研究も、複数のモダリティを組み合わせると想起が高まるという考えを支持しています(Mayer, 2009)。
+
+Paivioの二重符号化理論は、言語と視覚の両方で符号化された情報のほうが記憶されやすいとしています(Paivio, 1986)。画像、音声、テキストを用いた研究では、テキストのみの条件と比べて、直後の想起も遅延後の想起も高いことが示されています(Mayer, 2009; Kalyuga et al., 1999)。ARを用いたある語彙学習の研究では、視覚化された文脈に触れた学習者は、視覚情報のない学習環境と比べて、定着が有意に向上していました(Bacca et al., 2014; Hsu, 2017)。
+
+これは素朴な直感とも一致します。学習者が単語を見て、読んで、自分ごととして結びつけるほど、記憶を引き出すための経路が増えるのです。
+
+### 3. 自分なりのコンテキストが、より深い処理を促す
+
+あらかじめ用意された例文にとどまらず、学習者自身が生み出したコンテキストは特に強力なようです(Wittrock, 1974)。
+
+生成的学習の研究によれば、学習者は自分から積極的に結びつき(たとえば心の中のイメージや個人的なメモ)をつくると、より多くを記憶します(Wittrock, 1974; Fiorella & Mayer, 2015)。学習者自身がつくった画像や注釈を語彙と組み合わせる方法は、定着度のテストでキーワード法のみを上回ることが示されています(Leutner et al., 2009; Zhang & Ren, 2019)。
+
+これが重要なのは、LingoBunが単に単語に触れる量を増やすためのものではなく、能動的に関わってもらうためのものだからです。
+
+## リサーチからプロダクトの判断へ
+
+これらの裏づけを合わせると、はっきりした結論が見えてきました。
+
+*視覚とテキストのコンテキストを加えることは、役に立ちそうに感じられるだけではない。定着と応用を測定できるほど向上させる。*
+
+この知見はLingoBunのミッションと直接重なっていたので、2つのサブ機能を進めることにしました。
+
+- **メディアのアップロード**
+- **メモ**
+
+## LingoBunのメディアとメモ
+
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/multimodal-context-for-higher-retention-a-case-study/media_and_notes_1.png"
+    alt="「cosmetic」のLingoBunの単語カード。定義、例文、メディア欄にアップロードした皮が一部むけたリンゴの写真、メモ欄にメモが表示されている"
+    style={{ marginBottom: "8px", maxWidth: "400px" }}
+  />
+</figure>
+<figure style={{ textAlign: "center" }}>
+  <img
+    src="/multimodal-context-for-higher-retention-a-case-study/media_and_notes_2.png"
+    alt="アップロードしたリンゴの写真を、単語カードの上に原寸で開いたところ"
+    style={{ marginBottom: "8px", maxWidth: "400px" }}
+  />
+  <figcaption style={{ fontSize: "16px", color: "#666" }}>「cosmetic」にアップロードした画像とメモ、そして「cosmetic flaws」という使い方</figcaption>
+</figure>
+
+### メディア:制約が大事
+
+メディアには、画像、動画、音声、さらにはインタラクティブなコンテンツまで、さまざまな形があります。ただ、プライベートベータでの目的は網羅することではなく、検証することです。そこで、あえて機能を絞りました。
+
+- 画像のみ(今のところは)
+- 編集ツールはなし(今後も)
+- AIが生成した画像はなし(今後も)
+
+こうすることで、機能を軽く保ちながら、中心にある仮説を検証できます。*視覚的なコンテキストは、学習者の想起と使い方を高めるのか*という仮説です。
+
+### メモ:一石二鳥
+
+テストの中で、*母語での注釈や、言語ごとに分けた定義のグループ*がほしいという参加者もいました。
+
+気持ちはよくわかりますが、そうするとUIの複雑さも認知的な負荷も大きく増えてしまいます。代わりに、自由に書けるメモ欄を用意しました。ユーザーはそこに、次のようなことを書けます。
+
+- どの言語でも説明を書く
+- 自分用のリマインダーを書き留める
+- その単語にどこで出会ったかを記録する
+
+定義の欄(将来的には言語面で制約をかける予定です)とは違い、メモは意図的に自由なままにしています。これで2つの問題を一度に解決できます。
+
+1. 必要なときには、多言語での補足を支えられる
+2. 中心となる学習の流れのシンプルさを保てる
+
+## まとめ
+
+この機能は、直感だけで決めたものではありません。**ユーザーのフィードバック → 理論による検証 → 制約をかけた実装**というループから生まれました。
+
+LingoBunにとって、メディアとメモは「上級者向けの機能」ではありません。負担をかけすぎることなく、より深い理解と長く続く記憶を支えるものです。
+
+学習者が実際にこれらをどう使うかを観察し、次に何をするかは、意見ではなく行動に決めてもらうつもりです。
+
+## 参考文献
+
+Nation, I. S. P. (2001). Learning vocabulary in another language. Cambridge University Press. https://doi.org/10.1017/CBO9781139524759
+
+Webb, S. (2007). The effects of repetition on vocabulary knowledge. Applied Linguistics, 28(1), 46–65. https://doi.org/10.1093/applin/aml048
+
+Huckin, T., & Coady, J. (1999). Incidental vocabulary acquisition in a second language. Studies in Second Language Acquisition, 21(2), 181–193. https://doi.org/10.1017/S0272263199002028
+
+Pellicer-Sánchez, A. (2016). Incidental L2 vocabulary acquisition from reading: An eye-tracking study. Studies in Second Language Acquisition, 38(1), 97–130. https://doi.org/10.1017/S0272263115000224
+
+Paivio, A. (1986). Mental representations: A dual coding approach. Oxford University Press. https://doi.org/10.1093/acprof:oso/9780195066661.001.0001
+
+Mayer, R. E. (2009). Multimedia learning (2nd ed.). Cambridge University Press. https://doi.org/10.1017/CBO9780511811678
+
+Kalyuga, S., Chandler, P., & Sweller, J. (1999). Managing split-attention and redundancy in multimedia instruction. Applied Cognitive Psychology, 13(4), 351–371. `https://doi.org/10.1002/(SICI)1099-0720(199908)13:4<351::AID-ACP589>3.0.CO;2-6`
+
+Bacca, J., Baldiris, S., Fabregat, R., & Graf, S. (2014). Augmented reality trends in education. Educational Technology & Society, 17(4), 133–149. https://www.jstor.org/stable/jeductechsoci.17.4.133
+
+Hsu, T.-C. (2017). Learning English with augmented reality: Do learning styles matter? Computers & Education, 106, 137–149. https://doi.org/10.1016/j.compedu.2016.12.007
+
+Wittrock, M. C. (1974). Learning as a generative process. Educational Psychologist, 11(2), 87–95. https://doi.org/10.1080/00461527409529129
+
+Fiorella, L., & Mayer, R. E. (2015). Learning as a generative activity: Eight learning strategies that promote understanding. Cambridge University Press. https://doi.org/10.1017/CBO9781107707085
+
+Zhang, H., & Ren, L. (2019). Effects of learner-generated drawing on vocabulary learning. System, 84, 102167. https://doi.org/10.1016/j.system.2019.102167
+
+Leutner, D., Leopold, C., & Sumfleth, E. (2009). Cognitive load and science text comprehension: Effects of drawing and mentally imagining text content. Computers in Human Behavior, 25(2), 284–289. https://doi.org/10.1016/j.chb.2008.12.010

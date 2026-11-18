@@ -66,7 +66,7 @@ module.exports = {
       },
       {
         source: "/posts/ux-case-studies",
-        destination: "/posts/radio-buttons",
+        destination: "/posts",
         permanent: true,
       },
       {
@@ -81,7 +81,7 @@ module.exports = {
       },
       {
         source: "/ja/posts/ux-case-studies",
-        destination: "/ja/posts/radio-buttons",
+        destination: "/ja/posts",
         permanent: true,
       },
       // Project posts left their folders (2026-10): a project is not a series,
@@ -94,28 +94,18 @@ module.exports = {
         permanent: true,
       },
       {
-        source: "/posts/AWS/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture",
-        destination: "/posts/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture",
-        permanent: true,
-      },
-      {
         source: "/posts/LingoBun",
         destination: "/projects/lingobun",
         permanent: true,
       },
       {
         source: "/posts/AuStride",
-        destination: "/posts/austride-overview",
+        destination: "/projects",
         permanent: true,
       },
       {
         source: "/ja/posts/:folder(strobe-assistant|LingoBun|AuStride|ai-assisted-siem-workflow)/:slug",
         destination: "/ja/posts/:slug",
-        permanent: true,
-      },
-      {
-        source: "/ja/posts/AWS/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture",
-        destination: "/ja/posts/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture",
         permanent: true,
       },
       {
@@ -125,7 +115,7 @@ module.exports = {
       },
       {
         source: "/ja/posts/AuStride",
-        destination: "/ja/posts/austride-overview",
+        destination: "/ja/projects",
         permanent: true,
       },
       // The design-ops case study left the one-post design-case-studies
@@ -178,17 +168,127 @@ module.exports = {
         destination: "/ja/posts",
         permanent: true,
       },
+      // Retired posts (2026-11-18 audit): beginner-level explainers, thin
+      // case studies and posts that no longer fit the positioning. URLs with
+      // or without their old folder go to the Posts index; the retired
+      // LingoBun posts go to the LingoBun project; the emptied AuStride
+      // project goes to Projects.
+      {
+        source: "/posts/:folder(radio-buttons|authentication|ml-metrics|ai-and-design)?/:slug(radio-buttons|ux-insight-on-radio-buttons-1|ux-insight-on-radio-buttons-2|authentication|understanding-jwts|understanding-jwts-part-1|understanding-jwts-part-2|passkeys-demystified|designing-password-uis-that-enhance-security-and-usability|understanding-r-squared|austride-overview|revamping-my-personal-website-with-claude-design-claude-code|prototyping-made-easy-how-emerging-tooling-has-transformed-the-ui-design-workflow)",
+        destination: "/posts",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/:folder(radio-buttons|authentication|ml-metrics|ai-and-design)?/:slug(radio-buttons|ux-insight-on-radio-buttons-1|ux-insight-on-radio-buttons-2|authentication|understanding-jwts|understanding-jwts-part-1|understanding-jwts-part-2|passkeys-demystified|designing-password-uis-that-enhance-security-and-usability|understanding-r-squared|austride-overview|revamping-my-personal-website-with-claude-design-claude-code|prototyping-made-easy-how-emerging-tooling-has-transformed-the-ui-design-workflow)",
+        destination: "/ja/posts",
+        permanent: true,
+      },
+      {
+        source: "/posts/:slug(lingobun-learning-language-seriously|lingobun-logo-a-case-study-on-logo-design-in-the-era-of-ai|designing-for-visibility-adaptive-input-fields-in-lingobun)",
+        destination: "/projects/lingobun",
+        permanent: true,
+      },
+      {
+        source: "/projects/lingobun/:slug(lingobun-learning-language-seriously|lingobun-logo-a-case-study-on-logo-design-in-the-era-of-ai|designing-for-visibility-adaptive-input-fields-in-lingobun)",
+        destination: "/projects/lingobun",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/:slug(lingobun-learning-language-seriously|lingobun-logo-a-case-study-on-logo-design-in-the-era-of-ai|designing-for-visibility-adaptive-input-fields-in-lingobun)",
+        destination: "/ja/projects/lingobun",
+        permanent: true,
+      },
+      {
+        source: "/ja/projects/lingobun/:slug(lingobun-learning-language-seriously|lingobun-logo-a-case-study-on-logo-design-in-the-era-of-ai|designing-for-visibility-adaptive-input-fields-in-lingobun)",
+        destination: "/ja/projects/lingobun",
+        permanent: true,
+      },
+      {
+        source: "/projects/austride/:slug*",
+        destination: "/projects",
+        permanent: true,
+      },
+      {
+        source: "/ja/projects/austride/:slug*",
+        destination: "/ja/projects",
+        permanent: true,
+      },
+      // Series consolidated (2026-11-18 audit): the one- and two-post ML
+      // folders became ML Lab (/posts/cnn and /posts/autoencoders stay, as
+      // their "Part N of M" pages), workflows joined ai-agent, and the AWS
+      // folder's posts joined the Strobe project (/posts/<slug> redirects a
+      // project post to its project URL).
+      {
+        source: "/posts/:folder(cnn|autoencoders|transformers|ml-metrics|reflection)/:slug",
+        destination: "/posts/ml-lab/:slug",
+        permanent: true,
+      },
+      {
+        source: "/posts/:folder(transformers|ml-metrics|reflection)",
+        destination: "/posts/ml-lab",
+        permanent: true,
+      },
+      {
+        source: "/posts/workflows/:slug",
+        destination: "/posts/ai-agent/:slug",
+        permanent: true,
+      },
+      {
+        source: "/posts/workflows",
+        destination: "/posts/ai-agent",
+        permanent: true,
+      },
+      {
+        source: "/posts/AWS/:slug",
+        destination: "/posts/:slug",
+        permanent: true,
+      },
+      {
+        source: "/posts/AWS",
+        destination: "/projects/strobe",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/:folder(cnn|autoencoders|transformers|ml-metrics|reflection)/:slug",
+        destination: "/ja/posts/ml-lab/:slug",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/:folder(transformers|ml-metrics|reflection)",
+        destination: "/ja/posts/ml-lab",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/workflows/:slug",
+        destination: "/ja/posts/ai-agent/:slug",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/workflows",
+        destination: "/ja/posts/ai-agent",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/AWS/:slug",
+        destination: "/ja/posts/:slug",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/AWS",
+        destination: "/ja/projects/strobe",
+        permanent: true,
+      },
       // Misspelt slugs fixed (2026-10-15): understaning-jwts-* became
       // understanding-jwts-*. The JA routes only ever showed the
       // "not translated yet" page for them.
       {
         source: "/posts/:folder(authentication)?/understaning-jwts-:part(part-1|part-2)",
-        destination: "/posts/authentication/understanding-jwts-:part",
+        destination: "/posts",
         permanent: true,
       },
       {
         source: "/ja/posts/:folder(authentication)?/understaning-jwts-:part(part-1|part-2)",
-        destination: "/ja/posts/authentication/understanding-jwts-:part",
+        destination: "/ja/posts",
         permanent: true,
       },
       // Old /portfolio section (retired 2026-09; case studies folded into
@@ -200,7 +300,7 @@ module.exports = {
       },
       {
         source: "/portfolio/austride",
-        destination: "/posts/austride-overview",
+        destination: "/projects",
         permanent: true,
       },
       {
