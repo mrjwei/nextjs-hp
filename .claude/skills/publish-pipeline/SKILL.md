@@ -25,7 +25,7 @@ In the working copy, images use the translate stage's format (`stages/translate.
 | Stage | Runs on | Does | Instructions |
 | --- | --- | --- | --- |
 | publish | a Ready note (original or translation) | vault note → MDX post (plus placeholders for posts it links to), built, then merged to main through a pull request | `stages/publish.md` |
-| after-publish | the note just published, or a `finish` note | writes the note's pipeline properties | `stages/after-publish.md` |
+| after-publish | the note just published, or a `finish` note | writes the note's pipeline properties and files it under `Posts/` | `stages/after-publish.md` |
 | translate | a Published original with `requireTranslate: true` | writes the translation note next to it, as Review or Ready | `stages/translate.md` |
 
 Paths are relative to this skill's folder. Read a stage's file only when you're about to run it.
@@ -112,7 +112,7 @@ The translate stage lists in `reviewFocus` only the spots that need a human. The
 
 ## Rules
 
-- Vault writes: only the properties above, new translation notes, images copied into `assets/`, and a published note's body from its working copy (`sync.sh apply`, after the merge). Never edit a note in any other way (changes go into the working copy), never rename or move a note.
+- Vault writes: only the properties above, new translation notes, images copied into `assets/`, and a published note's body from its working copy (`sync.sh apply`, after the merge). Never edit a note in any other way (changes go into the working copy), never rename a note, and move one only to file it under `Posts/` (after-publish step 5).
 - Never run `media.mjs` on, or otherwise resize, recompress or convert, a file in the vault: it shrinks the copies in `public/` only.
 - Never commit anything from the vault. Repo changes happen only in the publish stage, one branch and one pull request per published note.
 - `main` is protected: never commit to it, push to it or merge into it locally. Every change goes in through a PR merged with `gh pr merge` (`stages/publish.md` step 7).
