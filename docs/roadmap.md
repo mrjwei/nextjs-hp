@@ -101,7 +101,7 @@ EN                                   JA
 
 ### Content (each becomes a project)
 
-Pinned now: projects UIUX (the WAmazing booking-form case study, JA only), LingoBun, AI+Sec, Strobe; posts are the four design × AI essays. DEN and KOD go to the front of `highlights.projects` when their case studies land.
+Pinned now (18 Nov): projects FuelDelivery, UIUX (the WAmazing booking-form case study, JA only), Strobe, AI+Sec, LingoBun, after the most recently active project, which Home always shows first; posts are the Design in Git hub and three design × AI essays, after the 2 newest posts. DEN and KOD go to the front of `highlights.projects` when their case studies land.
 
 1. [ ] **DEN, JA-first**: 「紙とスプレッドシートの福祉事業所に、人の確認を前提とした生成AIを入れる」 — 業務DX + 要件定義 + ◎/○/★ gate + eval results; describe the AI system as a pilot. Needs 加納社長's written permission for screenshots (seed data only). Track: `transformation`.
 2. [x] ~~WAmazing case study in EN~~ — not needed (16 Oct): the case study is for the Japanese market, so it stays JA-only (`requireTranslate: false`). Some posts are geo-specific like this; don't treat a missing translation of one as a gap.

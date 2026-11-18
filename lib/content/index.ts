@@ -483,6 +483,15 @@ export function hasProjectPage(project: TProject) {
   )
 }
 
+// When a project last published a real post (placeholders don't count), as
+// a timestamp; undefined when it has only placeholders.
+export function latestPublishedAt(project: TProject): number | undefined {
+  const dates = project.items
+    .filter((item) => !item.metadata.placeholder)
+    .map((item) => Date.parse(item.metadata.publishedAt))
+  return dates.length ? Math.max(...dates) : undefined
+}
+
 // Home highlights (see `highlights` in lib/content/profile.ts): the `latest`
 // newest of `items` (already newest first), then the pinned items in pin
 // order, then the rest of `items`, without repeats, up to `limit`. Pins with
