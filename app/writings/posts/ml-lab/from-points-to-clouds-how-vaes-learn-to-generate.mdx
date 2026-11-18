@@ -4,6 +4,10 @@ slug: "from-points-to-clouds-how-vaes-learn-to-generate"
 publishedAt: "2026-09-30"
 summary: "How a variational autoencoder turns an autoencoder's scattered latent points into overlapping Gaussian clouds: what the encoder outputs, how the KL term and β shape the latent space, and why z is obtained differently in training, reconstruction and generation."
 tags: ["ai", "machine-learning", "deep-learning"]
+seriesOrder: 5
+partOf: "autoencoders"
+partOfTitle: "Autoencoders"
+partNumber: 2
 ---
 
 - [What "variational" means in plain English](#what-variational-means-in-plain-english)
@@ -15,7 +19,7 @@ tags: ["ai", "machine-learning", "deep-learning"]
 - [Wrapping up](#wrapping-up)
 - [Further reading](#further-reading)
 
-In [my post on autoencoders](/posts/autoencoders/autoencoders-from-the-inside-out), I ended on a problem: an autoencoder squeezes every input into a single point in the latent space, and nothing stops those points from scattering into isolated clusters with big empty gaps between them. That is fine for compression, but if we pick a random code and ask the decoder to turn it into something new, we usually get garbage.
+In [my post on autoencoders](/posts/ml-lab/autoencoders-from-the-inside-out), I ended on a problem: an autoencoder squeezes every input into a single point in the latent space, and nothing stops those points from scattering into isolated clusters with big empty gaps between them. That is fine for compression, but if we pick a random code and ask the decoder to turn it into something new, we usually get garbage.
 
 A variational autoencoder (VAE) fixes this with two small changes: the encoder outputs a *distribution* instead of a point, and the loss gets an extra term that keeps all those distributions close to a shared prior. This post walks through both changes, and then through the part that took me longest to get: how and why `z` is drawn differently during training, reconstruction and generation.
 
@@ -132,7 +136,7 @@ A common trick to avoid collapse early in training is *KL annealing*: start with
 
 When I was studying AEs and VAEs, I realised that the key to fully understanding these architectures, and the reasoning behind their design, is to understand how the latent space is organised and how `z` is obtained in each case.
 
-As touched on in [my autoencoders post](/posts/autoencoders/autoencoders-from-the-inside-out#the-problem-with-the-reconstruction-error-target), the codes of an AE form clusters that can land anywhere in the latent space. In a VAE, each input maps to a Gaussian cloud instead, and all the clouds are pulled towards the prior:
+As touched on in [my autoencoders post](/posts/ml-lab/autoencoders-from-the-inside-out#the-problem-with-the-reconstruction-error-target), the codes of an AE form clusters that can land anywhere in the latent space. In a VAE, each input maps to a Gaussian cloud instead, and all the clouds are pulled towards the prior:
 
 <figure style={{ textAlign: "center" }}>
   <img

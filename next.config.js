@@ -94,11 +94,6 @@ module.exports = {
         permanent: true,
       },
       {
-        source: "/posts/AWS/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture",
-        destination: "/posts/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture",
-        permanent: true,
-      },
-      {
         source: "/posts/LingoBun",
         destination: "/projects/lingobun",
         permanent: true,
@@ -111,11 +106,6 @@ module.exports = {
       {
         source: "/ja/posts/:folder(strobe-assistant|LingoBun|AuStride|ai-assisted-siem-workflow)/:slug",
         destination: "/ja/posts/:slug",
-        permanent: true,
-      },
-      {
-        source: "/ja/posts/AWS/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture",
-        destination: "/ja/posts/migrating-a-traditional-monolithic-backend-to-a-cloud-native-serverless-microservices-architecture",
         permanent: true,
       },
       {
@@ -221,6 +211,71 @@ module.exports = {
       {
         source: "/ja/projects/austride/:slug*",
         destination: "/ja/projects",
+        permanent: true,
+      },
+      // Series consolidated (2026-11-18 audit): the one- and two-post ML
+      // folders became ML Lab (/posts/cnn and /posts/autoencoders stay, as
+      // their "Part N of M" pages), workflows joined ai-agent, and the AWS
+      // folder's posts joined the Strobe project (/posts/<slug> redirects a
+      // project post to its project URL).
+      {
+        source: "/posts/:folder(cnn|autoencoders|transformers|ml-metrics|reflection)/:slug",
+        destination: "/posts/ml-lab/:slug",
+        permanent: true,
+      },
+      {
+        source: "/posts/:folder(transformers|ml-metrics|reflection)",
+        destination: "/posts/ml-lab",
+        permanent: true,
+      },
+      {
+        source: "/posts/workflows/:slug",
+        destination: "/posts/ai-agent/:slug",
+        permanent: true,
+      },
+      {
+        source: "/posts/workflows",
+        destination: "/posts/ai-agent",
+        permanent: true,
+      },
+      {
+        source: "/posts/AWS/:slug",
+        destination: "/posts/:slug",
+        permanent: true,
+      },
+      {
+        source: "/posts/AWS",
+        destination: "/projects/strobe",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/:folder(cnn|autoencoders|transformers|ml-metrics|reflection)/:slug",
+        destination: "/ja/posts/ml-lab/:slug",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/:folder(transformers|ml-metrics|reflection)",
+        destination: "/ja/posts/ml-lab",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/workflows/:slug",
+        destination: "/ja/posts/ai-agent/:slug",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/workflows",
+        destination: "/ja/posts/ai-agent",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/AWS/:slug",
+        destination: "/ja/posts/:slug",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/AWS",
+        destination: "/ja/projects/strobe",
         permanent: true,
       },
       // Misspelt slugs fixed (2026-10-15): understaning-jwts-* became

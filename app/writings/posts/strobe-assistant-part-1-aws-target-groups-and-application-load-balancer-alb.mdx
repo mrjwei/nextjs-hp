@@ -181,7 +181,7 @@ If I were starting again, here's what I'd tell myself:
 1. **Choose the health-check path deliberately.** It should be cheap, unauthenticated, and never a WebSocket or streaming endpoint.
 2. **Tune health checks for faster deployments.** With the defaults, a target that has gone unhealthy needs 5 × 30 s = 2.5 minutes of passing checks before it gets traffic again. AWS's ECS guidance suggests something like a 5 s interval and a threshold of 2 for services that start quickly. Pair that with the ECS service's health-check grace period so slow-starting tasks aren't killed before they're ready.
 3. **Watch your wildcards.** `/acp*` matches `/acp` and `/acp/anything`—but also `/acpx`. That's harmless here, but `/api/*` and `/api*` are not the same rule.
-4. **Only let the ALB in.** The ALB's security group opens 443 to the internet. Tasks in public subnets with public IPs are otherwise reachable directly, so their security group should accept the container ports only from the ALB's security group (see [Networking and VPC](/posts/AWS/networking-and-vpc)).
+4. **Only let the ALB in.** The ALB's security group opens 443 to the internet. Tasks in public subnets with public IPs are otherwise reachable directly, so their security group should accept the container ports only from the ALB's security group (see [Networking and VPC](/posts/networking-and-vpc)).
 5. **In-memory sessions limit scaling.** The agent keeps session state in memory, so running more than one agent task would need target-group stickiness or an external session store such as DynamoDB.
 
 ## Wrapping up

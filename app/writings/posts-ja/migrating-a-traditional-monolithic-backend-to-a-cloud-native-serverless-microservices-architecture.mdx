@@ -218,7 +218,7 @@ HTTP APIには27本のルートがあり、6つのLambdaが処理しています
 
 ### 「username」と呼ばれる4つのもの
 
-ログインをCognitoに移行した後、後半のユーザーストーリー全体で401エラーが相次ぎました。根本原因は命名にありました。1人のユーザーに対して、「username」と呼ばれるものが4つ存在していたのです。クライアントが送信するJSONフィールド、アプリ独自の`username`属性、Cognitoの変更不可な内部`Username`(このユーザープールはメールアドレス形式のユーザー名を受け付けないため、UUIDになっています)、そしてそのUUIDか検証済みのメールエイリアスを受け付ける`InitiateAuth`の`USERNAME`パラメータです。バグは1つ目にありました。ログインハンドラーはリクエストボディから`email`を読み取っていましたが、クライアントが送っていたのは`username`でした。調査の全容は[Four Things Called "Username": An Email-vs-Username Login Bug in Amazon Cognito](/posts/AWS/four-things-called-username-an-email-vs-username-login-bug-in-amazon-cognito)(英語)にまとめています。
+ログインをCognitoに移行した後、後半のユーザーストーリー全体で401エラーが相次ぎました。根本原因は命名にありました。1人のユーザーに対して、「username」と呼ばれるものが4つ存在していたのです。クライアントが送信するJSONフィールド、アプリ独自の`username`属性、Cognitoの変更不可な内部`Username`(このユーザープールはメールアドレス形式のユーザー名を受け付けないため、UUIDになっています)、そしてそのUUIDか検証済みのメールエイリアスを受け付ける`InitiateAuth`の`USERNAME`パラメータです。バグは1つ目にありました。ログインハンドラーはリクエストボディから`email`を読み取っていましたが、クライアントが送っていたのは`username`でした。調査の全容は[Four Things Called "Username": An Email-vs-Username Login Bug in Amazon Cognito](/posts/four-things-called-username-an-email-vs-username-login-bug-in-amazon-cognito)(英語)にまとめています。
 
 ### インメモリ前提の習慣はDynamoDBでは通用しない
 

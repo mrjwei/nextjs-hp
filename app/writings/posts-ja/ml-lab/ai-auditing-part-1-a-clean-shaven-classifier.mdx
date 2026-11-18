@@ -4,7 +4,7 @@ slug: "ai-auditing-part-1-a-clean-shaven-classifier"
 publishedAt: "2026-11-06"
 summary: "スタジオ写真で93.7%の正解率を出したひげ判定モデルが、スマートフォンで撮った写真では61.9%まで落ちました。画質の差をどう測ったか、鮮明な写真を一度に1つの変数だけ劣化させてブレが原因だとどう証明したか、そしてスマホ風の画像でファインチューニングして20ポイントをどう取り戻したかを紹介します。"
 tags: ["ai", "machine-learning", "deep-learning", "evals", "qut"]
-seriesOrder: 1
+seriesOrder: 8
 partOf: "ai-auditing"
 partOfTitle: "AI Auditing"
 partNumber: 1
@@ -76,7 +76,7 @@ CNNにとってひげが何なのかを考えると、これは納得がいき�
 ほかに3つの確認結果も、同じ方向を指していました。
 
 - **外部セットの中でも、誤分類されたひげありの顔は、正しく分類されたものよりぼやけていました**(平均LVは50.1対61.1)。1つのデータセットの中でも、ブレが誤りと連動していたことになります。
-- **ROC AUCは0.985から0.846に下がりました。** モデルのスコアそのものが2クラスを分けられなくなっていたので、決定しきい値を変えれば直る問題ではありませんでした(AUCの読み方は[Understanding the ROC Curve](/posts/ml-metrics/understanding-the-roc-curve)(英語)で詳しく書いています)。
+- **ROC AUCは0.985から0.846に下がりました。** モデルのスコアそのものが2クラスを分けられなくなっていたので、決定しきい値を変えれば直る問題ではありませんでした(AUCの読み方は[Understanding the ROC Curve](/posts/ml-lab/understanding-the-roc-curve)(英語)で詳しく書いています)。
 - **[Grad-CAM](https://arxiv.org/abs/1610.02391)で、モデルがどこを見ているかがわかりました。** 鮮明な顔では、ヒートマップがあごの線とあごの先、つまりひげがあるはずの場所にしっかり乗っていました。同じ顔をぼかしたものでは、あごから頬や目、さらには背景へとずれていき、まるでどこを見ればいいのかわからなくなったかのようでした。
 
 <figure style={{ textAlign: "center" }}>

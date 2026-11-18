@@ -4,6 +4,7 @@ slug: "from-keeping-up-to-enjoying-it-how-ai-changed-the-way-i-study-machine-lea
 publishedAt: "2026-10-25"
 summary: "How studying QUT's IFN680 Advanced Machine Learning with AI compares with a year ago: diagrams and explanations grounded in my own code that made CNNs and VAEs sink in faster, and the toolkit I built around each AI tool's strengths and limits."
 tags: ["ai", "machine-learning", "productivity", "qut"]
+seriesOrder: 0
 ---
 
 - [A year ago: struggling to keep up](#a-year-ago-struggling-to-keep-up)
@@ -45,7 +46,7 @@ As a formula, $\text{RF}_l = \text{RF}_{l-1} + (k-1)$ is correct but abstract. D
   <figcaption>Each stacked 3×3 convolution adds a ring of coverage around what the unit could already see.</figcaption>
 </figure>
 
-With that picture in place, the follow-up question is much easier to answer: why do CNNs go deep instead of using one big kernel? Three stacked 3×3 layers reach the same 7×7 view as a single 7×7 kernel, but with 27 weights per input channel instead of 49, plus two extra non-linearities in between. I wrote this up in more detail in [my CNN series](/posts/cnn).
+With that picture in place, the follow-up question is much easier to answer: why do CNNs go deep instead of using one big kernel? Three stacked 3×3 layers reach the same 7×7 view as a single 7×7 kernel, but with 27 weights per input channel instead of 49, plus two extra non-linearities in between. I wrote this up in more detail in [my CNN series](/posts/ml-lab/cnn-kernels-and-convolution).
 
 ### Autoencoders vs VAEs: points vs clouds
 
@@ -58,7 +59,7 @@ That's accurate, but it's a lot of words for what is essentially a picture:
   <figcaption>A random code in an AE's gap decodes to garbage, while a sample from the VAE's prior lands where the decoder was trained.</figcaption>
 </figure>
 
-With that picture in mind, the code is easier to read too: why the VAE encoder outputs a mean and a log-variance instead of a single vector, and why its loss adds a KL term to the reconstruction error. It's also the foundation for the conditional VAE (cVAE) I worked on in one of the unit's projects. Both topics are covered in [my autoencoder series](/posts/autoencoders).
+With that picture in mind, the code is easier to read too: why the VAE encoder outputs a mean and a log-variance instead of a single vector, and why its loss adds a KL term to the reconstruction error. It's also the foundation for the conditional VAE (cVAE) I worked on in one of the unit's projects. Both topics are covered in [my autoencoder series](/posts/ml-lab/autoencoders-from-the-inside-out).
 
 ## Choosing the right tool for each task
 
