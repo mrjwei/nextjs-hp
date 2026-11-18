@@ -52,22 +52,26 @@ const features = {
   cv: false,
 }
 
-// Home highlights. Projects: pinned items show first, in this order, and the
-// remaining slots fill with the most recent. Posts: the 2 newest posts show
-// first, then the pins in this order (skipping any already shown), so only the
-// first pins that fit are used. Shared by EN and JA; a pin with no match in a
-// language (e.g. an untranslated post) is skipped there.
+// Home highlights, shared by EN and JA (components/views/home-view.tsx).
+// - Projects: the most recently active project first (by its newest real
+//   post), so new work shows up on its own, then these pins in order, then
+//   the rest by recency.
+// - Posts: the 2 newest posts first, then these pins in order (skipping any
+//   already shown), so only the first pins that fit are used.
+// Project posts and "Coming soon" placeholders never fill a Posts slot. A pin
+// with no match in a language (e.g. an untranslated post) is skipped there.
 export const highlights: { projects: string[]; posts: string[] } = {
   // Project IDs, as in a post's `project` frontmatter, e.g. "LingoBun".
   // "UIUX" is the WAmazing booking-form case study: JA only by design (its
-  // audience is Japan), so check-parity's "no EN version" warning for it is expected.
-  projects: ["UIUX", "LingoBun", "AI+Sec", "Strobe"],
+  // audience is Japan), so check-parity's "no EN version" warning for it is
+  // expected. DEN and KOD go to the front when their case studies land.
+  projects: ["FuelDelivery", "UIUX", "Strobe", "AI+Sec", "LingoBun"],
   // Post slugs (the file name without .mdx), e.g. "ai-design-guidelines".
   posts: [
+    "i-was-reinventing-git-in-figma",
     "designing-infrastructure-not-assets",
-    "from-requirements-to-assumptions",
     "ai-design-guidelines",
-    "ai-productivity-gains-not-evenly-shared",
+    "from-requirements-to-assumptions",
   ],
 }
 

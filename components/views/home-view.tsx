@@ -13,6 +13,7 @@ import {
   getAllSortedWritings,
   groupProjects,
   isProject,
+  latestPublishedAt,
   pickHighlights,
 } from "@/lib/content"
 import { highlights, profile } from "@/lib/content/profile"
@@ -22,11 +23,16 @@ import { localeHref, type Lang } from "@/lib/i18n/config"
 export function HomeView({ lang }: { lang: Lang }) {
   const p = profile[lang]
   const writings = getAllSortedWritings(lang)
-  const projects = pickHighlights(groupProjects(writings), {
-    pinned: highlights.projects,
-    keyOf: (project) => project.id,
-    limit: 4,
-  })
+  // Selected projects: the most recently active project first, so new work
+  // always shows, then pinned projects, then the rest by recency. Activity
+  // counts published posts only, and a project with nothing but "Coming soon"
+  // placeholders isn't shown.
+  const projects = pickHighlights(
+    groupProjects(writings)
+      .filter((project) => latestPublishedAt(project) !== undefined)
+      .sort((a, b) => latestPublishedAt(b)! - latestPublishedAt(a)!),
+    { pinned: highlights.projects, keyOf: (project) => project.id, limit: 4, latest: 1 }
+  )
   // Selected writing: the 2 newest posts, so new writing always shows, then
   // pinned posts. Project posts belong to "Selected projects" above, and
   // unwritten "Coming soon" placeholders aren't ready, so neither is picked here.
