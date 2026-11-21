@@ -47,6 +47,9 @@ export type TMetadata = {
   // of a series an overview already links to). Listed as usual, but badged
   // "Coming soon" on cards and the post page, and never a project's lead.
   placeholder?: boolean
+  // Set by the content index (never in MDX) on a post dated after the build's
+  // day: it's served as a placeholder until the rebuild on its publish date.
+  scheduled?: boolean
   // Short one-word project ID (e.g. "LingoBun"). Its presence makes the post a
   // project: listed on /projects and badged on every card.
   project?: string
@@ -74,6 +77,8 @@ type ContentKind = "writing"
 type ContentIndexFile = {
   version: 1
   generatedAt: string
+  // The site's day (Australia/Brisbane) when the index was built.
+  siteDate?: string
   writings?: Array<{
     slug: string
     filePath: string

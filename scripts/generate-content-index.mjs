@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { siteToday } from "./site-date.mjs";
 
 const CWD = process.cwd();
 const OUTPUT_PATH = path.join(CWD, "app", "data", "content-index.json");
@@ -197,6 +198,31 @@ function assertOptionalStringArray(value, field, absFilePath) {
   }
 }
 
+// A post dated after today (in the site's time zone) is staged: its MDX is on main, but until its day the site
+// serves it as a "coming soon" placeholder, so it stays off listings, search, the sitemap and RSS, and its own URL
+// shows only when it's due. The daily scheduled-publish workflow rebuilds the site on that day (see docs/publish.md).
+const TODAY = siteToday();
+
+function scheduledBody(publishedAt, lang) {
+  const date = new Date(`${publishedAt}T00:00:00Z`);
+  if (lang === "ja") {
+    const d = new Intl.DateTimeFormat("ja-JP", { dateStyle: "long", timeZone: "UTC" }).format(date);
+    return `この記事は${d}に公開予定です。\n`;
+  }
+  const d = new Intl.DateTimeFormat("en-AU", { dateStyle: "long", timeZone: "UTC" }).format(date);
+  return `This post will be published on ${d}.\n`;
+}
+
+function applySchedule(entry, lang) {
+  const { metadata } = entry;
+  if (metadata.placeholder || metadata.draft || metadata.archived || metadata.publishedAt <= TODAY) return entry;
+  return {
+    ...entry,
+    metadata: { ...metadata, placeholder: true, scheduled: true },
+    content: scheduledBody(metadata.publishedAt, lang),
+  };
+}
+
 function buildIndexSectionForLang(sectionKey, config, lang, baseDir) {
   if (!isDirectory(baseDir)) {
     return [];
@@ -275,7 +301,7 @@ function buildIndexSectionForLang(sectionKey, config, lang, baseDir) {
       if (meta[field] != null) assertString(meta[field], field, absFilePath);
     }
 
-    return {
+    return applySchedule({
       slug,
       filePath: path.relative(CWD, absFilePath),
       collection: inferredCollection,
@@ -311,7 +337,7 @@ function buildIndexSectionForLang(sectionKey, config, lang, baseDir) {
         confidential: typeof meta.confidential === "boolean" ? meta.confidential : undefined,
       },
       content,
-    };
+    }, lang);
   });
 }
 
@@ -325,13 +351,15 @@ function main() {
   const index = {
     version: 1,
     generatedAt: new Date().toISOString(),
+    // The site's day at build time: posts dated up to this day are live in this build.
+    siteDate: TODAY,
     writings: buildIndexSection("writings", CONTENT.writings),
   };
 
   fs.writeFileSync(OUTPUT_PATH, JSON.stringify(index, null, 2) + "\n", "utf-8");
 
   console.log(
-    `Generated content index at ${path.relative(CWD, OUTPUT_PATH)} (writings=${index.writings.length})`
+    `Generated content index at ${path.relative(CWD, OUTPUT_PATH)} (writings=${index.writings.length}, scheduled=${index.writings.filter((w) => w.metadata.scheduled).length}, siteDate=${TODAY})`
   );
 }
 
