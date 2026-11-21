@@ -1,14 +1,106 @@
 ---
-title: "Recall Was 100% and Meant Nothing"
+title: "Recall Was 100% and Meant Nothing: Fixing LLM Proofreading False Positives Before the Model"
 publishedAt: "2026-11-21"
-summary: "Coming soon. Measuring three checks in an AI proofreader for technical manuals on a 20-page sample, and tracing most of its typo false positives back to text extraction, before the model ever saw the text."
-tags: ["casestudy", "ai", "llm", "evals", "uiux"]
+summary: "I measured three checks in an AI proofreading tool for technical manuals on a 20-page sample. This post covers what a number hides when you haven't decided how to measure it, and how I traced most of the typo findings to a stage before the model, text extraction, and fixed them there."
+tags: ["casestudy", "ai", "llm", "evals"]
 project: "ManualProof"
-placeholder: true
 ---
 
-{/* Placeholder page: replace this file when the full post is published. */}
+- [Measuring three checks on 20 pages](#measuring-three-checks-on-20-pages)
+- [What should have been decided before measuring](#what-should-have-been-decided-before-measuring)
+- [Sorting the false positives by cause](#sorting-the-false-positives-by-cause)
+- [Forming a hypothesis, and getting it wrong](#forming-a-hypothesis-and-getting-it-wrong)
+- [Removing only the spaces that can go](#removing-only-the-spaces-that-can-go)
+- [Re-measuring on the same 20 pages](#re-measuring-on-the-same-20-pages)
+- [If I did it again](#if-i-did-it-again)
+- [References](#references)
 
-This post is still being written and will be published here soon.
+> **A note on privacy:** This is the first post in the [case study of AI proofreading for technical manuals](/projects/manualproof/ai-proofreading-for-technical-manuals). The company and the product aren't named, and the only numbers used are counts from a 20-page sample of one manual.
 
-In the meantime, see [AI Proofreading for Technical Manuals: Five Weeks of Client Work](/projects/manualproof/ai-proofreading-for-technical-manuals), the overview of this project.
+The first thing I was asked to do on this project was measure accuracy. Measuring taught me two things. A number produced before you've decided how to measure fools you easily. And many of the errors that looked like the model's fault had been created before the model ever read the text.
+
+## Measuring three checks on 20 pages
+
+The subjects were three checks the team wanted to make more accurate: typo detection by an LLM, detection of overlong sentences judged by character count (with the LLM suggesting rewrites), and detection of inconsistent terminology by an LLM. I ran them over the first 20 pages of one manual, checked each finding against the original PDF one by one, and labelled it right or wrong.
+
+| Check | Findings | Correct findings |
+|---|---:|---:|
+| Typos | 29 | 2 |
+| Overlong sentences | 46 | 23 |
+| Inconsistent terms | 21 | 1 |
+
+More important than the numbers themselves were the decisions I had to make while building this table.
+
+## What should have been decided before measuring
+
+**Each check measures something different.** The overlong-sentence check mechanically tests whether a sentence exceeds a set number of characters. So what its right-or-wrong labels measured wasn't the model but how sentences had been cut out of the PDF. If a table or a table of contents ran together into a single "sentence", it was counted as a false positive. The LLM's actual job in this check is suggesting rewrites, and those should be judged not as right or wrong but on whether the meaning is kept and the text gets easier to read. Inconsistent terminology is also a task of grouping terms rather than spotting individual words, so it really needs counting differently. Lining all three up in the same columns of one sheet hides these differences.
+
+**Recall can't be measured with the model's own answers.** If you build the answer key from the model's findings, every "real error" on it is one the model found. Misses are always zero, and recall is always 100%. Sure enough, the misses column on our sheet stayed at zero.
+
+To count misses, you need an answer key built independently of the model: either people read the pages and list the errors, or you pool the results of several systems that work differently. Say the 20 pages contain 8 errors and the model finds 3 of them. If the answer key is the model's own findings, recall is 3/3, or 100%. With an independently built key it's 3/8, or 38%, and the 5 misses become visible for the first time.
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/recall-was-100-and-meant-nothing/kod-recall-circularity.svg" alt="Top row: the answer key is the model's own findings, so only the 3 it found count as correct and recall is 100%. Bottom row: every error on the pages is listed independently, adding 5 misses to the 3 found, and recall is 38%. Illustrative numbers" style={{ marginBottom: "8px" }} />
+  <figcaption>When the answer key is the model's own answers, misses can't be counted. Illustrative numbers.</figcaption>
+</figure>
+
+Precision (how many of the findings were correct), on the other hand, this approach did measure. What it didn't measure was recall. For a proofreading tool, misses are the worst failure, so this isn't a cosmetic problem. In information retrieval, it's been pointed out that even pooling, which builds the answer key from the results of several systems, tends to overestimate recall (Zobel, 1998). With the results of a single model, all the more so.
+
+**How you count "one" finding moves the numbers.** If the same word is flagged five times on the same page, is that five findings or one? The typo check flagged "くださ い" five times on one page, so the number of false positives changes with the counting rule. Nobody had decided that rule.
+
+One more thing: before labelling the findings myself, I'd had an LLM judge the same findings. Comparing the two, it disagreed with me in at least 5 cases. LLM judges can agree well with human judgement under the right conditions, but they also have biases, such as being swayed by the order things are presented in or by the length of answers, and they only become trustworthy once checked against human labels (Zheng et al., 2023). Checking showed that on this project the LLM's judgements were no use beyond a first draft. That said, I labelled the findings after seeing the LLM's judgements, so I may have been swayed by them.
+
+## Sorting the false positives by cause
+
+I sorted the typo check's 29 findings (from the first run, which I'd labelled) by cause.
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/recall-was-100-and-meant-nothing/kod-false-positives-by-cause.svg" alt="Horizontal bar chart breaking down the typo check's 29 findings: 12 stray spaces between Japanese characters, 12 other false positives, 3 suggestions identical to the original, and 2 real errors" style={{ marginBottom: "8px" }} />
+  <figcaption>12 of the 29 were created before the model read the text.</figcaption>
+</figure>
+
+Only 2 were real errors. 3 of the false positives were suggestions exactly the same as the original sentence. The 12 "other" ones included treating the manual's own style rules as errors, suggestions that were mere rewordings, and misread tables. The remaining 12 were spaces in the middle of Japanese words that the model flagged as typos, such as "くださ い" and "デバ イス". The actual manual has no such spaces. The errors were created before the model, so no change to the model or the prompt could fix them at the root. The feedback the team put together also listed "false positives from noise in the data (spaces present or missing)" as one of the issues with the typo and terminology checks, with better preprocessing as the remedy.
+
+## Forming a hypothesis, and getting it wrong
+
+My first hypothesis was that the library that extracts text from the PDF was adding the spaces. The library has an option to suppress inserted spaces, so I turned it on and extracted the same pages again. The output didn't change by a single byte.
+
+The cause was in our own code. The library returns text one visual line of the PDF at a time, and our code joined those lines with spaces. That's fine for English, but in Japanese, which puts no spaces between words, every line wrap put a space in the middle of a word. Headings set vertically came out with a space between every character.
+
+## Removing only the spaces that can go
+
+Removing every space wasn't the answer. Around letters and digits, as in model numbers, units and standard names, spaces carry meaning. So I removed a space only when the characters on both sides were Japanese, and kept any space next to a letter or a digit.
+
+I also considered a more aggressive version that would remove spaces between digits and Japanese too. But it risked joining things that must stay apart, as in "図1 本体" (Figure 1, main unit). I decided to measure its effect before deciding whether to add it, and left it out. In the end, I didn't run that measurement while I was there.
+
+I wrote unit tests for both the spaces that should go and the spaces that should stay, and added the step at the end of the text-assembly process.
+
+## Re-measuring on the same 20 pages
+
+After the fix, I ran the same 20 pages again with the same model and the same settings.
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/recall-was-100-and-meant-nothing/kod-before-after-space-fix.svg" alt="Horizontal bar chart comparing typo findings on the same 20 pages before and after the space fix: all findings went from 29 to 21, findings containing a space from 14 to 4, and findings containing a space between Japanese characters from 12 to 0" style={{ marginBottom: "8px" }} />
+  <figcaption>Every finding caused by a space between Japanese characters disappeared.</figcaption>
+</figure>
+
+Findings fell from 29 to 21, and findings containing a space between Japanese characters went from 12 to 0. Across all findings containing a space, it was 14 to 4. The remaining 4 were all spaces next to letters or digits, kept on purpose.
+
+But these are counts, not accuracy. I didn't label the 21 findings after the fix. And with the spaces gone, a different kind of false positive came into view: findings on long strings where headings had run together many times, and suggestions that reversed the meaning, such as changing "prone to freezing" to "resistant to freezing" in a handling caution. Seeing the latter convinced me that the final human check can't be dropped.
+
+By the end of the sprint, I'd also added two things to the preprocessing, both with unit tests: trimming page numbers, headers and the like before proofreading, and removing tables and warning blocks. What the team checked this time wasn't the results of the LLM checks but the preprocessing output itself, before and after the change. Looking at the LLM's results would have mixed up whether a cause lay in the preprocessing or in the model.
+
+## If I did it again
+
+The client hadn't provided ground-truth labels, so "Is accuracy improving?" couldn't be answered until the end of the sprint. If I join a similar project, I'd want to agree on three things at kickoff:
+
+- A one-page labelling guideline saying what counts as one finding and what counts as an error
+- A sample of about 20 pages, with an answer key in which people have listed every error on them
+- Two people to build that answer key, each labelling independently against the guideline without seeing the model's output, and settling disagreements by discussion
+
+None of these is a big job. But without them, as improvements pile up, nobody can say whether anything got better.
+
+## References
+
+- Zobel, J. (1998). [How Reliable are the Results of Large-Scale Information Retrieval Experiments?](https://www.cs.cornell.edu/courses/cs574/2002fa/assignments.org/zobel-sigir98.pdf) SIGIR '98.
+- Zheng, L. et al. (2023). [Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena](https://arxiv.org/abs/2306.05685). NeurIPS 2023.
