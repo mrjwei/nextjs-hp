@@ -1,0 +1,50 @@
+---
+title: "AI Proofreading for Technical Manuals: Five Weeks of Client Work"
+publishedAt: "2026-11-20"
+summary: "I spent about five weeks helping build an AI proofreading tool that checks technical manuals for a major manufacturer. The work split in two: measuring how accurate the findings were and cutting the noise at its source, and building the screens for the people who verify each finding. Each half has its own post; this one is the way in."
+tags: ["casestudy", "ai", "llm", "evals", "uiux"]
+project: "ManualProof"
+lead: true
+track: "ai-engineering"
+---
+
+- [What I did](#what-i-did)
+- [The posts](#the-posts)
+
+> **A note on privacy:** This is a case study of client work. The company, the client, the product and the in-house standard aren't named, and the client's industry and the timing are kept general. No text from the manuals appears here, and the example sentences in the diagram are my own. The only numbers used are counts from a 20-page sample of one manual.
+
+During the winter break of my master's at QUT, I joined a development company in Japan to help build an AI proofreading tool for technical manuals. The client was a major manufacturer, and a single manual runs to several hundred pages. The tool combines rules and an LLM to check for Japanese-language errors, inconsistent terminology, and conformance with the client's in-house style standard.
+
+The tool was built to miss nothing, and so it flagged too much. My work fell into two broad parts: measuring which findings were real and cutting the noise at its source, and building the screens for the people who verify each finding one by one.
+
+I was involved for about five weeks, four days a week: one agile sprint. That's not a long engagement, so these posts are less about the size of the results and more about what I decided, and how, within a short window.
+
+| | |
+|---|---|
+| Type | B2B client work (as part of a development company's team) |
+| Subject | Technical manuals for products (Japanese, several hundred pages each) |
+| Checks | Japanese proofreading, terminology checks, conformance with the in-house style standard |
+| How it works | A checking engine combining rules and an LLM, plus a web admin interface |
+| Duration | About five weeks over a university winter break (four days a week) |
+| Way of working | A small development team; weekly meetings with the client in Japanese |
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/ai-proofreading-for-technical-manuals/proofreader-pipeline-strip-my-work-undated.png" alt="Diagram of the proofreading pipeline (text extraction, checks, trimming false positives, human review) and the work I did at each stage, with a cause found during evaluation fed back to the extraction stage" style={{ marginBottom: "8px" }} />
+  <figcaption>The proofreading pipeline, and where my work sat in it.</figcaption>
+</figure>
+
+## What I did
+
+- **The team's development groundwork.** I set up the rules file for the coding agent, verification and formatting hooks, the branching strategy and the implementation roadmap.
+- **The first review screens.** I built the flow from upload through review to report export and run history. Review and reports were cut from that sprint's delivery.
+- **Evaluating accuracy.** I ran three checks over 20 pages of one manual and labelled every finding they raised as right or wrong myself.
+- **Fixing false positives at their source.** I found that most of the typo findings were being created at the text-extraction stage, implemented space normalisation for Japanese text, and re-measured on the same pages.
+- **Better preprocessing.** I implemented trimming of page numbers, headers and the like, and removal of tables and warning blocks, with unit tests.
+- **Design notes.** I wrote designs for detecting warning symbols and for taking XML as input alongside PDF. Neither got as far as implementation while I was there.
+
+## The posts
+
+1. [Recall Was 100% and Meant Nothing](/projects/manualproof/recall-was-100-and-meant-nothing): how I measured accuracy, and how I traced the false positives to their cause and fixed them.
+2. [Reviewing an AI That Flags Too Much](/projects/manualproof/reviewing-an-ai-that-flags-too-much): the screens for verifying findings, and making decisions while the scope kept moving.
+
+I left at the end of a sprint, not the end of the project. I'd heard the client planned to start using the tool in-house a few months later, but I don't know how things went after I left.
