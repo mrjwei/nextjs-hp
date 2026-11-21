@@ -1,0 +1,100 @@
+---
+title: "Measuring Retrieval Honestly with n = 25"
+slug: "measuring-retrieval-honestly-with-n-25"
+publishedAt: "2026-11-12"
+summary: "My retrieval evaluation's headline result was a loss: fusing two indexes scored an MRR of 0.89 against 0.92 for one. How I compared designs with paired bootstrap intervals, why the loss turned out to be a labelling artefact, what reciprocal rank fusion was actually doing, and what 25 questions can and can't tell you."
+tags: ["evals", "ai", "aws", "qut"]
+project: "Strobe"
+partOf: "strobe-assistant"
+partOfTitle: "Strobe Assistant"
+partNumber: 3
+---
+
+- [Why two indexes](#why-two-indexes)
+- [RRF, and what it was actually doing](#rrf-and-what-it-was-actually-doing)
+- [The results](#the-results)
+- [What the −0.03 turned out to be](#what-the-003-turned-out-to-be)
+- [256 or 1,024 dimensions?](#256-or-1024-dimensions)
+- [What n = 25 can and can't tell you](#what-n-25-can-and-cant-tell-you)
+- [What I'd measure next](#what-id-measure-next)
+
+The headline number from my retrieval evaluation was a loss. Searching two indexes and fusing the results, the design I'd argued for, scored a mean reciprocal rank (MRR) of 0.89. The image index on its own scored 0.92, and the paired confidence interval said the gap wasn't noise.
+
+This post is about what that number turned out to mean, what else the evaluation showed, and how far 25 questions can be trusted. It's part of the Strobe Assistant project, a chat agent over a user's own photos and posts; the [project overview](/projects/strobe/strobe-assistant-extending-strobe-with-an-ai-agent) has the whole system.
+
+## Why two indexes
+
+Photos are embedded with Amazon Titan Multimodal Embeddings G1, which puts images and short text in one vector space, so "noodles" can find a photo of noodles. Posts and comments are text, and a post can be 5,000 characters long. Titan Multimodal's text input is capped at 256 tokens (about 1,000 English characters), it's English-only, and it's trained to match text to *images*, not to other text.
+
+So text goes into a second index, embedded with Titan Text Embeddings V2, which takes 8,192 tokens in over 100 languages. A search embeds the question twice, queries both indexes in parallel, and merges the two result lists. The alternative was one multimodal index for everything. It's simpler, but it would silently cut long posts after about a thousand characters and give Japanese posts weak vectors.
+
+One honest gap belongs here: every post in my evaluation was under 140 characters, so the evaluation never came near the 256-token limit. It shows that a text index adds something. It doesn't show that the text index needed a *different model*; that claim rests on the documented limits, not on a measurement.
+
+## RRF, and what it was actually doing
+
+The two indexes return distances from two different models, and those can't be compared: a 0.4 in one space doesn't mean the same as a 0.4 in the other. Reciprocal rank fusion (RRF) sidesteps that by using only positions. Each item scores `1/(k + rank)` in each list it appears in, the scores are summed, and the usual `k` is 60. Its strength is agreement: an item that both lists rank highly beats one that only one list ranks first.
+
+Reading the stored results, I found that agreement never happens in Strobe. Image vectors are keyed by the photo's storage key, and text vectors by the post or comment ID, so no item can appear in both lists. Every fused score therefore has exactly one term. Image #1 and text #1 tie, then image #2 and text #2, and a stable sort keeps the image list first. The fused list is simply image, text, image, text…, and `k` has no effect on the order.
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/measuring-retrieval-honestly-with-n-25/rrf-strobe-interleave.svg" alt="Textbook RRF, where two lists share items and agreement wins, next to Strobe, where the lists never share an item and fusion becomes a strict image-text interleave. Below, a real eval question where the expected photo ends up third" style={{ marginBottom: "8px" }} />
+  <figcaption>What I'd described as "RRF" was really rank-based interleaving.</figcaption>
+</figure>
+
+That's still a sound design, since it guarantees the agent sees both kinds of evidence. But it isn't what I'd described, and it explains a result below: with five results, fusion always returns three photos and two text hits.
+
+## The results
+
+The corpus was 49 of my own photos in four themes (food, travel, sports and pets) with their posts, and 25 questions in six categories. The ground truth came from the folder each photo was in, not from the captions the vision model wrote, so the model wasn't grading its own work. For each configuration, I measured recall@5 (how many of the right photos made the top five) and MRR (how high the first right answer ranked), with 95% bootstrap intervals over questions.
+
+| Configuration | recall@5 [95% CI] | MRR [95% CI] |
+|---|---|---|
+| Image index only | 0.75 [0.65–0.85] | 0.92 [0.84–0.98] |
+| Text index only | 0.08 [0.02–0.16] | 0.16 [0.04–0.32] |
+| Fused (RRF) | 0.77 [0.65–0.88] | 0.89 [0.79–0.97] |
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/measuring-retrieval-honestly-with-n-25/retrieval-headline.png" alt="Dot plot of recall@5 and MRR with 95% confidence intervals for five configurations: image index only, text index only, fused, and local exact search at 1,024 and 256 dimensions" style={{ marginBottom: "8px" }} />
+  <figcaption>The two local runs are discussed below. Recall@5 can't exceed 0.90 here, because some questions have more than five right photos.</figcaption>
+</figure>
+
+The intervals overlap a lot, but overlapping intervals don't mean "no difference". Every configuration answers the same 25 questions, so the right comparison is question by question. I bootstrapped the *difference* for each question pair:
+
+- **Overall recall@5:** fused minus image-only is +0.02, CI [−0.07, +0.11]. Within noise.
+- **Recall@5 on text questions:** +0.37, CI [+0.17, +0.50]. Clearly better, and it's exactly the text index's job.
+- **MRR:** −0.03, CI [−0.05, −0.01]. Clearly worse.
+
+## What the −0.03 turned out to be
+
+MRR averages `1/rank` of the first right answer, so losing rank 1 costs a question 0.5, while slipping from 2 to 3 costs about 0.17. I went through the stored results question by question. In 21 of the 25 questions, nothing changed. In four, the first right answer moved from rank 2 to rank 3, and `4 × (1/2 − 1/3) ÷ 25 = 0.027`. That's the whole −0.03.
+
+The more interesting question was why those four started at rank 2. In each case, the image index's top hit was a second copy of the expected photo. Ten of the 49 photos had been uploaded twice when I re-seeded the corpus, and my labels only listed the first copy. So the image index ranked the duplicate first and got no credit. Fusion then put text hit #1 at rank 2 (the interleave), pushing the labelled photo to 3. In two of the four, that text hit was the very post that contains the expected photo, which the labels didn't credit either.
+
+Re-scoring the stored top-five lists with the duplicates counted as relevant, both runs reach MRR 1.00 and the difference disappears. That's a re-score, not a rerun, and I'd want to fix the corpus and rerun before quoting it as a result.
+
+The paired interval did its job: the difference was real. What it couldn't tell me was the *cause*, which here was a property of my labels, not of fusion. Only reading the misses showed that.
+
+## 256 or 1,024 dimensions?
+
+I also tested whether smaller vectors would do. Ranking by exact cosine similarity on a local copy of the embeddings, 256 dimensions scored recall@5 0.79 and MRR 0.98, against 0.75 and 0.92 for the default 1,024. On first sight, smaller looked better.
+
+The paired comparison says otherwise. The MRR difference is −0.06 with CI [−0.14, 0.00], and recall@5 is −0.04 with CI [−0.09, 0.00]. Both are within noise. The honest result is that I found **no measurable difference for a quarter of the size**, not that 256 dimensions are better. A side result was that exact search at 1,024 dimensions gave exactly the same numbers as S3 Vectors' approximate search, so at this size the index loses nothing.
+
+I kept 1,024. At this scale, the saving is smaller than it looks: S3 Vectors bills each write with a 128 KB minimum, so a 1 KB vector costs the same to write as a 4 KB one, and only storage and query data shrink. At real volume, I'd revisit it, with this comparison as the starting point rather than an assumption.
+
+## What n = 25 can and can't tell you
+
+Twenty-five questions are enough to see a large effect in one category (+0.37 on text questions) and to say an overall difference is small. They aren't enough to compare categories with one or four questions in them.
+
+The clearest example is the one Japanese question, 「京都のお寺の写真」 ("photos of Kyoto temples"). Titan Multimodal is documented as English-only, and I marked this question as an expected miss. Instead, all three expected photos made the top five. With n = 1, that's an anecdote, not a finding. It's also a reminder that a documented limit and a measured one are different things.
+
+The set is also easy: four distinct themes and 49 photos, so scores above 0.9 are expected. I'd use these numbers to compare configurations on the same questions, never as an absolute claim about search quality.
+
+## What I'd measure next
+
+- **Fix the labels, then rerun.** Either label the duplicates or remove them, so MRR measures retrieval rather than bookkeeping.
+- **Fuse at the post level.** Mapping image hits to the post they belong to before fusing would let a photo and its own post's text reinforce each other, which is what RRF is for.
+- **Japanese, properly.** A real question set in Japanese, over posts in Japanese, including long posts whose key fact sits past the first thousand characters. That's the test of whether the text index needed a different model.
+- **Classification quality.** The vision model's captions and labels were never scored against ground truth. A labelled hold-out set of about 100 images would measure top-1 and top-3 label accuracy, with captions scored against a rubric.
+
+The habit I took from this into client work on Japanese technical manuals ([Recall Was 100% and Meant Nothing](/projects/manualproof/recall-was-100-and-meant-nothing)) is the same one: before trusting a number, decide what it measures, and then read the misses.
