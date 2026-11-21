@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="960" viewBox="0 0 1500 960" role="img" aria-label="Where one conversational turn spends its time: a chat turn is two model calls around one tool call; measured over 6 turns the model takes 57% of the time, tools 43% and agent overhead about 0%." xmlns:c2pa="http://c2pa.org/manifest"><metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYTo5YTMxYTc5Yi1jNDFhLTRlODYtYTlmZS1jNTViZDUwMDQ4N2QAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaM58259rHa1FbTwAmtmRPp0AAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDplZDdkZTJmNC00OTNhLTQzNzUtYThlNS0xYTFjNjA3ZjMyNTdscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNorNnFsXCF5SkUQhJUzd5G+gAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggNoJNBPwJghI6DA5d+Lz51JT4HT3LUZShXshO03la6aKkZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaPM605sR0/UBMauEGdLMID8AAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRMAAAAAAAAAAAAAAAAZGhhc2hYIFCNqADTO34p4kdxO3YKL//zxPVAn7Mpl7OYWP7ubvI+ZG5hbWVuanVtYmYgbWFuaWZlc3RqZXhjbHVzaW9uc4GiZXN0YXJ0GQFyZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOjlhMzFhNzliLWM0MWEtNGU4Ni1hOWZlLWM1NWJkNTAwNDg3ZC9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOjM5ZjU1OTM3LTM3MTctNGQ2NC04MzBhLTZjMDZlMDI0NmZkMnJjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCA2gk0E/AmCEjoMDl34vPnUlPgdPctRlKFeyE7TeVrpoqJjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFgglbq8A4CO4ENr6J9JIuHG0P9FY+7rGgCanHSfED9cIOmiY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggCJlgHlRxfDSQNkMC8GArwwxFTszI1xaJJaNOo0jHo1p0Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQAsHlfQH+vLPM9qScwqvJrEKpDWFzT0FkqUug1GkmkqC9o9d+YGLdfka9pRiXD/VkfCo9oxXuUdeGB1C5ivLzvA=</c2pa:manifest></metadata>
+  <rect x="0" y="0" width="1500" height="960" fill="#fafbfc"/>
+  <g font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif">
+
+    <!-- Title -->
+    <text x="60" y="66" font-size="30" font-weight="700" fill="#1b2230">Where one conversational turn spends its time</text>
+    <text x="60" y="98" font-size="16" fill="#4a5363">Agent turn telemetry (agent ≥ 0.3.0): every turn logs one JSON line with latencyMs = modelMs + toolMs + overheadMs. Measured over n = 6 turns.</text>
+
+    <!-- ===== Panel A: timeline ===== -->
+    <text x="60" y="150" font-size="13" font-weight="700" fill="#8a919c" letter-spacing="1.5">A · ONE CHAT TURN, IN ORDER</text>
+    <text x="60" y="172" font-size="14" fill="#4a5363">Drawn to the measured chat means (model 2.3 s, tools 1.6 s). How each total splits between its two parts is illustrative.</text>
+
+    <!-- lane labels -->
+    <text x="60" y="226" font-size="15" font-weight="600" fill="#1b2230">Model</text>
+    <text x="60" y="245" font-size="12" fill="#8a919c">Bedrock ConverseStream</text>
+    <text x="60" y="306" font-size="15" font-weight="600" fill="#1b2230">Tools</text>
+    <text x="60" y="325" font-size="12" fill="#8a919c">MCP over HTTPS</text>
+    <text x="60" y="386" font-size="15" font-weight="600" fill="#1b2230">User sees</text>
+    <text x="60" y="405" font-size="12" fill="#8a919c">ACP WebSocket</text>
+
+    <!-- lane guides -->
+    <line x1="230" y1="235" x2="1440" y2="235" stroke="#e3e7ed" stroke-width="1"/>
+    <line x1="230" y1="315" x2="1440" y2="315" stroke="#e3e7ed" stroke-width="1"/>
+    <line x1="230" y1="395" x2="1440" y2="395" stroke="#e3e7ed" stroke-width="1"/>
+
+    <!-- scale: x = 230 + s * 310  (3.9 s -> 1439) -->
+    <!-- model #1: 0 - 1.0 s -->
+    <rect x="230" y="208" width="310" height="54" rx="4" fill="#1f3a5f"/>
+    <text x="246" y="231" font-size="14" font-weight="600" fill="#ffffff">① Read the request</text>
+    <text x="246" y="250" font-size="12.5" fill="#d6dee9">writes a ```tool_code block (hidden)</text>
+
+    <!-- search: 1.0 - 1.5 s -->
+    <rect x="540" y="288" width="155" height="54" rx="4" fill="#5d6875"/>
+    <text x="552" y="311" font-size="14" font-weight="600" fill="#ffffff">② search</text>
+    <text x="552" y="330" font-size="12.5" fill="#e3e7ed">≈ 0.5 s</text>
+
+    <!-- thumbnails: 1.5 - 2.6 s -->
+    <rect x="695" y="288" width="341" height="54" rx="4" fill="#8a919c"/>
+    <text x="709" y="311" font-size="14" font-weight="600" fill="#ffffff">③ get_image × 3 (auto-thumbnails)</text>
+    <text x="709" y="330" font-size="12.5" fill="#f6f7f9">agent fetches top 3 hits itself</text>
+
+    <!-- model #2: 2.6 - 3.9 s -->
+    <rect x="1036" y="208" width="403" height="54" rx="4" fill="#1f3a5f"/>
+    <text x="1052" y="231" font-size="14" font-weight="600" fill="#ffffff">④ Stream the answer</text>
+    <text x="1052" y="250" font-size="12.5" fill="#d6dee9">reads tool results, writes the reply</text>
+
+    <!-- hand-off arrows -->
+    <g stroke="#4a5363" stroke-width="1.4" fill="none">
+      <path d="M540 262 L540 286"/>
+      <path d="M1036 288 L1036 264"/>
+    </g>
+    <path d="M536 280 L540 288 L544 280 Z" fill="#4a5363"/>
+    <path d="M1032 270 L1036 262 L1040 270 Z" fill="#4a5363"/>
+
+    <!-- user lane -->
+    <rect x="230" y="372" width="150" height="28" rx="14" fill="#eef2f7" stroke="#c9d1dc"/>
+    <text x="244" y="391" font-size="12.5" fill="#4a5363">“Reading the request…”</text>
+    <g fill="#ffffff" stroke="#5d6875" stroke-width="1.2">
+      <rect x="1000" y="372" width="26" height="26" rx="3"/>
+      <rect x="1006" y="378" width="26" height="26" rx="3"/>
+      <rect x="1012" y="384" width="26" height="26" rx="3"/>
+    </g>
+    <text x="992" y="428" font-size="12.5" fill="#4a5363" text-anchor="end">3 photos appear inline</text>
+    <line x1="1050" y1="388" x2="1439" y2="388" stroke="#1f3a5f" stroke-width="2.5" stroke-dasharray="7 5"/>
+    <text x="1060" y="428" font-size="12.5" fill="#4a5363">answer text streams token by token</text>
+
+    <!-- axis -->
+    <line x1="230" y1="452" x2="1440" y2="452" stroke="#8a919c" stroke-width="1"/>
+    <g font-size="12.5" fill="#8a919c" text-anchor="middle">
+      <line x1="230" y1="452" x2="230" y2="458" stroke="#8a919c"/><text x="230" y="474">0 s</text>
+      <line x1="540" y1="452" x2="540" y2="458" stroke="#8a919c"/><text x="540" y="474">1</text>
+      <line x1="850" y1="452" x2="850" y2="458" stroke="#8a919c"/><text x="850" y="474">2</text>
+      <line x1="1160" y1="452" x2="1160" y2="458" stroke="#8a919c"/><text x="1160" y="474">3</text>
+      <line x1="1439" y1="452" x2="1439" y2="458" stroke="#8a919c"/><text x="1439" y="474">3.9 s</text>
+    </g>
+
+    <!-- ===== Panel B: measured split ===== -->
+    <line x1="60" y1="506" x2="1440" y2="506" stroke="#e3e7ed"/>
+    <text x="60" y="546" font-size="13" font-weight="700" fill="#8a919c" letter-spacing="1.5">B · MEASURED SPLIT (MEAN SECONDS PER TURN)</text>
+
+    <!-- scale: 1 s = 120 px from x=170 -->
+    <text x="150" y="602" font-size="15" font-weight="600" fill="#1b2230" text-anchor="end">chat</text>
+    <rect x="170" y="580" width="276" height="34" fill="#1f3a5f"/>
+    <text x="308" y="602" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">model 2.3</text>
+    <rect x="446" y="580" width="192" height="34" fill="#8a919c"/>
+    <text x="542" y="602" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">tools 1.6</text>
+    <text x="650" y="602" font-size="14" fill="#4a5363">3.9 s</text>
+
+    <text x="150" y="656" font-size="15" font-weight="600" fill="#1b2230" text-anchor="end">schedule</text>
+    <rect x="170" y="634" width="240" height="34" fill="#1f3a5f"/>
+    <text x="290" y="656" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">model 2.0</text>
+    <rect x="410" y="634" width="192" height="34" fill="#8a919c"/>
+    <text x="506" y="656" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">tools 1.6</text>
+    <text x="614" y="656" font-size="14" fill="#4a5363">3.6 s</text>
+
+    <g font-size="12" fill="#8a919c" text-anchor="middle">
+      <line x1="170" y1="684" x2="650" y2="684" stroke="#c9d1dc"/>
+      <text x="170" y="700">0</text><text x="290" y="700">1</text><text x="410" y="700">2</text><text x="530" y="700">3</text><text x="650" y="700">4 s</text>
+    </g>
+
+    <text x="60" y="744" font-size="34" font-weight="700" fill="#1f3a5f">57%</text>
+    <text x="140" y="744" font-size="16" fill="#1b2230">model</text>
+    <text x="222" y="744" font-size="34" font-weight="700" fill="#5d6875">43%</text>
+    <text x="302" y="744" font-size="16" fill="#1b2230">tools</text>
+    <text x="378" y="744" font-size="34" font-weight="700" fill="#8a919c">≈0%</text>
+    <text x="460" y="744" font-size="16" fill="#1b2230">agent overhead</text>
+    <text x="60" y="770" font-size="13" fill="#8a919c">All 6 turns · mean 2.2 model calls per turn · source: scripts/eval/out/figures/agent_latency_split.png</text>
+
+    <!-- ===== Panel C: code ===== -->
+    <text x="760" y="546" font-size="13" font-weight="700" fill="#8a919c" letter-spacing="1.5">C · HOW IT IS MEASURED — agent/src/agent.ts</text>
+    <rect x="760" y="562" width="680" height="214" rx="6" fill="#eef2f7" stroke="#d6dde6"/>
+    <g font-family="'JetBrains Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="13.5" fill="#1b2230">
+      <text x="780" y="592">const modelStartedAt = Date.now();</text>
+      <text x="780" y="612">const turn = await deps.model.streamTurn({ … });</text>
+      <text x="780" y="632"><tspan font-weight="700" fill="#1f3a5f">modelMs</tspan> += Date.now() - modelStartedAt;</text>
+      <text x="780" y="660" fill="#8a919c">// … for each tool call the model asked for:</text>
+      <text x="780" y="680">const toolStartedAt = Date.now();</text>
+      <text x="780" y="700">const outcome = await runTool(tools, session, name, …);</text>
+      <text x="780" y="720"><tspan font-weight="700" fill="#5d6875">toolMs</tspan> += Date.now() - toolStartedAt;</text>
+      <text x="780" y="752">overheadMs: Math.max(0, latencyMs - modelMs - toolMs)</text>
+    </g>
+
+    <!-- ===== Reading it ===== -->
+    <line x1="60" y1="806" x2="1440" y2="806" stroke="#e3e7ed"/>
+    <text x="60" y="840" font-size="13" font-weight="700" fill="#8a919c" letter-spacing="1.5">READING IT</text>
+
+    <rect x="60" y="856" width="440" height="80" rx="6" fill="#ffffff" stroke="#d6dde6"/>
+    <text x="78" y="882" font-size="14.5" font-weight="700" fill="#1b2230">“Dominates” = largest term, not 90%</text>
+    <text x="78" y="904" font-size="13.5" fill="#4a5363">The model is the biggest single cost (57%).</text>
+    <text x="78" y="922" font-size="13.5" fill="#4a5363">It is the biggest term, not the only one.</text>
+
+    <rect x="530" y="856" width="440" height="80" rx="6" fill="#ffffff" stroke="#d6dde6"/>
+    <text x="548" y="882" font-size="14.5" font-weight="700" fill="#1b2230">Model time scales with tokens written</text>
+    <text x="548" y="904" font-size="13.5" fill="#4a5363">Output is decoded one token at a time, so fewer</text>
+    <text x="548" y="922" font-size="13.5" fill="#4a5363">output tokens means a faster turn. Hence the strobe:// fix.</text>
+
+    <rect x="1000" y="856" width="440" height="80" rx="6" fill="#ffffff" stroke="#d6dde6"/>
+    <text x="1018" y="882" font-size="14.5" font-weight="700" fill="#1b2230">Where the 43% goes</text>
+    <text x="1018" y="904" font-size="13.5" fill="#4a5363">The search itself is ≈ 0.5 s; the rest is mostly ③.</text>
+    <text x="1018" y="922" font-size="13.5" fill="#4a5363">The three get_image calls run one after another.</text>
+  </g>
+</svg>
