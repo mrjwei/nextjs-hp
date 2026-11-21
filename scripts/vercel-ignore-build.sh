@@ -5,6 +5,14 @@
 # Skips commits that change nothing the site is built from: Claude skills,
 # GitHub workflows, docs/ plans and the repo's own Markdown files. Each
 # skipped build saves a full copy of the site in Deployment Storage.
+#
+# Always builds when a staged post is due (dated after the live build's day,
+# up to today): that's what the scheduled-publish workflow's deploy hook
+# asks for, on a commit that's already deployed.
+if command -v node >/dev/null 2>&1 && node scripts/due-posts.mjs --live https://jessewei.net; then
+  echo "A scheduled post is due: building."
+  exit 1
+fi
 
 # Compare against the last deployed commit of this branch when Vercel gives
 # us one we have locally, else against the previous commit.

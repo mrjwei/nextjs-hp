@@ -1,0 +1,60 @@
+name: Scheduled publish
+
+# Posts are staged on main ahead of their date by /publish-pipeline (run on the Mac). Until a build on or after a
+# post's `publishedAt` (Australia/Brisbane), the site serves it as a "coming soon" placeholder. This workflow checks
+# a few times a day whether any staged post is due but not live yet, and if so rebuilds production through a Vercel
+# deploy hook. It never commits; going live needs no Claude and no vault. See docs/publish.md, "Scheduled posts".
+#
+# Setup: create a deploy hook for the production branch (Vercel → Project → Settings → Git → Deploy Hooks) and save
+# its URL as the repository secret VERCEL_DEPLOY_HOOK_URL.
+
+on:
+  schedule:
+    # 00:17, 01:17 and 06:17 in Brisbane (UTC+10, no DST). Later runs are retries: they rebuild only if the
+    # first run's build didn't make the post live.
+    - cron: "17 14,15,20 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: scheduled-publish
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish-due-posts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Find posts that are due but not live
+        id: due
+        run: |
+          set +e
+          node scripts/due-posts.mjs --live https://jessewei.net > due.txt
+          code=$?
+          set -e
+          cat due.txt
+          if [ "$code" -eq 0 ]; then echo "due=true" >> "$GITHUB_OUTPUT"
+          elif [ "$code" -eq 1 ]; then echo "due=false" >> "$GITHUB_OUTPUT"; echo "Nothing due."
+          else exit "$code"; fi
+
+      - name: Rebuild production
+        if: steps.due.outputs.due == 'true'
+        env:
+          HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$HOOK" ]; then echo "::error::Repository secret VERCEL_DEPLOY_HOOK_URL is not set"; exit 1; fi
+          curl -fsS -X POST "$HOOK" > /dev/null
+          {
+            echo "### Rebuild triggered for:"
+            sed 's/^/- /' due.txt
+          } >> "$GITHUB_STEP_SUMMARY"
