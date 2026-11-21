@@ -3,8 +3,9 @@ title: "一度のサインインで、どこでも検証できる:Cognitoトー�
 publishedAt: "2026-10-12"
 summary: "Strobeの認証を支える基礎を解説します。「auth」という言葉に隠れた3つの役割、Cognitoユーザープールが発行するトークン、あらゆるサービスが公開鍵を使ってJWTをローカルで検証する仕組み、そしてリクエストが誰のデータに触れられるかを決めるのはクライアントでもモデルでもなく、検証済みのsubだけである理由です。"
 tags: ["aws", "security", "qut"]
-project: "Strobe"
 ---
+
+*Strobe Assistantを作る過程で書いた背景知識のメモです。プロジェクトの記事は[こちら](/ja/projects/strobe/strobe-assistant-extending-strobe-with-an-ai-agent)です。*
 
 - [「auth」は実は3つの役割](#authは実は3つの役割)
 - [サインイン後にCognitoが返すもの](#サインイン後にcognitoが返すもの)
@@ -15,7 +16,7 @@ project: "Strobe"
 
 基本的なルールはこうです。アイデンティティは*検証済みのトークン*から得るものであり、クライアントやモデルの言い分から得るものでは決してありません。Cognitoはユーザーが誰なのかを一度だけ証明します。その後は、各サービスが署名付きトークンを自分自身でチェックします。そして、そこから取り出した`sub`クレームだけが、リクエストが*誰の*データに触れられるかを決めます。
 
-本稿では基礎に絞って、Cognitoが何を発行し、サービスがそれをどのようにチェックするのかを扱います。Strobe Assistant自体の中でトークンがどのように流れるのかは、[パート4](/ja/posts/strobe-assistant-part-4-how-cognito-and-auth-fit-in)で追いかけます。
+本稿では基礎に絞って、Cognitoが何を発行し、サービスがそれをどのようにチェックするのかを扱います。Strobe Assistant自体の中でトークンがどのように流れるのかは、[RAGのコーパスをユーザーが書くとき](/ja/projects/strobe/when-the-rag-corpus-is-user-generated)で追いかけています。
 
 ## 「auth」は実は3つの役割
 
@@ -47,7 +48,7 @@ Cognitoが担うのは1つ目の役割だけです。Cognitoは投稿や写真�
 
 IDトークンとアクセストークンは**[JWT](https://datatracker.ietf.org/doc/html/rfc7519)**(JSON Web Token)です。base64urlでエンコードされた3つの部分をドットでつないだもので、`header.payload.signature`という形をしています。
 
-**StrobeがアクセストークンではなくIDトークンを使う理由。** Strobe Assistantの検証側(エージェントの`auth.ts`とMCPサーバーの[`JWTVerifier`](https://gofastmcp.com/servers/auth/token-verification))は、`aud`をアプリクライアントIDと照合します。Cognitoのアクセストークンには`aud`クレームがないため、このチェックは設計上アクセストークンを拒否します。また、IDトークンにはエージェントが表示名に使うユーザー情報も含まれています。どちらのファイルもこのことをdocstringで説明しています。両方がトークンを検証する理由は[パート3](/ja/posts/strobe-assistant-part-3-acp-mcp-pipeline#mcpサーバー独立したコンポーネント独立した認証境界)で解説しています。
+**StrobeがアクセストークンではなくIDトークンを使う理由。** Strobe Assistantの検証側(エージェントの`auth.ts`とMCPサーバーの[`JWTVerifier`](https://gofastmcp.com/servers/auth/token-verification))は、`aud`をアプリクライアントIDと照合します。Cognitoのアクセストークンには`aud`クレームがないため、このチェックは設計上アクセストークンを拒否します。また、IDトークンにはエージェントが表示名に使うユーザー情報も含まれています。どちらのファイルもこのことをdocstringで説明しています。両方がトークンを検証する理由は[ACP + MCPについてのメモ](/ja/posts/strobe-assistant-part-3-acp-mcp-pipeline#mcpサーバー独立したコンポーネント独立した認証境界)で解説しています。
 
 ## サービスがCognitoに問い合わせずにトークンを信頼できる仕組み
 
@@ -92,7 +93,7 @@ Strobeでは、ユーザーのトークンで**AWSが使えるようになるこ
 
 ## StrobeアプリにおけるCognitoの位置づけ
 
-Assessment 1(Strobe Assistantが拡張している写真共有アプリ。[シリーズの紹介記事](/ja/posts/strobe-assistant-extending-strobe-with-an-ai-agent)を参照)では、Cognitoは薄い認証Lambdaの背後にあり、API Gatewayの**[JWTオーソライザー](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-jwt-authorizer.html)**がすべての保護されたルートを守っています。
+Assessment 1(Strobe Assistantが拡張している写真共有アプリ。[プロジェクトの記事](/ja/projects/strobe/strobe-assistant-extending-strobe-with-an-ai-agent)を参照)では、Cognitoは薄い認証Lambdaの背後にあり、API Gatewayの**[JWTオーソライザー](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-jwt-authorizer.html)**がすべての保護されたルートを守っています。
 
 <figure style={{ textAlign: "center" }}>
   <img
@@ -114,7 +115,7 @@ user_id = claims["sub"]   # never read the user id from the request body
 **`sub`は2つの場所でルールになります:**
 
 - **所有者チェック。** たとえば、投稿を編集するには`post.userId == sub`である必要があり、そうでなければ`403`になります。
-- **ストレージのキー。** アップロードLambdaは、キー`{sub}/{postId}/{fileId}`に対するPUTの署名付きURLを発行します。`{sub}`の部分をクライアントが選ぶことはありません。A2の取り込みワーカーはこのプレフィックスを信頼するため、これは後で重要になります([パート4](/ja/posts/strobe-assistant-part-4-how-cognito-and-auth-fit-in)を参照)。
+- **ストレージのキー。** アップロードLambdaは、キー`{sub}/{postId}/{fileId}`に対するPUTの署名付きURLを発行します。`{sub}`の部分をクライアントが選ぶことはありません。A2の取り込みワーカーはこのプレフィックスを信頼するため、これは後で重要になります([RAGのコーパスをユーザーが書くとき](/ja/projects/strobe/when-the-rag-corpus-is-user-generated)を参照)。
 
 Cognitoには**モデレーターグループ**もあります。グループへの所属は、IDトークンの中で`cognito:groups`として現れます。
 
