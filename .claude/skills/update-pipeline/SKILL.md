@@ -13,7 +13,7 @@ The companion of `publish-pipeline`. The vault note is the single source of trut
 
 Read from the note: `status` (`Updated`), `sitePath` (the post), `title`, `summary`, `project`, `series`, `lang`, `updatedAt` and `updateNote`.
 
-`updatedAt` (optional, `YYYY-MM-DD`) is the "Updated" date the post shows next to "Published". The author sets it to choose the date; otherwise it is the deploy day (`date +%F` when the run starts), and the pipeline writes that back to the note after deploying. So a note's `updatedAt` counts as set by the author only when it differs from the post's current `updatedAt` (or the post has none). A value equal to the post's was recorded by the last update, so the deploy day is used.
+`updatedAt` (optional, `YYYY-MM-DD`) is the "Updated" date the post shows next to "Published". The author sets it to choose the date; otherwise it is the deploy day (`TZ=Australia/Brisbane date +%F` when the run starts), and the pipeline writes that back to the note after deploying. So a note's `updatedAt` counts as set by the author only when it differs from the post's current `updatedAt` (or the post has none). A value equal to the post's was recorded by the last update, so the deploy day is used.
 
 `updateNote`: optional, `;`-separated, for this update only:
 
@@ -37,7 +37,7 @@ bash .claude/skills/publish-pipeline/queue.sh | awk -F'\t' '$1 == "update" || $1
 
 ## Steps
 
-1. **Plan.** One `bash $P/fm.sh` call for every note and every post at their `sitePath`s. No post there, or a `placeholder: true` one → blocked: never published, set it to Ready. Branch from an up-to-date main (`git switch -q main && git pull -q --ff-only origin main`): `update/<YYYY-MM-DD-HHMM>`. First clear what a failed run left (the vault still holds everything): close each open update PR and delete its branch (`gh pr list --state open --json headRefName -q '.[].headRefName | select(startswith("update/"))'`, then `gh pr close <branch> --delete-branch`), and delete leftover local `git branch --no-merged main --list 'update/*'`. Make the working copies: `bash $P/sync.sh copy <note>...` (a fresh copy, even if a failed run left one). From here on, read and edit the copies, never the notes.
+1. **Plan.** One `bash $P/fm.sh` call for every note and every post at their `sitePath`s. No post there, or a `placeholder: true` one → blocked: never published, set it to Ready. A post dated after today (`TZ=Australia/Brisbane date +%F`) → blocked: it's staged, not live; set the note back to Ready and `/publish-pipeline` restages it. Branch from an up-to-date main (`git switch -q main && git pull -q --ff-only origin main`): `update/<YYYY-MM-DD-HHMM>`. First clear what a failed run left (the vault still holds everything): close each open update PR and delete its branch (`gh pr list --state open --json headRefName -q '.[].headRefName | select(startswith("update/"))'`, then `gh pr close <branch> --delete-branch`), and delete leftover local `git branch --no-merged main --list 'update/*'`. Make the working copies: `bash $P/sync.sh copy <note>...` (a fresh copy, even if a failed run left one). From here on, read and edit the copies, never the notes.
 2. **Write each post.** Read the working copy, and once per run `sed -n '/^## 3\./,/^## 5\./p' $P/stages/publish.md` (conversion, links and placeholders). First apply to the copy any `updateNote` instruction that changes content ("check and refine the new part": edit that part in the copy, proofreading only it, and list non-trivial edits under "Check"), and rewrite new image embeds in it as publish.md step 3 says. The post's new body is the copy's body converted by those rules.
 
    Images and videos the note embeds that aren't in `public/` yet (an embedded `<name>.gif` counts as there when `public/<folder>/<name>.webm` is) are copied in and shrunk as publish.md step 3 says, "Shrink the copies": `node $P/media.mjs <each file this run copied>`, before writing their markup (a GIF becomes `<name>.webm` with the video markup; the note keeps its `.gif` embed). Files already in `public/` are left as they are, and the vault originals are never touched.
@@ -67,7 +67,7 @@ bash .claude/skills/publish-pipeline/queue.sh | awk -F'\t' '$1 == "update" || $1
 - Never commit anything from the vault.
 - Never run `media.mjs` on, or otherwise resize, recompress or convert, a file in the vault: it shrinks the copies in `public/` only.
 - `main` is protected: never commit to it, push to it or merge into it locally; the run's changes go in through its one PR.
-- Run from Claude Code on the Mac (the vault is local, and pushing needs its SSH key), with `gh` signed in (`gh auth status`).
+- Run from Claude Code on the Mac (the vault is local, and pushing needs its SSH key), with `gh` signed in (`gh auth status`). Staged posts that aren't live yet belong to `/publish-pipeline` (it restages edited Ready notes).
 
 ## Report
 

@@ -46,10 +46,10 @@ Quality gates for every change: `npm run lint && npm run typecheck && npm run bu
 
 Post content lives in the Obsidian vault at `~/projects/Notes`, which is the source of truth for every post and translation. Don't edit a post's MDX on its own if it has a vault note, or the next update will overwrite it. Claude Code skills deploy the vault to this repo:
 
-- `/publish-pipeline`: publishes Ready notes, writes and publishes translations ([`.claude/skills/publish-pipeline/SKILL.md`](.claude/skills/publish-pipeline/SKILL.md))
+- `/publish-pipeline`: stages Ready notes on main ahead of their date (restaging edited ones), writes and stages translations ([`.claude/skills/publish-pipeline/SKILL.md`](.claude/skills/publish-pipeline/SKILL.md))
 - `/update-pipeline`: deploys edits to published notes ([`.claude/skills/update-pipeline/SKILL.md`](.claude/skills/update-pipeline/SKILL.md))
 
-The pipeline scripts read the vault from `$VAULT` (default `~/projects/Notes`). They run from Claude Code on the Mac, because pushing needs its SSH key.
+The pipeline scripts read the vault from `$VAULT` (default `~/projects/Notes`). They run from Claude Code on the Mac, because the vault is only there and pushing needs its SSH key. Going live doesn't: a staged post (dated after today, Brisbane time) is served as "coming soon" until its date, and the `Scheduled publish` GitHub Actions workflow rebuilds production through a Vercel deploy hook (secret `VERCEL_DEPLOY_HOOK_URL`) when one is due. See [`docs/publish.md`](docs/publish.md), "Scheduled posts".
 
 ## Environment variables
 
