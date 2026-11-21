@@ -1,11 +1,11 @@
 # Stage: translate
 
-Write the translation of a Published original as a new vault note in the same folder, then set its status for review or publishing. This stage changes only the vault, never the repo.
+Write the translation of a staged or Published original as a new vault note in the same folder, then set its status for review or publishing. A staged original (Ready, with `stagedHash`) is translated straight away, so both versions can go live together on its date. This stage changes only the vault, never the repo.
 
 ## 1. Source and target
 
-- Read the original's frontmatter (`fm.sh`) and its published post at `sitePath` (always set by now: a Published note without it goes through `finish` first). If `sitePath` is a list (one note published as several posts), translate each post into its own translation note, named with the post's slug: `<original's name without a ✅ prefix> (JA, <slug>).md`, and record them all in `translation` as a list.
-- **Translate from the published post, not the note's body.** The post is what readers see; a note published before notes were synced, or one whose sync hit a `conflict`, may still lack the publish stage's edits and PII removals.
+- Read the original's frontmatter (`fm.sh`) and its post at `sitePath` (always set by now: a staged note has it, and a Published note without it goes through `finish` first). If `sitePath` is a list (one note published as several posts), translate each post into its own translation note, named with the post's slug: `<original's name without a ✅ prefix> (JA, <slug>).md`, and record them all in `translation` as a list.
+- **Translate from the post on main, not the note's body.** The post is what readers see; a note published before notes were synced, or one whose sync hit a `conflict`, may still lack the publish stage's edits and PII removals.
 - Direction from the post's locale: `posts/` (en) → ja, `posts-ja/` (ja) → en. Target path: the same path with `posts` ↔ `posts-ja` swapped, same subfolder and filename. The content index pairs translations by that path.
 - Translation note: `<original's name without a ✅ prefix> (JA).md` (or `(EN).md`), in the original's folder.
 - Something already exists:
@@ -27,8 +27,8 @@ Write the body as ordinary Obsidian Markdown, as the original note is written: n
 ```yaml
 status:
   - Review            # or Ready, see step 4
-scheduledAt: …        # the original's, else today: keeps it next to the original on the board
-publishedAt: …        # the original post's publishedAt: both versions share the date
+scheduledAt: …        # the original post's publishedAt: keeps it next to the original on the board
+publishedAt: …        # the original post's publishedAt: both versions share the date (and go live together)
 title: "…"            # translated
 summary: "…"          # the original post's summary, translated
 lang: ja              # or en
@@ -55,4 +55,4 @@ Status from the original's `reviewTranslation` (see SKILL.md): `flagged` → Rev
 
 ## 5. Link the original
 
-Set `translation: "[[<translation note's name>]]"` on the original. If the translation is Ready, continue with publish for it in this run.
+Set `translation: "[[<translation note's name>]]"` on the original. If the translation is Ready, continue with publish for it in this run (staged with the original's date when that's still ahead).

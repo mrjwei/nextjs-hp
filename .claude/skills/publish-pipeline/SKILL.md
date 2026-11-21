@@ -1,11 +1,23 @@
 ---
 name: publish-pipeline
-description: Publish posts from the Obsidian vault (~/projects/Notes) end to end — publish Ready notes, write their translations into the vault for review, publish reviewed translations, and update the vault notes afterwards (properties, and the body synced with what was published). No arguments → work the queue; or pass note path(s).
+description: Publish posts from the Obsidian vault (~/projects/Notes) end to end — stage every Ready note on main ahead of its date (it goes live on its date by itself), restage Ready notes edited since, write translations into the vault for review, stage reviewed translations, and update the vault notes (properties, and the body synced with what was published). No arguments → work the queue; or pass note path(s).
 ---
 
 # publish-pipeline
 
 The Obsidian vault `~/projects/Notes` (attachments in `/assets`) is the single source of truth for every post on the site and its translation. A translation is its own note, in the same folder as the original. The pipeline's state is the notes' frontmatter (shown as a kanban in `Posts.base`; don't read it).
+
+## Staged, then live
+
+Publishing is split between the Mac and the cloud, because only the Mac can reach the vault:
+
+- **On the Mac (this skill): stage.** Every Ready note is converted and merged to main as soon as it's Ready, whatever its `scheduledAt`. A post dated after today is *staged*: the site serves it as a "coming soon" placeholder (off listings, search, sitemap and RSS) until a build on or after its date. The note stays Ready, with `stagedHash` recording what was staged.
+- **In the cloud: go live.** `.github/workflows/scheduled-publish.yml` runs daily just after midnight (Australia/Brisbane) and rebuilds production through a Vercel deploy hook when a staged post is due. No Claude, no vault, no commit: the post's `publishedAt` is the schedule, so irregular dates need no cron changes.
+- **Back on the Mac: record.** The next run sees the note's date has passed (`live`) and finishes it: `publishedAt`, `status: Published`, `translated`.
+
+**Edits after staging.** Editing a staged Ready note's body or its post properties (title, summary, `scheduledAt`, `publishedAt`, `note`, …) makes its `stagedHash` stale; the next run restages it (`restage`), including a new date. Rescheduling is just changing `scheduledAt` and running the pipeline. To hold a staged post back, set a later `scheduledAt` (not Drafting: that would leave the staged post on main).
+
+"Today" is always the site's day: `TZ=Australia/Brisbane date +%F`, wherever the Mac is.
 
 ## Note and post stay in sync
 
@@ -24,9 +36,9 @@ In the working copy, images use the translate stage's format (`stages/translate.
 
 | Stage | Runs on | Does | Instructions |
 | --- | --- | --- | --- |
-| publish | a Ready note (original or translation) | vault note → MDX post (plus placeholders for posts it links to), built, then merged to main through a pull request | `stages/publish.md` |
-| after-publish | the note just published, or a `finish` note | writes the note's pipeline properties and files it under `Posts/` | `stages/after-publish.md` |
-| translate | a Published original with `requireTranslate: true` | writes the translation note next to it, as Review or Ready | `stages/translate.md` |
+| publish | a Ready note (original or translation), any date; or a `restage` | vault note → MDX post (plus placeholders for posts it links to), built, then merged to main through a pull request: staged until its date | `stages/publish.md` |
+| after-publish | the note just staged, a `live` note, or a `finish` note | records the post in the note (pipeline properties, `stagedHash`, filed under `Posts/`); once its date has come, marks it Published | `stages/after-publish.md` |
+| translate | a staged or Published original with `requireTranslate: true` | writes the translation note next to it, as Review or Ready | `stages/translate.md` |
 
 Paths are relative to this skill's folder. Read a stage's file only when you're about to run it.
 
@@ -39,7 +51,7 @@ Set by the author:
 | Property | Meaning | If missing |
 | --- | --- | --- |
 | `status` | One of `Drafting`, `Review` (a translation waiting for the author), `Ready`, `Updated` (a published note edited by the author: `/update-pipeline`), `Published`. | Not a pipeline note, though a note passed by path counts as Ready. Empty → Drafting. Several or unknown → invalid. |
-| `scheduledAt` | Queue order (earliest first), earliest publish day, and the publish date unless `publishedAt` is set: a note published late is still dated `scheduledAt`. | Sorts last; publishable now; the publish date is the publish day. |
+| `scheduledAt` | Queue order (earliest first) and the publish date unless `publishedAt` is set: the post is staged ahead and goes live on that day. A note staged late is still dated `scheduledAt` (and goes live at once if that day has passed). | Sorts last; the publish date is the day it's staged (live at once). |
 | `publishedAt` | Overrides the publish date. On a translation: always the original post's. | `scheduledAt`, else the publish day. |
 | `series` | Folder, e.g. `ai-agent`. A new folder starts a new series. | Claude decides (see "Series or project"). |
 | `project` | Project ID (one word, ≤12 chars, e.g. `Strobe`); lists the post under `/projects`. | Claude decides (see "Series or project"). |
@@ -53,7 +65,7 @@ Set by the author:
 
 Updates (`/update-pipeline`) also use `updateNote` and `updatedAt`.
 
-Written by the pipeline only: `translation` (wikilink, on an original: its translation note), `translationOf` (wikilink, on a translation: its original; such a note is never translated), `translated` (checkbox, on an original: its translation is published), `reviewFocus` (list, on a translation: spots for the author to check).
+Written by the pipeline only: `translation` (wikilink, on an original: its translation note), `translationOf` (wikilink, on a translation: its original; such a note is never translated), `translated` (checkbox, on an original: its translation is published), `reviewFocus` (list, on a translation: spots for the author to check), `stagedHash` (on a Ready note whose post is on main: `sync.sh hash` of the note as staged; removed when the note becomes Published).
 
 The vault's `status` never goes into a post (case studies have their own site `status`, from `note`).
 
@@ -76,9 +88,11 @@ A placeholder is a post with `placeholder: true`: a "coming soon" stand-in for a
 | several/unknown `status`, or a date not `YYYY-MM-DD` | `invalid` | Report `detail`. |
 | `status` empty or Drafting | `idle` | Nothing. |
 | Review | `review` | Report as waiting for the author. |
-| Ready, `scheduledAt` in the future | `scheduled` | Nothing until then, however the run started. |
-| Ready, has `translationOf` | `publish-translation` | publish → after-publish |
-| Ready, original | `publish` | publish → after-publish → translate if `requireTranslate` → if the translation is Ready: publish → after-publish |
+| Ready, no `stagedHash`, or one that no longer matches the note (detail starts `restage`) | `publish-translation` (has `translationOf`) or `publish` | publish → after-publish → for an original: translate if `requireTranslate` → if the translation is Ready: publish → after-publish |
+| Ready, staged and unchanged, date (`publishedAt`, else `scheduledAt`) today or earlier, or none | `live` | after-publish (its post is live: record it) → translate if due |
+| Ready original, staged and unchanged, date in the future, `requireTranslate: true`, no `translation`, `translated` not true | `translate` | translate → if Ready: publish → after-publish |
+| Ready, staged and unchanged, date in the future | `scheduled` | Nothing: the cloud makes it live on its date. |
+| Updated, date in the future | `invalid` | Report: the post isn't live yet; set the note back to Ready (edits to a staged note are restaged). |
 | Updated | `update` | `/update-pipeline`'s: skip. |
 | Published, missing `sitePath`, `lang` or `publishedAt` | `finish` | after-publish (never republishes) |
 | Published original, `requireTranslate: true`, no `translation`, `translated` not true | `translate` | translate → if Ready: publish → after-publish |
@@ -94,17 +108,19 @@ A placeholder is a post with `placeholder: true`: a "coming soon" stand-in for a
 ## Runs
 
 - **Scheduled run** (no arguments, nobody to ask):
-  1. Every `finish` line, then every `publish-translation` line.
-  2. The first `publish` line, through the whole pipeline. One original per run.
-  3. If no `publish` line could be done, the first `translate` line.
-  4. A blocked item (unfinished draft, PII you're unsure about, a file conflict, a build failure that isn't the post's) stays untouched; report it and move to the next line of the same action.
+  1. Every `live` and `finish` line, then every `publish-translation` line.
+  2. Every `publish` line, each through its whole row, in queue order (staging ahead is the point: a post goes live on its date only if it's on main by then).
+  3. Every `translate` line.
+  4. A blocked item (unfinished draft, PII you're unsure about, a file conflict, a build failure that isn't the post's) stays untouched; report it and move to the next line.
   5. Nothing to do → end with no changes and no report.
 - **Manual run, no arguments**: the same, but ask instead of skipping when blocked or unsure. Nothing to do → say so.
-- **Manual run with note path(s)**: each note's next action from the table, regardless of queue order. A future `scheduledAt` → skip the note and change nothing; just say it's scheduled for that day. No paths and an empty queue → ask for a path.
+- **Manual run with note path(s)**: each note's next action from the table, regardless of queue order. A `scheduled` note → change nothing; say it's staged and goes live on that day. No paths and an empty queue → ask for a path.
 
-**Finish the row.** Whatever started the publish (the queue, a path, or a request like "fix it and publish it" in a conversation), an original's pipeline is its whole row in the table: publish → after-publish → translate when `requireTranslate: true` → publish and after-publish of the translation when it's Ready. It isn't done until then, except that a note is never published before its `scheduledAt`: only a `scheduledAt` of today or earlier (or none) can be published, and a later one is left for its day. Before reporting, rerun `queue.sh` and check that no line remains for a note this run touched other than `review`, `scheduled` or a blocked item named in the report.
+Run it after the finalise skill sets notes to Ready, and after editing a Ready note, so main matches the vault; in particular before going away, since the cloud can only make live what's already staged.
 
-A failed stage stops that note's pipeline there; earlier stages stay done, and a merged publish is never undone. The next run picks the note up at its first unfinished stage (a Ready note whose post is already on main skips to after-publish).
+**Finish the row.** Whatever started the publish (the queue, a path, or a request like "fix it and publish it" in a conversation), an original's pipeline is its whole row in the table: publish → after-publish → translate when `requireTranslate: true` → publish and after-publish of the translation when it's Ready. It isn't done until then. A future date doesn't stop the row: the post and its translation are staged now and go live together on the date. Before reporting, rerun `queue.sh` and check that no line remains for a note this run touched other than `review`, `scheduled` or a blocked item named in the report.
+
+A failed stage stops that note's pipeline there; earlier stages stay done, and a merged publish is never undone. The next run picks the note up at its first unfinished stage (a Ready note without `stagedHash` whose post is already on main skips to after-publish).
 
 ## Translation review
 
@@ -116,7 +132,7 @@ The translate stage lists in `reviewFocus` only the spots that need a human. The
 - Never run `media.mjs` on, or otherwise resize, recompress or convert, a file in the vault: it shrinks the copies in `public/` only.
 - Never commit anything from the vault. Repo changes happen only in the publish stage, one branch and one pull request per published note.
 - `main` is protected: never commit to it, push to it or merge into it locally. Every change goes in through a PR merged with `gh pr merge` (`stages/publish.md` step 7).
-- Run from Claude Code on the Mac (the Cowork VM can't push via SSH or clear git lock files), with `gh` signed in (`gh auth status`); not signed in → blocked before any publish.
+- Run from Claude Code on the Mac (the vault is only there, and the Cowork VM can't push via SSH or clear git lock files), with `gh` signed in (`gh auth status`); not signed in → blocked before any publish. Going live needs neither: it's the cloud workflow's job (see "Staged, then live").
 
 ## Report
 
@@ -125,6 +141,10 @@ Only what the author needs to see or act on, one line per item, empty sections l
 ```
 Published
 - <title> (en) → <canonical URL>, <publishedAt> (PR <url>)   (project post: /projects/<project-slug>/<slug>; series post: /posts/<folder>/<slug>; else /posts/<slug>)
+Staged (live on their date)
+- <title> (en) → <canonical URL>, live <publishedAt> (PR <url>; "restaged" when it replaced an earlier staging)
+Went live (recorded)
+- <title> (en), <publishedAt>
 Placeholders: /posts/…, /ja/posts/… (note properties set: <note>: Drafting, requireTranslate; …)
 Needs you
 - Review: <translation note>: "<quote>" (reason); …

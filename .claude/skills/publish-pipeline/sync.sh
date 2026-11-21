@@ -12,17 +12,20 @@
 #                       none <note>                no working copy (e.g. an earlier run stopped after its PR was merged)
 #                       conflict <note> <copy>     the note's body changed since `copy` (the author edited it): left as it is
 #                     The working copy is removed after synced/same, and kept for a conflict.
+#   hash <note>...    Print each note's staging fingerprint: `<hash>  <note>`. It covers the body and the properties that
+#                     go into the post (title, summary, scheduledAt, publishedAt, note, series, project, lang, sitePath,
+#                     requireTranslate), so editing any of them after staging makes `stagedHash` stale (queue.sh: restage).
 #
 # A note is a path (absolute, or relative to the vault) or a wikilink target, as for fm.sh.
-# Usage: sync.sh copy|apply <note>... (vault: $VAULT, default ~/projects/Notes)
+# Usage: sync.sh copy|apply|hash <note>... (vault: $VAULT, default ~/projects/Notes)
 set -u
 VAULT="${VAULT:-$HOME/projects/Notes}"
 DIR="${PIPELINE_SYNC_DIR:-/tmp/publish-pipeline-notes}"
 cmd="${1:-}"; shift || true
-if [ "$cmd" != copy ] && [ "$cmd" != apply ] || [ $# -eq 0 ]; then
-  echo "usage: sync.sh copy|apply <note>..." >&2; exit 2
+if { [ "$cmd" != copy ] && [ "$cmd" != apply ] && [ "$cmd" != hash ]; } || [ $# -eq 0 ]; then
+  echo "usage: sync.sh copy|apply|hash <note>..." >&2; exit 2
 fi
-mkdir -p "$DIR"
+[ "$cmd" = hash ] || mkdir -p "$DIR"
 
 resolve() {  # → absolute path of the note, or nothing
   local name="${1#\[\[}"; name="${name%\]\]}"; name="${name%%|*}"; name="${name%%#*}"
@@ -37,11 +40,24 @@ fmend() {    # line number of the frontmatter's closing ---, or 0 when there is 
   awk 'NR == 1 { if ($0 != "---") exit; next } $0 == "---" { print NR; exit }' "$1"
 }
 body() { local n; n="$(fmend "$1")"; tail -n +"$(( ${n:-0} + 1 ))" "$1"; }
+props() {    # the hashed properties, each with its list lines, in a fixed order (so reordering them changes nothing)
+  awk -v keys="title summary scheduledAt publishedAt note series project lang sitePath requireTranslate" '
+    BEGIN { n = split(keys, k, " "); for (i = 1; i <= n; i++) want[k[i]] = 1 }
+    NR == 1 { if ($0 != "---") exit; next }
+    $0 == "---" { exit }
+    /^[^ \t#][^:]*:/ { key = $0; sub(/:.*/, "", key) }
+    key in want { v[key] = v[key] $0 "\n" }
+    END { for (i = 1; i <= n; i++) printf "%s", v[k[i]] }' "$1"
+}
 
 for arg in "$@"; do
   note="$(resolve "$arg")"
   if [ -z "$note" ]; then echo "error	$arg: not found, or several notes with that name" >&2; continue; fi
   rel="${note#"$VAULT"/}"
+  if [ "$cmd" = hash ]; then
+    printf '%s\t%s\n' "$({ props "$note"; echo ---; body "$note"; } | shasum -a 256 | cut -c1-12)" "$rel"
+    continue
+  fi
   key="$(printf '%s' "$rel" | sed 's|/|__|g')"
   copy="$DIR/$key"; orig="$DIR/$key.orig"
   if [ "$cmd" = copy ]; then

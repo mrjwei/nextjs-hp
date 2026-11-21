@@ -2,11 +2,12 @@ import { Badge } from "@/components/ui/badge"
 import type { Lang } from "@/lib/i18n/config"
 
 const copy: Record<Lang, { label: string; title: string }> = {
-  en: { label: "Coming soon", title: "This post is a placeholder and hasn't been written yet." },
+  en: { label: "Coming soon", title: "This post hasn't been published yet." },
   ja: { label: "近日公開", title: "この記事は準備中です。" },
 }
 
-// Shown on cards and post pages for posts with `placeholder: true`.
+// Shown on cards and post pages for posts with `placeholder: true` (including
+// posts scheduled for a later date, which the content index marks as placeholders).
 export function ComingSoonBadge({
   lang = "en",
   className,
