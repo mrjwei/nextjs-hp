@@ -1,0 +1,160 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1040" viewBox="0 0 1500 1040" role="img" aria-label="strobe:// link indirection. Before: the model read and retyped a 1,200-character presigned S3 URL, taking 15.4 s and 1,266 output tokens for one photo. After: LinkRegistry swaps each URL for a short strobe://image reference, the model writes the short reference, and StreamSanitizer expands it back to the real URL, taking 2.0 s and 106 tokens; links no tool returned are reduced to their label." xmlns:c2pa="http://c2pa.org/manifest"><metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYToxZmU1NGY5NS05MzQ5LTQxOTMtODRkMC0yNTYwYzE0YjE5NWIAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaMIyQmMIKQfvfrW2jp+S+3UAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDo3Y2NkMWJmMy01ZTA5LTRmZTAtYWNjYy04OWIzNTZkZjYwNWNscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNoYqeU6tcoKceF6QINI3ZtBQAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggsh9qacSB7YAaJuhynMjEDRvkeX1DrEC1qfEY+EBpeSykZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaE58BgVdzv+8jcHHAL1psisAAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRMAAAAAAAAAAAAAAAAZGhhc2hYIFu7MBSDbO/6gFnrpGVTtKE1s2VmVFFBJHLATDIVm1a4ZG5hbWVuanVtYmYgbWFuaWZlc3RqZXhjbHVzaW9uc4GiZXN0YXJ0GQI+Zmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOjFmZTU0Zjk1LTkzNDktNDE5My04NGQwLTI1NjBjMTRiMTk1Yi9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOjU3NDkwMWRkLTFlZTUtNDEyNC1hMzc0LThmZjQyYWRkY2M5NXJjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCCyH2ppxIHtgBom6HKcyMQNG+R5fUOsQLWp8Rj4QGl5LKJjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFggx+DxwojdEAStxZFopwd8O4OXs8I21mIAclEGpcc1v42iY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggkD4LFfcm6ZXh8L9nOlmqWuY3y2peymhoZodGf7L2O0R0Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQM9cI84yn1nN135kynmkJqOAbi7e5CpmWBf48ltntTioMd/NtJl4WO72Imbtfu6TU87WfjlD+BU2ZvX2TrwoKVE=</c2pa:manifest></metadata>
+  <defs>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#4a5363"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1500" height="1040" fill="#fafbfc"/>
+  <g font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif">
+
+    <text x="60" y="66" font-size="30" font-weight="700" fill="#1b2230">strobe:// links: stop the model retyping URLs</text>
+    <text x="60" y="98" font-size="16" fill="#4a5363">agent/src/prompt-tools.ts: LinkRegistry + StreamSanitizer. Same one-photo reply measured before and after the change, Gemma 3 12B on Bedrock.</text>
+
+    <!-- ================= BEFORE ================= -->
+    <text x="60" y="150" font-size="13" font-weight="700" fill="#8c2f2f" letter-spacing="1.5">BEFORE · THE MODEL HANDLES THE REAL URL</text>
+
+    <!-- MCP payload -->
+    <rect x="60" y="168" width="230" height="170" rx="6" fill="#ffffff" stroke="#c9d1dc"/>
+    <text x="78" y="196" font-size="15" font-weight="700" fill="#1b2230">MCP get_image</text>
+    <text x="78" y="216" font-size="12.5" fill="#8a919c">tool result payload</text>
+    <g font-family="'JetBrains Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="11.5" fill="#4a5363">
+      <text x="78" y="244">url: "https://demo-</text>
+      <text x="78" y="260">media.s3.ap-southeast-2</text>
+      <text x="78" y="276">.amazonaws.com/…?X-Amz-</text>
+      <text x="78" y="292">Credential=…&amp;X-Amz-</text>
+      <text x="78" y="308">Signature=9f2c7e…"</text>
+    </g>
+    <text x="78" y="328" font-size="12.5" font-weight="600" fill="#8c2f2f">≈ 1,200 characters</text>
+
+    <line x1="292" y1="253" x2="326" y2="253" stroke="#4a5363" stroke-width="1.6" marker-end="url(#arw)"/>
+
+    <!-- Gemma retypes -->
+    <rect x="330" y="168" width="470" height="170" rx="6" fill="#ffffff" stroke="#c9d1dc"/>
+    <rect x="330" y="168" width="6" height="170" fill="#1f3a5f"/>
+    <text x="352" y="196" font-size="15" font-weight="700" fill="#1b2230">Gemma 3 reads it, then retypes it</text>
+    <text x="352" y="220" font-size="13.5" fill="#4a5363">≈ 400 tokens to read (code comment), and it must write the</text>
+    <text x="352" y="239" font-size="13.5" fill="#4a5363">URL back out token by token. A signature is random text,</text>
+    <text x="352" y="258" font-size="13.5" fill="#4a5363">so the tokeniser has no words to merge.</text>
+    <rect x="352" y="274" width="430" height="46" rx="4" fill="#eef2f7"/>
+    <g font-family="'JetBrains Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="11.5" fill="#1b2230">
+      <text x="364" y="293">![Dog on the beach](https://demo-media.s3</text>
+      <text x="364" y="310">.ap-southeast-2.amazonaws.com/…X-Amz-Signature=9f…)</text>
+    </g>
+
+    <line x1="802" y1="253" x2="836" y2="253" stroke="#4a5363" stroke-width="1.6" marker-end="url(#arw)"/>
+
+    <!-- Browser -->
+    <rect x="840" y="168" width="260" height="170" rx="6" fill="#ffffff" stroke="#c9d1dc"/>
+    <text x="858" y="196" font-size="15" font-weight="700" fill="#1b2230">Chat renders what was typed</text>
+    <text x="858" y="222" font-size="13.5" fill="#4a5363">One wrong character breaks the</text>
+    <text x="858" y="241" font-size="13.5" fill="#4a5363">signature (403). Small models</text>
+    <text x="858" y="260" font-size="13.5" fill="#4a5363">also invent plausible URLs</text>
+    <text x="858" y="279" font-size="13.5" fill="#4a5363">around real IDs.</text>
+
+    <!-- before metric -->
+    <text x="1140" y="226" font-size="48" font-weight="700" fill="#8c2f2f">15.4 s</text>
+    <text x="1140" y="262" font-size="20" font-weight="600" fill="#1b2230">1,266 output tokens</text>
+    <text x="1140" y="288" font-size="13.5" fill="#8a919c">for a reply showing one photo</text>
+
+    <!-- ================= AFTER ================= -->
+    <line x1="60" y1="372" x2="1440" y2="372" stroke="#e3e7ed"/>
+    <text x="60" y="410" font-size="13" font-weight="700" fill="#1f3a5f" letter-spacing="1.5">AFTER · THE MODEL ONLY EVER SEES A SHORT REFERENCE</text>
+
+    <!-- MCP -->
+    <rect x="60" y="428" width="200" height="190" rx="6" fill="#ffffff" stroke="#c9d1dc"/>
+    <text x="78" y="456" font-size="15" font-weight="700" fill="#1b2230">MCP get_image</text>
+    <text x="78" y="480" font-size="13.5" fill="#4a5363">same payload,</text>
+    <text x="78" y="499" font-size="13.5" fill="#4a5363">same 1,200-char URL</text>
+
+    <line x1="262" y1="523" x2="286" y2="523" stroke="#4a5363" stroke-width="1.6" marker-end="url(#arw)"/>
+
+    <!-- LinkRegistry -->
+    <rect x="290" y="428" width="250" height="190" rx="6" fill="#ffffff" stroke="#1f3a5f" stroke-width="1.5"/>
+    <text x="308" y="456" font-size="15" font-weight="700" fill="#1f3a5f">① LinkRegistry.shorten()</text>
+    <text x="308" y="480" font-size="13.5" fill="#4a5363">Agent rewrites every https URL</text>
+    <text x="308" y="499" font-size="13.5" fill="#4a5363">before the model sees it:</text>
+    <rect x="308" y="510" width="214" height="28" rx="4" fill="#eef2f7"/>
+    <text x="318" y="529" font-family="'JetBrains Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="12" fill="#1b2230">strobe://image/3f9a1c…</text>
+    <text x="308" y="562" font-size="13.5" fill="#4a5363">The real URL is kept in a Map,</text>
+    <text x="308" y="581" font-size="13.5" fill="#4a5363">created fresh for each turn.</text>
+
+    <line x1="542" y1="523" x2="566" y2="523" stroke="#4a5363" stroke-width="1.6" marker-end="url(#arw)"/>
+
+    <!-- Gemma -->
+    <rect x="570" y="428" width="260" height="190" rx="6" fill="#ffffff" stroke="#c9d1dc"/>
+    <rect x="570" y="428" width="6" height="190" fill="#1f3a5f"/>
+    <text x="592" y="456" font-size="15" font-weight="700" fill="#1b2230">② Gemma writes the ref</text>
+    <text x="592" y="480" font-size="13.5" fill="#4a5363">Copies the short reference</text>
+    <text x="592" y="499" font-size="13.5" fill="#4a5363">as the prompt tells it to:</text>
+    <rect x="592" y="510" width="220" height="46" rx="4" fill="#eef2f7"/>
+    <g font-family="'JetBrains Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="11.5" fill="#1b2230">
+      <text x="602" y="529">![Dog on the beach]</text>
+      <text x="602" y="546">(strobe://image/3f9a1c…)</text>
+    </g>
+    <text x="592" y="581" font-size="13.5" fill="#4a5363">A handful of tokens, not hundreds.</text>
+
+    <line x1="832" y1="523" x2="856" y2="523" stroke="#4a5363" stroke-width="1.6" marker-end="url(#arw)"/>
+
+    <!-- Sanitizer -->
+    <rect x="860" y="428" width="250" height="190" rx="6" fill="#ffffff" stroke="#1f3a5f" stroke-width="1.5"/>
+    <text x="878" y="456" font-size="15" font-weight="700" fill="#1f3a5f">③ StreamSanitizer</text>
+    <text x="878" y="480" font-size="13.5" fill="#4a5363">Holds each Markdown link until</text>
+    <text x="878" y="499" font-size="13.5" fill="#4a5363">it is complete, then resolve(ref):</text>
+    <text x="878" y="526" font-size="13.5" fill="#1b2230"><tspan font-weight="700">known ref</tspan> → real presigned URL</text>
+    <text x="878" y="547" font-size="13.5" fill="#1b2230"><tspan font-weight="700">anything else</tspan> → label only</text>
+    <text x="878" y="581" font-size="13.5" fill="#4a5363">The chat gets a working URL;</text>
+    <text x="878" y="600" font-size="13.5" fill="#4a5363">the model never typed it.</text>
+
+    <!-- after metric -->
+    <text x="1140" y="486" font-size="48" font-weight="700" fill="#1f3a5f">2.0 s</text>
+    <text x="1140" y="522" font-size="20" font-weight="600" fill="#1b2230">106 output tokens</text>
+    <text x="1140" y="548" font-size="13.5" fill="#8a919c">same one-photo reply</text>
+
+    <!-- ================= Bottom: comparison + code ================= -->
+    <line x1="60" y1="652" x2="1440" y2="652" stroke="#e3e7ed"/>
+    <text x="60" y="690" font-size="13" font-weight="700" fill="#8a919c" letter-spacing="1.5">WHY TIME FALLS WITH TOKENS</text>
+
+    <!-- latency bars: 1 s = 28 px -->
+    <text x="60" y="728" font-size="14.5" font-weight="600" fill="#1b2230">Latency</text>
+    <rect x="160" y="712" width="431" height="22" fill="#8a919c"/>
+    <text x="600" y="728" font-size="13.5" fill="#4a5363">15.4 s</text>
+    <rect x="160" y="738" width="56" height="22" fill="#1f3a5f"/>
+    <text x="226" y="754" font-size="13.5" fill="#1b2230"><tspan font-weight="700">2.0 s</tspan>  · 7.7× faster (−87%)</text>
+
+    <!-- token bars: 1 token = 0.34 px -->
+    <text x="60" y="802" font-size="14.5" font-weight="600" fill="#1b2230">Tokens out</text>
+    <rect x="160" y="786" width="430" height="22" fill="#8a919c"/>
+    <text x="600" y="802" font-size="13.5" fill="#4a5363">1,266</text>
+    <rect x="160" y="812" width="36" height="22" fill="#1f3a5f"/>
+    <text x="206" y="828" font-size="13.5" fill="#1b2230"><tspan font-weight="700">106</tspan>  · −92%</text>
+
+    <rect x="60" y="856" width="600" height="150" rx="6" fill="#ffffff" stroke="#d6dde6"/>
+    <text x="78" y="884" font-size="14.5" font-weight="700" fill="#1b2230">Decoding is sequential</text>
+    <text x="78" y="906" font-size="13.5" fill="#4a5363">Each output token is one step through the model, so reply time is roughly</text>
+    <text x="78" y="925" font-size="13.5" fill="#4a5363">tokens written ÷ decode speed. Before: 1,266 ÷ 15.4 s ≈ 82 tok/s.</text>
+    <text x="78" y="944" font-size="13.5" fill="#4a5363">Cut the tokens and the time follows. That is why the model is</text>
+    <text x="78" y="963" font-size="13.5" fill="#4a5363">the lever: input tokens are read in parallel and are cheap by comparison.</text>
+    <text x="78" y="990" font-size="12.5" fill="#8a919c">Bonus security effect: only links a tool returned this turn can render.</text>
+
+    <!-- code -->
+    <rect x="700" y="676" width="740" height="330" rx="6" fill="#eef2f7" stroke="#d6dde6"/>
+    <g xml:space="preserve" font-family="'JetBrains Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#1b2230">
+      <text x="720" y="704" fill="#8a919c">// ① LinkRegistry.walk() — on each tool result, before the model</text>
+      <text x="720" y="724">if (!/^https?:\/\//.test(value)) return value;</text>
+      <text x="720" y="743">const ref = imageId</text>
+      <text x="720" y="762">&#160;&#160;? `<tspan font-weight="700" fill="#1f3a5f">strobe://image/${imageId}</tspan>`</text>
+      <text x="720" y="781">&#160;&#160;: `strobe://link/${++this.counter}`;</text>
+      <text x="720" y="800">this.byRef.set(ref, value);&#160;&#160;&#160;<tspan fill="#8a919c">// remember the real URL</tspan></text>
+      <text x="720" y="819">return ref;</text>
+
+      <text x="720" y="853" fill="#8a919c">// agent.ts, right after each tool call</text>
+      <text x="720" y="872">outcome.payload = links.shorten(outcome.payload);</text>
+
+      <text x="720" y="906" fill="#8a919c">// ③ StreamSanitizer.checkLink() — as the reply streams</text>
+      <text x="720" y="926">const real = this.links.<tspan font-weight="700" fill="#1f3a5f">resolve</tspan>(url);</text>
+      <text x="720" y="945">if (!real) return label || "(link removed)";</text>
+      <text x="720" y="964">return `${bang}[${label}](${real})`;</text>
+      <text x="720" y="992" fill="#8a919c">// simplified: bang = whole.startsWith("!") ? "!" : ""</text>
+    </g>
+  </g>
+</svg>
