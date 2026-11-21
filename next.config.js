@@ -168,6 +168,100 @@ module.exports = {
         destination: "/ja/posts",
         permanent: true,
       },
+      // Strobe refactor (2026-11-21): Part 4 was folded into the security post,
+      // the Part 5-7 placeholders into the retrieval and ingestion posts, and
+      // the networking-and-vpc placeholder dropped. Parts 1-3 and Sign In Once
+      // left the Strobe project as standalone background notes at /posts/<slug>.
+      {
+        source: "/posts/strobe-assistant-part-4-how-cognito-and-auth-fit-in",
+        destination: "/projects/strobe/when-the-rag-corpus-is-user-generated",
+        permanent: true,
+      },
+      {
+        source: "/posts/:slug(strobe-assistant-part-5-embeddings-for-posts-moments-and-search|strobe-assistant-part-7-dual-index-rrf-and-mrr)",
+        destination: "/projects/strobe/measuring-retrieval-honestly-with-n-25",
+        permanent: true,
+      },
+      {
+        source: "/posts/strobe-assistant-part-6-why-ingestion-goes-through-sqs",
+        destination: "/projects/strobe/own-the-buffer-18-dead-lettered-photos",
+        permanent: true,
+      },
+      {
+        source: "/posts/networking-and-vpc",
+        destination: "/posts",
+        permanent: true,
+      },
+      {
+        source: "/projects/strobe/strobe-assistant-part-4-how-cognito-and-auth-fit-in",
+        destination: "/projects/strobe/when-the-rag-corpus-is-user-generated",
+        permanent: true,
+      },
+      {
+        source: "/projects/strobe/:slug(strobe-assistant-part-5-embeddings-for-posts-moments-and-search|strobe-assistant-part-7-dual-index-rrf-and-mrr)",
+        destination: "/projects/strobe/measuring-retrieval-honestly-with-n-25",
+        permanent: true,
+      },
+      {
+        source: "/projects/strobe/strobe-assistant-part-6-why-ingestion-goes-through-sqs",
+        destination: "/projects/strobe/own-the-buffer-18-dead-lettered-photos",
+        permanent: true,
+      },
+      {
+        source: "/projects/strobe/networking-and-vpc",
+        destination: "/posts",
+        permanent: true,
+      },
+      {
+        source: "/projects/strobe/:slug(strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb|strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together|strobe-assistant-part-3-acp-mcp-pipeline|sign-in-once-verify-anywhere-how-cognito-tokens-work)",
+        destination: "/posts/:slug",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/strobe-assistant-part-4-how-cognito-and-auth-fit-in",
+        destination: "/ja/projects/strobe/when-the-rag-corpus-is-user-generated",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/:slug(strobe-assistant-part-5-embeddings-for-posts-moments-and-search|strobe-assistant-part-7-dual-index-rrf-and-mrr)",
+        destination: "/ja/projects/strobe/measuring-retrieval-honestly-with-n-25",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/strobe-assistant-part-6-why-ingestion-goes-through-sqs",
+        destination: "/ja/projects/strobe/own-the-buffer-18-dead-lettered-photos",
+        permanent: true,
+      },
+      {
+        source: "/ja/posts/networking-and-vpc",
+        destination: "/ja/posts",
+        permanent: true,
+      },
+      {
+        source: "/ja/projects/strobe/strobe-assistant-part-4-how-cognito-and-auth-fit-in",
+        destination: "/ja/projects/strobe/when-the-rag-corpus-is-user-generated",
+        permanent: true,
+      },
+      {
+        source: "/ja/projects/strobe/:slug(strobe-assistant-part-5-embeddings-for-posts-moments-and-search|strobe-assistant-part-7-dual-index-rrf-and-mrr)",
+        destination: "/ja/projects/strobe/measuring-retrieval-honestly-with-n-25",
+        permanent: true,
+      },
+      {
+        source: "/ja/projects/strobe/strobe-assistant-part-6-why-ingestion-goes-through-sqs",
+        destination: "/ja/projects/strobe/own-the-buffer-18-dead-lettered-photos",
+        permanent: true,
+      },
+      {
+        source: "/ja/projects/strobe/networking-and-vpc",
+        destination: "/ja/posts",
+        permanent: true,
+      },
+      {
+        source: "/ja/projects/strobe/:slug(strobe-assistant-part-1-aws-target-groups-and-application-load-balancer-alb|strobe-assistant-part-2-how-aws-ecs-glues-tasks-albs-target-groups-etc-together|strobe-assistant-part-3-acp-mcp-pipeline|sign-in-once-verify-anywhere-how-cognito-tokens-work)",
+        destination: "/ja/posts/:slug",
+        permanent: true,
+      },
       // Retired posts (2026-11-18 audit): beginner-level explainers, thin
       // case studies and posts that no longer fit the positioning. URLs with
       // or without their old folder go to the Posts index; the retired

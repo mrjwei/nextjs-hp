@@ -1,10 +1,11 @@
 ---
-title: "Sign In Once, Verify Anywhere—How Cognito Tokens Work"
+title: "Sign In Once, Verify Anywhere: How Cognito Tokens Work"
 publishedAt: "2026-10-12"
 summary: "The foundations behind Strobe's auth: the three jobs hidden in the word \"auth\", the tokens a Cognito user pool issues, how any service verifies a JWT locally with public keys, and why a verified sub, never a client or a model, decides whose data a request can touch."
 tags: ["aws", "security", "qut"]
-project: "Strobe"
 ---
+
+*A background note I wrote while building Strobe Assistant. The project write-up is [here](/projects/strobe/strobe-assistant-extending-strobe-with-an-ai-agent).*
 
 - ["Auth" is really three jobs](#auth-is-really-three-jobs)
 - [What Cognito hands back after sign-in](#what-cognito-hands-back-after-sign-in)
@@ -15,7 +16,7 @@ project: "Strobe"
 
 The fundamental rule is this: identity comes from a *verified token*, never from what a client or a model says. Cognito proves who the user is once; every service after that checks the signed token for itself; and the `sub` claim it recovers is the only thing that decides *whose* data a request can touch.
 
-This post sticks to the foundations: what Cognito issues and how a service checks it. [Part 4](/posts/strobe-assistant-part-4-how-cognito-and-auth-fit-in) then follows the token through Strobe Assistant itself.
+This post sticks to the foundations: what Cognito issues and how a service checks it. [When the RAG Corpus Is User-Generated](/projects/strobe/when-the-rag-corpus-is-user-generated) then follows the token through Strobe Assistant itself.
 
 ## "Auth" is really three jobs
 
@@ -47,7 +48,7 @@ A **user pool** is a user directory plus a token issuer. When a sign-in succeeds
 
 ID and access tokens are **[JWTs](https://datatracker.ietf.org/doc/html/rfc7519)** (JSON Web Tokens): three base64url-encoded parts joined by dots, `header.payload.signature`.
 
-**Why Strobe uses the ID token, not the access token.** Strobe Assistant's verifiers (the agent's `auth.ts` and the MCP server's [`JWTVerifier`](https://gofastmcp.com/servers/auth/token-verification)) check `aud` against the app client id. Cognito access tokens have no `aud` claim, so that check rejects them by design. The ID token also carries the user details the agent uses for its display name. Both files explain this in their docstrings, and I cover why both of them verify the token in [Part 3](/posts/strobe-assistant-part-3-acp-mcp-pipeline#the-mcp-server-its-own-component-its-own-auth-boundary).
+**Why Strobe uses the ID token, not the access token.** Strobe Assistant's verifiers (the agent's `auth.ts` and the MCP server's [`JWTVerifier`](https://gofastmcp.com/servers/auth/token-verification)) check `aud` against the app client id. Cognito access tokens have no `aud` claim, so that check rejects them by design. The ID token also carries the user details the agent uses for its display name. Both files explain this in their docstrings, and I cover why both of them verify the token in [my ACP + MCP note](/posts/strobe-assistant-part-3-acp-mcp-pipeline#the-mcp-server-its-own-component-its-own-auth-boundary).
 
 ## How a service trusts a token without asking Cognito
 
@@ -92,7 +93,7 @@ In Strobe, the user's token **never unlocks AWS**. Bedrock, S3 Vectors and Dynam
 
 ## Where Cognito sits in the Strobe app
 
-In Assessment 1 (the photo-sharing app that Strobe Assistant extends; see [the series intro](/posts/strobe-assistant-extending-strobe-with-an-ai-agent)), Cognito sits behind a thin auth Lambda, and API Gateway's **[JWT authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-jwt-authorizer.html)** guards every protected route.
+In Assessment 1 (the photo-sharing app that Strobe Assistant extends; see [the project write-up](/projects/strobe/strobe-assistant-extending-strobe-with-an-ai-agent)), Cognito sits behind a thin auth Lambda, and API Gateway's **[JWT authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-jwt-authorizer.html)** guards every protected route.
 
 <figure style={{ textAlign: "center" }}>
   <img
@@ -114,7 +115,7 @@ user_id = claims["sub"]   # never read the user id from the request body
 **`sub` becomes rules in two places:**
 
 - **Ownership checks.** For example, editing a post requires `post.userId == sub`; otherwise it's a `403`.
-- **Storage keys.** The upload Lambda presigns a PUT for the key `{sub}/{postId}/{fileId}`. The client never chooses the `{sub}` part. This matters later, because the A2 ingestion worker trusts that prefix (see [Part 4](/posts/strobe-assistant-part-4-how-cognito-and-auth-fit-in)).
+- **Storage keys.** The upload Lambda presigns a PUT for the key `{sub}/{postId}/{fileId}`. The client never chooses the `{sub}` part. This matters later, because the A2 ingestion worker trusts that prefix (see [When the RAG Corpus Is User-Generated](/projects/strobe/when-the-rag-corpus-is-user-generated)).
 
 Cognito is also where the **moderator group** lives. Group membership appears in the ID token as `cognito:groups`.
 
