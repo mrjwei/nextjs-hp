@@ -1,14 +1,64 @@
 ---
-title: "Reviewing an AI That Flags Too Much"
+title: "Reviewing an AI That Flags Too Much: Built, Cut, and What It Left Behind"
 publishedAt: "2026-11-23"
-summary: "Coming soon. In an AI proofreader built to miss nothing, the reviewer pays for every flag. How the first review flow I built for them was cut from the delivery, and what I would change next time."
-tags: ["casestudy", "ai", "llm", "evals", "uiux"]
+summary: "With an AI proofreading tool built to miss nothing, the person checking its findings pays the cost. This post covers how the review flow I first built for that person was cut from the delivery, what was lost with it, and what I'd change next time in the same situation."
+tags: ["casestudy", "ai", "uiux", "process"]
 project: "ManualProof"
-placeholder: true
 ---
 
-{/* Placeholder page: replace this file when the full post is published. */}
+- [What I built first](#what-i-built-first)
+- [While the scope kept moving](#while-the-scope-kept-moving)
+- [What the delivered screen did](#what-the-delivered-screen-did)
+- [What was lost when it was cut](#what-was-lost-when-it-was-cut)
+- [If I did it again](#if-i-did-it-again)
 
-This post is still being written and will be published here soon.
+> **A note on privacy:** This is the second post in the [case study of AI proofreading for technical manuals](/projects/manualproof/ai-proofreading-for-technical-manuals). The company and the product aren't named, and every screen in the diagrams has been redrawn with invented text.
 
-In the meantime, see [AI Proofreading for Technical Manuals: Five Weeks of Client Work](/projects/manualproof/ai-proofreading-for-technical-manuals), the overview of this project.
+An AI proofreading tool built to miss nothing flags a lot. The cost is paid by the person who checks each finding one by one. If checking takes too long, it's faster not to use the tool at all.
+
+The first thing I built on this project was a screen for that person. And it was cut from that month's delivery. This post is a record of what I built, why it was cut, and what was lost.
+
+## What I built first
+
+Using a coding agent, I built the proofreading flow in the admin interface in about two days:
+
+- Uploads split into three, "target PDF", "Japanese proofreading and terminology checks" and "standard conformance checks", so several checks could be chosen and run together
+- A list of findings showing the page, the flagged text, the suggested fix, and whether the finding came from a rule or the LLM
+- Accept, Reject or Hold for each finding, with a comment, and each decision saved to the database with who made it and when
+- The decisions exported as a report, and a run history kept
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/reviewing-an-ai-that-flags-too-much/kod-review-layouts.svg" alt="Comparison of two ways to show findings. Left: the review table I built first, with the page, the flagged term, the suggested fix, the source of the finding and Accept, Reject and Hold buttons; decisions are saved. Right: the screen used in the delivery, where flagged terms are highlighted in the page text and a card alongside shows the suggested fix and the reason; decisions aren't recorded. Both redrawn with invented text" style={{ marginBottom: "8px" }} />
+  <figcaption>Two ways to show findings, redrawn with invented text.</figcaption>
+</figure>
+
+## While the scope kept moving
+
+The problem was timing. In the week I joined, the requirements weren't settled yet. The first week's scope left out reviewing findings; the draft requirements document a few days later put it in. I built to that draft.
+
+But a later review of the task list put report export and finding filters out of scope, and moved the review feature to "under discussion". Three weeks later, judged unlikely to make this delivery, the review feature was dropped from the scope.
+
+## What the delivered screen did
+
+The delivered results screen answered the same problem from another direction. It highlights flagged terms in the page text and shows the suggested fix and the reason in a card alongside. The reason comes from a notes column the client's glossary already had. The page range could also be chosen from the table of contents rather than by page number. The labels say "Start" and "End" rather than "Start chapter" and "End chapter", because some manuals are organised into parts rather than chapters.
+
+The team designed and proposed these in response to requests from the client, and a colleague built them.
+
+<figure style={{ textAlign: "center" }}>
+  <img src="/reviewing-an-ai-that-flags-too-much/kod-delivered-results-screen.svg" alt="An example of the delivered results screen. At the top, the range is set with Start and End chosen from the table of contents; in the page text on the left, flagged terms are highlighted, and cards on the right show the suggested fix and a reason taken from the notes column of the client's glossary. No Accept, Reject or Hold decisions are recorded" style={{ marginBottom: "8px" }} />
+  <figcaption>The delivered results screen: each check is fast, but its result isn't kept. Redrawn with invented text.</figcaption>
+</figure>
+
+Compared with my review table, this one was faster for checking a single finding, because you don't have to hunt for the flagged term in the text. In exchange, the result of each check isn't kept anywhere.
+
+## What was lost when it was cut
+
+Cutting the review feature removed two things: a record of who decided what about which finding, and the answer data those decisions would have produced.
+
+Looking back, the second hurt more. As I wrote in [the first post](/projects/manualproof/recall-was-100-and-meant-nothing), this project had no ground-truth labels from the client, and no way to tell whether accuracy had improved. A growing record of accepts and rejects would gradually have stood in for that answer key.
+
+## If I did it again
+
+- **Build to the agreed scope, and treat anything built ahead of it as a prototype.** A feature built as a finished product before the scope is settled is simply wasted when it's cut. Had I treated it as a prototype for showing, the same two days could have shown more options, more roughly.
+- **If something has to go, cut from the edges, not the decision record.** Filters, bulk actions and report export can be added later. I should have proposed putting just the Accept and Reject buttons, and saving those decisions to the database, at the centre of the first delivery.
+- **Give "the feature exists" and "the accuracy is good enough" separate rows in the scope table.** In the early meetings, the screens and accuracy were discussed as one. We only decided to treat them separately once the sprint was past its midpoint. To a client, the two easily sound like one promise. Separate rows from the start make it easier to explain how far each has got.
