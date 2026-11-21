@@ -44,10 +44,19 @@ Quality gates for every change: `npm run lint && npm run typecheck && npm run bu
 
 ## Where content comes from
 
-Post content lives in the Obsidian vault at `~/projects/Notes`, which is the source of truth for every post and translation. Don't edit a post's MDX on its own if it has a vault note, or the next update will overwrite it. Claude Code skills deploy the vault to this repo:
+Post content lives in the Obsidian vault at `~/projects/Notes`, which is the source of truth for every post and translation. Don't edit a post's MDX on its own if it has a vault note, or the next update will overwrite it. The `post-pipeline` Claude Code plugin ([`plugins/post-pipeline`](plugins/post-pipeline), listed in this repo's marketplace) turns the vault's `Posts.base` board into posts, lane by lane:
 
-- `/publish-pipeline`: stages Ready notes on main ahead of their date (restaging edited ones), writes and stages translations ([`.claude/skills/publish-pipeline/SKILL.md`](.claude/skills/publish-pipeline/SKILL.md))
-- `/update-pipeline`: deploys edits to published notes ([`.claude/skills/update-pipeline/SKILL.md`](.claude/skills/update-pipeline/SKILL.md))
+- `/post-pipeline:run-board`: works the whole board, running each skill below only when its lane has notes. A scheduled task on the Mac runs it.
+- `/post-pipeline:finalise-post-draft`: finishes drafts in Stage (proofread, fact-check, flesh out, diagrams) and sets them to Ready ([`SKILL.md`](plugins/post-pipeline/skills/finalise-post-draft/SKILL.md))
+- `/post-pipeline:publish-pipeline`: stages Ready notes on main ahead of their date (restaging edited ones), writes and stages translations ([`SKILL.md`](plugins/post-pipeline/skills/publish-pipeline/SKILL.md))
+- `/post-pipeline:update-pipeline`: deploys edits to published notes in Updated ([`SKILL.md`](plugins/post-pipeline/skills/update-pipeline/SKILL.md))
+
+Install it from a checkout of this repo:
+
+```bash
+claude plugin marketplace add ~/projects/nextjs-hp
+claude plugin install post-pipeline@jessewei-net
+```
 
 The pipeline scripts read the vault from `$VAULT` (default `~/projects/Notes`). They run from Claude Code on the Mac, because the vault is only there and pushing needs its SSH key. Going live doesn't: a staged post (dated after today, Brisbane time) is served as "coming soon" until its date, and the `Scheduled publish` GitHub Actions workflow rebuilds production through a Vercel deploy hook (secret `VERCEL_DEPLOY_HOOK_URL`) when one is due. See [`docs/publish.md`](docs/publish.md), "Scheduled posts".
 

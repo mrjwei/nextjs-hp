@@ -1,0 +1,8 @@
+{
+  "name": "post-pipeline",
+  "version": "1.0.0",
+  "description": "Blog post pipeline for jessewei.net, run from the Obsidian Posts board: finalise drafts in Stage, stage Ready posts and their translations on main, deploy edits to Updated posts. run-board does all three as the board needs.",
+  "author": { "name": "Jesse Wei" },
+  "repository": "https://github.com/mrjwei/nextjs-hp",
+  "keywords": ["obsidian", "blog", "publishing", "nextjs"]
+}

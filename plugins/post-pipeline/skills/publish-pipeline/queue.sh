@@ -4,7 +4,8 @@
 #
 # Output, one TSV line per note, in the order to work on them:
 #   action  scheduledAt  path (relative to the vault)  detail
-# action:   live | finish | publish-translation | publish | translate               (publish-pipeline)
+# action:   finalise                                                               (finalise-post-draft)
+#           live | finish | publish-translation | publish | translate               (publish-pipeline)
 #           update                                                                 (update-pipeline)
 #           review | invalid                                                       (both)
 #           scheduled | idle                                                       (--all only)
@@ -23,7 +24,7 @@ TODAY="$(TZ=Australia/Brisbane date +%F)"   # the site's day (scripts/site-date.
 SYNC="$(cd "$(dirname "$0")" && pwd)/sync.sh"
 
 # `command grep` bypasses the shell's grep wrapper, which honours the vault's .gitignore (`*`) and finds nothing.
-command grep -rl --null --include='*.md' --exclude-dir=.trash --exclude-dir=.obsidian -E '^status:' "$VAULT" 2>/dev/null \
+command grep -rl --null --include='*.md' --exclude-dir=.trash --exclude-dir=.obsidian --exclude-dir=Templates -E '^status:' "$VAULT" 2>/dev/null \
 | xargs -0 awk -v today="$TODAY" -v all="$ALL" -v vault="${VAULT%/}/" -v sync="$SYNC" '
   function unq(s) { gsub(/^[ \t"\047]+|[ \t"\047]+$/, "", s); return s }
   function isdate(s) { return s ~ /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/ }
@@ -34,7 +35,7 @@ command grep -rl --null --include='*.md' --exclude-dir=.trash --exclude-dir=.obs
     sub(/\t.*/, "", line); return line
   }
   function emit(action, detail,   pri, rel) {
-    pri = (action == "live" || action == "finish") ? 1 : (action == "publish-translation") ? 2 : (action == "publish") ? 3 : \
+    pri = (action == "finalise") ? 0 : (action == "live" || action == "finish") ? 1 : (action == "publish-translation") ? 2 : (action == "publish") ? 3 : \
           (action == "translate") ? 4 : (action == "update") ? 5 : \
           (action == "review") ? 6 : (action == "invalid") ? 7 : (action == "scheduled") ? 8 : 9
     if (pri >= 8 && !all) return
@@ -49,6 +50,7 @@ command grep -rl --null --include='*.md' --exclude-dir=.trash --exclude-dir=.obs
     if (pub != "" && !isdate(pub)) { emit("invalid", "publishedAt is not YYYY-MM-DD: " pub); return }
     if (upd != "" && !isdate(upd)) { emit("invalid", "updatedAt is not YYYY-MM-DD: " upd); return }
     if (st == "Drafting") { emit("idle", note); return }
+    if (st == "Stage") { emit("finalise", note); return }
     if (st == "Review") { emit("review", note); return }
     day = (pub != "" ? pub : sched)
     if (st == "Updated") {

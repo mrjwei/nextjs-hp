@@ -10,7 +10,7 @@
 // Output, one TSV line per file: `changed <file>`, then `mention <vault note>` for each vault note that
 // still contains the old title or old URL (the pipeline doesn't edit note bodies; report them).
 //
-// Usage: node .claude/skills/publish-pipeline/refs.mjs retitle|move … (vault: $VAULT, default ~/projects/Notes)
+// Usage: node <publish-pipeline skill folder>/refs.mjs retitle|move … (vault: $VAULT, default ~/projects/Notes)
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";

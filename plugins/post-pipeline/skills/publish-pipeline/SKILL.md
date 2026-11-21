@@ -24,8 +24,8 @@ Publishing is split between the Mac and the cloud, because only the Mac can reac
 A published note always says what its post says, so the next `/update-pipeline` run (which copies the note as is) never undoes an edit. Every change the pipeline makes to a post's content (proofreading, PII removal, `note` or `updateNote` instructions, alt text it writes, an image it splits or obfuscates, a fix during the build) is made in a **working copy** of the note, and the post is converted from that copy. Once its pull request is merged, the copy's body replaces the note's body. Only the conversion stays in the post alone: MDX figure and video markup, links written for wikilinks, the table of contents, the removed title H1, escaping, callouts as blockquotes, and the frontmatter.
 
 ```bash
-bash .claude/skills/publish-pipeline/sync.sh copy <note>...   # → copy <working copy> <note>: read and edit that file, never the note
-bash .claude/skills/publish-pipeline/sync.sh apply <note>...  # after the PR is merged → synced | same | none | conflict <working copy>
+bash $P/sync.sh copy <note>...   # → copy <working copy> <note>: read and edit that file, never the note
+bash $P/sync.sh apply <note>...  # after the PR is merged → synced | same | none | conflict <working copy>
 ```
 
 In the working copy, images use the translate stage's format (`stages/translate.md` step 3): `![[assets/<folder>/file.png|alt text]]`, where `<folder>/file.png` is the published file under `public/` (copied into the vault's `assets/<folder>/` if it isn't there yet), with its caption, if any, as an italic line directly below. An embed with a width keeps it (`|390`) and gets no alt text. Images the note embedded before stay in the vault untouched. The copies in `public/` are shrunk by `media.mjs` (`stages/publish.md` step 3): an image keeps its file name, and an animated GIF is published as `<name>.webm` while the note keeps embedding the vault's `<name>.gif`.
@@ -40,7 +40,7 @@ In the working copy, images use the translate stage's format (`stages/translate.
 | after-publish | the note just staged, a `live` note, or a `finish` note | records the post in the note (pipeline properties, `stagedHash`, filed under `Posts/`); once its date has come, marks it Published | `stages/after-publish.md` |
 | translate | a staged or Published original with `requireTranslate: true` | writes the translation note next to it, as Review or Ready | `stages/translate.md` |
 
-Paths are relative to this skill's folder. Read a stage's file only when you're about to run it.
+`P=${CLAUDE_SKILL_DIR}` is this skill's folder in the post-pipeline plugin: the scripts here and in `stages/` are written `$P/…`, and stage files are `$P/stages/<stage>.md`. Each Bash call starts fresh, so write the expanded path in every command. Run commands from the site repo's root (`~/projects/nextjs-hp`). Read a stage's file only when you're about to run it.
 
 ## Frontmatter
 
@@ -81,12 +81,13 @@ A placeholder is a post with `placeholder: true`: a "coming soon" stand-in for a
 
 ## Finding work
 
-`bash .claude/skills/publish-pipeline/queue.sh` reads frontmatter only and prints one TSV line per note that needs something, in order: `action  scheduledAt  path-in-vault  detail`. `--all` adds `scheduled` and `idle` notes. Don't search the vault for work any other way; plain `grep` finds nothing there (its .gitignore is `*`), so use the scripts or `command grep`.
+`bash $P/queue.sh` reads frontmatter only and prints one TSV line per note that needs something, in order: `action  scheduledAt  path-in-vault  detail`. `--all` adds `scheduled` and `idle` notes. Don't search the vault for work any other way; plain `grep` finds nothing there (its .gitignore is `*`), so use the scripts or `command grep`.
 
 | Note's frontmatter (checked top to bottom) | action | Do |
 | --- | --- | --- |
 | several/unknown `status`, or a date not `YYYY-MM-DD` | `invalid` | Report `detail`. |
 | `status` empty or Drafting | `idle` | Nothing. |
+| Stage | `finalise` | `finalise-post-draft`'s (it writes the draft and sets Ready): skip. |
 | Review | `review` | Report as waiting for the author. |
 | Ready, no `stagedHash`, or one that no longer matches the note (detail starts `restage`) | `publish-translation` (has `translationOf`) or `publish` | publish → after-publish → for an original: translate if `requireTranslate` → if the translation is Ready: publish → after-publish |
 | Ready, staged and unchanged, date (`publishedAt`, else `scheduledAt`) today or earlier, or none | `live` | after-publish (its post is live: record it) → translate if due |
@@ -100,7 +101,7 @@ A placeholder is a post with `placeholder: true`: a "coming soon" stand-in for a
 
 ## Keep runs cheap
 
-- Read a note's body only when publishing it or writing its placeholder summary (then only its opening). For any other note, `bash .claude/skills/publish-pipeline/fm.sh <path or wikilink target>...` prints just the frontmatter; it also takes repo `.mdx` paths.
+- Read a note's body only when publishing it or writing its placeholder summary (then only its opening). For any other note, `bash $P/fm.sh <path or wikilink target>...` prints just the frontmatter; it also takes repo `.mdx` paths.
 - Read a post in full only when translating it. For format, read the top of one sibling (`head -n 40`), not whole posts.
 - Never print `app/data/content-index.json` or build logs whole: use the queries and log filters in `stages/publish.md`.
 - Don't re-read a file after editing it, and use `git -q` where it exists.
@@ -116,7 +117,7 @@ A placeholder is a post with `placeholder: true`: a "coming soon" stand-in for a
 - **Manual run, no arguments**: the same, but ask instead of skipping when blocked or unsure. Nothing to do → say so.
 - **Manual run with note path(s)**: each note's next action from the table, regardless of queue order. A `scheduled` note → change nothing; say it's staged and goes live on that day. No paths and an empty queue → ask for a path.
 
-Run it after the finalise skill sets notes to Ready, and after editing a Ready note, so main matches the vault; in particular before going away, since the cloud can only make live what's already staged.
+`run-board` (this plugin) runs finalise, this skill and `/update-pipeline` in turn, as the board needs. Run it after the finalise skill sets notes to Ready, and after editing a Ready note, so main matches the vault; in particular before going away, since the cloud can only make live what's already staged.
 
 **Finish the row.** Whatever started the publish (the queue, a path, or a request like "fix it and publish it" in a conversation), an original's pipeline is its whole row in the table: publish → after-publish → translate when `requireTranslate: true` → publish and after-publish of the translation when it's Ready. It isn't done until then. A future date doesn't stop the row: the post and its translation are staged now and go live together on the date. Before reporting, rerun `queue.sh` and check that no line remains for a note this run touched other than `review`, `scheduled` or a blocked item named in the report.
 

@@ -7,7 +7,7 @@ description: Deploy edited, already-published posts from the Obsidian vault (~/p
 
 The companion of `publish-pipeline`. The vault note is the single source of truth: the author edits a published note in Obsidian and sets its `status` to `Updated` (a column in `Posts.base`). The note is final and clean, so its content goes into the post as is: no comparing, no proofreading. Anything else the run changes in a post's content (an `updateNote` instruction such as "refine the new part", alt text, an image, a build fix) is made in the note's working copy first and written back to the note after the merge, so the note keeps saying what its post says (publish-pipeline's SKILL.md, "Note and post stay in sync"). Each language's note is updated on its own; the other language changes only when `updateNote` asks for it (step 2), and then through its own note too.
 
-`P=.claude/skills/publish-pipeline` (shared scripts: `queue.sh`, `fm.sh`, `sync.sh`, `links.mjs`, `refs.mjs`, `media.mjs`).
+`P=${CLAUDE_SKILL_DIR}/../publish-pipeline`, the publish-pipeline skill's folder in this plugin; use the expanded path in commands (shared scripts: `queue.sh`, `fm.sh`, `sync.sh`, `links.mjs`, `refs.mjs`, `media.mjs`).
 
 ## Frontmatter
 
@@ -26,7 +26,7 @@ The note's `note` property was for the first publish: ignore it. Written afterwa
 ## Finding work
 
 ```bash
-bash .claude/skills/publish-pipeline/queue.sh | awk -F'\t' '$1 == "update" || $1 == "invalid"'
+bash $P/queue.sh | awk -F'\t' '$1 == "update" || $1 == "invalid"'
 ```
 
 ## Runs
