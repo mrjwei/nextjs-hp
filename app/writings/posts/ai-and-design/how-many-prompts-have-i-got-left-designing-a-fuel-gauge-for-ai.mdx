@@ -2,6 +2,7 @@
 title: "How many prompts have I got left? Designing a Fuel Gauge for AI"
 slug: "how-many-prompts-have-i-got-left-designing-a-fuel-gauge-for-ai"
 publishedAt: "2026-11-18"
+updatedAt: "2026-11-21"
 summary: "AI apps bury usage two or three clicks deep and show it as a bare percentage. I sketched a usage 'fuel gauge' that sits where the work happens and translates the quota into tasks, then explored with Claude Design why 'tasks left' has to be a range, and why providers have reasons to keep the meter vague."
 tags: ["design", "ai", "uiux"]
 ---
@@ -13,6 +14,7 @@ tags: ["design", "ai", "uiux"]
 - [Discussion](#discussion)
   - ["Tasks left" is a range, not a number](#tasks-left-is-a-range-not-a-number)
   - [Why the meter is buried](#why-the-meter-is-buried)
+  - [No meter is worse than a vague one](#no-meter-is-worse-than-a-vague-one)
   - [What's realistic](#whats-realistic)
 - [Limitations](#limitations)
 - [What I'd do next](#what-id-do-next)
@@ -21,7 +23,7 @@ tags: ["design", "ai", "uiux"]
 
 I check my AI usage far more often now than when I first started using AI in my work and daily life. Yet in most AI apps, that information is buried two or three clicks deep in a settings panel, and when I do find it, it rarely answers the question I actually have.
 
-This post is about a small design experiment that came out of that frustration: a usage "fuel gauge" that sits where the work happens and translates a percentage into tasks. The short version: showing usage in human terms is the right goal, but "tasks left" is a range, not a number, and providers have real reasons to keep the meter vague. A good usage UI has to be honest about both.
+This post is about a small design experiment that came out of that frustration: a usage "fuel gauge" that sits where the work happens and translates a percentage into tasks. The short version: showing usage in human terms is the right goal, but "tasks left" is a range, not a number, and providers have real reasons to keep the meter vague. A good usage UI has to be honest about both, and the worst case isn't a vague meter but a limit with no meter at all.
 
 ## The problem: "2% used", so what?
 
@@ -49,13 +51,25 @@ Mid-task in Claude Code, I hover over the little ring next to the model picker a
 |---|---|---|---|---|
 | Claude app | Settings → Usage | 2–3 clicks | % of session and week, with reset times | What's left in terms of work |
 | Claude Code (desktop) | Ring next to the model picker | Hover, or 1 click | Hover: weekly %. Click: 5-hour and weekly % | What that % means for the task in front of me |
-| Mistral Vibe | Avatar → Limits | 2 clicks | Dollars spent on Vibe Code; nothing for Work (fair use) | What either one buys in work |
+| Mistral Vibe | Avatar → Limits | 2 clicks | Dollars spent on Vibe Code; nothing for Work (fair use) | What either one buys in work, or that a separate message limit exists |
 
 The pattern is almost exactly backwards: the closer to the work, the less information; the more information, the further from the work. And the question I actually care about isn't what percentage of the quota is used, but "can I finish this before the reset?" None of these screens answers that.
 
 Recently, I came across an [article](https://uxdesign.cc/every-click-has-a-price-now-who-designs-how-that-feels-e3f00b6cabb8) by Arin Bhowmick on UX Collective that put words to this frustration. It calls *budget anxiety* and bill shock UX failures, which captures what I've been experiencing: on top of budgeting my time, I now have to budget my tokens. The article treats cost as a design material, like latency or error states, and lists practices it considers non-negotiable, including putting the estimate next to the button, showing what each task cost, and warning early. It also floats the idea of telling people they have "enough for about three more prototypes like this one" instead of a bare credit count. Where I agree most is its point that, for Copilot users, the worst part wasn't the price but **not knowing the cost in advance**.
 
 The GitHub Copilot billing switch the article mentions is one I experienced first-hand, on the free Copilot Student plan. In March 2026, GitHub removed Claude Opus, Claude Sonnet and GPT-5.4 from the Student plan's model picker, so the more powerful models I was used to were gone overnight. Then on 1 June, Copilot replaced premium requests with metered AI Credits (200 a month on the Student plan), and I still remember how frustrated I felt when I burned through half of my monthly credits in a day without knowing it. The old safety net went with the switch: running out of premium requests used to drop you to a cheaper model, but once AI Credits run out, Copilot's chat and agent features simply stop unless you pay for more. Cursor went through its own version in 2025, ending with an apology and refunds for surprise charges.
+
+A few days after I first published this post, Mistral Vibe, which I use on the Free plan, gave me a sharper example. Out of the blue, it stopped me with a "Messages limit reached" screen: my limit would reset in two days, and the only way forward was an "Upgrade to Pro" button. Nothing had warned me. More than half of my weekly quota was still left, and the only meter Vibe shows, the Limits flyout, had my Vibe Code spending at $4.07 of $10.
+
+<figure style={{ textAlign: "center" }}>
+  <div className="figure-row">
+    <img src="/how-many-prompts-have-i-got-left-designing-a-fuel-gauge-for-ai/mistral-vibe-usage-flyout-at-lockout.png" alt="Mistral Vibe's Limits flyout at the time of the lockout: $4.07 of $10 of monthly Vibe & Studio usage, resetting in 10 days, with a note that Work usage is not affected" style={{ "--row-flex": "219", maxWidth: "219px" }} />
+    <img src="/how-many-prompts-have-i-got-left-designing-a-fuel-gauge-for-ai/mistral-vibe-messages-limit-reached.png" alt="Mistral Vibe's &quot;Messages limit reached&quot; screen: the limit will reset in 2 days, with an Upgrade to Pro button that promises unlimited messages" style={{ "--row-flex": "463", maxWidth: "463px" }} />
+  </div>
+  <figcaption>Mistral Vibe: the only meter showed plenty of Vibe Code budget left (left), yet a limit it never mentions locked me out for two days (right).</figcaption>
+</figure>
+
+I still don't know which limit I hit. "Message limit" could mean a cap per day, per session or per conversation, or even a context-length limit, and it appears on no meter I can find. The screen also promises "unlimited messages" on Pro, which Mistral's pricing page doesn't offer on any plan; it lists Pro at "up to 6x" the Free plan's messages. It's a failure the table above can't even capture: there's no row for a limit that has no meter.
 
 ## Design experiments to find a solution
 
@@ -114,11 +128,11 @@ The second was a lookbook of eight patterns that go beyond the meter:
 7. **Limits weather report:** a peak-hour notice and a dated changelog of limit changes.
 8. **Fixed-price task menu:** the provider absorbs the variance for repeatable tasks.
 
-Five of them (1, 3, 4, 7 and 8) come up in the discussion below.
+All but the second come up in the discussion below.
 
 ## Discussion
 
-The lessons apply to any AI product with usage limits. Three stood out.
+The lessons apply to any AI product with usage limits. Four stood out.
 
 ### "Tasks left" is a range, not a number
 
@@ -177,6 +191,24 @@ There's a middle path: be honest about the flexibility instead of hiding it. Tha
   <figcaption>A limits weather report: the limits can still move, but not silently.</figcaption>
 </figure>
 
+Mistral shows why the log matters: between my two screenshots, three days apart, its usage flyout changed from *"monthly Vibe Code usage"* to *"monthly Vibe & Studio usage"*, with no note on whether what it counts had changed too.
+
+<figure style={{ textAlign: "center" }}>
+  <div className="figure-row">
+    <img src="/how-many-prompts-have-i-got-left-designing-a-fuel-gauge-for-ai/mistral-vibe-limits-flyout-before.png" alt="Mistral Vibe's usage flyout on the earlier date, with the phrase &quot;Vibe Code usage&quot; circled: $4.04 of $10, resetting in 13 days" style={{ "--row-flex": "319", maxWidth: "319px" }} />
+    <img src="/how-many-prompts-have-i-got-left-designing-a-fuel-gauge-for-ai/mistral-vibe-limits-flyout-after.png" alt="Mistral Vibe's usage flyout three days later, with the phrase &quot;Vibe & Studio usage&quot; circled: $4.07 of $10, resetting in 10 days" style={{ "--row-flex": "339", maxWidth: "339px" }} />
+  </div>
+  <figcaption>Mistral Vibe's usage flyout, three days apart: the label changed from Vibe Code to Vibe & Studio, but the note under it didn't.</figcaption>
+</figure>
+
+### No meter is worse than a vague one
+
+The Mistral lockout showed me the failure that sits below a vague meter. A range like "16–22" can disappoint me, but it never ambushes me; a limit with no meter only becomes visible once it has already stopped me. The cheapest fix is the one telecoms were pushed into: an early warning. The provider already knows how close I am to every limit it enforces, so an alert costs little to build, and it doesn't commit the provider to publishing what the limit is.
+
+Two patterns in the lookbook go further. *Downshift, don't dead-end* pairs an 80% alert with a cheaper model, so running low means slowing down rather than stopping, much like the fallback Copilot dropped when it moved to AI Credits. *Stop at a safe point* makes sure that when a limit does bite, it doesn't cut a task off halfway. Neither needs the limit to be published; both only need the provider to admit that it exists.
+
+There's a business case too. A surprise lockout next to an upgrade button is presumably meant to convert, and the price isn't what's stopping me. It had the opposite effect: I now trust Mistral less, and upgrading wouldn't fix what went wrong. Nothing guarantees a paid plan won't hit a similar hidden limit (Pro's messages are capped too, just higher), and the meter would be just as silent about it. Hiding the meter may protect a flat rate's perceived value; an unannounced wall spends the trust that value depends on.
+
 ### What's realistic
 
 Every design I explored carries some risk for the provider, and the ones that cost least are closest to what providers already do. Two patterns from the lookbook sit at opposite ends of that scale.
@@ -209,6 +241,7 @@ The implication seems to be that it makes sense for AI vendors *not* to offer th
 - No user testing yet, so I don't know whether people read ranges correctly or find them reassuring.
 - Personalisation means analysing activity history, a privacy question (opt-in? on-device?) I didn't design for.
 - The UI can only be as honest as the estimation model behind it, and that's an engineering problem.
+- I don't know what Mistral's message limit counts; my reading of it comes from the lockout screen alone.
 - The provider-incentive section is inference, not insider knowledge, and the screenshots come from one account on one plan in November 2026.
 - The sketches and design decisions are mine. Claude did the benchmark research and produced the higher-fidelity mockups and the lookbook in Claude Design.
 
@@ -219,7 +252,7 @@ The implication seems to be that it makes sense for AI vendors *not* to offer th
 
 ## Wrapping up
 
-The useful meter isn't the most precise one. It's the one that answers "can I finish this?" honestly, including "probably; here's the range".
+The useful meter isn't the most precise one. It's the one that answers "can I finish this?" honestly, including "probably; here's the range". The worst meter is the one that isn't there.
 
 It was also a reminder that design is usually more complex than designers first expect; some constraints only surface once you start working on the problem. From the users' perspective, there are more poor usage UIs than good ones; from a business standpoint, a poor design that protects revenue is still a successful product. A good usage UI has to work for both, starting with honesty about what the meter can and can't promise.
 
