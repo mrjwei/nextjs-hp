@@ -1,0 +1,12 @@
+{
+  "name": "jessewei-net",
+  "owner": { "name": "Jesse Wei" },
+  "description": "Claude Code plugins for working on jessewei.net.",
+  "plugins": [
+    {
+      "name": "post-pipeline",
+      "source": "./plugins/post-pipeline",
+      "description": "Finalise, publish and update blog posts from the Obsidian Posts board, lane by lane."
+    }
+  ]
+}

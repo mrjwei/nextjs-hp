@@ -15,12 +15,16 @@
 // When <output> differs from <input> (a GIF that became .webm), the post uses <output>,
 // written with the video markup in stages/publish.md step 3.
 //
-// Needs sharp (a devDependency: run `npm install` once) and ffmpeg (for video).
-// Usage: node .claude/skills/publish-pipeline/media.mjs public/<folder>/<file>...
+// Needs sharp (a devDependency of the site repo: run `npm install` once) and ffmpeg (for video).
+// Run it from the site repo's root: sharp is loaded from that repo's node_modules, since this
+// script lives in the post-pipeline plugin, which may be installed outside the repo.
+// Usage: node <publish-pipeline skill folder>/media.mjs public/<folder>/<file>...
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
-import sharp from "sharp";
+import { createRequire } from "node:module";
+
+const sharp = createRequire(path.join(process.cwd(), "package.json"))("sharp");
 
 const MAX_WIDTH = 2000;
 const IMAGE = new Set([".png", ".jpg", ".jpeg", ".webp", ".gif"]);

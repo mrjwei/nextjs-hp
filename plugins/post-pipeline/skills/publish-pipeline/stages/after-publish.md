@@ -10,7 +10,7 @@ It writes the note's frontmatter and, after a publish, its body from the working
 ## Record
 
 1. Find the post. After a publish, it's the post just merged. For `finish`, use `sitePath` if set; otherwise search both locale trees without opening posts: by the slug derived from the note's `title` or name (without a `✅` prefix) with `find app/writings -name '<slug>.mdx'`, then by title with `command grep -rl '^title: "<title>"' app/writings`. A placeholder (`placeholder: true`) is never the note's post. No match, or several equally likely → blocked; never republish to fill a gap.
-2. After a publish (not for a `finish` line): `bash .claude/skills/publish-pipeline/sync.sh apply <note>`. `synced` or `same` → go on (as does `none` when this stage already synced the note earlier in the run). `conflict`, or `none` because an earlier run merged its PR but stopped before syncing → go on too, and report under "Check": `<note>: body not synced with the post` (with the working copy's path for a conflict).
+2. After a publish (not for a `finish` line): `bash $P/sync.sh apply <note>`. `synced` or `same` → go on (as does `none` when this stage already synced the note earlier in the run). `conflict`, or `none` because an earlier run merged its PR but stopped before syncing → go on too, and report under "Check": `<note>: body not synced with the post` (with the working copy's path for a conflict).
 3. Set on the note, in one edit:
    - `sitePath`: the post's repo path (a list if the note was published as several posts)
    - `lang`: the post's locale
@@ -20,7 +20,7 @@ It writes the note's frontmatter and, after a publish, its body from the working
 
    When `series` or `project` is now a property, remove the matching item (e.g. `project: Strobe`) from `note`, and remove `note` if nothing is left. Leave `status` (Ready until it goes live) and an author-set `publishedAt` as they are.
 4. **File the note** where the vault mirrors the site (`Posts/`, see the vault's `Vault Guide.md`), unless it's already there: a series post's note goes to `Posts/Series/<the folder's EN title in app/data/series.json>/`, a project post's to `Posts/Projects/<project ID>/`, any other to `Posts/Standalone/`; a translation goes next to its original. Create the folder if it's missing and move the note with `mv` under its current name (never rename it; wikilinks find it by name). Images embedded as `assets/...` resolve from the vault root, so nothing else moves.
-5. After a publish: set `stagedHash` to the first column of `bash .claude/skills/publish-pipeline/sync.sh hash <note>`, as the last edit of this part (the hash covers the properties above). After a `conflict` in step 2, set `stagedHash: stale` instead, so the next run restages the author's edit.
+5. After a publish: set `stagedHash` to the first column of `bash $P/sync.sh hash <note>`, as the last edit of this part (the hash covers the properties above). After a `conflict` in step 2, set `stagedHash: stale` instead, so the next run restages the author's edit.
 6. Next, unless this was a `finish` line: the post's `publishedAt` is today or earlier → **Go live** now. Otherwise the post is staged: an original with `requireTranslate: true` and no translation note → `stages/translate.md` now, even when the request only said "publish"; anything else → done until its date.
 
 ## Go live

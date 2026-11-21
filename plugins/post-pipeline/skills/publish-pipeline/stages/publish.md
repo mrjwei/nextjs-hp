@@ -6,7 +6,7 @@ Turn one Ready vault note into a post on the site, with placeholders for the pos
 
 - No date check: a future `scheduledAt` is staged, never skipped. "Today" below is `TZ=Australia/Brisbane date +%F`.
 - **Restage** (the queue's detail starts `restage`: the note was staged, then edited): the same steps, writing over the note's staged post. Keep from that post whatever the note doesn't decide (tags, part fields, `lead`, case-study fields), and redo the rest from the note. Find what changed with `git diff --no-index <post> <new conversion>` only if you need it for the report.
-- Make the working copy: `bash .claude/skills/publish-pipeline/sync.sh copy <note>`. From here on, read and edit the copy, never the note.
+- Make the working copy: `bash $P/sync.sh copy <note>`. From here on, read and edit the copy, never the note.
 - Read the copy in full: frontmatter, body and every image reference (`![[image.png]]` or `![alt](path)`).
 - It must be finished. Placeholder text ("TODO", "add example here"), sections that are only a heading, or a bullet skeleton where prose should be → blocked: report what's unfinished. Publishing doesn't write missing content.
 - **Translation note** (`translationOf` set): also run `fm.sh` on the original note and on the original's published post at its `sitePath`. Every site frontmatter field except `title` and `summary` comes from that post, unchanged.
@@ -50,7 +50,7 @@ Skip whatever the note already satisfies. Check the house format with `head -n 4
   ```
 
   An image you can't find → blocked. In an embed, text after `|` is the alt text (a number is a width, so ignore it); without it, write the alt text yourself. An italic line directly below an image is its caption. Notes written by the translate stage use both.
-- **Shrink the copies**, once every image and video this run copied is in `public/` (and after any split or obfuscation), before writing their markup: `node .claude/skills/publish-pipeline/media.mjs <each file this run copied into public/>`. It changes only those repo copies, never the vault originals:
+- **Shrink the copies**, once every image and video this run copied is in `public/` (and after any split or obfuscation), before writing their markup: `node $P/media.mjs <each file this run copied into public/>`. It changes only those repo copies, never the vault originals:
   - images (`.png`, `.jpg`, `.webp`, a static `.gif`) are capped at 2000 px wide and recompressed in place, under the same file name;
   - an animated `.gif` (or an `.mp4`/`.mov` recording) becomes `<name>.webm` (VP9, at most 2000 px wide), and the copy is deleted. Its output line's second column is the new file: write it with the video markup below, the alt text becoming its `aria-label`.
 
@@ -129,7 +129,7 @@ tags: ["…"]
 `main` is protected: never commit to it or push it. Every change reaches main through a pull request, merged with `gh`.
 
 1. Branch from an up-to-date main: `git switch -q main && git pull -q --ff-only origin main`, then `git switch -q -C post/<slug>` (or `post/<slug>-ja` / `post/<slug>-en` for a translation). `-C` resets a branch a failed run left behind; its open PR, if any, is reused in step 5.
-2. `node .claude/skills/publish-pipeline/links.mjs` prints nothing when every post link resolves. Otherwise fix each line on this branch, even in other posts, as step 4 says, and rerun until it's silent:
+2. `node $P/links.mjs` prints nothing when every post link resolves. Otherwise fix each line on this branch, even in other posts, as step 4 says, and rerun until it's silent:
    - `placeholder <path>`: create it (its counterpart in the other locale is the model);
    - `relink <file> <url> <new url>`: change the link, and drop a language mark like `(英語)` if the link is now same-locale;
    - `broken <file> <url>`: a typo → fix it; else a missing post → placeholders per step 4.

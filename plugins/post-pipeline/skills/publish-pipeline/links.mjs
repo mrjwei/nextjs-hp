@@ -7,7 +7,7 @@
 // links to it from the other locale use its only version and it never gets a placeholder there.
 // A published post whose note doesn't have `requireTranslate: true` counts as single-language too.
 //
-// Usage: node .claude/skills/publish-pipeline/links.mjs [vault]
+// Usage: node <publish-pipeline skill folder>/links.mjs [vault]
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
