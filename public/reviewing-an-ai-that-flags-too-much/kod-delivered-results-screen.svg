@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="712" viewBox="0 0 1400 712">
+  <rect x="0" y="0" width="1400" height="712" fill="#fff" />
+  <text x="48" y="64" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#1E293B" font-size="28" font-weight="700">The delivered screen made each check fast and kept nothing</text>
+  <text x="48" y="94" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#5B6675" font-size="15">Redrawn with invented text. A finding is checked where it sits in the page; the result of the check is not saved.</text>
+
+  <text x="48" y="140" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#5B6675" font-size="11.5" font-weight="600" letter-spacing=".12em">DELIVERED RESULTS SCREEN · TERM IN CONTEXT</text>
+  <rect x="48" y="154" width="1304" height="360" rx="8" fill="#F1F4F7" stroke="#CBD5E1" stroke-width="1" />
+
+  
+  <rect x="68" y="172" width="1264" height="52" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="88" y="203" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#5B6675" font-size="11.5" font-weight="600" letter-spacing=".12em">RANGE</text>
+  <rect x="160" y="182" width="250" height="32" rx="4" fill="#fff" stroke="#94A3B8" stroke-width="1" />
+  <text x="174" y="203" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#5B6675" font-size="12">開始</text>
+  <text x="214" y="203" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#1E293B" font-size="14.5">第2部 設置</text>
+  <polygon points="386,195 396,195 391,201" fill="#5B6675" />
+  <rect x="426" y="182" width="270" height="32" rx="4" fill="#fff" stroke="#94A3B8" stroke-width="1" />
+  <text x="440" y="203" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#5B6675" font-size="12">終了</text>
+  <text x="480" y="203" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#1E293B" font-size="14.5">第3部 日常の点検</text>
+  <polygon points="672,195 682,195 677,201" fill="#5B6675" />
+  <circle cx="728" cy="198" r="11" fill="#23395B" />
+  <text x="728" y="202" text-anchor="middle" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#fff" font-size="12" font-weight="700">1</text>
+
+  
+  <rect x="68" y="240" width="560" height="258" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="88" y="268" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#1E293B" font-size="15.5" font-weight="600">Page 12 (3 findings)</text>
+  <circle cx="270" cy="263" r="11" fill="#23395B" />
+  <text x="270" y="267" text-anchor="middle" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#fff" font-size="12" font-weight="700">2</text>
+
+  <text x="88" y="306" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#1E293B" font-size="15">部品を</text>
+  <rect x="131" y="290" width="49" height="22" rx="3" fill="#FBEEEE" />
+  <text x="133" y="306" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#A33A3A" font-size="15" font-weight="600">取付け</text>
+  <text x="178" y="306" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#1E293B" font-size="15">る前に、電源が切れていることを</text>
+  <text x="88" y="338" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#1E293B" font-size="15">確認してください。</text>
+  <text x="88" y="370" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#1E293B" font-size="15">作業は一人で</text>
+  <rect x="176" y="354" width="49" height="22" rx="3" fill="#FBEEEE" />
+  <text x="178" y="370" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#A33A3A" font-size="15" font-weight="600">出来る</text>
+  <text x="223" y="370" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#1E293B" font-size="15">範囲にとどめ、工具は所定の</text>
+  <text x="88" y="402" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#1E293B" font-size="15">位置に戻してください。</text>
+  <text x="88" y="434" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#1E293B" font-size="15">固定用の</text>
+  <rect x="146" y="418" width="34" height="22" rx="3" fill="#FBEEEE" />
+  <text x="148" y="434" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#A33A3A" font-size="15" font-weight="600">ネジ</text>
+  <text x="178" y="434" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#1E293B" font-size="15">は締めすぎないこと。</text>
+
+  
+  <path d="M628,301 H664" fill="none" stroke="#94A3B8" stroke-width="1" stroke-dasharray="4 3" />
+  <path d="M628,365 H664" fill="none" stroke="#94A3B8" stroke-width="1" stroke-dasharray="4 3" />
+  <path d="M628,429 H664" fill="none" stroke="#94A3B8" stroke-width="1" stroke-dasharray="4 3" />
+
+  
+  <text x="664" y="262" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#5B6675" font-size="11.5" font-weight="600" letter-spacing=".12em">SUGGESTION · REASON</text>
+  <circle cx="842" cy="258" r="11" fill="#23395B" />
+  <text x="842" y="262" text-anchor="middle" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#fff" font-size="12" font-weight="700">3</text>
+
+  <rect x="664" y="276" width="420" height="52" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="680" y="298" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#1E293B" font-size="14.5">取付け</text>
+  <text x="732" y="298" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#1E293B" font-size="14.5">→</text>
+  <text x="754" y="298" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#1E293B" font-size="14.5">取り付け</text>
+  <text x="680" y="318" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#5B6675" font-size="12">用語集の送り仮名に合わせる</text>
+
+  <rect x="664" y="340" width="420" height="52" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="680" y="362" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#1E293B" font-size="14.5">出来る</text>
+  <text x="732" y="362" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#1E293B" font-size="14.5">→</text>
+  <text x="754" y="362" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#1E293B" font-size="14.5">できる</text>
+  <text x="680" y="382" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#5B6675" font-size="12">補助的な用法はひらがな</text>
+
+  <rect x="664" y="404" width="420" height="52" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <text x="680" y="426" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#1E293B" font-size="14.5">ネジ</text>
+  <text x="718" y="426" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#1E293B" font-size="14.5">→</text>
+  <text x="740" y="426" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#1E293B" font-size="14.5">ねじ</text>
+  <text x="680" y="446" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#5B6675" font-size="12">用語集でひらがな表記に統一</text>
+
+  
+  <rect x="1108" y="276" width="208" height="180" rx="6" fill="#FBEEEE" stroke="#C98080" stroke-width="1" stroke-dasharray="5 4" />
+  <text x="1126" y="304" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#A33A3A" font-size="12.5" font-weight="600" letter-spacing=".08em">NOT RECORDED</text>
+  <text x="1126" y="334" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#5B6675" font-size="13">No accept, reject or hold</text>
+  <text x="1126" y="354" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#5B6675" font-size="13">on any finding.</text>
+  <text x="1126" y="386" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#5B6675" font-size="13">Nothing is saved about</text>
+  <text x="1126" y="406" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#5B6675" font-size="13">who checked what, or</text>
+  <text x="1126" y="426" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#5B6675" font-size="13">what they decided.</text>
+
+  
+  <rect x="48" y="538" width="418" height="116" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <circle cx="72" cy="566" r="11" fill="#23395B" />
+  <text x="72" y="570" text-anchor="middle" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#fff" font-size="12" font-weight="700">1</text>
+  <text x="94" y="571" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#1E293B" font-size="15.5" font-weight="600">Range from the table of contents</text>
+  <text x="94" y="598" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#5B6675" font-size="13">Chosen by section, not by page number.</text>
+  <text x="94" y="618" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#5B6675" font-size="13">Labelled 開始 / 終了 rather than by chapter,</text>
+  <text x="94" y="638" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#5B6675" font-size="13">because some manuals are built from parts.</text>
+
+  <rect x="491" y="538" width="418" height="116" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <circle cx="515" cy="566" r="11" fill="#23395B" />
+  <text x="515" y="570" text-anchor="middle" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#fff" font-size="12" font-weight="700">2</text>
+  <text x="537" y="571" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#1E293B" font-size="15.5" font-weight="600">Term highlighted in the page</text>
+  <text x="537" y="598" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#5B6675" font-size="13">The flagged term is shown where it sits, so</text>
+  <text x="537" y="618" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#5B6675" font-size="13">there is nothing to search for. Quicker to</text>
+  <text x="537" y="638" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#5B6675" font-size="13">check one finding than in my review table.</text>
+
+  <rect x="934" y="538" width="418" height="116" rx="6" fill="#fff" stroke="#CBD5E1" stroke-width="1" />
+  <circle cx="958" cy="566" r="11" fill="#23395B" />
+  <text x="958" y="570" text-anchor="middle" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#fff" font-size="12" font-weight="700">3</text>
+  <text x="980" y="571" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#1E293B" font-size="15.5" font-weight="600">Reason from the client's term list</text>
+  <text x="980" y="598" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#5B6675" font-size="13">Each card's reason comes from the note</text>
+  <text x="980" y="618" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#5B6675" font-size="13">column the client's own term list already had.</text>
+
+  <text x="48" y="688" font-family="'IBM Plex Sans',Inter,'Helvetica Neue',Arial,'Noto Sans CJK JP','Hiragino Sans',sans-serif" fill="#5B6675" font-size="12" font-style="italic">Proposed by the team in response to client requests during the sprint, and built by my colleague.</text>
+</svg>
